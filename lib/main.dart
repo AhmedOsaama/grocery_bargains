@@ -23,14 +23,10 @@ class MyApp extends StatelessWidget {
       title: 'SWAAV',
       theme: appTheme(),
       debugShowCheckedModeBanner: false,
-      // theme: ThemeData(
-      //   primarySwatch: Colors.blue,
-      // ),
       home: Builder(
-
         builder: (context) => ScreenUtilInit(
-            designSize: const Size(163,
-                313),
+            designSize: const Size(390,
+                844),
             minTextAdapt: true,
             splitScreenMode: true,
             builder: (ctx,child) => SplashScreen()),

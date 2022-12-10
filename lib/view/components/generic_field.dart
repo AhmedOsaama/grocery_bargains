@@ -69,7 +69,7 @@ class GenericField extends StatelessWidget {
           suffixIcon: suffixIcon,
           hintText: hintText,
           labelText: labeltext,
-          fillColor: white,
+          fillColor: Color.fromRGBO(188, 188, 188, 1),
           labelStyle: const TextStyle(fontSize: 16, color: Color(0xff343434)),
           hintStyle: const TextStyle(fontSize: 16, color: grey),
           border: OutlineInputBorder(

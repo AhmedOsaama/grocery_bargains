@@ -19,3 +19,5 @@ const Color borderColor = Color.fromRGBO(148, 149, 147, 1);
 const Color yellowTextColor = Color.fromRGBO(255, 168, 0, 1);
 const Color purpleTextColor = Color.fromRGBO(173, 0, 255, 1);
 const Color tealTextColor = Color.fromRGBO(37, 102, 175, 1);
+
+Color buttonColor = const Color.fromRGBO(188, 188, 188, 1);

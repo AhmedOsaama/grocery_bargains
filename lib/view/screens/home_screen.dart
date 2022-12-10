@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:swaav/config/routes/app_navigator.dart';
 import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/assets_manager.dart';
 import 'package:swaav/utils/icons_manager.dart';
 import 'package:swaav/utils/style_utils.dart';
+import 'package:swaav/view/screens/profile_screen.dart';
 import 'package:swaav/view/widgets/list_type_widget.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -16,18 +18,25 @@ class HomeScreen extends StatelessWidget {
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10.w),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 30.h),
+            SizedBox(height: 90.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                SvgPicture.asset(home,width: 18.w,height: 20.h,),
-                SizedBox(width: 70.w,child: Text("Welcome Laura Let's List !",style: TextStyles.textViewBold10.copyWith(color: Color.fromRGBO(137, 137, 137, 1)),)),
+                SvgPicture.asset(home,width: 40.w,height: 44.h,),
+                SizedBox(width: 156.w,child: Text("Welcome Laura Let's List !",style: TextStyles.textViewBold20.copyWith(color: Color.fromRGBO(137, 137, 137, 1)),)),
                 Image.asset(userIcon),
-                SvgPicture.asset(options,width: 10.w,height: 10.h,),
+                GestureDetector(
+                  onTap: () => AppNavigator.push(context: context, screen: ProfileScreen()),
+                    child: SvgPicture.asset(options,width: 22.w,height: 22.h,)),
               ],
             ),
-            SizedBox(height: 40.h,),
+            SizedBox(height: 93.h,),
+            Padding(
+              padding: const EdgeInsets.all(11.0),
+              child: Text("Shopping Categories",style: TextStyles.textViewBold15,),
+            ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 10.0.w),
               child: Row(
@@ -45,7 +54,15 @@ class HomeScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ListTypeWidget(color: lightGreen, text: "Clothing"),
-                  ListTypeWidget(color: darkBlue, text: "Basics",),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(11.0),
+                        child: Text("Pre made",style: TextStyles.textViewBold15,),
+                      ),
+                      ListTypeWidget(color: darkBlue, text: "Basics",),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -60,14 +77,39 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 30.h,),
-            Container(
-              width: 138.w,
-              height: 28.h,
+            SizedBox(height: 20.h,),
+            Padding(
+              padding: const EdgeInsets.all(11.0),
+              child: Text("Recent",style: TextStyles.textViewBold15,),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+              Container(
+              width: 109.w,
+              height: 137.h,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(6.r),
-                color: darkGrey
+                  borderRadius: BorderRadius.circular(18),
+                  color: Color.fromRGBO(217, 217, 217, 1)
               ) ,
+            ),
+                Container(
+                  width: 109.w,
+                  height: 137.h,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18),
+                      color: Color.fromRGBO(217, 217, 217, 1)
+                  ) ,
+                ),
+                Container(
+                  width: 109.w,
+                  height: 137.h,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
+                      color: Color.fromRGBO(217, 217, 217, 1)
+                  ) ,
+                ),
+              ],
             ),
           ],
         ),

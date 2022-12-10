@@ -5,7 +5,7 @@ import '../../utils/fonts_utils.dart';
 
 ThemeData appTheme() {
   return ThemeData(
-      canvasColor: Colors.transparent,
+      // canvasColor: Colors.transparent,
       primaryColor: primary,
       hintColor: hintColor,
       brightness: Brightness.light,
@@ -21,7 +21,7 @@ ThemeData appTheme() {
         bodyMedium: TextStyle(
             height: 1.3,
             fontSize: 22,
-            color: black,
+            color: Color.fromRGBO(137, 137, 137, 1),
             fontWeight: FontWeight.bold),
       ),
       scrollbarTheme: const ScrollbarThemeData().copyWith(

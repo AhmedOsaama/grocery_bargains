@@ -1,6 +1,6 @@
 # swaav
 
-An Afdal Project.
+An Afdal X Project.
 
 ## Getting Started
 
