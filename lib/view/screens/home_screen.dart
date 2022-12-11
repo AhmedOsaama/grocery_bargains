@@ -6,6 +6,8 @@ import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/assets_manager.dart';
 import 'package:swaav/utils/icons_manager.dart';
 import 'package:swaav/utils/style_utils.dart';
+import 'package:swaav/view/components/nav_bar.dart';
+import 'package:swaav/view/screens/lists_screen.dart';
 import 'package:swaav/view/screens/profile_screen.dart';
 import 'package:swaav/view/widgets/list_type_widget.dart';
 
@@ -32,7 +34,7 @@ class HomeScreen extends StatelessWidget {
                     child: SvgPicture.asset(options,width: 22.w,height: 22.h,)),
               ],
             ),
-            SizedBox(height: 93.h,),
+            SizedBox(height: 70.h,),
             Padding(
               padding: const EdgeInsets.all(11.0),
               child: Text("Shopping Categories",style: TextStyles.textViewBold15,),
@@ -114,6 +116,7 @@ class HomeScreen extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: NavBar(),
     );
   }
 }
