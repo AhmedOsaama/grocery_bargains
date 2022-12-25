@@ -13,7 +13,7 @@ class NavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10.h),
-      margin: EdgeInsets.symmetric(horizontal: 41.w,vertical: 15.h),
+      margin: EdgeInsets.symmetric(horizontal: 41.w,vertical: 12.h),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
           color: Color.fromRGBO(204, 204, 204, 1)

@@ -34,7 +34,7 @@ class HomeScreen extends StatelessWidget {
                     child: SvgPicture.asset(options,width: 22.w,height: 22.h,)),
               ],
             ),
-            SizedBox(height: 70.h,),
+            SizedBox(height: 50.h,),
             Padding(
               padding: const EdgeInsets.all(11.0),
               child: Text("Shopping Categories",style: TextStyles.textViewBold15,),
