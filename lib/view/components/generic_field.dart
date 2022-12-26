@@ -8,6 +8,7 @@ class GenericField extends StatelessWidget {
   final String? Function(String?)? validation;
   final void Function(String)? onSubmitted;
   final void Function(String?)? onSaved;
+  final void Function(String?)? onChanged;
   final String? labeltext;
   final String? hintText;
   final bool readOnly;
@@ -41,7 +42,7 @@ class GenericField extends StatelessWidget {
     this.autoFocus = false,
     this.maxLines = 1,
     this.colorStyle = lightGrey,
-    this.borderRaduis = 10, this.obscureText = false,
+    this.borderRaduis = 10, this.obscureText = false, this.onChanged,
   });
 
   @override
@@ -65,7 +66,7 @@ class GenericField extends StatelessWidget {
           color: black,
           fontSize: 16,
         ),
-
+        onChanged: onChanged,
         decoration: InputDecoration(
           filled: isFilled,
 

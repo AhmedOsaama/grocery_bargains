@@ -1,6 +1,12 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:swaav/config/routes/app_navigator.dart';
 import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/icons_manager.dart';
@@ -19,7 +25,15 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
+  @override
+  void initState() {
+    getUserDataFuture = FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
+    super.initState();
+  }
   bool isEditingPicture = false;
+  File? _pickedImage;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,8 +64,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         height: 10.h,
                       ),
                       GenericButton(
-                          onPressed: () {},
-                          borderRadius: BorderRadius.circular(10),                          height: 31.h,
+                          onPressed: () async {
+                              final picker = ImagePicker();
+                              final pickedImage = await picker.pickImage(source: ImageSource.gallery,
+                              );
+                              final pickedImageFile = File(pickedImage!.path);
+
+                            final userImageRef = FirebaseStorage.instance.ref().child('user_image').child('${FirebaseAuth.instance.currentUser?.uid}.jpg');
+                            await userImageRef.putFile(pickedImageFile).whenComplete(() => null);
+                            final url = await userImageRef.getDownloadURL();
+                             await FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).update({
+                                "imageURL": url,
+                              });
+                             setState(() {
+                              isEditingPicture = false;
+                             });
+                          },
+                          borderRadius: BorderRadius.circular(10),
+                          height: 31.h,
                           width: 165.w,
                           child: Text(
                             "Change Profile Picture",
@@ -61,24 +91,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 Column(
                   children: [
+                    // isEditingPicture ? Container(
+                    //     decoration: BoxDecoration(
+                    //         border: Border.all(
+                    //             color: Colors.black, width: 5),
+                    //         shape: BoxShape.circle),
+                    //     child: Container()) :
                     GestureDetector(
                       onTap: () {
                         setState(() {
                           isEditingPicture = true;
                         });
                       },
-                      child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black, width: 5),
-                              shape: BoxShape.circle),
-                          child: Image.asset(
-                            userIcon,
-                          )),
+                      child: FutureBuilder(
+                        future: getUserDataFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Container(
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                        color: Colors.black, width: 5),
+                                    shape: BoxShape.circle),
+                                child: Container());
+                          }
+                          return Container(
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors.black, width: 5),
+                                  shape: BoxShape.circle),
+                              child: snapshot.data!['imageURL'] != "" ? CircleAvatar(backgroundImage: NetworkImage(snapshot.data!['imageURL']),radius: 30,) : SvgPicture.asset(personIcon));
+                        }
+                      ),
                     ),
-                    Text(
-                      "Laura R.",
-                      style: TextStyles.textViewBold15
-                          .copyWith(color: Colors.black),
+                    FutureBuilder(
+                      future: getUserDataFuture,
+                      builder: (context, snapshot) {
+                        if(snapshot.connectionState == ConnectionState.waiting){
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        return Text(
+                          snapshot.data!['username'],
+                          style: TextStyles.textViewBold15
+                              .copyWith(color: Colors.black),
+                        );
+                      }
                     ),
                   ],
                 ),

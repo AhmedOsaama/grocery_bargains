@@ -32,7 +32,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
   ];
 
   Future<void> addItemsToList() async {
-    // final userData = await FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
+    final userData = await FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
     for(Item item in addedItems) {
       FirebaseFirestore.instance.collection('/lists/${widget.listId}/items')
           .add({
@@ -40,9 +40,9 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
         'item_image': item.imageUrl,
         'createdAt': Timestamp.now(),
         'userId': FirebaseAuth.instance.currentUser!.uid,
-        'message': ""
-        // 'username': userData['username'],  TODO
-        // 'userImageURL': userData['imageURL'],
+        'message': "",
+        'username': userData['username'],
+        'userImageURL': userData['imageURL'],
       });
     }
   }

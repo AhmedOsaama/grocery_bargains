@@ -57,10 +57,8 @@ class ChatViewScreen extends StatelessWidget {
                       isMe: messages[index]['userId'] ==
                           FirebaseAuth.instance.currentUser!.uid,
                       message: messages[index]['message'],
-                      userImage: "",
-                      userName: "",
-                      // userName: messages[index]['username'],
-                      // userImage: messages[index]['userImageURL'],
+                      userName: messages[index]['username'],
+                      userImage: messages[index]['userImageURL'],
                       key: ValueKey(messages[index].id),
                     ),
                   ));
@@ -76,6 +74,7 @@ class ChatViewScreen extends StatelessWidget {
               child: TextField(
                 controller: messageController,
                 textAlign: TextAlign.center,
+                keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
                     isDense: true,
                     hintText: "Type Something Here...",
@@ -84,8 +83,9 @@ class ChatViewScreen extends StatelessWidget {
               ),
             ),
             GestureDetector(
-              onTap: (){
+              onTap: () async {
                 print(messageController.text.trim());
+                final userData = await FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
                 FirebaseFirestore.instance.collection('/lists/$listId/items')
                     .add({
                   'item_name': "",
@@ -93,6 +93,8 @@ class ChatViewScreen extends StatelessWidget {
                   'message': messageController.text.trim(),
                   'createdAt': Timestamp.now(),
                   'userId': FirebaseAuth.instance.currentUser!.uid,
+                  'username': userData['username'],
+                  'userImageURL': userData['imageURL'],
                 });
                 messageController.clear();
               },

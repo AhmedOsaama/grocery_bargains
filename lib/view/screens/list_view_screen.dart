@@ -25,6 +25,8 @@ class ListViewScreen extends StatefulWidget {
 }
 
 class _ListViewScreenState extends State<ListViewScreen> {
+  bool isDeleting = false;
+
   @override
   Widget build(BuildContext context) {
     return MyScaffold(
@@ -91,29 +93,42 @@ class _ListViewScreenState extends State<ListViewScreen> {
                       itemCount: items.length,
                       itemBuilder: (ctx,i) {
                       if(items[i]['message'] == ""){
-                        return Container(
-                        color: items[i]['userId'] == FirebaseAuth.instance.currentUser?.uid ?  Colors.yellow.withOpacity(0.6) : null,
-                        child: Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
+                        return Stack(
+                          clipBehavior: Clip.none,
                           children: [
-                            Image.network( items[i]['item_image'],width: 100.w,height: 100.h,),
-                            Container(
-                              width: 32.w,
-                              height: 21.h,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(6),
-                                color: Color.fromRGBO(217, 217, 217, 1),
-                              ),
-                              child: Center(child: Text("3",style: TextStyles.textViewBold15,)),
-                            ),
-                          ],
+                            GestureDetector(
+                              onLongPress: (){
+                                setState(() {
+                                  isDeleting = !isDeleting;
+                                });
+                              },
+                              child: Container(
+                              color: items[i]['userId'] == FirebaseAuth.instance.currentUser?.uid ?  Colors.yellow.withOpacity(0.6) : null,
+                              child: Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  isDeleting ? Icon(Icons.delete_rounded) :
+                                  Image.network( items[i]['item_image'],width: 100.w,height: 100.h,),
+                                  Container(
+                                    width: 32.w,
+                                    height: 21.h,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(6),
+                                      color: Color.fromRGBO(217, 217, 217, 1),
+                                    ),
+                                    child: Center(child: Text("3",style: TextStyles.textViewBold15,)),
+                                  ),
+                                ],
                   ),
-                        ),
-                      );
+                              ),
+                      ),
+                            ),
+                            Positioned(child: CircleAvatar(backgroundImage: NetworkImage(items[i]['userImageURL']),radius: 20,),top: -15 ,right: -15,),
+                          ],
+                        );
                       }
-                      return SizedBox(
-                      );
+                      return SizedBox();
                       },
                   );
                 }

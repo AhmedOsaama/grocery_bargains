@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -46,11 +47,11 @@ class MessageBubble extends StatelessWidget {
               crossAxisAlignment:
                   isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
-                // Text(
-                //   userName,
-                //   style: TextStyles.textViewRegular16
-                //   // textAlign: isMe ? TextAlign.end : TextAlign.start,
-                // ),
+                Text(
+                  userName,
+                  style: TextStyles.textViewBold20
+                  // textAlign: isMe ? TextAlign.end : TextAlign.start,
+                ),
                 if(message.isNotEmpty)
                   Text(message,style: TextStyles.textViewRegular15,),
                 if(message.isEmpty)
@@ -63,8 +64,8 @@ class MessageBubble extends StatelessWidget {
               ],
             ),
           ),
-          SvgPicture.asset(personIcon),
-
+          userImage.isNotEmpty ?
+          CircleAvatar(backgroundImage: NetworkImage(userImage),radius: 20,) : SvgPicture.asset(personIcon),
         ],
       ),
     ]

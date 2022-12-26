@@ -25,6 +25,7 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _formKey = GlobalKey<FormState>();
+  String username = "";
   String email = "";
   String password = "";
   String confirmPassword = "";
@@ -49,7 +50,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             .set({
           "email": email,
           "username": username,
-          // 'imageURL': url,
+          'imageURL': "",
         });
       } else {
         setState(() {
@@ -80,9 +81,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 50.w),
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 50.w),
           child: Form(
             key: _formKey,
             child: Column(
@@ -100,6 +101,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 SizedBox(
                   height: 40.h,
+                ),
+                if(!isLogin)
+                GenericField(
+                  borderRaduis: 10,
+                  hintText: "Username",
+                  isFilled: true,
+                  colorStyle: borderColor,
+                  validation: (value) => Validator.text(value),
+                  onSaved: (value) {
+                    username = value!;
+                  },
+                ),
+                SizedBox(
+                  height: 20.h,
                 ),
                 GenericField(
                   borderRaduis: 10,
@@ -121,8 +136,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   colorStyle: borderColor,
                   obscureText: true,
                   validation: (value) => Validator.password(value),
-                  onSubmitted: (value) {
-                    password = value;
+                  onChanged: (value) {
+                    password = value!;
                   },
                   onSaved: (value) {
                     password = value!;
@@ -193,7 +208,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           if (isValid!) {
                             _formKey.currentState?.save();
                             _submitAuthForm(
-                                email, "username", null, password, context);
+                                email, username, null, password, context);
                           }
                         },
                         height: 32.h,
@@ -220,6 +235,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Image.asset(apple),
                   ],
                 ),
+                SizedBox(height: 100.h,)
               ],
             ),
           ),
