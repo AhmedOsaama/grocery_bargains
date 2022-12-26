@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:swaav/config/themes/app_theme.dart';
+import 'package:swaav/services/dynamic_link_service.dart';
 import 'package:swaav/view/screens/home_screen.dart';
+import 'package:swaav/view/screens/list_view_screen.dart';
 import 'package:swaav/view/screens/register_screen.dart';
 import 'package:swaav/view/screens/splash_screen.dart';
 
@@ -19,13 +21,15 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+
+  final String path = await DynamicLinkService().handleDynamicLinks();
+  runApp(MyApp(dynamicLinkPath: path,));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String dynamicLinkPath;
+  const MyApp({super.key, required this.dynamicLinkPath});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -45,7 +49,8 @@ class MyApp extends StatelessWidget {
                    return Center(child: CircularProgressIndicator(),);
               }
               if (snapshot.hasData) {
-                return HomeScreen();
+                print("LOGGED IN");
+                  return DynamicLinkService().getStartPage(dynamicLinkPath);                 //case 1
               }
               return RegisterScreen();
             }

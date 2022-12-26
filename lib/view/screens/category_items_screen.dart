@@ -143,10 +143,10 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
           children:
               allItems.map((item) => LongPressDraggable<Item>(
                 data: item,
-                dragAnchorStrategy: pointerDragAnchorStrategy,
+                // dragAnchorStrategy: pointerDragAnchorStrategy,
                 feedback: Container(
-                  width: 64.w,
-                  height: 64.h,
+                  width: 150.w,
+                  height: 150.h,
                   decoration: BoxDecoration(
                     image: DecorationImage(image: NetworkImage(item.imageUrl),opacity: 0.8),
                     borderRadius: BorderRadius.circular(6),

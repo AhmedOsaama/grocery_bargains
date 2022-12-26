@@ -13,6 +13,8 @@ import 'package:swaav/view/screens/lists_screen.dart';
 import 'package:swaav/view/screens/profile_screen.dart';
 import 'package:swaav/view/widgets/list_type_widget.dart';
 
+import '../../services/dynamic_link_service.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -25,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     getUserDataFuture = FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
+    DynamicLinkService().listenToDynamicLinks(context);               //case 2 the app is open but in background and opened again via deep link
     super.initState();
   }
   @override

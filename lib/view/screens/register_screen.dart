@@ -89,7 +89,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               children: [
                 SizedBox(
-                  height: 165.h,
+                  height: 80.h,
                 ),
                 SvgPicture.asset(splashImage),
                 SizedBox(

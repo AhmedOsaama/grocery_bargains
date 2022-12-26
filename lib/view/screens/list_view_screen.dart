@@ -18,7 +18,8 @@ import '../components/button.dart';
 class ListViewScreen extends StatefulWidget {
   final String listId;
   final String listName;
-  ListViewScreen({Key? key,required this.listId, required this.listName}) : super(key: key);
+  final bool isUsingDynamicLink;
+  const ListViewScreen({Key? key,required this.listId, required this.listName, this.isUsingDynamicLink = false}) : super(key: key);
 
   @override
   State<ListViewScreen> createState() => _ListViewScreenState();
@@ -26,6 +27,28 @@ class ListViewScreen extends StatefulWidget {
 
 class _ListViewScreenState extends State<ListViewScreen> {
   bool isDeleting = false;
+
+  @override
+  void initState() {
+    if(widget.isUsingDynamicLink){
+      var currentUserId = FirebaseAuth.instance.currentUser?.uid;
+      FirebaseFirestore.instance.collection('/lists').doc(widget.listId).get().then((listSnapshot) {
+        final List userIds = listSnapshot.data()!['userIds'];
+        if(!userIds.contains(currentUserId)){
+          userIds.add(currentUserId);
+          FirebaseFirestore.instance.collection('/lists').doc(widget.listId).update(
+              {
+                "userIds": userIds
+              }
+          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("User added successfully to list ${widget.listName}")));
+        }else{
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("User Already Exists in the list")));
+        }
+      });
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
