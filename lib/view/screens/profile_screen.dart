@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -85,6 +86,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           width: 165.w,
                           child: Text(
                             "Change Profile Picture",
+                            style: TextStyles.textViewBold12,
+                          )),
+                      SizedBox(height: 10.h,),
+                      GenericButton(
+                          onPressed: () {
+                            FirebaseAuth.instance.signOut();
+                            AppNavigator.pop(context: context);
+                          },
+                          borderRadius: BorderRadius.circular(10),
+                          height: 31.h,
+                          width: 165.w,
+                          child: Text(
+                            "Log out",
                             style: TextStyles.textViewBold12,
                           )),
                     ],
