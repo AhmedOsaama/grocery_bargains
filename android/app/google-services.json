@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "870806539222",
+    "project_id": "swaav-3f4d4",
+    "storage_bucket": "swaav-3f4d4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:870806539222:android:df3052d72419c9f31af277",
+        "android_client_info": {
+          "package_name": "com.example.swaav"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "870806539222-smpufqnbi3d45sp1aa9kng7muvmn4ad5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJMEGe4QZMJUJNRHL1FB1yfTw9cu6LoIo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "870806539222-smpufqnbi3d45sp1aa9kng7muvmn4ad5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

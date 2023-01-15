@@ -12,13 +12,14 @@ class ListTypeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 57.w,
-      height: 36.h,
+      width: 160.w,
+      height: 69.h,
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(10.r),
       ),
-      child: Center(child: Text(text,style: TextStyles.textViewBold7.copyWith(color: textColor ?? Colors.white),textAlign: TextAlign.center,)),
+      child: Center(child: Text(text,style: TextStyles.textViewBold20.copyWith(color: textColor ?? Colors.white),textAlign: TextAlign.center,)),
     );
   }
 }
