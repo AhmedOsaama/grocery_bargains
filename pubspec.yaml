@@ -48,6 +48,9 @@ dependencies:
   share_plus: ^6.0.0
   easy_localization: ^3.0.1
   whatsapp_share2: ^2.0.2
+  flutter_automation: ^2.0.0
+  google_sign_in: ^5.4.3
+  provider: ^6.0.5
 
 dev_dependencies:
   flutter_test:

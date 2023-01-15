@@ -9,7 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import 'package:swaav/config/routes/app_navigator.dart';
+import 'package:swaav/providers/google_sign_in_provider.dart';
 import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/icons_manager.dart';
 import 'package:swaav/utils/style_utils.dart';
@@ -91,8 +93,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           )),
                       SizedBox(height: 10.h,),
                       GenericButton(
-                          onPressed: () {
+                          onPressed: () async {
+                            var isGoogleSignedIn = await Provider.of<GoogleSignInProvider>(context,listen: false).googleSignIn.isSignedIn();
+                            if(isGoogleSignedIn) {
+                              await Provider.of<GoogleSignInProvider>(context,listen: false).logout();
+                            }else{
                             FirebaseAuth.instance.signOut();
+                            }
                             AppNavigator.pop(context: context);
                           },
                           borderRadius: BorderRadius.circular(10),

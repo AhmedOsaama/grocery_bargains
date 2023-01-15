@@ -6,7 +6,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:swaav/config/routes/app_navigator.dart';
+import 'package:swaav/providers/google_sign_in_provider.dart';
 import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/assets_manager.dart';
 import 'package:swaav/utils/icons_manager.dart';
@@ -226,15 +228,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   "Or continue with: ",
                   style: TextStyles.textViewBold15,
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset(twitter),
-                    Image.asset(fbIcon),
-                    Image.asset(google),
-                    Image.asset(apple),
-                  ],
-                ),
+                ElevatedButton(onPressed: (){
+                  Provider.of<GoogleSignInProvider>(context,listen: false).loginWithGoogle();
+                }, child: const Text("Sign in with google")),
                 SizedBox(height: 100.h,)
               ],
             ),
