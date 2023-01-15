@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -99,6 +100,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           width: 165.w,
                           child: Text(
                             "Log out",
+                            style: TextStyles.textViewBold12,
+                          )),
+                      SizedBox(height: 10.h,),
+                      GenericButton(
+                          onPressed: () {
+                            context.setLocale(context.locale.languageCode == 'ar' ? Locale('en') : Locale('ar'));
+                          },
+                          borderRadius: BorderRadius.circular(10),
+                          height: 31.h,
+                          width: 165.w,
+                          child: Text(
+                            // "Change Language",
+                            "changeLang".tr(),
                             style: TextStyles.textViewBold12,
                           )),
                     ],

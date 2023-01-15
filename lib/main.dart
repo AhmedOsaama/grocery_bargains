@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await EasyLocalization.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent, // transparent status bar
   ));
@@ -23,7 +24,15 @@ Future<void> main() async {
   );
 
   final String path = await DynamicLinkService().handleDynamicLinks();
-  runApp(MyApp(dynamicLinkPath: path,));
+  runApp(
+      EasyLocalization(
+      supportedLocales: const [
+      Locale('ar'),
+        Locale('en')
+      ],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en'),
+      child: MyApp(dynamicLinkPath: path,)));
 }
 
 class MyApp extends StatelessWidget {
@@ -57,6 +66,9 @@ class MyApp extends StatelessWidget {
           );
         }
       ),
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
     );
   }
 }

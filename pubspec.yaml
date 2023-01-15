@@ -46,6 +46,7 @@ dependencies:
   firebase_storage: ^11.0.9
   firebase_dynamic_links: ^5.0.10
   share_plus: ^6.0.0
+  easy_localization: ^3.0.1
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +73,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icon/
+    - assets/translations/
 
 
   fonts:
