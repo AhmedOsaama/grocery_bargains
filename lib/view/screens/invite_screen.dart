@@ -6,11 +6,21 @@ import 'package:swaav/view/components/button.dart';
 import 'package:swaav/view/components/generic_field.dart';
 import 'package:swaav/view/widgets/backbutton.dart';
 import 'package:swaav/view/widgets/share_option_widget.dart';
+import 'package:whatsapp_share2/whatsapp_share2.dart';
 
 class InviteScreen extends StatelessWidget {
   InviteScreen({Key? key}) : super(key: key);
 
   var emailController = TextEditingController();
+
+  Future<bool?> isWhatsAppInstalled() async {
+    final val = await WhatsappShare.isInstalled(
+      package: Package.businessWhatsapp
+    );
+    print('Whatsapp is installed: $val');
+    return val;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +52,16 @@ class InviteScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                  ShareOption(optionFunction: (){}, optionName: "WP"),
+                  ShareOption(optionFunction: () async {
+                    try{
+                      await WhatsappShare.share(
+                      text: '',
+                      linkUrl: 'https://flutter.dev/', phone: '1315456487987554',
+                    );
+                  }catch(error){
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Couldn't share with WhatsApp. Please make sure it is installed")));
+                    }
+                  }, optionName: "WP"),
                   ShareOption(optionFunction: (){}, optionName: "..."),
               ],
             ),

@@ -24,6 +24,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
+
+
+
   @override
   void initState() {
     getUserDataFuture = FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
