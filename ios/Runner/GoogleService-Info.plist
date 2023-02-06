@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>870806539222-9c7g0cekqv2vianoplijafhm5na402en.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.870806539222-9c7g0cekqv2vianoplijafhm5na402en</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCU7mdaZ6qEOE_YrpjWI2bZHhl3FIHHFd4</string>
+	<key>GCM_SENDER_ID</key>
+	<string>870806539222</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.swaav</string>
+	<key>PROJECT_ID</key>
+	<string>swaav-3f4d4</string>
+	<key>STORAGE_BUCKET</key>
+	<string>swaav-3f4d4.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:870806539222:ios:1a2194e4c4195c1d1af277</string>
+</dict>
+</plist>
