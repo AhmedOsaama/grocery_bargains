@@ -1,4 +1,20 @@
 const String imgPath = 'assets/images';
 
 const String splashImage = '$imgPath/splash.svg';
+const String splashBackground = '$imgPath/splash_background.svg';
+const String registerArt = '$imgPath/register_art.svg';
 const String userIcon = '$imgPath/user.png';
+const String forgotPassword = '$imgPath/forgot_password.svg';
+const String verifyEmail = '$imgPath/verify_email.svg';
+const String success = '$imgPath/success.svg';
+const String inviteFriends = '$imgPath/invite_friends.svg';
+const String discount = '$imgPath/discount.svg';
+const String lists = '$imgPath/lists.svg';
+const String sharing = '$imgPath/sharing.svg';
+const String vegetables = '$imgPath/vegetables.svg';
+const String fruits = '$imgPath/fruits.svg';
+const String beverages = '$imgPath/beverages.svg';
+const String edibleOil = '$imgPath/edible_oil.svg';
+const String grocery = '$imgPath/grocery.svg';
+// const String peach = '$imgPath/peach.svg';
+const String peach = '$imgPath/peach.png';

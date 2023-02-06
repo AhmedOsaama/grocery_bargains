@@ -16,7 +16,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     Future.delayed(Duration(seconds: 3),(){
-      AppNavigator.pushReplacement(context: context, screen: RegisterScreen());
+      if(mounted) AppNavigator.pushReplacement(context: context, screen: RegisterScreen());
     });
     super.initState();
   }
@@ -24,7 +24,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(child: SvgPicture.asset(splashImage,width: 135.w,height: 31.h,)),
+      body: Center(child: SvgPicture.asset(forgotPassword,width: 256,height: 60,))
     );
   }
 }

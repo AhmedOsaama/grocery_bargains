@@ -1,19 +1,22 @@
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
+import 'package:swaav/utils/style_utils.dart';
 
 import '../../utils/app_colors.dart';
 
-class GenericField extends StatelessWidget {
+class GenericField extends StatefulWidget {
   final TextEditingController? controller;
   final String? Function(String?)? validation;
   final void Function(String)? onSubmitted;
   final void Function(String?)? onSaved;
   final void Function(String?)? onChanged;
+  final Function()? onTap;
   final String? labeltext;
-  final String? hintText;
+  String? hintText;
+  final TextStyle? hintStyle;
   final bool readOnly;
   final Widget? prefixIcon;
-  final Widget? suffixIcon;
+  Widget? suffixIcon;
   final bool isProfile;
   final bool obscureText;
   final bool? autoFocus;
@@ -21,10 +24,11 @@ class GenericField extends StatelessWidget {
   final TextInputType? keyboardType;
   final int? maxLines;
   final bool? isFilled;
-  final Color? colorStyle;
-  final double? borderRaduis;
+  final bool isSearchField;
+  final Color colorStyle;
+  final double borderRaduis;
 
-  const GenericField({
+  GenericField({
     super.key,
     this.onSaved,
     this.controller,
@@ -36,68 +40,98 @@ class GenericField extends StatelessWidget {
     this.onSubmitted,
     this.focusNode,
     this.keyboardType,
-    this.isFilled = false,
+    this.isFilled = true,
     this.readOnly = false,
     this.isProfile = false,
     this.autoFocus = false,
     this.maxLines = 1,
     this.colorStyle = lightGrey,
-    this.borderRaduis = 10, this.obscureText = false, this.onChanged,
+    this.borderRaduis = 10,
+    this.obscureText = false, this.onChanged, this.hintStyle, this.isSearchField = false, this.onTap,
   });
 
   @override
+  State<GenericField> createState() => _GenericFieldState();
+}
+
+class _GenericFieldState extends State<GenericField> {
+  @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: widget.colorStyle),
+        borderRadius: BorderRadius.circular(widget.borderRaduis),
+        boxShadow: const [
+          BoxShadow(
+            blurRadius: 62,
+            offset: Offset(0,4),
+            color: Color.fromRGBO(153, 171, 198, 0.18)
+          )
+        ]
+      ),
       //height: 55.h,
       child: TextFormField(
-        focusNode: focusNode,
+        focusNode: widget.focusNode,
         // textInputAction: TextInputAction.done,
-        autofocus: autoFocus!,
-        onFieldSubmitted: onSubmitted,
-        onSaved: onSaved,
-        readOnly: readOnly,
-        controller: controller,
-        maxLines: maxLines,
-        keyboardType: keyboardType,
+        autofocus: widget.autoFocus!,
+        onFieldSubmitted: widget.onSubmitted,
+        onSaved: widget.onSaved,
+        readOnly: widget.readOnly,
+        controller: widget.controller,
+        maxLines: widget.maxLines,
+        keyboardType: widget.keyboardType,
         autocorrect: true,
-        validator: validation,
-        obscureText: obscureText,
+        validator: widget.validation,
+        obscureText: widget.obscureText,
         style: const TextStyle(
           color: black,
           fontSize: 16,
         ),
-        onChanged: onChanged,
+        onChanged: widget.onChanged,
+        onTap: widget.onTap,
+        // onTap: widget.isSearchField ? () {
+        //   setState(() {
+        //     widget.hintText = "";
+        //   widget.suffixIcon = Container(
+        //     margin: EdgeInsets.only(right: 10.w),
+        //     decoration: BoxDecoration(
+        //       shape: BoxShape.circle,
+        //       border: Border.all(color: widget.colorStyle)
+        //     ),
+        //       child: Icon(Icons.close));
+        //   });
+        // } : null,
         decoration: InputDecoration(
-          filled: isFilled,
-
+          filled: widget.isFilled,
           // contentPadding: const EdgeInsets.only(left: 5, right: 5),
-          prefixIcon: prefixIcon,
-          suffixIcon: suffixIcon,
-          hintText: hintText,
-          labelText: labeltext,
-          fillColor: Color.fromRGBO(188, 188, 188, 1),
+          prefixIcon: widget.prefixIcon,
+          suffixIcon: widget.suffixIcon,
+          hintText: widget.hintText,
+          labelText: widget.labeltext,
+          fillColor: Colors.white,
+          suffixIconConstraints: BoxConstraints.tight(Size.square(40)),
           labelStyle: const TextStyle(fontSize: 16, color: Color(0xff343434)),
-          hintStyle: const TextStyle(fontSize: 16, color: grey),
+          hintStyle: widget.hintStyle ?? TextStylesDMSans.textViewRegular12.copyWith(color: Color.fromRGBO(13, 1, 64, 0.6)),
           border: OutlineInputBorder(
               borderSide: BorderSide(
-                color: isFilled == true ? Colors.transparent : colorStyle!,
+                color: widget.isFilled == true ? Colors.transparent : widget.colorStyle!,
               ),
-              borderRadius: BorderRadius.circular(borderRaduis!.sp)),
+              borderRadius: BorderRadius.circular(widget.borderRaduis!.sp)),
 
           focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: isFilled == true ? Colors.transparent : colorStyle!,
+                color: widget.isFilled == true ? Colors.transparent : widget.colorStyle!,
               ),
-              borderRadius: BorderRadius.circular(borderRaduis!.sp)),
+              borderRadius: BorderRadius.circular(widget.borderRaduis!.sp)),
           enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                  color: isFilled == true ? Colors.transparent : colorStyle!),
-              borderRadius: BorderRadius.circular(borderRaduis!.sp)),
+                  color: widget.isFilled == true ? Colors.transparent : widget.colorStyle!),
+              borderRadius: BorderRadius.circular(widget.borderRaduis!.sp)),
           errorBorder: OutlineInputBorder(
               borderSide: const BorderSide(
                 color: primary,
               ),
-              borderRadius: BorderRadius.circular(borderRaduis!.sp)),
+              borderRadius: BorderRadius.circular(widget.borderRaduis!.sp)),
           // border: const OutlineInputBorder(
           //   borderSide: BorderSide(color: Colors.black, width: 1.0),
           // ),

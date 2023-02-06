@@ -10,10 +10,9 @@ class MyScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        padding: EdgeInsets.symmetric(horizontal: 15.w),
         child: body,
       ),
-      bottomNavigationBar: const NavBar(),
     );
   }
 }

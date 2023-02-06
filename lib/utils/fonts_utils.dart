@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-const String fontFamily = "MonsalGothic";
+const String fontFamilyPoppins = "Poppins";
+const String fontFamilyDMSans = "DMSans";
 
 const FontWeight light = FontWeight.w300;
 const FontWeight regular = FontWeight.w400;

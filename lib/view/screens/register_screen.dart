@@ -1,21 +1,28 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swaav/config/routes/app_navigator.dart';
+import 'package:swaav/generated/locale_keys.g.dart';
 import 'package:swaav/providers/google_sign_in_provider.dart';
 import 'package:swaav/utils/app_colors.dart';
+import 'package:swaav/utils/app_strings.dart';
 import 'package:swaav/utils/assets_manager.dart';
 import 'package:swaav/utils/icons_manager.dart';
 import 'package:swaav/utils/style_utils.dart';
 import 'package:swaav/utils/validator.dart';
 import 'package:swaav/view/components/button.dart';
 import 'package:swaav/view/components/generic_field.dart';
+import 'package:swaav/view/screens/forgot_password_screen.dart';
+import 'package:swaav/view/screens/main_screen.dart';
+import 'package:swaav/view/screens/onboarding_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   RegisterScreen({Key? key}) : super(key: key);
@@ -30,8 +37,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String username = "";
   String email = "";
   String password = "";
-  String confirmPassword = "";
   bool _isLoading = false;
+  bool isLogin = false;
+  bool isObscured = true;
+
+  bool rememberMe = false;
+
+  Future<void> saveRememberMePref() async {
+    var pref = await SharedPreferences.getInstance();
+    pref.setBool("rememberMe", rememberMe);
+  }
 
   Future<void> _submitAuthForm(String email, String username, File? pickedImage,
       String password, BuildContext ctx) async {
@@ -60,6 +75,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
         userCredential = await _auth.signInWithEmailAndPassword(
             email: email, password: password);
+      saveRememberMePref();
+      //TODO: make a condition if the user is first time in app then go to oboarding, else go to homescreen
+      //   AppNavigator.pushReplacement(context: context, screen: HomeScreen());
+        AppNavigator.pushReplacement(context: context, screen: OnBoardingScreen());
       }
     } on FirebaseAuthException catch (error) {
       var message = "An error occurred, please check your credentials";
@@ -78,160 +97,235 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  bool isLogin = false;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 50.w),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 15.w),
+        child: SingleChildScrollView(
           child: Form(
             key: _formKey,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 80.h,
+                  height: 105.h,
                 ),
-                SvgPicture.asset(splashImage),
+                Center(
+                  child: Text(
+                    isLogin
+                        ? LocaleKeys.welcomeBack.tr()
+                        : LocaleKeys.createAnAccount.tr(),
+                    style:
+                        TextStyles.textViewSemiBold30.copyWith(color: prussian),
+                  ),
+                ),
                 SizedBox(
-                  height: 65.h,
+                  height: 12.h,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 35),
+                  child: Text(
+                    isLogin
+                        ? LocaleKeys.getTheLatestDiscounts.tr()
+                        : LocaleKeys.loremIpsum.tr(),
+                    style:
+                        TextStyles.textViewRegular14.copyWith(color: gunmetal),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SizedBox(
+                  height: 58.h,
+                ),
+                if (!isLogin) ...[
+                  Text(
+                    LocaleKeys.fullName.tr(),
+                    style: TextStylesDMSans.textViewBold12
+                        .copyWith(color: gunmetal),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  GenericField(
+                    hintText: "Brandone Louis",
+                    validation: (value) => Validator.text(value),
+                    onSaved: (value) {
+                      username = value!;
+                    },
+                  ),
+                ],
+                SizedBox(
+                  height: 15.h,
                 ),
                 Text(
-                  !isLogin ? "Sign up with: " : "Log in",
-                  style: TextStyles.textViewBold20,
+                  LocaleKeys.email.tr(),
+                  style:
+                      TextStylesDMSans.textViewBold12.copyWith(color: gunmetal),
                 ),
                 SizedBox(
-                  height: 40.h,
-                ),
-                if(!isLogin)
-                GenericField(
-                  borderRaduis: 10,
-                  hintText: "Username",
-                  isFilled: true,
-                  colorStyle: borderColor,
-                  validation: (value) => Validator.text(value),
-                  onSaved: (value) {
-                    username = value!;
-                  },
-                ),
-                SizedBox(
-                  height: 20.h,
+                  height: 10.h,
                 ),
                 GenericField(
-                  borderRaduis: 10,
-                  hintText: "Email",
-                  isFilled: true,
-                  colorStyle: borderColor,
+                  hintText: "Brandonelouis@gmail.com",
                   validation: (value) => Validator.email(value),
                   onSaved: (value) {
                     email = value!;
                   },
                 ),
                 SizedBox(
-                  height: 20.h,
+                  height: 15.h,
+                ),
+                Text(
+                  LocaleKeys.password.tr(),
+                  style:
+                      TextStylesDMSans.textViewBold12.copyWith(color: gunmetal),
+                ),
+                SizedBox(
+                  height: 10.h,
                 ),
                 GenericField(
-                  borderRaduis: 10,
-                  hintText: "Password",
-                  isFilled: true,
-                  colorStyle: borderColor,
-                  obscureText: true,
+                  hintText: "***********",
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isObscured = !isObscured;
+                      });
+                    },
+                      child: Icon(isObscured ? Icons.visibility : Icons.visibility_off)),
                   validation: (value) => Validator.password(value),
-                  onChanged: (value) {
-                    password = value!;
-                  },
+                  obscureText: isObscured,
                   onSaved: (value) {
                     password = value!;
                   },
                 ),
                 SizedBox(
-                  height: 20.h,
+                  height: 10.h,
                 ),
-                if (!isLogin)
-                  GenericField(
-                    borderRaduis: 10,
-                    hintText: "Confirm Password",
-                    isFilled: true,
-                    colorStyle: borderColor,
-                    obscureText: true,
-                    validation: (value) =>
-                        Validator.confirmPassword(value, password),
-                    onSaved: (value) {
-                      confirmPassword = value!;
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Checkbox(
+                            checkColor: Color.fromRGBO(255, 146, 40, 1),
+                            fillColor: MaterialStateProperty.all(
+                                Color.fromRGBO(201, 242, 232, 1)),
+                            value: rememberMe,
+                            onChanged: (value) {
+                              setState(() {
+                                rememberMe = value!;
+                              });
+                            }),
+                        SizedBox(
+                          width: 5.w,
+                        ),
+                        Text(
+                          LocaleKeys.rememberMe.tr(),
+                          style: TextStylesDMSans.textViewRegular12.copyWith(
+                              color: Color.fromRGBO(170, 166, 185, 1)),
+                        ),
+                      ],
+                    ),
+                    TextButton(
+                      onPressed: () => AppNavigator.push(context: context, screen: ForgotPasswordScreen()),
+                      child: Text(
+                        LocaleKeys.forgotPassword.tr(),
+                        style: TextStylesDMSans.textViewRegular12
+                            .copyWith(color: Color.fromRGBO(13, 1, 64, 1)),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10.h,
+                ),
+                GenericButton(
+                    shadow: [
+                      BoxShadow(
+                          blurRadius: 9,
+                          offset: Offset(0, 10),
+                          color: verdigris.withOpacity(0.25))
+                    ],
+                    height: 70.h,
+                    color: verdigris,
+                    borderRadius: BorderRadius.circular(6),
+                    width: double.infinity,
+                    onPressed: () {
+                      var isValid = _formKey.currentState?.validate();
+                      FocusScope.of(context).unfocus();
+                      if (isValid!) {
+                        _formKey.currentState?.save();
+                        _submitAuthForm(
+                            email, username, null, password, context).timeout(Duration(seconds: 10),onTimeout: (){
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed to login or signup, Please check your internet and try again later")));
+                        });
+                      }
                     },
+                    child: Text(
+                      isLogin ? LocaleKeys.login.tr() : LocaleKeys.signUp.tr(),
+                      style: TextStyles.textViewSemiBold16,
+                    )),
+                SizedBox(
+                  height: 12.h,
+                ),
+                GenericButton(
+                    borderRadius: BorderRadius.circular(6),
+                    borderColor: borderColor,
+                    color: Colors.white,
+                    height: 70.h,
+                    width: double.infinity,
+                    onPressed: () async {
+                      await Provider.of<GoogleSignInProvider>(context,
+                            listen: false)
+                        .loginWithGoogle();
+                      saveRememberMePref();
+                      AppNavigator.pushReplacement(context: context, screen: MainScreen());
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(google2),
+                        SizedBox(
+                          width: 10.w,
+                        ),
+                        Text(
+                          LocaleKeys.signUpWithGoogle.tr(),
+                          style: TextStyles.textViewSemiBold16
+                              .copyWith(color: Colors.black),
+                        ),
+                      ],
+                    )),
+                SizedBox(
+                  height: 10.h,
+                ),
+                Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        isLogin = !isLogin;
+                      });
+                    },
+                    child: Text.rich(
+                      TextSpan(
+                          text: isLogin
+                              ? LocaleKeys.youDontHaveAnAccount.tr()
+                              : LocaleKeys.alreadyHaveAnAccount.tr(),
+                          style: TextStylesDMSans.textViewRegular12.copyWith(
+                            color: Color.fromRGBO(82, 75, 107, 1),
+                          ),
+                          children: [
+                            TextSpan(
+                                text: " ${isLogin ? LocaleKeys.signUp.tr() : LocaleKeys.signIn.tr()}",
+                                style: TextStyles.textViewRegular12.copyWith(
+                                    decoration: TextDecoration.underline,
+                                    color: Color.fromRGBO(255, 146, 40, 1)))
+                          ]),
+                    ),
                   ),
+                ),
                 SizedBox(
-                  height: 20.h,
+                  height: 50.h,
                 ),
-                !isLogin
-                    ? GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isLogin = true;
-                          });
-                        },
-                        child: Text.rich(TextSpan(
-                            text: "Already have an account ? ",
-                            children: [
-                              TextSpan(
-                                  text: "Login",
-                                  style: TextStyles.textViewRegular15.copyWith(
-                                      color: const Color.fromRGBO(
-                                          77, 191, 163, 1)))
-                            ],
-                            style: TextStyles.textViewRegular15)))
-                    : GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isLogin = false;
-                          });
-                        },
-                        child: Text.rich(TextSpan(
-                            text: "Don't have an account ? ",
-                            children: [
-                              TextSpan(
-                                  text: "Register",
-                                  style: TextStyles.textViewRegular15.copyWith(
-                                      color: const Color.fromRGBO(
-                                          77, 191, 163, 1)))
-                            ],
-                            style: TextStyles.textViewRegular15)),
-                      ),
-                SizedBox(
-                  height: 30.h,
-                ),
-                _isLoading
-                    ? CircularProgressIndicator()
-                    : GenericButton(
-                        onPressed: () {
-                          var isValid = _formKey.currentState?.validate();
-                          FocusScope.of(context).unfocus();
-                          if (isValid!) {
-                            _formKey.currentState?.save();
-                            _submitAuthForm(
-                                email, username, null, password, context);
-                          }
-                        },
-                        height: 32.h,
-                        // width: 95.w,
-                        color: const Color.fromRGBO(217, 217, 217, 1),
-                        borderRadius: BorderRadius.circular(10),
-                        child: Text(isLogin ? "Login" : "Register",
-                            style: TextStyles.textViewRegular18
-                                .copyWith(color: Colors.black)),
-                      ),
-                SizedBox(
-                  height: 40.h,
-                ),
-                Text(
-                  "Or continue with: ",
-                  style: TextStyles.textViewBold15,
-                ),
-                ElevatedButton(onPressed: (){
-                  Provider.of<GoogleSignInProvider>(context,listen: false).loginWithGoogle();
-                }, child: const Text("Sign in with google")),
-                SizedBox(height: 100.h,)
               ],
             ),
           ),

@@ -1,0 +1,61 @@
+// DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
+
+abstract class  LocaleKeys {
+  static const welcome = 'welcome';
+  static const letsList = 'letsList';
+  static const changeLang = 'changeLang';
+  static const createAnAccount = 'createAnAccount';
+  static const loremIpsum = 'loremIpsum';
+  static const fullName = 'fullName';
+  static const email = 'email';
+  static const password = 'password';
+  static const rememberMe = 'rememberMe';
+  static const forgotPassword = 'forgotPassword';
+  static const signUp = 'signUp';
+  static const signUpWithGoogle = 'signUpWithGoogle';
+  static const youDontHaveAnAccount = 'youDontHaveAnAccount';
+  static const signIn = 'signIn';
+  static const welcomeBack = 'welcomeBack';
+  static const getTheLatestDiscounts = 'getTheLatestDiscounts';
+  static const login = 'login';
+  static const alreadyHaveAnAccount = 'alreadyHaveAnAccount';
+  static const toResetYourPassword = 'toResetYourPassword';
+  static const resetPassword = 'resetPassword';
+  static const backToLogin = 'backToLogin';
+  static const checkEmail = 'checkEmail';
+  static const weHaveSentResetPassword = 'weHaveSentResetPassword';
+  static const openEmail = 'openEmail';
+  static const youHaveNotReceivedEmail = 'youHaveNotReceivedEmail';
+  static const resend = 'resend';
+  static const successfully = 'successfully';
+  static const yourPasswordHasBeenUpdated = 'yourPasswordHasBeenUpdated';
+  static const continueText = 'continueText';
+  static const shoppingTogether = 'shoppingTogether';
+  static const inviteFriends = 'inviteFriends';
+  static const inviteYourFriendsNowToShare = 'inviteYourFriendsNowToShare';
+  static const whatApp = 'whatApp';
+  static const sms = 'sms';
+  static const or = 'or';
+  static const nameOrEmail = 'nameOrEmail';
+  static const sendInvites = 'sendInvites';
+  static const skip = 'skip';
+  static const findAllTheDiscountsHere = 'findAllTheDiscountsHere';
+  static const exploreAllTheLatest = 'exploreAllTheLatest';
+  static const createShoppingLists = 'createShoppingLists';
+  static const easilyAddItems = 'easilyAddItems';
+  static const shareTheLists = 'shareTheLists';
+  static const easilyAddFriends = 'easilyAddFriends';
+  static const hello = 'hello';
+  static const whatAreYouLookingFor = 'whatAreYouLookingFor';
+  static const anyGrocery = 'anyGrocery';
+  static const vegetables = 'vegetables';
+  static const fruits = 'fruits';
+  static const grocery = 'grocery';
+  static const edibleOil = 'edibleOil';
+  static const beverages = 'beverages';
+  static const recentSearches = 'recentSearches';
+  static const dozen = 'dozen';
+  static const addToCart = 'addToCart';
+  static const latestDiscounts = 'latestDiscounts';
+
+}

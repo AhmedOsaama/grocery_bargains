@@ -14,10 +14,13 @@ const Color lightGreen = Color.fromRGBO(103, 196, 172, 1);
 const Color lightGrey = Color(0xffD9D9D9);
 const Color black = Color(0xff000000);
 const Color hintbuttonSocial = Color(0xff03034d);
-const Color borderColor = Color.fromRGBO(148, 149, 147, 1);
+const Color borderColor = Color.fromRGBO(137, 137, 137, 1);
 
 const Color yellowTextColor = Color.fromRGBO(255, 168, 0, 1);
 const Color purpleTextColor = Color.fromRGBO(173, 0, 255, 1);
 const Color tealTextColor = Color.fromRGBO(37, 102, 175, 1);
+const Color prussian = Color.fromRGBO(5, 55, 84, 1);
+const Color gunmetal = Color.fromRGBO(61, 62, 59, 1);
+const Color verdigris = Color.fromRGBO(77, 191, 163, 1);
 
 Color buttonColor = const Color.fromRGBO(188, 188, 188, 1);

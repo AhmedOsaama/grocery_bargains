@@ -10,6 +10,7 @@ class GenericButton extends StatelessWidget {
   final Color borderColor;
   final Color shadowColorButton;
   final double elevationButton;
+  final List<BoxShadow>? shadow;
 
   final VoidCallback? onPressed;
   final Widget child;
@@ -18,13 +19,14 @@ class GenericButton extends StatelessWidget {
     Key? key,
     required this.onPressed,
     required this.child,
+
     this.borderRadius,
     this.width,
     this.height = 50.0,
     this.color = Colors.blue,
     this.borderColor = Colors.transparent,
     this.shadowColorButton = Colors.transparent,
-    this.elevationButton = 0.0,
+    this.elevationButton = 0.0, this.shadow,
   }) : super(key: key);
 
   @override
@@ -32,10 +34,11 @@ class GenericButton extends StatelessWidget {
     final borderRadius = this.borderRadius ?? BorderRadius.circular(0);
     return Container(
       width: width,
-      height: height.h,
+      height: height,
       decoration: BoxDecoration(
-        color: buttonColor,
+        color: color,
         borderRadius: borderRadius,
+        boxShadow: shadow
       ),
       child: ElevatedButton(
         onPressed: onPressed,

@@ -51,6 +51,8 @@ dependencies:
   flutter_automation: ^2.0.0
   google_sign_in: ^5.4.3
   provider: ^6.0.5
+  shared_preferences: ^2.0.17
+  dots_indicator: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +83,26 @@ flutter:
 
 
   fonts:
+    - family: DMSans
+      fonts:
+        - asset: assets/fonts/DMSans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/DMSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/DMSans-Regular.ttf
+          weight: 400
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-ExtraBold.ttf
+          weight: 800
+        - asset: assets/fonts/Poppins-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Poppins-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Poppins-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Poppins-Light.ttf
+          weight: 300
     - family: MonsalGothic
       fonts:
         - asset: assets/fonts/MonsalGothic-ExtraBold.ttf

@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swaav/config/routes/app_navigator.dart';
 import 'package:swaav/providers/google_sign_in_provider.dart';
 import 'package:swaav/utils/app_colors.dart';
@@ -17,6 +18,7 @@ import 'package:swaav/utils/icons_manager.dart';
 import 'package:swaav/utils/style_utils.dart';
 import 'package:swaav/view/components/button.dart';
 import 'package:swaav/view/screens/invite_screen.dart';
+import 'package:swaav/view/screens/register_screen.dart';
 import 'package:swaav/view/widgets/backbutton.dart';
 
 import '../../utils/assets_manager.dart';
@@ -94,13 +96,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       SizedBox(height: 10.h,),
                       GenericButton(
                           onPressed: () async {
+                            var pref = await SharedPreferences.getInstance();
+                            pref.setBool("rememberMe", false);
                             var isGoogleSignedIn = await Provider.of<GoogleSignInProvider>(context,listen: false).googleSignIn.isSignedIn();
                             if(isGoogleSignedIn) {
                               await Provider.of<GoogleSignInProvider>(context,listen: false).logout();
                             }else{
                             FirebaseAuth.instance.signOut();
                             }
-                            AppNavigator.pop(context: context);
+                            AppNavigator.pushReplacement(context: context,screen: RegisterScreen());
+                            print("SIGNED OUT...................");
                           },
                           borderRadius: BorderRadius.circular(10),
                           height: 31.h,
@@ -155,7 +160,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   border: Border.all(
                                       color: Colors.black, width: 5),
                                   shape: BoxShape.circle),
-                              child: snapshot.data!['imageURL'] != "" ? CircleAvatar(backgroundImage: NetworkImage(snapshot.data!['imageURL']),radius: 30,) : SvgPicture.asset(personIcon));
+                              child: snapshot.data!['imageURL'] != "" ? CircleAvatar(
+                                backgroundImage: NetworkImage(snapshot.data!['imageURL']),radius: 30,) : SvgPicture.asset(personIcon));
                         }
                       ),
                     ),
