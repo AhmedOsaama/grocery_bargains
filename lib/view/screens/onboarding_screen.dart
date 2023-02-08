@@ -67,7 +67,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 ),
                 GenericButton(
                   onPressed: () {
-                    if(pageNumber == 2) AppNavigator.pushReplacement(context: context, screen: HomeScreen());
+                    if(pageNumber == 2) AppNavigator.pushReplacement(context: context, screen: MainScreen());
                     setState(() {
                       if (pageNumber < 2) {
                         _pageController.animateToPage(pageNumber.toInt() + 1,

@@ -42,7 +42,7 @@ class _ListsScreenState extends State<ListsScreen> {
       body: Column(
         children: [
           SizedBox(
-            height: 62.h,
+            height: 91.h,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -76,39 +76,32 @@ class _ListsScreenState extends State<ListsScreen> {
           SizedBox(
             height: 50.h,
           ),
-         Expanded(
-             child: FutureBuilder(
-           future: getAllListsFuture,
-           builder: (context,  AsyncSnapshot<QuerySnapshot> snapshot) {
-             if (snapshot.connectionState == ConnectionState.waiting) {
-               return Center(
-                 child: CircularProgressIndicator(),
-               );
-             }
-             var allLists = snapshot.data?.docs;
-             return ListView.builder(itemCount: allLists!.length,itemBuilder: (ctx,i) {
-               print(allLists[i]['list_name']);
-               return GestureDetector(
-               onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                   builder: (ctx) => ListViewScreen(
-                       listId: allLists[i].id,
-                       listName: allLists[i]['list_name']))),
-                 child: SwaavList(listName: allLists[i]['list_name']));
-             });
-           }
-         )),
-          if (!isAdding)
-            PlusButton(onTap: () {
-              setState(() {
-                isAdding = true;
-              });
-            }),
-          // Spacer(),
-          if (isAdding)
-            GenericMenu(option1Text: "New list", option2Text: "Pre-made", option1Func: () => AppNavigator.push(context: context,screen: NewListScreen()), option2Func: (){})
+          Expanded(
+              child: FutureBuilder(
+                  future: getAllListsFuture,
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    var allLists = snapshot.data?.docs;
+                    return ListView.builder(
+                        itemCount: allLists!.length,
+                        itemBuilder: (ctx, i) {
+                          print(allLists[i]['list_name']);
+                          return GestureDetector(
+                              onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                      builder: (ctx) => ListViewScreen(
+                                          listId: allLists[i].id,
+                                          listName: allLists[i]['list_name']))),
+                              child: SwaavList(
+                                  listName: allLists[i]['list_name']));
+                        });
+                  })),
         ],
       ),
-      bottomNavigationBar: NavBar(),
     );
   }
 }

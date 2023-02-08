@@ -18,3 +18,5 @@ const String edibleOil = '$imgPath/edible_oil.svg';
 const String grocery = '$imgPath/grocery.svg';
 // const String peach = '$imgPath/peach.svg';
 const String peach = '$imgPath/peach.png';
+const String milk = '$imgPath/milk.png';
+const String brand = '$imgPath/brand.png';

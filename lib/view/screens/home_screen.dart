@@ -4,17 +4,25 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swaav/generated/locale_keys.g.dart';
 import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/style_utils.dart';
 import 'package:swaav/view/components/generic_field.dart';
+import 'package:swaav/view/screens/product_detail_screen.dart';
+import 'package:swaav/view/screens/register_screen.dart';
 import 'package:swaav/view/widgets/categoryWidget.dart';
 import 'package:swaav/view/widgets/discountItem.dart';
 import 'package:swaav/view/widgets/productItem.dart';
+import 'package:swaav/view/widgets/search_item.dart';
 
+import '../../config/routes/app_navigator.dart';
+import '../../providers/google_sign_in_provider.dart';
 import '../../services/dynamic_link_service.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/icons_manager.dart';
+import '../components/button.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -74,6 +82,26 @@ class _HomeScreenState extends State<HomeScreen> {
                           backgroundImage: NetworkImage(snapshot.data!['imageURL']),radius: 30,) : SvgPicture.asset(personIcon);
                       }
                   ),
+                  GenericButton(
+                      onPressed: () async {
+                        var pref = await SharedPreferences.getInstance();
+                        pref.setBool("rememberMe", false);
+                        var isGoogleSignedIn = await Provider.of<GoogleSignInProvider>(context,listen: false).googleSignIn.isSignedIn();
+                        if(isGoogleSignedIn) {
+                          await Provider.of<GoogleSignInProvider>(context,listen: false).logout();
+                        }else{
+                          FirebaseAuth.instance.signOut();
+                        }
+                        AppNavigator.pushReplacement(context: context,screen: RegisterScreen());
+                        print("SIGNED OUT...................");
+                      },
+                      borderRadius: BorderRadius.circular(10),
+                      height: 31.h,
+                      width: 100.w,
+                      child: Text(
+                        "Log out",
+                        style: TextStyles.textViewBold12,
+                      )),
                 ],
               ),
               SizedBox(height: 24.h,),
@@ -173,9 +201,19 @@ class MySearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    return Center(
-      child: Text(
-        query,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: ListView(
+        children: [
+          GestureDetector(
+            onTap: (){
+              AppNavigator.push(context: context, screen: ProductDetailScreen());
+            },
+              child: SearchItem()),
+          SearchItem(),
+          SearchItem(),
+          SearchItem(),
+        ],
       ),
     );
   }

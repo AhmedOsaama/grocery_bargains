@@ -62,5 +62,10 @@
   "recentSearches"                     : "Recent Searches",
   "dozen"                     : "dozen",
   "addToCart"                     : "Add to cart",
-  "latestDiscounts"                     : "Latest Discounts"
+  "latestDiscounts"                     : "Latest Discounts",
+
+  "addToList"                           : "Add to list",
+  "share"                           : "Share",
+  "priceAlert"                           : "Price alert",
+  "seeMore"                           : "See more"
 }

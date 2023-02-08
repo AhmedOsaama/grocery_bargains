@@ -236,6 +236,12 @@ abstract class TextStyles {
     fontFamily: fontFamilyPoppins,
   );
 
+  static TextStyle textViewSemiBold18 = TextStyle(
+    fontSize: 18.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: fontFamilyPoppins,
+  );
+
   static TextStyle textViewMedium30 = TextStyle(
     fontSize: 30.sp,
     fontWeight: medium,

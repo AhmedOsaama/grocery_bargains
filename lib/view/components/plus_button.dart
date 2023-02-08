@@ -14,21 +14,12 @@ class PlusButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 31.w,
-        height: 31.h,
         decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: Color.fromRGBO(137, 137, 137, 1),
-            boxShadow: [
-              BoxShadow(
-                blurRadius: 4,
-                color: Colors.black.withOpacity(0.25),
-              )
-            ]),
-        child: Icon(
-          Icons.add,
-          color: Colors.white,
-          size: 10,
+            border: Border.all(color: verdigris,width: 2),
+            borderRadius: BorderRadius.circular(10)
+        ),
+        child: Center(
+          child: Icon(Icons.add,color: verdigris,size: 20,),
         ),
       ),
     );

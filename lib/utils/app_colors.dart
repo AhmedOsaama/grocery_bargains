@@ -15,6 +15,7 @@ const Color lightGrey = Color(0xffD9D9D9);
 const Color black = Color(0xff000000);
 const Color hintbuttonSocial = Color(0xff03034d);
 const Color borderColor = Color.fromRGBO(137, 137, 137, 1);
+const Color iris = Color.fromRGBO(99, 104, 176, 1);
 
 const Color yellowTextColor = Color.fromRGBO(255, 168, 0, 1);
 const Color purpleTextColor = Color.fromRGBO(173, 0, 255, 1);
