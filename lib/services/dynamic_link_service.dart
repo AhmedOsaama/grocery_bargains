@@ -36,7 +36,7 @@ class DynamicLinkService {
       var listName = parsedPath[2];
       var listId = parsedPath[3];
       if (functionName == "add_user") {
-        AppNavigator.push(context: context, screen: ListViewScreen(listId: listId, listName: listName, isUsingDynamicLink: true));
+        AppNavigator.push(context: context, screen: ListViewScreen(items: [],listId: listId, listName: listName, isUsingDynamicLink: true));
       }
 
     }
@@ -50,7 +50,7 @@ class DynamicLinkService {
       var listName = parsedPath[2];
       var listId = parsedPath[3];
       if (functionName == "add_user") {
-        return ListViewScreen(listId: listId, listName: listName,isUsingDynamicLink: true);
+        return ListViewScreen(items: [],listId: listId, listName: listName,isUsingDynamicLink: true);
       }
       return const MainScreen();                                //in case functionName wasn't add_user
     }

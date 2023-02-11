@@ -20,3 +20,4 @@ const String grocery = '$imgPath/grocery.svg';
 const String peach = '$imgPath/peach.png';
 const String milk = '$imgPath/milk.png';
 const String brand = '$imgPath/brand.png';
+const String noLists = '$imgPath/no_lists.svg';

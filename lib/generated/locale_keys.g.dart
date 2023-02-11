@@ -57,5 +57,20 @@ abstract class  LocaleKeys {
   static const dozen = 'dozen';
   static const addToCart = 'addToCart';
   static const latestDiscounts = 'latestDiscounts';
+  static const addToList = 'addToList';
+  static const share = 'share';
+  static const priceAlert = 'priceAlert';
+  static const seeMore = 'seeMore';
+  static const myLists = 'myLists';
+  static const createYourFirstList = 'createYourFirstList';
+  static const blank = 'blank';
+  static const store = 'store';
+  static const total = 'total';
+  static const nameHint = 'nameHint';
+  static const descriptionHint = 'descriptionHint';
+  static const autoSave = 'autoSave';
+  static const chooseAStore = 'chooseAStore';
+  static const createListForStore = 'createListForStore';
+  static const comingSoon = 'comingSoon';
 
 }

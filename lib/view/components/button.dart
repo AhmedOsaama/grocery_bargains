@@ -5,10 +5,11 @@ import 'package:swaav/utils/app_colors.dart';
 class GenericButton extends StatelessWidget {
   final BorderRadiusGeometry? borderRadius;
   final double? width;
-  final double height;
+  final double? height;
   final Color color;
   final Color borderColor;
   final Color shadowColorButton;
+  final Color? disabledBackgroundColor;
   final double elevationButton;
   final List<BoxShadow>? shadow;
 
@@ -22,11 +23,11 @@ class GenericButton extends StatelessWidget {
 
     this.borderRadius,
     this.width,
-    this.height = 50.0,
+    this.height,
     this.color = Colors.blue,
     this.borderColor = Colors.transparent,
     this.shadowColorButton = Colors.transparent,
-    this.elevationButton = 0.0, this.shadow,
+    this.elevationButton = 0.0, this.shadow, this.disabledBackgroundColor,
   }) : super(key: key);
 
   @override
@@ -36,7 +37,6 @@ class GenericButton extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: color,
         borderRadius: borderRadius,
         boxShadow: shadow
       ),
@@ -44,9 +44,10 @@ class GenericButton extends StatelessWidget {
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           side: BorderSide(color: borderColor),
-          backgroundColor: Colors.transparent,
-          shadowColor: shadowColorButton,
-          elevation: 0.0,
+          backgroundColor: color,
+          // shadowColor: shadowColorButton,
+          elevation: 0,
+          disabledBackgroundColor: disabledBackgroundColor,
           shape: RoundedRectangleBorder(
             borderRadius: borderRadius,
           ),

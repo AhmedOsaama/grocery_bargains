@@ -86,7 +86,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
                 var docRef = await FirebaseFirestore.instance.doc('/lists/${widget.listId}').get();
                 var listName = docRef.get("list_name");
                 print("LIST NAME: $listName");
-                AppNavigator.pushReplacement(context: context, screen: ListViewScreen(listId: widget.listId,listName: listName,));
+                // AppNavigator.pushReplacement(context: context, screen: ListViewScreen(listId: widget.listId,listName: listName,));
               } : null,
               child: Text(
                 "Done",

@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:swaav/config/routes/app_navigator.dart';
+import 'package:swaav/generated/locale_keys.g.dart';
+import 'package:swaav/utils/app_colors.dart';
+import 'package:swaav/utils/assets_manager.dart';
 import 'package:swaav/utils/fonts_utils.dart';
 import 'package:swaav/view/components/generic_appbar.dart';
 import 'package:swaav/view/components/my_scaffold.dart';
@@ -18,8 +22,11 @@ import '../components/button.dart';
 class ListViewScreen extends StatefulWidget {
   final String listId;
   final String listName;
+  final List<Map> items;
+  final String? storeName;
+  final String? storeImage;
   final bool isUsingDynamicLink;
-  const ListViewScreen({Key? key,required this.listId, required this.listName, this.isUsingDynamicLink = false}) : super(key: key);
+  const ListViewScreen({Key? key,required this.listId, required this.listName, this.isUsingDynamicLink = false, this.storeName, this.storeImage, required this.items}) : super(key: key);
 
   @override
   State<ListViewScreen> createState() => _ListViewScreenState();
@@ -50,117 +57,98 @@ class _ListViewScreenState extends State<ListViewScreen> {
     super.initState();
   }
 
+  String getTotalListPrice(){
+    var total = 0.0;
+    for (var item in widget.items) {
+      total += double.tryParse(item['itemPrice']) ?? 99999;
+    }
+    return total.toStringAsFixed(2);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MyScaffold(
-        body: Column(
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 62.h,),
-            GenericAppBar(appBarTitle: widget.listName,actions: [
-              GestureDetector(
-                onTap: (){},
-                child: SvgPicture.asset(shareIcon),
-              ),
-              SizedBox(width: 20.w,),
-              GestureDetector(
-                onTap: () => AppNavigator.pushReplacement(context: context, screen: ChatViewScreen(listName: widget.listName,listId: widget.listId,)),
-                child: SvgPicture.asset(chatIcon),
-              )
-            ],),
-            SizedBox(height: 64.h,),
+            SizedBox(height: 100.h,),
+            BackButton(),
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  width: 200.w,
-                  child: TextField(
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(
-                      isDense: true,
-                      hintText: "Search",
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))
-                    ),
-                  ),
-                ),
-                SizedBox(width: 15.w,),
-                GenericButton(
-                  onPressed: () {},
-                  child: Text(
-                    "Filter",
-                    style: TextStyles.textViewBold15,
-                  ),
-                  borderRadius: BorderRadius.circular(6),
-                  width: 95.w,
-                  height: 35.h,
-                ),
+                Image.asset(brand),
+                SizedBox(width: 10.w,),
+                widget.storeName != null ? Text(widget.storeName!,style: TextStyles.textViewMedium16.copyWith(color: prussian),) : Container(),
+                widget.storeImage != null ? Image.asset(widget.storeImage!) : Container(),
+                Spacer(),
+                SvgPicture.asset(peopleIcon),
+                IconButton(onPressed: (){}, icon: Icon(Icons.more_vert)),
               ],
             ),
-            SizedBox(height: 40.h,),
-            Expanded(
-              child: StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection("/lists/${widget.listId}/items").orderBy('createdAt', descending: false)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    var items = snapshot.data!.docs;
-                    //LIST VIEW
-                    items = items.where((item) => item['message'] == "").toList();
-                    return GridView.builder(gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    mainAxisSpacing: 50.h,
-                    crossAxisSpacing: 90.w,
-                    crossAxisCount: 2
-                  ),
-                      itemCount: items.length,
-                      itemBuilder: (ctx,i) {
-                      if(items[i]['message'] == ""){
-                        return Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            GestureDetector(
-                              onLongPress: (){
-                                setState(() {
-                                  isDeleting = !isDeleting;
-                                });
-                              },
-                              child: Container(
-                              color: items[i]['userId'] == FirebaseAuth.instance.currentUser?.uid ?  Colors.yellow.withOpacity(0.6) : null,
-                              child: Center(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  isDeleting ? Icon(Icons.delete_rounded) :
-                                  Image.network( items[i]['item_image'],width: 100.w,height: 100.h,),
-                                  Container(
-                                    width: 32.w,
-                                    height: 21.h,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(6),
-                                      color: Color.fromRGBO(217, 217, 217, 1),
-                                    ),
-                                    child: Center(child: Text("3",style: TextStyles.textViewBold15,)),
-                                  ),
-                                ],
-                  ),
-                              ),
-                      ),
-                            ),
-                            Positioned(child: CircleAvatar(backgroundImage: NetworkImage(items[i]['userImageURL']),radius: 20,),top: -15 ,right: -15,),
-                          ],
-                        );
-                      }
-                      return SizedBox();
-                      },
-                  );
-                }
-              ),
+            Text(widget.listName,style: TextStyles.textViewSemiBold30.copyWith(color: prussian),),
+            Divider(height: 10.h,),
+            Row(
+              children: [
+                IconButton(onPressed: (){}, icon: Icon(Icons.share_outlined)),
+                IconButton(onPressed: (){}, icon: Icon(Icons.store_outlined)),
+                IconButton(onPressed: (){}, icon: Icon(Icons.message_outlined)),
+                Spacer(),
+                Text("${widget.items.length} items",style: TextStyles.textViewMedium10.copyWith(color: Color.fromRGBO(204, 204, 203, 1)),),
+                SizedBox(width: 10.w,),
+                Text(LocaleKeys.total.tr(),style: TextStyles.textViewMedium15.copyWith(color: prussian),),
+                SizedBox(width: 10.w,),
+                Text("€ ${getTotalListPrice()}",
+                    style: TextStyles.textViewSemiBold18.copyWith(color: prussian)),              ],
             ),
-            SizedBox(height: 10.h,),
-            PlusButton(onTap: () => AppNavigator.pushReplacement(context: context, screen: CategoryItemsScreen(listId: widget.listId))),
+            Expanded(
+              child: ListView.separated(
+                itemCount: widget.items.length,
+                  separatorBuilder: (ctx,_) => const Divider(),
+                  itemBuilder: (ctx,i) {
+                  var isChecked = widget.items[i]['isChecked'];
+                  var itemName = widget.items[i]['itemName'];
+                  var itemPrice = widget.items[i]['itemPrice'];
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Opacity(
+                          opacity: isChecked ? 0.6 : 1,
+                          child: Row(
+                            children: [
+                              Checkbox(
+                                value: isChecked,
+                                onChanged: (value) {
+                                  setState(() {
+                                    widget.items[i]['isChecked'] = !isChecked;
+                                  });
+                                },
+                              ),
+                              Image.asset(milk,width: 55,height: 55,),
+                              SizedBox(width: 12.w,),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(itemName,style: TextStyles.textViewSemiBold14.copyWith(color: prussian,decoration: isChecked ? TextDecoration.lineThrough : null) ,),
+                                  Text("0,331",style: TextStyles.textViewLight12.copyWith(color: prussian,decoration: isChecked ? TextDecoration.lineThrough : null),),
+                                ],
+                              ),
+                              Spacer(),
+                              Text("€ $itemPrice",style: TextStyles.textViewMedium13.copyWith(color: prussian,decoration: isChecked ? TextDecoration.lineThrough : null,),),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 20.w,),
+                      IconButton(onPressed: (){}, icon: const Icon(Icons.more_vert)),
+                    ],
+                  );
+                  }),
+            )
           ],
-        )
+        ),
+      ),
     );
   }
 }

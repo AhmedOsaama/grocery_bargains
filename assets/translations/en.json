@@ -66,5 +66,17 @@
 
   "addToList"                           : "Add to list",
   "share"                           : "Share",
-  "priceAlert"                           : "Price alert"
+  "priceAlert"                           : "Price alert",
+  "seeMore"                           : "See more",
+  "myLists"                           : "My lists",
+  "createYourFirstList"                           : "Create Your First List",
+  "blank"                           : "Blank",
+  "store"                           : "Store",
+  "total"                           : "Total",
+  "nameHint"                           : "Name...",
+  "descriptionHint"                           : "Description...",
+  "autoSave"                           : "AutoSave",
+  "chooseAStore"                           : "Choose a store",
+  "createListForStore"                           : "Create list for this store",
+  "comingSoon"                           : "Coming Soon"
 }

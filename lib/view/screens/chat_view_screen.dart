@@ -61,13 +61,13 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
             SizedBox(
               width: 20.w,
             ),
-            GestureDetector(
-              onTap: () => AppNavigator.pushReplacement(
-                  context: context,
-                  screen: ListViewScreen(
-                      listId: widget.listId, listName: widget.listName)),
-              child: SvgPicture.asset(listViewIcon),
-            )
+            // GestureDetector(
+            //   onTap: () => AppNavigator.pushReplacement(
+            //       context: context,
+            //       screen: ListViewScreen(
+            //           listId: widget.listId, listName: widget.listName)),
+            //   child: SvgPicture.asset(listViewIcon),
+            // )
           ],
         ),
         SizedBox(
