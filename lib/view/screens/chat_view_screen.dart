@@ -89,7 +89,7 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
                       reverse: true,
                       itemCount: messages.length,
                       itemBuilder: (ctx, index) => Container(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: MessageBubble(
                           itemName: messages[index]['item_name'],
                           itemImage: messages[index]['item_image'],
@@ -103,10 +103,6 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
                         ),
                       ));
                 })),
-        PlusButton(
-            onTap: () => AppNavigator.pushReplacement(
-                context: context,
-                screen: CategoryItemsScreen(listId: widget.listId))),
         SizedBox(
           height: 10.h,
         ),
@@ -140,6 +136,10 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
                         .add({
                       'item_name': "",
                       'item_image': "",
+                      'item_description': "",
+                      'item_quantity': "",
+                      'item_isChecked': '',
+                      'item_price': 0.0,
                       'message': messageController.text.trim(),
                       'createdAt': Timestamp.now(),
                       'userId': FirebaseAuth.instance.currentUser!.uid,

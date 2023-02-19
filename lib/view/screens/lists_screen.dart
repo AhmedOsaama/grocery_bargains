@@ -16,11 +16,11 @@ import 'package:swaav/view/components/plus_button.dart';
 import 'package:swaav/view/screens/choose_store_screen.dart';
 import 'package:swaav/view/screens/list_view_screen.dart';
 import 'package:swaav/view/widgets/backbutton.dart';
-import 'package:swaav/view/widgets/store_list.dart';
+import 'package:swaav/view/widgets/store_list_widget.dart';
 import 'package:swaav/view/widgets/swaav_list.dart';
 
 import '../../config/routes/app_navigator.dart';
-import 'new_list_screen.dart';
+import 'new_blank_list_screen.dart';
 
 class ListsScreen extends StatefulWidget {
   const ListsScreen({Key? key}) : super(key: key);
@@ -31,17 +31,8 @@ class ListsScreen extends StatefulWidget {
 
 class _ListsScreenState extends State<ListsScreen> {
   late Future<QuerySnapshot> getAllListsFuture;
+  late Future<QuerySnapshot> getListItemsFuture;
   var isFabPressed = false;
-  var storeItems = [ {
-    "isChecked": false,
-    "itemName": 'Melkan long-life',
-    "itemPrice": "1.19"
-  },
-    {
-      "isChecked": true,
-      "itemName": 'item name',
-      "itemPrice": "1.19"
-    }];
 
   @override
   void initState() {
@@ -50,6 +41,16 @@ class _ListsScreenState extends State<ListsScreen> {
         .where("userIds", arrayContains: FirebaseAuth.instance.currentUser?.uid)
         .get();
     super.initState();
+  }
+
+  void updateList() async {
+    print("RUN UPDATE LIST");
+    setState((){
+    getAllListsFuture = FirebaseFirestore.instance
+        .collection('/lists')
+        .where("userIds", arrayContains: FirebaseAuth.instance.currentUser?.uid)
+        .get();
+    });
   }
 
   bool isAdding = false;
@@ -88,8 +89,8 @@ class _ListsScreenState extends State<ListsScreen> {
                           child: CircularProgressIndicator(),
                         );
                       }
-                      var allLists = snapshot.data?.docs;
-                      if (!snapshot.hasData) {
+                      var allLists = snapshot.data?.docs ?? [];
+                      if (!snapshot.hasData || allLists.isEmpty) {
                         return Column(
                           children: [
                             SizedBox(
@@ -114,45 +115,29 @@ class _ListsScreenState extends State<ListsScreen> {
                                   mainAxisSpacing: 24.h,
                                   crossAxisSpacing: 10.w,
                                   childAspectRatio: 2 / 3),
-                          itemCount: allLists!.length,
+                          itemCount: allLists.length,
                           itemBuilder: (ctx, i) {
-                            return GestureDetector(
-                              onTap: () => Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                      builder: (ctx) => ListViewScreen(
-                                        items: storeItems,
-                                          storeName: "SPAR",
-                                          listId: allLists[i].id,
-                                          listName: allLists[i]['list_name']))),
-                              child:
-                                  StoreList(
-                                    storeImagePath: brand,
-                                    storeItems: storeItems,
-                                        listName: allLists[i]['list_name']
-                                  )
-                                  // SwaavList(
-                                  //     userImage: peopleIcon,
-                                  //     items: [
-                                  //       {
-                                  //         "isChecked": false,
-                                  //         "itemName": 'Melkan long-life',
-                                  //       },{
-                                  //         "isChecked": false,
-                                  //         "itemName": 'Melkan long-life',
-                                  //       },{
-                                  //         "isChecked": false,
-                                  //         "itemName": 'Melkan long-life',
-                                  //       },{
-                                  //         "isChecked": false,
-                                  //         "itemName": 'Melkan long-life',
-                                  //       },
-                                  //       {
-                                  //         "isChecked": false,
-                                  //         "itemName": 'Melkan long-life',
-                                  //       },
-                                  //     ],
-                                  //     listName: allLists[i]['list_name']),
-                            );
+                            getListItemsFuture = FirebaseFirestore.instance
+                                .collection('/lists/${allLists[i].id}/items')
+                                .get();
+                                  return GestureDetector(
+                                    onTap: () => Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                            builder: (ctx) => ListViewScreen(
+                                                // itemsFuture: getListItemsFuture,
+                                              updateList: updateList,
+                                                storeName: allLists[i]['storeName'],
+                                                storeImage: allLists[i]
+                                                ['storeImageUrl'],
+                                                listId: allLists[i].id,
+                                                listName: allLists[i]
+                                                    ['list_name']))),
+                                    child: StoreListWidget(
+                                        listId: allLists[i].id,
+                                        storeImagePath: allLists[i]
+                                            ['storeImageUrl'],
+                                        // storeItems: items,
+                                        listName: allLists[i]['list_name']));
                           });
                     })),
           ],
@@ -170,7 +155,8 @@ class _ListsScreenState extends State<ListsScreen> {
           GenericButton(
               height: 40,
               onPressed: () {
-                AppNavigator.push(context: context, screen: const ChooseStoreScreen());
+                AppNavigator.push(
+                    context: context, screen: const ChooseStoreScreen());
               },
               borderRadius: BorderRadius.circular(8),
               color: Colors.white,

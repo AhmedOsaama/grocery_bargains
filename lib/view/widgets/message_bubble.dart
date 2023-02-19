@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:swaav/config/routes/app_navigator.dart';
+import 'package:swaav/utils/app_colors.dart';
 import 'dart:io';
 
 import 'package:swaav/utils/icons_manager.dart';
 import 'package:swaav/utils/style_utils.dart';
 import 'package:swaav/view/screens/thread_screen.dart';
+import 'package:swaav/view/widgets/product_item.dart';
 
 import '../components/button.dart';
 
@@ -31,9 +33,10 @@ class MessageBubble extends StatefulWidget {
       required this.userName,
       required this.userImage,
       required this.isMe,
-        this.messageDocPath,
+      this.messageDocPath,
       this.key,
-      required this.message, this.isInThread = false})
+      required this.message,
+      this.isInThread = false})
       : super(key: key);
 
   @override
@@ -55,80 +58,77 @@ class _MessageBubbleState extends State<MessageBubble> {
         mainAxisAlignment:
             widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          Container(
-            key: widget.key,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(10),
-                topRight: Radius.circular(10),
-                bottomLeft:
-                    widget.isMe ? Radius.circular(10) : Radius.circular(0),
-                bottomRight:
-                    widget.isMe ? Radius.circular(0) : Radius.circular(10),
+          if (widget.message.isEmpty)
+            Container(
+              key: widget.key,
+              width: 160.w,
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              margin: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+              child: ProductItemWidget(
+                  price: 1.25.toString(),
+                  name: widget.itemName,
+                  description: "description",
+                  imagePath: widget.itemImage,
+                  fullPrice: 1.55.toString(),
+                  onTap: null),
+            ),
+          if (widget.message.isNotEmpty)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
+              margin: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(18),
+                  topRight: Radius.circular(18),
+                  bottomLeft:
+                      widget.isMe ? Radius.circular(18) : Radius.circular(0),
+                  bottomRight:
+                      widget.isMe ? Radius.circular(0) : Radius.circular(18),
+                ),
+                color:
+                    widget.isMe ? iris : const Color.fromRGBO(233, 233, 235, 1),
               ),
-              color: widget.isMe
-                  ? Colors.yellow.withOpacity(0.6)
-                  : Colors.lightGreenAccent,
+              child: Text(
+                widget.message,
+                style: TextStyles.textViewRegular16
+                    .copyWith(color: widget.isMe ? Colors.white : Colors.black),
+                textAlign: widget.isMe ? TextAlign.right : TextAlign.left,
+              ),
             ),
-            width: 100.w,
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            margin: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-            child: Column(
-              crossAxisAlignment: widget.isMe
-                  ? CrossAxisAlignment.end
-                  : CrossAxisAlignment.start,
-              children: [
-                Text(widget.userName, style: TextStyles.textViewBold20
-                    // textAlign: isMe ? TextAlign.end : TextAlign.start,
-                    ),
-                if (widget.message.isNotEmpty)
-                  Text(
-                    widget.message,
-                    style: TextStyles.textViewRegular15,
-                  ),
-                if (widget.message.isEmpty) ...[
-                  Text(
-                    widget.itemName,
-                    style: TextStyles.textViewMedium16,
-                  ),
-                  Image.network(
-                    widget.itemImage,
-                    width: 100,
-                    height: 100,
-                  )
-                ],
-              ],
-            ),
-          ),
           widget.userImage.isNotEmpty
               ? CircleAvatar(
                   backgroundImage: NetworkImage(widget.userImage),
                   radius: 20,
                 )
               : SvgPicture.asset(personIcon),
-          if(isDisplayingOptions)
-            ...[
-          Spacer(),
-              SizedBox(
-                width: 30.w,
-              ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    GenericButton(
-                        onPressed: () {},
-                        // height: 30.h,
-                        borderRadius: BorderRadius.circular(10),
-                        child: Text("Delete Message")),
-                    SizedBox(height: 10.h,),
-                    if(!widget.isInThread)
-                    GenericButton(
-                        onPressed: () => AppNavigator.push(context: context, screen: ThreadScreen(messageDocRef: widget.messageDocPath!,)),
-                        borderRadius: BorderRadius.circular(10),
-                        child: Text("Reply in thread")),
-                  ],
-                )
-            ]
+          if (isDisplayingOptions) ...[
+            Spacer(),
+            SizedBox(
+              width: 30.w,
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GenericButton(
+                    onPressed: () {},
+                    // height: 30.h,
+                    borderRadius: BorderRadius.circular(10),
+                    child: const Text("Delete Message")),
+                SizedBox(
+                  height: 10.h,
+                ),
+                if (!widget.isInThread)
+                  GenericButton(
+                      onPressed: () => AppNavigator.push(
+                          context: context,
+                          screen: ThreadScreen(
+                            messageDocRef: widget.messageDocPath!,
+                          )),
+                      borderRadius: BorderRadius.circular(10),
+                      child: const Text("Reply in thread")),
+              ],
+            )
+          ]
         ],
       ),
     );

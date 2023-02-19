@@ -1,12 +1,15 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:swaav/config/routes/app_navigator.dart';
 import 'package:swaav/generated/locale_keys.g.dart';
 import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/assets_manager.dart';
 import 'package:swaav/utils/style_utils.dart';
 import 'package:swaav/utils/utils.dart';
 import 'package:swaav/view/components/button.dart';
+
+import 'add_store_items_screen.dart';
 
 class ChooseStoreScreen extends StatefulWidget {
   const ChooseStoreScreen({Key? key}) : super(key: key);
@@ -33,6 +36,8 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
   ];
 
   var selectedStoreIndex;
+  var selectedStoreName = '';
+  var selectedStoreImage = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,8 +49,9 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
           child: GenericButton(
             width: double.infinity,
             height: 60.h,
-            // onPressed: selectedStoreIndex != null ? (){} : null,
-            onPressed: (){},
+            onPressed: (){
+              AppNavigator.push(context: context, screen: AddStoreItemsScreen(storeName: selectedStoreName,storeImageURL: selectedStoreImage));
+            },
             color: verdigris,
             borderRadius: BorderRadius.circular(6),
             shadow: [
@@ -74,7 +80,7 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                 crossAxisSpacing: 10,
               ),itemCount: stores.length,
                   itemBuilder: (ctx,i){
-                var name = stores[i]['name'];
+                var name = stores[i]['name'] as String;
                 var image = stores[i]['image'] as String;
                 var isComingSoon = stores[i]['isComingSoon'] as bool;
                   return Stack(
@@ -83,6 +89,8 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
                       InkWell(
                         onTap: (){
                           if(!isComingSoon) {
+                            selectedStoreName = name;
+                            selectedStoreImage = image;
                             setState(() {
                             selectedStoreIndex = i;
                           });

@@ -78,5 +78,17 @@
   "autoSave"                           : "AutoSave",
   "chooseAStore"                           : "Choose a store",
   "createListForStore"                           : "Create list for this store",
-  "comingSoon"                           : "Coming Soon"
+  "comingSoon"                           : "Coming Soon",
+
+  "todaysBestBargain"                   : "Today’s best bargain",
+  "shopByAisle"                   : "Shop by aisle",
+  "vegetablesAndFruits"                   : "Vegetables & Fruits",
+  "frozenFood"                   : "Frozen Food",
+  "healthAndToiletries"                   : "Health & Toiletries",
+  "drinks"                   : "Drinks",
+  "household"                   : "Household",
+  "pets"                   : "Pets",
+  "bakery"                   : "Bakery",
+  "bananas"                   : "Bananas",
+  "seeAll"                   : "See all"
 }

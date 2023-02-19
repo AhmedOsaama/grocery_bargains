@@ -12,9 +12,9 @@ import 'package:swaav/utils/style_utils.dart';
 import 'package:swaav/view/components/generic_field.dart';
 import 'package:swaav/view/screens/product_detail_screen.dart';
 import 'package:swaav/view/screens/register_screen.dart';
-import 'package:swaav/view/widgets/categoryWidget.dart';
+import 'package:swaav/view/widgets/category_widget.dart';
 import 'package:swaav/view/widgets/discountItem.dart';
-import 'package:swaav/view/widgets/productItem.dart';
+import 'package:swaav/view/widgets/product_item.dart';
 import 'package:swaav/view/widgets/search_item.dart';
 
 import '../../config/routes/app_navigator.dart';
@@ -54,23 +54,26 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 70.h,),
+              SizedBox(
+                height: 70.h,
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   FutureBuilder(
                       future: getUserDataFuture,
                       builder: (context, snapshot) {
-                        if(snapshot.connectionState == ConnectionState.waiting){
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
                         return Text(
                           'Hello, ' + snapshot.data!['username'],
                           style: TextStylesDMSans.textViewBold22
                               .copyWith(color: prussian),
                         );
-                      }
-                  ),
+                      }),
                   FutureBuilder(
                       future: getUserDataFuture,
                       builder: (context, snapshot) {
@@ -78,21 +81,32 @@ class _HomeScreenState extends State<HomeScreen> {
                             ConnectionState.waiting) {
                           return Container();
                         }
-                        return snapshot.data!['imageURL'] != "" ? CircleAvatar(
-                          backgroundImage: NetworkImage(snapshot.data!['imageURL']),radius: 30,) : SvgPicture.asset(personIcon);
-                      }
-                  ),
+                        return snapshot.data!['imageURL'] != ""
+                            ? CircleAvatar(
+                                backgroundImage:
+                                    NetworkImage(snapshot.data!['imageURL']),
+                                radius: 30,
+                              )
+                            : SvgPicture.asset(personIcon);
+                      }),
                   GenericButton(
                       onPressed: () async {
                         var pref = await SharedPreferences.getInstance();
                         pref.setBool("rememberMe", false);
-                        var isGoogleSignedIn = await Provider.of<GoogleSignInProvider>(context,listen: false).googleSignIn.isSignedIn();
-                        if(isGoogleSignedIn) {
-                          await Provider.of<GoogleSignInProvider>(context,listen: false).logout();
-                        }else{
+                        var isGoogleSignedIn =
+                            await Provider.of<GoogleSignInProvider>(context,
+                                    listen: false)
+                                .googleSignIn
+                                .isSignedIn();
+                        if (isGoogleSignedIn) {
+                          await Provider.of<GoogleSignInProvider>(context,
+                                  listen: false)
+                              .logout();
+                        } else {
                           FirebaseAuth.instance.signOut();
                         }
-                        AppNavigator.pushReplacement(context: context,screen: RegisterScreen());
+                        AppNavigator.pushReplacement(
+                            context: context, screen: RegisterScreen());
                         print("SIGNED OUT...................");
                       },
                       borderRadius: BorderRadius.circular(10),
@@ -104,7 +118,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       )),
                 ],
               ),
-              SizedBox(height: 24.h,),
+              SizedBox(
+                height: 24.h,
+              ),
               GenericField(
                 isFilled: true,
                 onTap: () =>
@@ -115,46 +131,119 @@ class _HomeScreenState extends State<HomeScreen> {
                 hintStyle:
                     TextStyles.textViewSemiBold14.copyWith(color: gunmetal),
               ),
-              SizedBox(height: 25.h,),
+              SizedBox(
+                height: 25.h,
+              ),
               Container(
                 height: 100.h,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    CategoryWidget(categoryImagePath: vegetables,categoryName: LocaleKeys.vegetables.tr(), color: Colors.green,),
-                    CategoryWidget(categoryImagePath: fruits,categoryName: LocaleKeys.fruits.tr(), color: Colors.red,),
-                    CategoryWidget(categoryImagePath: beverages,categoryName: LocaleKeys.beverages.tr(), color: Colors.yellow,),
-                    CategoryWidget(categoryImagePath: grocery,categoryName: LocaleKeys.grocery.tr(), color: Colors.deepPurpleAccent,),
-                    CategoryWidget(categoryImagePath: edibleOil,categoryName: LocaleKeys.edibleOil.tr(), color: Colors.cyan,),
+                    CategoryWidget(
+                      categoryImagePath: vegetables,
+                      categoryName: LocaleKeys.vegetables.tr(),
+                      color: Colors.green,
+                    ),
+                    CategoryWidget(
+                      categoryImagePath: fruits,
+                      categoryName: LocaleKeys.fruits.tr(),
+                      color: Colors.red,
+                    ),
+                    CategoryWidget(
+                      categoryImagePath: beverages,
+                      categoryName: LocaleKeys.beverages.tr(),
+                      color: Colors.yellow,
+                    ),
+                    CategoryWidget(
+                      categoryImagePath: grocery,
+                      categoryName: LocaleKeys.grocery.tr(),
+                      color: Colors.deepPurpleAccent,
+                    ),
+                    CategoryWidget(
+                      categoryImagePath: edibleOil,
+                      categoryName: LocaleKeys.edibleOil.tr(),
+                      color: Colors.cyan,
+                    ),
                   ],
                 ),
               ),
-              SizedBox(height: 30.h,),
-              Text(LocaleKeys.recentSearches.tr(),style: TextStylesDMSans.textViewBold16.copyWith(color: prussian),),
-              SizedBox(height: 10.h,),
+              SizedBox(
+                height: 30.h,
+              ),
+              Text(
+                LocaleKeys.recentSearches.tr(),
+                style:
+                    TextStylesDMSans.textViewBold16.copyWith(color: prussian),
+              ),
+              SizedBox(
+                height: 10.h,
+              ),
               Container(
                 height: 260.h,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    ProductItem(price: "8.00", name: "Fresh Peach", quantity: "dozen", imagePath: peach),
-                    ProductItem(price: "8.00", name: "Fresh Peach", quantity: "dozen", imagePath: peach),
-                    ProductItem(price: "8.00", name: "Fresh Peach", quantity: "dozen", imagePath: peach),
+                    ProductItemWidget(
+                      price: "8.00",
+                      fullPrice: "1.55",
+                      name: "Fresh Peach",
+                      description: "dozen",
+                      imagePath: peach,
+                      onTap: () {},
+                    ),
+                    ProductItemWidget(
+                        onTap: (){},
+                        price: "8.00",
+                        fullPrice: "1.55",
+                        name: "Fresh Peach",
+                        description: "dozen",
+                        imagePath: peach),
+                    ProductItemWidget(
+                        onTap: (){},
+                        price: "8.00",
+                        fullPrice: "1.55",
+                        name: "Fresh Peach",
+                        description: "dozen",
+                        imagePath: peach),
                   ],
                 ),
               ),
-              SizedBox(height: 30.h,),
-              Text(LocaleKeys.latestDiscounts.tr(),style: TextStylesDMSans.textViewBold16.copyWith(color: prussian),),
-              SizedBox(height: 10.h,),
+              SizedBox(
+                height: 30.h,
+              ),
+              Text(
+                LocaleKeys.latestDiscounts.tr(),
+                style:
+                    TextStylesDMSans.textViewBold16.copyWith(color: prussian),
+              ),
+              SizedBox(
+                height: 10.h,
+              ),
               Container(
                 height: 250.h,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    DiscountItem(name: "Avocado", priceBefore: "7.00", priceAfter: "4.00", measurement: "2.0 lbs"),
-                    DiscountItem(name: "Pinapple", priceBefore: "7.00", priceAfter: "4.00", measurement: "2.0 lbs"),
-                    DiscountItem(name: "Black grape", priceBefore: "7.00", priceAfter: "4.00", measurement: "2.0 lbs"),
-                    DiscountItem(name: "Black grape", priceBefore: "7.00", priceAfter: "4.00", measurement: "2.0 lbs"),
+                    DiscountItem(
+                        name: "Avocado",
+                        priceBefore: "7.00",
+                        priceAfter: "4.00",
+                        measurement: "2.0 lbs"),
+                    DiscountItem(
+                        name: "Pinapple",
+                        priceBefore: "7.00",
+                        priceAfter: "4.00",
+                        measurement: "2.0 lbs"),
+                    DiscountItem(
+                        name: "Black grape",
+                        priceBefore: "7.00",
+                        priceAfter: "4.00",
+                        measurement: "2.0 lbs"),
+                    DiscountItem(
+                        name: "Black grape",
+                        priceBefore: "7.00",
+                        priceAfter: "4.00",
+                        measurement: "2.0 lbs"),
                   ],
                 ),
               ),
@@ -206,9 +295,10 @@ class MySearchDelegate extends SearchDelegate {
       child: ListView(
         children: [
           GestureDetector(
-            onTap: (){
-              AppNavigator.push(context: context, screen: ProductDetailScreen());
-            },
+              onTap: () {
+                AppNavigator.push(
+                    context: context, screen: ProductDetailScreen());
+              },
               child: SearchItem()),
           SearchItem(),
           SearchItem(),

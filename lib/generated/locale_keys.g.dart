@@ -72,5 +72,16 @@ abstract class  LocaleKeys {
   static const chooseAStore = 'chooseAStore';
   static const createListForStore = 'createListForStore';
   static const comingSoon = 'comingSoon';
+  static const todaysBestBargain = 'todaysBestBargain';
+  static const shopByAisle = 'shopByAisle';
+  static const vegetablesAndFruits = 'vegetablesAndFruits';
+  static const frozenFood = 'frozenFood';
+  static const healthAndToiletries = 'healthAndToiletries';
+  static const drinks = 'drinks';
+  static const household = 'household';
+  static const pets = 'pets';
+  static const bakery = 'bakery';
+  static const bananas = 'bananas';
+  static const seeAll = 'seeAll';
 
 }

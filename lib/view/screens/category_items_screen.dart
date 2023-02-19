@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:swaav/view/components/my_scaffold.dart';
 import 'package:swaav/view/screens/list_view_screen.dart';
-import 'package:swaav/view/screens/new_list_screen.dart';
+import 'package:swaav/view/screens/new_blank_list_screen.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../models/item.dart';
