@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:swaav/providers/products_provider.dart';
 
 import '../../utils/app_colors.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/style_utils.dart';
 
 class SearchItem extends StatelessWidget {
-  const SearchItem({Key? key}) : super(key: key);
+  final String name;
+  final String store;
+  final String size;
+  final String currentPrice;
+  final String imageURL;
+  const SearchItem({Key? key, required this.name, required this.store, required this.size, required this.currentPrice, required this.imageURL}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 110,
+      height: 130,
       margin: EdgeInsets.symmetric(vertical: 8),
       padding: EdgeInsets.all(13),
       decoration: BoxDecoration(
@@ -49,22 +56,23 @@ class SearchItem extends StatelessWidget {
               ),
             ],
           ),
-          Image.asset(
-              milk
+          Image.network(
+              imageURL,
+            width: 80.w,height: 80.h,
           ),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Melkan long-life skimmed milk",style: TextStyles.textViewMedium13.copyWith(color: gunmetal),),
+                Text(name,style: TextStyles.textViewMedium13.copyWith(color: gunmetal),),
                 SizedBox(height: 10.h,),
-                Image.asset(brand),
+                Image.asset(Provider.of<ProductsProvider>(context,listen: false).getImage(store),height: 25.h,),
                 SizedBox(height: 15.h,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("1 Liter l Price per LT € 1.29",style: TextStyles.textViewLight12.copyWith(color: gunmetal),),
-                    Text("1.29",style: TextStyles.textViewBold20.copyWith(color: verdigris),),
+                    Text(size,style: TextStyles.textViewLight12.copyWith(color: gunmetal),),
+                    Text("€$currentPrice",style: TextStyles.textViewBold20.copyWith(color: verdigris),),
                   ],
                 ),
               ],
@@ -76,3 +84,5 @@ class SearchItem extends StatelessWidget {
     );
   }
 }
+
+

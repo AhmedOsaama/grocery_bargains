@@ -214,7 +214,7 @@ class _AddStoreItemsScreenState extends State<AddStoreItemsScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Image.asset(brand),
+                        Image.asset(spar),
                         Text(
                           "Albert Heinz",
                           style: TextStyles.textViewMedium10

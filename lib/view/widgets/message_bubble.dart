@@ -58,6 +58,12 @@ class _MessageBubbleState extends State<MessageBubble> {
         mainAxisAlignment:
             widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
+          if(!widget.isMe) widget.userImage.isNotEmpty
+              ? CircleAvatar(
+            backgroundImage: NetworkImage(widget.userImage),
+            radius: 20,
+          )
+              : SvgPicture.asset(personIcon),
           if (widget.message.isEmpty)
             Container(
               key: widget.key,
@@ -95,6 +101,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                 textAlign: widget.isMe ? TextAlign.right : TextAlign.left,
               ),
             ),
+          if(widget.isMe)
           widget.userImage.isNotEmpty
               ? CircleAvatar(
                   backgroundImage: NetworkImage(widget.userImage),

@@ -7,6 +7,7 @@ const String twitter = "$imgPath/twitter.png";
 const String home = "$imgPath/home.svg";
 const String options = "$imgPath/options.svg";
 const String backIcon = "$imgPath/back.svg";
+const String plusIcon = "$imgPath/plus.svg";
 const String listIcon = "$imgPath/list.svg";
 const String messageIcon = "$imgPath/message.svg";
 const String profileIcon = "$imgPath/profile.svg";

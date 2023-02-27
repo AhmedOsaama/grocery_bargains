@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swaav/config/themes/app_theme.dart';
 import 'package:swaav/providers/google_sign_in_provider.dart';
+import 'package:swaav/providers/products_provider.dart';
 import 'package:swaav/services/dynamic_link_service.dart';
 import 'package:swaav/view/screens/main_screen.dart';
 import 'package:swaav/view/screens/list_view_screen.dart';
@@ -40,6 +41,7 @@ Future<void> main() async {
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider<GoogleSignInProvider>(create: (_) => GoogleSignInProvider()),
+          ChangeNotifierProvider<ProductsProvider>(create: (_) => ProductsProvider()),
         ],
         child: MyApp(
           dynamicLinkPath: path,
@@ -58,6 +60,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'SWAAV',
       // theme: appTheme(),
+      theme: ThemeData(
+        canvasColor: Colors.white
+      ),
       debugShowCheckedModeBanner: false,
       home: ScreenUtilInit(
           designSize: const Size(390, 844),

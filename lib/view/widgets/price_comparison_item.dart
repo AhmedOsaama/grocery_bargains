@@ -27,7 +27,7 @@ class PriceComparisonItem extends StatelessWidget {
       padding: EdgeInsets.all(10),
       child: Row(
         children: [
-          Image.asset(brand,width: 50,height: 50,),
+          Image.asset(spar,width: 50,height: 50,),
           SizedBox(width: 20.w,),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

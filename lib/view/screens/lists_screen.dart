@@ -53,6 +53,8 @@ class _ListsScreenState extends State<ListsScreen> {
     });
   }
 
+
+
   bool isAdding = false;
   @override
   Widget build(BuildContext context) {
@@ -124,7 +126,6 @@ class _ListsScreenState extends State<ListsScreen> {
                                     onTap: () => Navigator.of(context).push(
                                         MaterialPageRoute(
                                             builder: (ctx) => ListViewScreen(
-                                                // itemsFuture: getListItemsFuture,
                                               updateList: updateList,
                                                 storeName: allLists[i]['storeName'],
                                                 storeImage: allLists[i]
@@ -136,7 +137,6 @@ class _ListsScreenState extends State<ListsScreen> {
                                         listId: allLists[i].id,
                                         storeImagePath: allLists[i]
                                             ['storeImageUrl'],
-                                        // storeItems: items,
                                         listName: allLists[i]['list_name']));
                           });
                     })),

@@ -41,23 +41,7 @@ class _ChatViewScreenState extends State<ChatViewScreen> {
         GenericAppBar(
           appBarTitle: widget.listName,
           actions: [
-            GestureDetector(
-              onTap: () async {
-                final dynamicLinkParams = DynamicLinkParameters(
-                  link: Uri.parse(
-                      "https://www.google.com/add_user/${widget.listName}/${widget.listId}"), //TODO: listName has white space and that won't reflect well in using the link later
-                  uriPrefix: "https://swaav.page.link",
-                  androidParameters:
-                      const AndroidParameters(packageName: "com.example.swaav"),
-                  // iosParameters: const IOSParameters(bundleId: "com.example.app.ios"),
-                );
-                final dynamicLink = await FirebaseDynamicLinks.instance
-                    .buildShortLink(dynamicLinkParams);
-                print(dynamicLink.shortUrl.toString());
-                Share.share(dynamicLink.shortUrl.toString());
-              },
-              child: SvgPicture.asset(shareIcon),
-            ),
+
             SizedBox(
               width: 20.w,
             ),

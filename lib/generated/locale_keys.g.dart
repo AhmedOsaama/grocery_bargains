@@ -83,5 +83,7 @@ abstract class  LocaleKeys {
   static const bakery = 'bakery';
   static const bananas = 'bananas';
   static const seeAll = 'seeAll';
+  static const chooseList = 'chooseList';
+  static const createNewList = 'createNewList';
 
 }

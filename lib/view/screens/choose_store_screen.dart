@@ -22,15 +22,15 @@ class _ChooseStoreScreenState extends State<ChooseStoreScreen> {
   var stores = [
     {
      "name" :"Albert Heinz",
-      "image" : brand,
+      "image" : albert,
       "isComingSoon": false,
     },{
-     "name" :"Albert Heinz",
-      "image" : brand,
+     "name" :"Jumbo",
+      "image" : jumbo,
       "isComingSoon": false,
     },{
-     "name" :"Albert Heinz",
-      "image" : brand,
+     "name" :"Spar1",
+      "image" : spar,
       "isComingSoon": true,
     },
   ];

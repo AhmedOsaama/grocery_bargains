@@ -1,12 +1,17 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swaav/generated/locale_keys.g.dart';
+import 'package:swaav/providers/products_provider.dart';
+import 'package:swaav/services/network_services.dart';
 import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/style_utils.dart';
 import 'package:swaav/view/components/generic_field.dart';
@@ -33,16 +38,24 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
-
+  late Future<int> getAllProductsFuture;
+  List allProducts = [];
   @override
   void initState() {
+    super.initState();
     getUserDataFuture = FirebaseFirestore.instance
         .collection('/users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
     DynamicLinkService().listenToDynamicLinks(
         context); //case 2 the app is open but in background and opened again via deep link
-    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    getAllProductsFuture =
+        Provider.of<ProductsProvider>(context, listen: false).getAllProducts();
+    super.didChangeDependencies();
   }
 
   @override
@@ -69,9 +82,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: CircularProgressIndicator());
                         }
                         return Text(
-                          'Hello, ' + snapshot.data!['username'],
                           style: TextStylesDMSans.textViewBold22
                               .copyWith(color: prussian),
+                          'Hello, ' + snapshot.data!['username'],
                         );
                       }),
                   FutureBuilder(
@@ -89,33 +102,33 @@ class _HomeScreenState extends State<HomeScreen> {
                               )
                             : SvgPicture.asset(personIcon);
                       }),
-                  GenericButton(
-                      onPressed: () async {
-                        var pref = await SharedPreferences.getInstance();
-                        pref.setBool("rememberMe", false);
-                        var isGoogleSignedIn =
-                            await Provider.of<GoogleSignInProvider>(context,
-                                    listen: false)
-                                .googleSignIn
-                                .isSignedIn();
-                        if (isGoogleSignedIn) {
-                          await Provider.of<GoogleSignInProvider>(context,
-                                  listen: false)
-                              .logout();
-                        } else {
-                          FirebaseAuth.instance.signOut();
-                        }
-                        AppNavigator.pushReplacement(
-                            context: context, screen: RegisterScreen());
-                        print("SIGNED OUT...................");
-                      },
-                      borderRadius: BorderRadius.circular(10),
-                      height: 31.h,
-                      width: 100.w,
-                      child: Text(
-                        "Log out",
-                        style: TextStyles.textViewBold12,
-                      )),
+                  // GenericButton(
+                  //     onPressed: () async {
+                  //       var pref = await SharedPreferences.getInstance();
+                  //       pref.setBool("rememberMe", false);
+                  //       var isGoogleSignedIn =
+                  //           await Provider.of<GoogleSignInProvider>(context,
+                  //                   listen: false)
+                  //               .googleSignIn
+                  //               .isSignedIn();
+                  //       if (isGoogleSignedIn) {
+                  //         await Provider.of<GoogleSignInProvider>(context,
+                  //                 listen: false)
+                  //             .logout();
+                  //       } else {
+                  //         FirebaseAuth.instance.signOut();
+                  //       }
+                  //       AppNavigator.pushReplacement(
+                  //           context: context, screen: RegisterScreen());
+                  //       print("SIGNED OUT...................");
+                  //     },
+                  //     borderRadius: BorderRadius.circular(10),
+                  //     height: 31.h,
+                  //     width: 100.w,
+                  //     child: Text(
+                  //       "Log out",
+                  //       style: TextStyles.textViewBold12,
+                  //     )),
                 ],
               ),
               SizedBox(
@@ -167,47 +180,47 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              SizedBox(
-                height: 30.h,
-              ),
-              Text(
-                LocaleKeys.recentSearches.tr(),
-                style:
-                    TextStylesDMSans.textViewBold16.copyWith(color: prussian),
-              ),
-              SizedBox(
-                height: 10.h,
-              ),
-              Container(
-                height: 260.h,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    ProductItemWidget(
-                      price: "8.00",
-                      fullPrice: "1.55",
-                      name: "Fresh Peach",
-                      description: "dozen",
-                      imagePath: peach,
-                      onTap: () {},
-                    ),
-                    ProductItemWidget(
-                        onTap: (){},
-                        price: "8.00",
-                        fullPrice: "1.55",
-                        name: "Fresh Peach",
-                        description: "dozen",
-                        imagePath: peach),
-                    ProductItemWidget(
-                        onTap: (){},
-                        price: "8.00",
-                        fullPrice: "1.55",
-                        name: "Fresh Peach",
-                        description: "dozen",
-                        imagePath: peach),
-                  ],
-                ),
-              ),
+              // SizedBox(
+              //   height: 30.h,
+              // ),
+              // Text(
+              //   LocaleKeys.recentSearches.tr(),
+              //   style:
+              //       TextStylesDMSans.textViewBold16.copyWith(color: prussian),
+              // ),
+              // SizedBox(
+              //   height: 10.h,
+              // ),
+              // Container(
+              //   height: 260.h,
+              //   child: ListView(
+              //     scrollDirection: Axis.horizontal,
+              //     children: [
+              //       ProductItemWidget(
+              //         price: "8.00",
+              //         fullPrice: "1.55",
+              //         name: "Fresh Peach",
+              //         description: "dozen",
+              //         imagePath: peach,
+              //         onTap: () {},
+              //       ),
+              //       ProductItemWidget(
+              //           onTap: () {},
+              //           price: "8.00",
+              //           fullPrice: "1.55",
+              //           name: "Fresh Peach",
+              //           description: "dozen",
+              //           imagePath: peach),
+              //       ProductItemWidget(
+              //           onTap: () {},
+              //           price: "8.00",
+              //           fullPrice: "1.55",
+              //           name: "Fresh Peach",
+              //           description: "dozen",
+              //           imagePath: peach),
+              //     ],
+              //   ),
+              // ),
               SizedBox(
                 height: 30.h,
               ),
@@ -221,31 +234,56 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Container(
                 height: 250.h,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    DiscountItem(
-                        name: "Avocado",
-                        priceBefore: "7.00",
-                        priceAfter: "4.00",
-                        measurement: "2.0 lbs"),
-                    DiscountItem(
-                        name: "Pinapple",
-                        priceBefore: "7.00",
-                        priceAfter: "4.00",
-                        measurement: "2.0 lbs"),
-                    DiscountItem(
-                        name: "Black grape",
-                        priceBefore: "7.00",
-                        priceAfter: "4.00",
-                        measurement: "2.0 lbs"),
-                    DiscountItem(
-                        name: "Black grape",
-                        priceBefore: "7.00",
-                        priceAfter: "4.00",
-                        measurement: "2.0 lbs"),
-                  ],
-                ),
+                child: FutureBuilder<int>(
+                    future: getAllProductsFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      }
+                      if (snapshot.data != 200) {
+                        return const Center(
+                          child: Text(
+                              "Something went wrong. Please try again later"),
+                        );
+                      }
+                      allProducts =
+                          Provider.of<ProductsProvider>(context, listen: false)
+                              .allProducts;
+                      print("\n RESPONSE: ${allProducts.length}");
+                      return ListView.builder(
+                        itemCount: allProducts.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (ctx, i) {
+                          var productName = allProducts[i]['Name'];
+                          var imageURL = allProducts[i]['Image_url'];
+                          var storeName = allProducts[i]['Store'];
+                          var description = allProducts[i]['Description'];
+                          var price = allProducts[i]['Current_price'];
+                          var size = allProducts[i]['Size'];
+                          return GestureDetector(
+                            onTap: () => AppNavigator.push(
+                                context: context,
+                                screen: ProductDetailScreen(
+                                  storeName: storeName,
+                                  productName: productName,
+                                  imageURL: imageURL,
+                                  description: description,
+                                  price: price,
+                                  size: size,
+                                )),
+                            child: DiscountItem(
+                                name: allProducts[i]['Name'],
+                                imageURL: allProducts[i]['Image_url'],
+                                priceBefore: allProducts[i]['Old_price'],
+                                priceAfter:
+                                    allProducts[i]['Current_price'].toString(),
+                                measurement: allProducts[i]['Size']),
+                          );
+                        },
+                      );
+                    }),
               ),
             ],
           ),
@@ -260,8 +298,12 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class MySearchDelegate extends SearchDelegate {
-  List<String> searchResults = ["Rice", "Bread", "Biscuits", "Milk"];
-
+  List<String> searchResults = [
+    "Rice",
+    "Bread",
+    "Biscuits",
+    "Milk"
+  ]; //TODO: get suggestions from stored user searches
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
@@ -290,20 +332,42 @@ class MySearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
+    List allProducts =
+        Provider.of<ProductsProvider>(context, listen: false).allProducts;
+    print(allProducts.length);
+    var searchResults = allProducts
+        .where((product) => product['Name'].toString().contains(query))
+        .toList();
+    if(searchResults.isEmpty) return const Center(child: Text("No matches found :("),);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: ListView(
-        children: [
-          GestureDetector(
-              onTap: () {
-                AppNavigator.push(
-                    context: context, screen: ProductDetailScreen());
-              },
-              child: SearchItem()),
-          SearchItem(),
-          SearchItem(),
-          SearchItem(),
-        ],
+      child: ListView.builder(
+        itemCount: searchResults.length,
+        itemBuilder: (ctx, i) {
+          var productName = searchResults[i]['Name'];
+          var imageURL = searchResults[i]['Image_url'];
+          var storeName = searchResults[i]['Store'];
+          var description = searchResults[i]['Description'];
+          var price = searchResults[i]['Current_price'];
+          var size = searchResults[i]['Size'];
+          return GestureDetector(
+            onTap: () => AppNavigator.push(
+                context: context,
+                screen: ProductDetailScreen(
+                  storeName: storeName,
+                  productName: productName,
+                  imageURL: imageURL,
+                  description: description, price: price, size: size,
+                )),
+            child: SearchItem(
+              name: searchResults[i]['Name'],
+              imageURL: searchResults[i]['Image_url'],
+              currentPrice: searchResults[i]['Current_price'].toString(),
+              size: searchResults[i]['Size'],
+              store: searchResults[i]['Store'],
+            ),
+          );
+        },
       ),
     );
   }
@@ -329,7 +393,7 @@ class MySearchDelegate extends SearchDelegate {
           ),
           Expanded(
             child: ListView.separated(
-                separatorBuilder: (ctx, i) => Divider(),
+                separatorBuilder: (ctx, i) => const Divider(),
                 itemCount: suggestions.length,
                 itemBuilder: (ctx, i) {
                   final suggestion = suggestions[i];

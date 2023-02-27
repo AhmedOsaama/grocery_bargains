@@ -90,5 +90,8 @@
   "pets"                   : "Pets",
   "bakery"                   : "Bakery",
   "bananas"                   : "Bananas",
-  "seeAll"                   : "See all"
+  "seeAll"                   : "See all",
+
+  "chooseList"                 : "Choose a list",
+  "createNewList"                 : "Create a new list"
 }

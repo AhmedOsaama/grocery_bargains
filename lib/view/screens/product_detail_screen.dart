@@ -1,20 +1,38 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:swaav/config/routes/app_navigator.dart';
+import 'package:swaav/generated/locale_keys.g.dart';
 import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/assets_manager.dart';
+import 'package:swaav/utils/icons_manager.dart';
 import 'package:swaav/utils/style_utils.dart';
+import 'package:swaav/view/components/button.dart';
 import 'package:swaav/view/components/plus_button.dart';
+import 'package:swaav/view/screens/choose_store_screen.dart';
+import 'package:swaav/view/widgets/choose_list_dialog.dart';
 import 'package:swaav/view/widgets/price_comparison_item.dart';
 
+import '../../models/list_item.dart';
+
 class ProductDetailScreen extends StatefulWidget {
-  const ProductDetailScreen({Key? key}) : super(key: key);
+  final String storeName;
+  final String productName;
+  final String imageURL;
+  final String description;
+  final double price;
+  final String size;
+  const ProductDetailScreen({Key? key, required this.storeName, required this.productName, required this.imageURL, required this.description, required this.price, required this.size}) : super(key: key);
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  final productImages = [milk, peach, brand];
+  final productImages = [milk, peach, spar];
   final productSizes = ["285 ml", "250 ml", '211 ml'];
   bool isLoading = false;
   final comparisonItems = [
@@ -26,6 +44,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   var selectedIndex = 0;
   var selectedSizeIndex = 0;
 
+  int quantity = 1;
+
   Future fetch() async {
     setState(() {
       comparisonItems.addAll([
@@ -36,6 +56,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ]);
     });
   }
+
+  List<Map> allLists = [];
+
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +72,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               SizedBox(
                 height: 100.h,
               ),
-              Text("Albert Heinz "),
-              Text("Semi-skimmed milk"),
+              Text(
+                widget.storeName,
+                style: TextStyles.textViewMedium30.copyWith(color: prussian),
+              ),
+              Text(
+                widget.productName,
+                style: TextStyles.textViewLight15,
+              ),
               Row(
                 children: [
                   Column(
@@ -85,7 +114,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       height: 214.h,
                       width: 214.w,
                       child:
-                          Image.asset(productImages.elementAt(selectedIndex))),
+                          // Image.asset(productImages.elementAt(selectedIndex))
+                          Image.network(widget.imageURL,width: 214.w,height: 214.h,)
+                  ),
                 ],
               ),
               SizedBox(
@@ -94,7 +125,46 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  addToListButton,
+                  Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () async {
+                          await getAllLists();
+                          showDialog(
+                              context: context,
+                              builder: (ctx) => ChooseListDialog(allLists: allLists,item:  ListItem(
+                                  name: widget.productName,
+                                  price: widget.price,
+                                  isChecked: false,
+                                  quantity: quantity,
+                                  imageURL: widget.imageURL,
+                                  description: widget.size),));
+                        },
+                        child: Container(
+                          padding: EdgeInsets.all(21),
+                          margin: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            color: Color.fromRGBO(135, 208, 192, 0.5),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: SvgPicture.asset(
+                            plusIcon,
+                            width: 18,
+                            height: 18,
+                            color: prussian,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Text(
+                        "Add to list",
+                        style: TextStyles.textViewMedium12
+                            .copyWith(color: prussian),
+                      )
+                    ],
+                  ),
                   shareButton,
                   priceAlertButton,
                 ],
@@ -114,18 +184,28 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     child: Row(
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            if(quantity > 0) {
+                              setState(() {
+                              quantity--;
+                            });
+                            }
+                          },
                           icon: Icon(Icons.remove),
                           color: verdigris,
                         ),
                         VerticalDivider(),
                         Text(
-                          "3",
+                          quantity.toString(),
                           style: TextStyles.textViewMedium18,
                         ),
                         VerticalDivider(),
                         IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              setState(() {
+                                ++quantity;
+                              });
+                            },
                             icon: Icon(Icons.add),
                             color: verdigris),
                       ],
@@ -186,6 +266,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                         Icon(
                                           Icons.keyboard_arrow_down,
                                           size: 18,
+                                          color: Colors.grey,
                                         ),
                                       ],
                                     ),
@@ -199,9 +280,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
               SizedBox(
                 height: 10.h,
-              ),
-              SizedBox(
-                height: 20.h,
               ),
               Container(
                 padding: EdgeInsets.all(15),
@@ -293,12 +371,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     );
                   }).toList()),
+              Divider(),
               SizedBox(
                 height: 20.h,
               ),
-              Text("Description", style: TextStyles.textViewSemiBold18),
-              const Text(
-                  "Et quidem facing, ut summum bonum sit extremum et rationibus conquisitis de voluptate. Sed ut summum bonum sit id,")
+              Text("Description", style: TextStyles.textViewSemiBold18.copyWith(color: prussian)),
+              SizedBox(height: 10.h,),
+              Text(widget.description,style: TextStyles.textViewMedium14.copyWith(color: Color.fromRGBO(134, 136, 137, 1)),),
+            SizedBox(height: 20.h,)
             ],
           ),
         ),
@@ -306,29 +386,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  var addToListButton = Column(
-    children: [
-      Container(
-        width: 60,
-        height: 60,
-        margin: EdgeInsets.symmetric(horizontal: 10),
-        decoration: BoxDecoration(
-          color: Color.fromRGBO(135, 208, 192, 0.5),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Icon(
-          Icons.add_box_outlined,
-        ),
-      ),
-      SizedBox(
-        height: 10.h,
-      ),
-      Text(
-        "Add to list",
-        style: TextStyles.textViewMedium12.copyWith(color: prussian),
-      )
-    ],
-  );
+  Future<void> getAllLists() async {
+    var allListsSnapshot =
+        await FirebaseFirestore.instance.collection('/lists').where("userIds", arrayContains: FirebaseAuth.instance.currentUser?.uid)
+            .get();
+      allLists.clear();
+    for (var list in allListsSnapshot.docs) {
+      allLists.add({
+        "list_name": list['list_name'],
+        'list_id': list.id,
+      });
+    }
+  }
+
   var shareButton = Column(
     children: [
       Container(
