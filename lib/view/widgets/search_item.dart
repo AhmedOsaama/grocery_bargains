@@ -20,7 +20,7 @@ class SearchItem extends StatelessWidget {
     return Container(
       height: 130,
       margin: EdgeInsets.symmetric(vertical: 8),
-      padding: EdgeInsets.all(13),
+      padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
@@ -60,18 +60,20 @@ class SearchItem extends StatelessWidget {
               imageURL,
             width: 80.w,height: 80.h,
           ),
+          SizedBox(width: 5.w,),
           Expanded(
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name,style: TextStyles.textViewMedium13.copyWith(color: gunmetal),),
+                Text(name,style: TextStyles.textViewMedium13.copyWith(color: gunmetal),maxLines: 2,),
                 SizedBox(height: 10.h,),
                 Image.asset(Provider.of<ProductsProvider>(context,listen: false).getImage(store),height: 25.h,),
-                SizedBox(height: 15.h,),
+                SizedBox(height: 10.h,),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(size,style: TextStyles.textViewLight12.copyWith(color: gunmetal),),
+                    Text(size,style: TextStyles.textViewLight10.copyWith(color: gunmetal),),
                     Text("€$currentPrice",style: TextStyles.textViewBold20.copyWith(color: verdigris),),
                   ],
                 ),

@@ -2,12 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:swaav/generated/locale_keys.g.dart';
 import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/assets_manager.dart';
 import 'package:swaav/utils/icons_manager.dart';
+import 'package:swaav/utils/media_query_values.dart';
 import 'package:swaav/utils/style_utils.dart';
 import 'package:swaav/view/components/button.dart';
 import 'package:swaav/view/components/generic_menu.dart';
@@ -45,15 +48,14 @@ class _ListsScreenState extends State<ListsScreen> {
 
   void updateList() async {
     print("RUN UPDATE LIST");
-    setState((){
-    getAllListsFuture = FirebaseFirestore.instance
-        .collection('/lists')
-        .where("userIds", arrayContains: FirebaseAuth.instance.currentUser?.uid)
-        .get();
+    setState(() {
+      getAllListsFuture = FirebaseFirestore.instance
+          .collection('/lists')
+          .where("userIds",
+              arrayContains: FirebaseAuth.instance.currentUser?.uid)
+          .get();
     });
   }
-
-
 
   bool isAdding = false;
   @override
@@ -63,6 +65,7 @@ class _ListsScreenState extends State<ListsScreen> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
               height: 91.h,
@@ -83,63 +86,58 @@ class _ListsScreenState extends State<ListsScreen> {
               height: 20.h,
             ),
             Expanded(
-                child: FutureBuilder(
-                    future: getAllListsFuture,
-                    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      var allLists = snapshot.data?.docs ?? [];
-                      if (!snapshot.hasData || allLists.isEmpty) {
-                        return Column(
-                          children: [
-                            SizedBox(
-                              height: 40.h,
-                            ),
-                            Text(
-                              LocaleKeys.createYourFirstList.tr(),
-                              style: TextStyles.textViewMedium23.copyWith(
-                                  color: Colors.grey.withOpacity(0.7)),
-                            ),
-                            SizedBox(
-                              height: 20.h,
-                            ),
-                            SvgPicture.asset(noLists),
-                          ],
-                        );
-                      }
-                      return GridView.builder(
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  mainAxisSpacing: 24.h,
-                                  crossAxisSpacing: 10.w,
-                                  childAspectRatio: 2 / 3),
-                          itemCount: allLists.length,
-                          itemBuilder: (ctx, i) {
-                            getListItemsFuture = FirebaseFirestore.instance
-                                .collection('/lists/${allLists[i].id}/items')
-                                .get();
-                                  return GestureDetector(
-                                    onTap: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (ctx) => ListViewScreen(
+              child: FutureBuilder(
+                  future: getAllListsFuture,
+                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    var allLists = snapshot.data?.docs ?? [];
+                    if (!snapshot.hasData || allLists.isEmpty) {
+                      return Column(
+                        children: [
+                          SizedBox(
+                            height: 40.h,
+                          ),
+                          Text(
+                            LocaleKeys.createYourFirstList.tr(),
+                            style: TextStyles.textViewMedium23
+                                .copyWith(color: Colors.grey.withOpacity(0.7)),
+                          ),
+                          SizedBox(
+                            height: 20.h,
+                          ),
+                          SvgPicture.asset(noLists),
+                        ],
+                      );
+                    }
+                    return SingleChildScrollView(
+                      child: StaggeredGrid.count(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 24.h,
+                          crossAxisSpacing: 10,
+                          children: allLists.map(
+                            (list) {
+                              return GestureDetector(
+                                  onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (ctx) => ListViewScreen(
                                               updateList: updateList,
-                                                storeName: allLists[i]['storeName'],
-                                                storeImage: allLists[i]
-                                                ['storeImageUrl'],
-                                                listId: allLists[i].id,
-                                                listName: allLists[i]
-                                                    ['list_name']))),
-                                    child: StoreListWidget(
-                                        listId: allLists[i].id,
-                                        storeImagePath: allLists[i]
-                                            ['storeImageUrl'],
-                                        listName: allLists[i]['list_name']));
-                          });
-                    })),
+                                              storeName: list['storeName'],
+                                              storeImage: list['storeImageUrl'],
+                                              listId: list.id,
+                                              listName: list['list_name']))),
+                                  child: StoreListWidget(
+                                      listId: list.id,
+                                      storeImagePath: list['storeImageUrl'],
+                                      listName: list['list_name']));
+                            },
+                          ).toList()),
+                    );
+                  }),
+            ),
           ],
         ),
       ),

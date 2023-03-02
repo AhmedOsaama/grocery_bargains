@@ -263,6 +263,11 @@ abstract class TextStyles {
     fontWeight: light,
     fontFamily: fontFamilyPoppins,
   );
+  static TextStyle textViewLight10 = TextStyle(
+    fontSize: 10.sp,
+    fontWeight: light,
+    fontFamily: fontFamilyPoppins,
+  );
 
   static TextStyle textViewLight8 = TextStyle(
     fontSize: 8.sp,

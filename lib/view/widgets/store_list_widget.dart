@@ -40,7 +40,7 @@ class _StoreListWidgetState extends State<StoreListWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(13),
+      padding: const EdgeInsets.all(11),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10),
@@ -75,10 +75,8 @@ class _StoreListWidgetState extends State<StoreListWidget> {
                     .copyWith(color: const Color.fromRGBO(37, 37, 37, 1)),
                 overflow: TextOverflow.ellipsis,
               ),
-              SizedBox(
-                height: 10.h,
-              ),
               ListView.builder(
+                padding: EdgeInsets.only(top: 10),
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: storeItems.length > 4 ? 4 : storeItems.length,
@@ -89,29 +87,32 @@ class _StoreListWidgetState extends State<StoreListWidget> {
                         var doc = storeItems[i];
                         if (i > 2) return const Text("...");
                         return Row(
+                          // mainAxisSize: MainAxisSize.min,
                           children: [
-                            Checkbox(
-                              value: isChecked,
-                              onChanged: (value) {
-                                setState(() {
-                                  FirebaseFirestore.instance.collection("/lists/${doc.reference.parent.parent?.id}/items").doc(doc.id).update({
-                                    "item_isChecked": !isChecked,
-                                  }).catchError((e) {
-                                    print(e);
-                                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("This operation couldn't be done please try again")));
+                            Flexible(
+                              child: Checkbox(
+                                value: isChecked,
+                                onChanged: (value) {
+                                  setState(() {
+                                    FirebaseFirestore.instance.collection("/lists/${doc.reference.parent.parent?.id}/items").doc(doc.id).update({
+                                      "item_isChecked": !isChecked,
+                                    }).catchError((e) {
+                                      print(e);
+                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("This operation couldn't be done please try again")));
+                                    });
+                                    isChecked = !isChecked;
                                   });
-
-                                  isChecked = !isChecked;
-                                });
-                              },
-                              visualDensity: VisualDensity.compact,
+                                },
+                                visualDensity: VisualDensity.compact,
+                              ),
+                              flex: 3,
                             ),
                             SizedBox(
                               width: 70.w,
                               child: Text(
                                 itemName,
                                 style:
-                                    TextStyles.textViewLight8.copyWith(color: prussian),
+                                    TextStyles.textViewLight10.copyWith(color: prussian),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),

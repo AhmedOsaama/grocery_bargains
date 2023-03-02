@@ -40,6 +40,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
   late Future<int> getAllProductsFuture;
   List allProducts = [];
+
+  var isLoading = false;
   @override
   void initState() {
     super.initState();
@@ -54,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void didChangeDependencies() {
     getAllProductsFuture =
-        Provider.of<ProductsProvider>(context, listen: false).getAllProducts();
+        Provider.of<ProductsProvider>(context, listen: false).getProducts(0);
     super.didChangeDependencies();
   }
 
@@ -136,8 +138,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               GenericField(
                 isFilled: true,
-                onTap: () =>
-                    showSearch(context: context, delegate: MySearchDelegate()),
+                onTap: () async {
+                  SharedPreferences pref = await SharedPreferences.getInstance();
+                  return showSearch(context: context, delegate: MySearchDelegate(pref));
+                },
                 prefixIcon: Icon(Icons.search),
                 borderRaduis: 999,
                 hintText: LocaleKeys.whatAreYouLookingFor.tr(),
@@ -253,9 +257,59 @@ class _HomeScreenState extends State<HomeScreen> {
                               .allProducts;
                       print("\n RESPONSE: ${allProducts.length}");
                       return ListView.builder(
-                        itemCount: allProducts.length,
+                        itemCount: allProducts.length + 1,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (ctx, i) {
+                          if(i >= allProducts.length){
+                            var productId = allProducts[i-1]['id'];
+                            return Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 32),
+                              child: isLoading
+                                  ? Center(
+                                  child: CircularProgressIndicator(
+                                    color: verdigris,
+                                  ))
+                                  : Center(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: InkWell(
+                                    onTap: () async {
+                                      setState(() {
+                                        isLoading = true;
+                                      });
+                                      print(productId);
+                                      await fetch(productId+1);
+                                      setState(() {
+                                        isLoading = false;
+                                      });
+                                    },
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(5),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            "See more",
+                                            style: TextStyles.textViewMedium10
+                                                .copyWith(color: prussian),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_forward_ios,
+                                            size: 18,
+                                            color: Colors.grey,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
                           var productName = allProducts[i]['Name'];
                           var imageURL = allProducts[i]['Image_url'];
                           var storeName = allProducts[i]['Store'];
@@ -291,19 +345,17 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-//product Item
 
-//discount item
-
+  Future fetch(int startingIndex) {
+    return Provider.of<ProductsProvider>(context,listen: false).getProducts(startingIndex);
+  }
 }
 
 class MySearchDelegate extends SearchDelegate {
-  List<String> searchResults = [
-    "Rice",
-    "Bread",
-    "Biscuits",
-    "Milk"
-  ]; //TODO: get suggestions from stored user searches
+  final SharedPreferences pref;
+
+  MySearchDelegate(this.pref);
+
   @override
   List<Widget>? buildActions(BuildContext context) {
     return [
@@ -327,53 +379,73 @@ class MySearchDelegate extends SearchDelegate {
   @override
   Widget? buildLeading(BuildContext context) {
     return IconButton(
-        onPressed: () => close(context, null), icon: Icon(Icons.arrow_back));
+        onPressed: () {
+          FocusScope.of(context).unfocus();
+          close(context, null);
+        }, icon: Icon(Icons.arrow_back));
   }
 
   @override
   Widget buildResults(BuildContext context) {
-    List allProducts =
-        Provider.of<ProductsProvider>(context, listen: false).allProducts;
-    print(allProducts.length);
-    var searchResults = allProducts
-        .where((product) => product['Name'].toString().contains(query))
-        .toList();
-    if(searchResults.isEmpty) return const Center(child: Text("No matches found :("),);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: ListView.builder(
-        itemCount: searchResults.length,
-        itemBuilder: (ctx, i) {
-          var productName = searchResults[i]['Name'];
-          var imageURL = searchResults[i]['Image_url'];
-          var storeName = searchResults[i]['Store'];
-          var description = searchResults[i]['Description'];
-          var price = searchResults[i]['Current_price'];
-          var size = searchResults[i]['Size'];
-          return GestureDetector(
-            onTap: () => AppNavigator.push(
-                context: context,
-                screen: ProductDetailScreen(
-                  storeName: storeName,
-                  productName: productName,
-                  imageURL: imageURL,
-                  description: description, price: price, size: size,
-                )),
-            child: SearchItem(
-              name: searchResults[i]['Name'],
-              imageURL: searchResults[i]['Image_url'],
-              currentPrice: searchResults[i]['Current_price'].toString(),
-              size: searchResults[i]['Size'],
-              store: searchResults[i]['Store'],
-            ),
-          );
-        },
-      ),
+   if(query.isNotEmpty) saveRecentSearches();
+    // List allProducts =
+    //     Provider.of<ProductsProvider>(context, listen: false).allProducts;
+    // var searchResults = allProducts
+    //     .where((product) => product['Name'].toString().contains(query))
+    //     .toList();
+    return FutureBuilder<Response>(
+      future: NetworkServices.searchProducts(query),
+      builder: (context, snapshot) {
+        if(snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(),);
+        if(snapshot.data?.statusCode != 200) return const Center(child: Text("Something went wrong please try again"),);
+        var searchResults = jsonDecode(snapshot.data?.body as String);
+        if(searchResults.isEmpty) return const Center(child: Text("No matches found :("),);
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: ListView.builder(
+            itemCount: searchResults.length,
+            itemBuilder: (ctx, i) {
+              var productName = searchResults[i]['Name'];
+              var imageURL = searchResults[i]['Image_url'];
+              var storeName = searchResults[i]['Store'];
+              var description = searchResults[i]['Description'];
+              var price = searchResults[i]['Current_price'];
+              var size = searchResults[i]['Size'];
+              return GestureDetector(
+                onTap: () => AppNavigator.push(
+                    context: context,
+                    screen: ProductDetailScreen(
+                      storeName: storeName,
+                      productName: productName,
+                      imageURL: imageURL,
+                      description: description, price: price, size: size,
+                    )),
+                child: SearchItem(
+                  name: searchResults[i]['Name'],
+                  imageURL: searchResults[i]['Image_url'],
+                  currentPrice: searchResults[i]['Current_price'].toString(),
+                  size: searchResults[i]['Size'],
+                  store: searchResults[i]['Store'],
+                ),
+              );
+            },
+          ),
+        );
+      }
     );
+  }
+
+  void saveRecentSearches() {
+    var recentSearches = pref.getStringList('recentSearches') ?? [];
+    if(recentSearches.contains(query)) return;
+    recentSearches.add(query);
+    pref.setStringList('recentSearches', recentSearches);
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
+    List<String> searchResults = pref.getStringList('recentSearches') ?? [];
+
     List<String> suggestions = searchResults.where((searchResult) {
       final result = searchResult.toLowerCase();
       final input = query.toLowerCase();

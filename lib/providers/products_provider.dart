@@ -15,6 +15,19 @@ class ProductsProvider with ChangeNotifier{
     return response.statusCode;
   }
 
+  Future<int> getProducts(int startingIndex) async {
+    if(startingIndex == 0) allProducts.clear();
+    var response = await NetworkServices.getProducts(startingIndex);
+    allProducts.addAll(jsonDecode(response.body));
+    print("Total number of products: ${allProducts.length}");
+    notifyListeners();
+    return response.statusCode;
+  }
+
+  // Future<void> searchProducts(String searchTerm) async {
+  //   var response = await NetworkServices.searchProducts(searchTerm);
+  // }
+
   String getImage(String storeName) {
     if(storeName == 'Albert Heijn') return albert;
     if(storeName == 'Jumbo') return jumbo;

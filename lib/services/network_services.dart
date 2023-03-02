@@ -7,7 +7,6 @@ class NetworkServices {
         'https://europe-west1-discountly.cloudfunctions.net/function-1');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json'});
-    final responseBody = response.body;
     // var decodedResponse = jsonDecode(responseBody);
     // print('SQL Response: $decodedResponse');
     // print('SQL status: ${response.statusCode}');
@@ -21,4 +20,22 @@ class NetworkServices {
     // }
     return response;
   }
+
+  static Future<http.Response> getProducts(int startingIndex) async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/function-2?startingIndex=$startingIndex');
+    var response = await http.get(
+        url, headers: {'Content-Type': 'application/json',});
+    return response;
+  }
+
+  static Future<http.Response> searchProducts(String searchTerm) async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/function-3?search=$searchTerm');
+    var response = await http.get(
+        url, headers: {'Content-Type': 'application/json',});
+    return response;
+  }
+
+
 }

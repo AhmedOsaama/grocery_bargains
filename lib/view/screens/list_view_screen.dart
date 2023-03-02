@@ -176,7 +176,7 @@ class _ListViewScreenState extends State<ListViewScreen> {
                   Row(
                     children: [
                       widget.storeImage != null
-                          ? Image.asset(widget.storeImage!)
+                          ? Image.asset(widget.storeImage!,width: 45,)
                           : Container(),
                       SizedBox(
                         width: 10.w,
@@ -203,7 +203,7 @@ class _ListViewScreenState extends State<ListViewScreen> {
                                 color: verdigris,
                               ));
                             }
-                            return Expanded(
+                            return Flexible(
                               child: snapshot.data ??
                                   const Text("Something went wrong"),
                             );
@@ -297,6 +297,7 @@ class _ListViewScreenState extends State<ListViewScreen> {
                         itemBuilder: (ctx, i) {
                           var isChecked = items[i]['item_isChecked'];
                           var itemName = items[i]['item_name'];
+                          var itemImage = items[i]['item_image'];
                           var itemDescription = items[i]['item_description'];
                           var itemPrice = items[i]['item_price'];
                           var doc = items[i];
@@ -330,8 +331,8 @@ class _ListViewScreenState extends State<ListViewScreen> {
                                           updateList();
                                         },
                                       ),
-                                      Image.asset(
-                                        milk,
+                                      Image.network(
+                                        itemImage,
                                         width: 55,
                                         height: 55,
                                       ),

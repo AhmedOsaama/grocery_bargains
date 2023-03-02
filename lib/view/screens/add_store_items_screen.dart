@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swaav/generated/locale_keys.g.dart';
 import 'package:swaav/models/product.dart';
 import 'package:swaav/utils/assets_manager.dart';
@@ -190,8 +191,10 @@ class _AddStoreItemsScreenState extends State<AddStoreItemsScreen> {
               ),                          //TODO: add this inside listview as the last item like see more
               GenericField(
                 isFilled: true,
-                onTap: () =>
-                    showSearch(context: context, delegate: MySearchDelegate()),
+                onTap: () async {
+                  SharedPreferences pref = await SharedPreferences.getInstance();
+                  return showSearch(context: context, delegate: MySearchDelegate(pref));
+                },
                 prefixIcon: Icon(Icons.search),
                 borderRaduis: 999,
                 hintText: LocaleKeys.whatAreYouLookingFor.tr(),
