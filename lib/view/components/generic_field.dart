@@ -27,6 +27,7 @@ class GenericField extends StatefulWidget {
   final bool isSearchField;
   final Color colorStyle;
   final double borderRaduis;
+  final BoxShadow? boxShadow;
 
   GenericField({
     super.key,
@@ -47,7 +48,7 @@ class GenericField extends StatefulWidget {
     this.maxLines = 1,
     this.colorStyle = lightGrey,
     this.borderRaduis = 10,
-    this.obscureText = false, this.onChanged, this.hintStyle, this.isSearchField = false, this.onTap,
+    this.obscureText = false, this.onChanged, this.hintStyle, this.isSearchField = false, this.onTap, this.boxShadow,
   });
 
   @override
@@ -61,8 +62,9 @@ class _GenericFieldState extends State<GenericField> {
       decoration: BoxDecoration(
         border: Border.all(color: widget.colorStyle),
         borderRadius: BorderRadius.circular(widget.borderRaduis),
-        boxShadow: const [
-          BoxShadow(
+        boxShadow:  [
+          widget.boxShadow ??
+          const BoxShadow(
             blurRadius: 62,
             offset: Offset(0,4),
             color: Color.fromRGBO(153, 171, 198, 0.18)

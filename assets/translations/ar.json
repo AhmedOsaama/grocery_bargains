@@ -93,5 +93,22 @@
   "seeAll"                   : "See all",
 
   "chooseList"                 : "Choose a list",
-  "createNewList"                 : "Create a new list"
+  "createNewList"                 : "Create a new list",
+
+  "profile"                     : "Profile",
+  "edit"                        : "Edit",
+  "settings"                     : "Settings",
+  "support"                     : "Support",
+  "signout"                     : "Sign out",
+  "chatlist"                    : "ChatList",
+  "chatlists"                    : "ChatLists",
+  "subscription"                  : "Subscription",
+  "freePlan"                      : "Free plan",
+  "language"                      : "Language",
+  "english"                       : "English",
+  "dutch"                       : "Dutch",
+  "deleteMyAccount"                       : "DELETE MY ACCOUNT",
+  "save"                                : "Save",
+  "yourName"                      : "Your name",
+  "yourMessage"                   : "Your message"
 }

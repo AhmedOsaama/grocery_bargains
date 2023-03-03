@@ -192,6 +192,11 @@ abstract class TextStyles {
     fontWeight: medium,
     fontFamily: fontFamilyPoppins,
   );
+  static TextStyle textViewSemiBold24 = TextStyle(
+    fontSize: 24.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: fontFamilyPoppins,
+  );
 
   static TextStyle textViewMedium15Underline = TextStyle(
       fontSize: 15.sp,
@@ -492,13 +497,23 @@ abstract class TextStylesDMSans {
   );
   static TextStyle textViewSemiBold14 = TextStyle(
     fontSize: 14.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: fontFamilyDMSans,
+  );
+  static TextStyle textViewBold14 = TextStyle(
+    fontSize: 14.sp,
     fontWeight: FontWeight.w700,
     fontFamily: fontFamilyDMSans,
   );
 
   static TextStyle textViewSemiBold16 = TextStyle(
     fontSize: 16.sp,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w600,
+    fontFamily: fontFamilyDMSans,
+  );
+  static TextStyle textViewSemiBold24 = TextStyle(
+    fontSize: 24.sp,
+    fontWeight: FontWeight.w600,
     fontFamily: fontFamilyDMSans,
   );
 

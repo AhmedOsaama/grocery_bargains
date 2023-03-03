@@ -18,3 +18,5 @@ const String shareIcon = "$imgPath/share.svg";
 const String personIcon = "$imgPath/person.svg";
 const String listViewIcon = "$imgPath/list_view.svg";
 const String google2 = "$imgPath/google2.jpg";
+const String beeBlack = "$imgPath/beeBlack.svg";
+const String masterCard = "$imgPath/masterCard.svg";

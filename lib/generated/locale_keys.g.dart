@@ -85,5 +85,21 @@ abstract class  LocaleKeys {
   static const seeAll = 'seeAll';
   static const chooseList = 'chooseList';
   static const createNewList = 'createNewList';
+  static const profile = 'profile';
+  static const edit = 'edit';
+  static const settings = 'settings';
+  static const support = 'support';
+  static const signout = 'signout';
+  static const chatlist = 'chatlist';
+  static const chatlists = 'chatlists';
+  static const subscription = 'subscription';
+  static const freePlan = 'freePlan';
+  static const language = 'language';
+  static const english = 'english';
+  static const dutch = 'dutch';
+  static const deleteMyAccount = 'deleteMyAccount';
+  static const save = 'save';
+  static const yourName = 'yourName';
+  static const yourMessage = 'yourMessage';
 
 }
