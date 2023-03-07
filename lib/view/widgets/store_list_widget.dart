@@ -61,12 +61,12 @@ class _StoreListWidgetState extends State<StoreListWidget> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  widget.userImages != null ? SvgPicture.asset(widget.userImages!) : Container(),
                   Image.asset(
                     widget.storeImagePath,
                     width: 30,
                     height: 30,
                   ),
-                  widget.userImages != null ? SvgPicture.asset(widget.userImages!) : Container(),
                 ],
               ),
               Text(
@@ -76,7 +76,7 @@ class _StoreListWidgetState extends State<StoreListWidget> {
                 overflow: TextOverflow.ellipsis,
               ),
               ListView.builder(
-                padding: EdgeInsets.only(top: 10),
+                padding: const EdgeInsets.only(top: 10),
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: storeItems.length > 4 ? 4 : storeItems.length,

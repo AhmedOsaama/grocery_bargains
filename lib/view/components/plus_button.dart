@@ -17,11 +17,11 @@ class PlusButton extends StatelessWidget {
         width: 24,
         height: 24,
         decoration: BoxDecoration(
-          color: verdigris,
-            borderRadius: BorderRadius.circular(10)
+          color: yellow,
+            borderRadius: BorderRadius.circular(7)
         ),
         child: Center(
-          child: Icon(Icons.add,color: Colors.white,size: 20,),
+          child: Icon(Icons.add,color: Colors.black,size: 20,),
         ),
       ),
     );

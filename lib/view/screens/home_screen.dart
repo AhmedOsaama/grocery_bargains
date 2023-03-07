@@ -15,6 +15,9 @@ import 'package:swaav/services/network_services.dart';
 import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/style_utils.dart';
 import 'package:swaav/view/components/generic_field.dart';
+import 'package:swaav/view/screens/choose_store_screen.dart';
+import 'package:swaav/view/screens/lists_screen.dart';
+import 'package:swaav/view/screens/new_blank_list_screen.dart';
 import 'package:swaav/view/screens/product_detail_screen.dart';
 import 'package:swaav/view/screens/register_screen.dart';
 import 'package:swaav/view/widgets/category_widget.dart';
@@ -28,6 +31,8 @@ import '../../services/dynamic_link_service.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/icons_manager.dart';
 import '../components/button.dart';
+import '../widgets/store_list_widget.dart';
+import 'list_view_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -39,12 +44,19 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
   late Future<int> getAllProductsFuture;
+  late Future<QuerySnapshot> getAllListsFuture;
   List allProducts = [];
 
   var isLoading = false;
+  TextStyle textButtonStyle =
+      TextStylesInter.textViewRegular16.copyWith(color: mainPurple);
   @override
   void initState() {
     super.initState();
+    getAllListsFuture = FirebaseFirestore.instance
+        .collection('/lists')
+        .where("userIds", arrayContains: FirebaseAuth.instance.currentUser?.uid)
+        .get();
     getUserDataFuture = FirebaseFirestore.instance
         .collection('/users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -70,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 70.h,
+                height: 50.h,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,9 +96,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: CircularProgressIndicator());
                         }
                         return Text(
-                          style: TextStylesDMSans.textViewBold22
-                              .copyWith(color: prussian),
-                          'Hello, ' + snapshot.data!['username'],
+                          style: TextStylesInter.textViewSemiBold24
+                              .copyWith(color: mainPurple),
+                          '${'Hello, ' + snapshot.data!['username']}!',
                         );
                       }),
                   FutureBuilder(
@@ -139,8 +151,10 @@ class _HomeScreenState extends State<HomeScreen> {
               GenericField(
                 isFilled: true,
                 onTap: () async {
-                  SharedPreferences pref = await SharedPreferences.getInstance();
-                  return showSearch(context: context, delegate: MySearchDelegate(pref));
+                  SharedPreferences pref =
+                      await SharedPreferences.getInstance();
+                  return showSearch(
+                      context: context, delegate: MySearchDelegate(pref));
                 },
                 prefixIcon: Icon(Icons.search),
                 borderRaduis: 999,
@@ -149,40 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     TextStyles.textViewSemiBold14.copyWith(color: gunmetal),
               ),
               SizedBox(
-                height: 25.h,
-              ),
-              Container(
-                height: 100.h,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    CategoryWidget(
-                      categoryImagePath: vegetables,
-                      categoryName: LocaleKeys.vegetables.tr(),
-                      color: Colors.green,
-                    ),
-                    CategoryWidget(
-                      categoryImagePath: fruits,
-                      categoryName: LocaleKeys.fruits.tr(),
-                      color: Colors.red,
-                    ),
-                    CategoryWidget(
-                      categoryImagePath: beverages,
-                      categoryName: LocaleKeys.beverages.tr(),
-                      color: Colors.yellow,
-                    ),
-                    CategoryWidget(
-                      categoryImagePath: grocery,
-                      categoryName: LocaleKeys.grocery.tr(),
-                      color: Colors.deepPurpleAccent,
-                    ),
-                    CategoryWidget(
-                      categoryImagePath: edibleOil,
-                      categoryName: LocaleKeys.edibleOil.tr(),
-                      color: Colors.cyan,
-                    ),
-                  ],
-                ),
+                height: 15.h,
               ),
               // SizedBox(
               //   height: 30.h,
@@ -225,13 +206,78 @@ class _HomeScreenState extends State<HomeScreen> {
               //     ],
               //   ),
               // ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    LocaleKeys.chatlists.tr(),
+                    style: TextStylesInter.textViewSemiBold16
+                        .copyWith(color: black2),
+                  ),
+                  TextButton(
+                      onPressed: () => AppNavigator.push(
+                          context: context, screen: ListsScreen()),
+                      child: Text(
+                        'See all',
+                        style: textButtonStyle,
+                      ))
+                ],
+              ),
+              FutureBuilder(
+                  future: getAllListsFuture,
+                  builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    var allLists = snapshot.data?.docs ?? [];
+                    if (!snapshot.hasData || allLists.isEmpty) {
+                      return Image.asset(
+                        newChatList,
+                        // width: 358.w,
+                        // height: 154.h,
+                      );
+                    }
+                    return SizedBox(
+                      height: 260.h,
+                      child: Stack(
+                          alignment: Alignment.topCenter,
+                          children: allLists.map(
+                            (list) {
+                              return Positioned(
+                                right: allLists.indexOf(list) * 90.w,
+                              child: Container(
+                                  width: 170.w,
+                                  child: StoreListWidget(
+                                      listId: list.id,
+                                      storeImagePath: list['storeImageUrl'],
+                                      listName: list['list_name']),
+                                ),
+                              );
+                            },
+                          ).toList()),
+                    );
+                  }),
               SizedBox(
                 height: 30.h,
               ),
-              Text(
-                LocaleKeys.latestDiscounts.tr(),
-                style:
-                    TextStylesDMSans.textViewBold16.copyWith(color: prussian),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    LocaleKeys.latestBargains.tr(),
+                    style:
+                        TextStylesDMSans.textViewBold16.copyWith(color: prussian),
+                  ),
+                  TextButton(
+                      onPressed: () => AppNavigator.push(
+                          context: context, screen: ListsScreen()),
+                      child: Text(
+                        'See all',
+                        style: textButtonStyle,
+                      ))
+                ],
               ),
               SizedBox(
                 height: 10.h,
@@ -260,54 +306,59 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemCount: allProducts.length + 1,
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (ctx, i) {
-                          if(i >= allProducts.length){
-                            var productId = allProducts[i-1]['id'];
+                          if (i >= allProducts.length) {
+                            var productId = allProducts[i - 1]['id'];
                             return Padding(
                               padding: EdgeInsets.symmetric(horizontal: 32),
                               child: isLoading
                                   ? Center(
-                                  child: CircularProgressIndicator(
-                                    color: verdigris,
-                                  ))
+                                      child: CircularProgressIndicator(
+                                      color: verdigris,
+                                    ))
                                   : Center(
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.grey),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: InkWell(
-                                    onTap: () async {
-                                      setState(() {
-                                        isLoading = true;
-                                      });
-                                      print(productId);
-                                      await fetch(productId+1);
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                    },
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(5),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            "See more",
-                                            style: TextStyles.textViewMedium10
-                                                .copyWith(color: prussian),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border:
+                                              Border.all(color: Colors.grey),
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                        ),
+                                        child: InkWell(
+                                          onTap: () async {
+                                            setState(() {
+                                              isLoading = true;
+                                            });
+                                            print(productId);
+                                            await fetch(productId + 1);
+                                            setState(() {
+                                              isLoading = false;
+                                            });
+                                          },
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(5),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(
+                                                  "See more",
+                                                  style: TextStyles
+                                                      .textViewMedium10
+                                                      .copyWith(
+                                                          color: prussian),
+                                                ),
+                                                Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  size: 18,
+                                                  color: Colors.grey,
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                          Icon(
-                                            Icons.arrow_forward_ios,
-                                            size: 18,
-                                            color: Colors.grey,
-                                          ),
-                                        ],
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                              ),
                             );
                           }
                           var productName = allProducts[i]['Name'];
@@ -324,16 +375,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                   productName: productName,
                                   imageURL: imageURL,
                                   description: description,
-                                  price: price,
+                                  price: price.runtimeType == int ? price.toDouble() : price,
                                   size: size,
                                 )),
                             child: DiscountItem(
                                 name: allProducts[i]['Name'],
                                 imageURL: allProducts[i]['Image_url'],
-                                priceBefore: allProducts[i]['Old_price'],
-                                priceAfter:
+                                albertPriceBefore: allProducts[i]['Old_price'].toString().isEmpty ? null : allProducts[i]['Old_price'],
+                                albertPriceAfter:
                                     allProducts[i]['Current_price'].toString(),
-                                measurement: allProducts[i]['Size']),
+                                measurement: allProducts[i]['Size'], sparPriceAfter: '0.0', jumboPriceAfter: '0.0',),
                           );
                         },
                       );
@@ -347,7 +398,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future fetch(int startingIndex) {
-    return Provider.of<ProductsProvider>(context,listen: false).getProducts(startingIndex);
+    return Provider.of<ProductsProvider>(context, listen: false)
+        .getProducts(startingIndex);
   }
 }
 
@@ -382,62 +434,73 @@ class MySearchDelegate extends SearchDelegate {
         onPressed: () {
           FocusScope.of(context).unfocus();
           close(context, null);
-        }, icon: Icon(Icons.arrow_back));
+        },
+        icon: Icon(Icons.arrow_back));
   }
 
   @override
   Widget buildResults(BuildContext context) {
-   if(query.isNotEmpty) saveRecentSearches();
+    if (query.isNotEmpty) saveRecentSearches();
     // List allProducts =
     //     Provider.of<ProductsProvider>(context, listen: false).allProducts;
     // var searchResults = allProducts
     //     .where((product) => product['Name'].toString().contains(query))
     //     .toList();
     return FutureBuilder<Response>(
-      future: NetworkServices.searchProducts(query),
-      builder: (context, snapshot) {
-        if(snapshot.connectionState == ConnectionState.waiting) return const Center(child: CircularProgressIndicator(),);
-        if(snapshot.data?.statusCode != 200) return const Center(child: Text("Something went wrong please try again"),);
-        var searchResults = jsonDecode(snapshot.data?.body as String);
-        if(searchResults.isEmpty) return const Center(child: Text("No matches found :("),);
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: ListView.builder(
-            itemCount: searchResults.length,
-            itemBuilder: (ctx, i) {
-              var productName = searchResults[i]['Name'];
-              var imageURL = searchResults[i]['Image_url'];
-              var storeName = searchResults[i]['Store'];
-              var description = searchResults[i]['Description'];
-              var price = searchResults[i]['Current_price'];
-              var size = searchResults[i]['Size'];
-              return GestureDetector(
-                onTap: () => AppNavigator.push(
-                    context: context,
-                    screen: ProductDetailScreen(
-                      storeName: storeName,
-                      productName: productName,
-                      imageURL: imageURL,
-                      description: description, price: price, size: size,
-                    )),
-                child: SearchItem(
-                  name: searchResults[i]['Name'],
-                  imageURL: searchResults[i]['Image_url'],
-                  currentPrice: searchResults[i]['Current_price'].toString(),
-                  size: searchResults[i]['Size'],
-                  store: searchResults[i]['Store'],
-                ),
-              );
-            },
-          ),
-        );
-      }
-    );
+        future: NetworkServices.searchProducts(query),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting)
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          if (snapshot.data?.statusCode != 200)
+            return const Center(
+              child: Text("Something went wrong please try again"),
+            );
+          var searchResults = jsonDecode(snapshot.data?.body as String);
+          if (searchResults.isEmpty)
+            return const Center(
+              child: Text("No matches found :("),
+            );
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: ListView.builder(
+              itemCount: searchResults.length,
+              itemBuilder: (ctx, i) {
+                var productName = searchResults[i]['Name'];
+                var imageURL = searchResults[i]['Image_url'];
+                var storeName = searchResults[i]['Store'];
+                var description = searchResults[i]['Description'];
+                var price = searchResults[i]['Current_price'];
+                var size = searchResults[i]['Size'];
+                return GestureDetector(
+                  onTap: () => AppNavigator.push(
+                      context: context,
+                      screen: ProductDetailScreen(
+                        storeName: storeName,
+                        productName: productName,
+                        imageURL: imageURL,
+                        description: description,
+                        price: price,
+                        size: size,
+                      )),
+                  child: SearchItem(
+                    name: searchResults[i]['Name'],
+                    imageURL: searchResults[i]['Image_url'],
+                    currentPrice: searchResults[i]['Current_price'].toString(),
+                    size: searchResults[i]['Size'],
+                    store: searchResults[i]['Store'],
+                  ),
+                );
+              },
+            ),
+          );
+        });
   }
 
   void saveRecentSearches() {
     var recentSearches = pref.getStringList('recentSearches') ?? [];
-    if(recentSearches.contains(query)) return;
+    if (recentSearches.contains(query)) return;
     recentSearches.add(query);
     pref.setStringList('recentSearches', recentSearches);
   }
@@ -484,3 +547,37 @@ class MySearchDelegate extends SearchDelegate {
     );
   }
 }
+
+// Container(
+//   height: 100.h,
+//   child: ListView(
+//     scrollDirection: Axis.horizontal,
+//     children: [
+//       CategoryWidget(
+//         categoryImagePath: vegetables,
+//         categoryName: LocaleKeys.vegetables.tr(),
+//         color: Colors.green,
+//       ),
+//       CategoryWidget(
+//         categoryImagePath: fruits,
+//         categoryName: LocaleKeys.fruits.tr(),
+//         color: Colors.red,
+//       ),
+//       CategoryWidget(
+//         categoryImagePath: beverages,
+//         categoryName: LocaleKeys.beverages.tr(),
+//         color: Colors.yellow,
+//       ),
+//       CategoryWidget(
+//         categoryImagePath: grocery,
+//         categoryName: LocaleKeys.grocery.tr(),
+//         color: Colors.deepPurpleAccent,
+//       ),
+//       CategoryWidget(
+//         categoryImagePath: edibleOil,
+//         categoryName: LocaleKeys.edibleOil.tr(),
+//         color: Colors.cyan,
+//       ),
+//     ],
+//   ),
+// ),

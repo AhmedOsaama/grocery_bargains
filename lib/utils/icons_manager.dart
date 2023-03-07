@@ -20,3 +20,5 @@ const String listViewIcon = "$imgPath/list_view.svg";
 const String google2 = "$imgPath/google2.jpg";
 const String beeBlack = "$imgPath/beeBlack.svg";
 const String masterCard = "$imgPath/masterCard.svg";
+const String search = "$imgPath/search.svg";
+const String chatShare = "$imgPath/chat_share.svg";

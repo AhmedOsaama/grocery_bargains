@@ -137,17 +137,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   route: SupportScreen()),
               Divider(),
               10.ph,
-              GestureDetector(
-                  onTap: () => showDialog(
-                      context: context,
-                      builder: (ctx) => Dialog(
-                            child: Container(),
-                          )),
-                  child: SettingRow(
-                      icon: const Icon(
-                        Icons.logout_outlined,
-                      ),
-                      settingText: LocaleKeys.signout.tr())),
+              SettingRow(
+                  icon: const Icon(
+                    Icons.logout_outlined,
+                  ),
+                  settingText: LocaleKeys.signout.tr()),
               10.ph,
               Divider(),
             60.ph,

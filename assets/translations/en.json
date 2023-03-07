@@ -62,7 +62,7 @@
   "recentSearches"                     : "Recent Searches",
   "dozen"                     : "dozen",
   "addToCart"                     : "Add to cart",
-  "latestDiscounts"                     : "Latest Discounts",
+  "latestBargains"                     : "Latest Bargains",
 
   "addToList"                           : "Add to list",
   "share"                           : "Share",
@@ -110,5 +110,11 @@
   "deleteMyAccount"                       : "DELETE MY ACCOUNT",
   "save"                                : "Save",
   "yourName"                      : "Your name",
-  "yourMessage"                   : "Your message"
+  "yourMessage"                   : "Your message",
+  "logoutFromAccount"                   : "Logout from your account",
+  "cancel"                            : "Cancel",
+  "delete"                            : "Delete",
+  "deleteYourAccount"               : "Delete your account",
+  "allDataWillBeRemoved"            : "All the data will be removed forever",
+  "submit"            : "Submit"
 }

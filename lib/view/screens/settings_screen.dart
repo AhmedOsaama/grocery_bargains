@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:swaav/utils/icons_manager.dart';
 import 'package:swaav/view/components/button.dart';
 import 'package:swaav/view/screens/profile_screen.dart';
+import 'package:swaav/view/widgets/profile_dialog.dart';
 
 import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';
@@ -137,7 +138,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             Spacer(),
-            GenericButton(onPressed: (){},
+            GenericButton(onPressed: () => showDialog(context: context, builder: (ctx) => ProfileDialog(title: LocaleKeys.deleteYourAccount.tr(), body: LocaleKeys.allDataWillBeRemoved.tr(), buttonText: LocaleKeys.delete.tr())),
               width: double.infinity,
               height: 60.h,
               borderRadius: BorderRadius.circular(6),

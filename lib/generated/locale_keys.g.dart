@@ -56,7 +56,7 @@ abstract class  LocaleKeys {
   static const recentSearches = 'recentSearches';
   static const dozen = 'dozen';
   static const addToCart = 'addToCart';
-  static const latestDiscounts = 'latestDiscounts';
+  static const latestBargains = 'latestBargains';
   static const addToList = 'addToList';
   static const share = 'share';
   static const priceAlert = 'priceAlert';
@@ -101,5 +101,11 @@ abstract class  LocaleKeys {
   static const save = 'save';
   static const yourName = 'yourName';
   static const yourMessage = 'yourMessage';
+  static const logoutFromAccount = 'logoutFromAccount';
+  static const cancel = 'cancel';
+  static const delete = 'delete';
+  static const deleteYourAccount = 'deleteYourAccount';
+  static const allDataWillBeRemoved = 'allDataWillBeRemoved';
+  static const submit = 'submit';
 
 }
