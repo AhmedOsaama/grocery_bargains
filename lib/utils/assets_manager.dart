@@ -24,3 +24,4 @@ const String albert = '$imgPath/albert.png';
 const String jumbo = '$imgPath/jumbo.png';
 const String noLists = '$imgPath/no_lists.svg';
 const String newChatList = '$imgPath/new_chatlist.png';
+const String storePlaceholder = "$imgPath/store_placeholder.png";

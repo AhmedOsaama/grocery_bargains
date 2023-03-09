@@ -16,8 +16,8 @@ import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/style_utils.dart';
 import 'package:swaav/view/components/generic_field.dart';
 import 'package:swaav/view/screens/choose_store_screen.dart';
-import 'package:swaav/view/screens/lists_screen.dart';
-import 'package:swaav/view/screens/new_blank_list_screen.dart';
+import 'package:swaav/view/screens/chatlists_screen.dart';
+import 'package:swaav/view/widgets/chat_view_widget.dart';
 import 'package:swaav/view/screens/product_detail_screen.dart';
 import 'package:swaav/view/screens/register_screen.dart';
 import 'package:swaav/view/widgets/category_widget.dart';
@@ -32,7 +32,7 @@ import '../../utils/assets_manager.dart';
 import '../../utils/icons_manager.dart';
 import '../components/button.dart';
 import '../widgets/store_list_widget.dart';
-import 'list_view_screen.dart';
+import 'chatlist_view_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

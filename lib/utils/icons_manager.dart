@@ -22,3 +22,7 @@ const String beeBlack = "$imgPath/beeBlack.svg";
 const String masterCard = "$imgPath/masterCard.svg";
 const String search = "$imgPath/search.svg";
 const String chatShare = "$imgPath/chat_share.svg";
+const String cartAdd = "$imgPath/circle.svg";
+const String send = "$imgPath/send.svg";
+const String add = "$imgPath/add.svg";
+const String checkMark = "$imgPath/checkmark.svg";

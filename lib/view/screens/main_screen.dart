@@ -10,7 +10,7 @@ import 'package:swaav/utils/icons_manager.dart';
 import 'package:swaav/utils/style_utils.dart';
 import 'package:swaav/view/components/nav_bar.dart';
 import 'package:swaav/view/screens/home_screen.dart';
-import 'package:swaav/view/screens/lists_screen.dart';
+import 'package:swaav/view/screens/chatlists_screen.dart';
 import 'package:swaav/view/screens/profile_screen.dart';
 import 'package:swaav/view/widgets/list_type_widget.dart';
 

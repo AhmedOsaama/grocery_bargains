@@ -28,6 +28,7 @@ class GenericField extends StatefulWidget {
   final Color colorStyle;
   final double borderRaduis;
   final BoxShadow? boxShadow;
+  final BoxConstraints? suffixConstraints;
 
   GenericField({
     super.key,
@@ -48,7 +49,7 @@ class GenericField extends StatefulWidget {
     this.maxLines = 1,
     this.colorStyle = lightGrey,
     this.borderRaduis = 10,
-    this.obscureText = false, this.onChanged, this.hintStyle, this.isSearchField = false, this.onTap, this.boxShadow,
+    this.obscureText = false, this.onChanged, this.hintStyle, this.isSearchField = false, this.onTap, this.boxShadow, this.suffixConstraints,
   });
 
   @override
@@ -111,7 +112,8 @@ class _GenericFieldState extends State<GenericField> {
           hintText: widget.hintText,
           labelText: widget.labeltext,
           fillColor: Colors.white,
-          suffixIconConstraints: BoxConstraints.tight(Size.square(40)),
+          // suffixIconConstraints: widget.suffixConstraints ?? BoxConstraints.tight(Size.square(40)),
+          suffixIconConstraints: widget.suffixConstraints,
           labelStyle: const TextStyle(fontSize: 16, color: Color(0xff343434)),
           hintStyle: widget.hintStyle ?? TextStylesDMSans.textViewRegular12.copyWith(color: Color.fromRGBO(13, 1, 64, 0.6)),
           border: OutlineInputBorder(

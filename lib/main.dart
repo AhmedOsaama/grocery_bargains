@@ -10,8 +10,9 @@ import 'package:swaav/config/themes/app_theme.dart';
 import 'package:swaav/providers/google_sign_in_provider.dart';
 import 'package:swaav/providers/products_provider.dart';
 import 'package:swaav/services/dynamic_link_service.dart';
+import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/view/screens/main_screen.dart';
-import 'package:swaav/view/screens/list_view_screen.dart';
+import 'package:swaav/view/screens/chatlist_view_screen.dart';
 import 'package:swaav/view/screens/onboarding_screen.dart';
 import 'package:swaav/view/screens/register_screen.dart';
 import 'package:swaav/view/screens/splash_screen.dart';
@@ -61,7 +62,7 @@ class MyApp extends StatelessWidget {
       title: 'SWAAV',
       // theme: appTheme(),
       theme: ThemeData(
-        canvasColor: Colors.white
+        canvasColor: lightPurple
       ),
       debugShowCheckedModeBanner: false,
       home: ScreenUtilInit(

@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../utils/icons_manager.dart';
-import '../screens/lists_screen.dart';
+import '../screens/chatlists_screen.dart';
 
 class NavBar extends StatelessWidget {
   const NavBar({Key? key}) : super(key: key);

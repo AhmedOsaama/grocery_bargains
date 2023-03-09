@@ -11,6 +11,7 @@ class GenericButton extends StatelessWidget {
   final Color shadowColorButton;
   final Color? disabledBackgroundColor;
   final double elevationButton;
+  final EdgeInsets? padding;
   final List<BoxShadow>? shadow;
 
   final VoidCallback? onPressed;
@@ -27,7 +28,7 @@ class GenericButton extends StatelessWidget {
     this.color = Colors.blue,
     this.borderColor = Colors.transparent,
     this.shadowColorButton = Colors.transparent,
-    this.elevationButton = 0.0, this.shadow, this.disabledBackgroundColor,
+    this.elevationButton = 0.0, this.shadow, this.disabledBackgroundColor, this.padding,
   }) : super(key: key);
 
   @override
@@ -43,6 +44,7 @@ class GenericButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
+          padding: padding,
           side: BorderSide(color: borderColor),
           backgroundColor: color,
           // shadowColor: shadowColorButton,

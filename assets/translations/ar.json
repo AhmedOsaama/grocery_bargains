@@ -116,5 +116,17 @@
   "delete"                            : "Delete",
   "deleteYourAccount"               : "Delete your account",
   "allDataWillBeRemoved"            : "All the data will be removed forever",
-  "submit"            : "Submit"
+  "submit"            : "Submit",
+
+  "searchForChats"                  : "Search for chats",
+  "startAChatlist"                  : "Start a chatlist",
+  "myChatlists"                  : "My Chatlists",
+  "groceryChatlists"                  : "Grocery ChatLists",
+  "startChatting"                  : "Start chatting",
+  "textHere"                  : "Text here...",
+  "authors"                  : "Authors",
+  "owner"                  : "owner",
+  "inputEmail"                  : "Input email...",
+  "addToListFirstItem"                  : "Add To List first item",
+  "you"                  : "You"
 }

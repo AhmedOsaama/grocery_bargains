@@ -107,5 +107,16 @@ abstract class  LocaleKeys {
   static const deleteYourAccount = 'deleteYourAccount';
   static const allDataWillBeRemoved = 'allDataWillBeRemoved';
   static const submit = 'submit';
+  static const searchForChats = 'searchForChats';
+  static const startAChatlist = 'startAChatlist';
+  static const myChatlists = 'myChatlists';
+  static const groceryChatlists = 'groceryChatlists';
+  static const startChatting = 'startChatting';
+  static const textHere = 'textHere';
+  static const authors = 'authors';
+  static const owner = 'owner';
+  static const inputEmail = 'inputEmail';
+  static const addToListFirstItem = 'addToListFirstItem';
+  static const you = 'you';
 
 }

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:swaav/config/routes/app_navigator.dart';
-import 'package:swaav/view/screens/lists_screen.dart';
+import 'package:swaav/view/screens/chatlists_screen.dart';
 import 'package:swaav/view/screens/profile_screen.dart';
 import 'package:swaav/view/widgets/profile_dialog.dart';
 

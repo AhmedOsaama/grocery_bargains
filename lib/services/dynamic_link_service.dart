@@ -3,7 +3,7 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:swaav/config/routes/app_navigator.dart';
 import 'package:swaav/view/screens/main_screen.dart';
 
-import '../view/screens/list_view_screen.dart';
+import '../view/screens/chatlist_view_screen.dart';
 
 
 class DynamicLinkService {
@@ -36,7 +36,7 @@ class DynamicLinkService {
       var listName = parsedPath[2];
       var listId = parsedPath[3];
       if (functionName == "add_user") {
-        AppNavigator.push(context: context, screen: ListViewScreen(listId: listId, listName: listName, isUsingDynamicLink: true));
+        AppNavigator.push(context: context, screen: ChatListViewScreen(listId: listId, listName: listName, isUsingDynamicLink: true));
       }
 
     }
@@ -50,7 +50,7 @@ class DynamicLinkService {
       var listName = parsedPath[2];
       var listId = parsedPath[3];
       if (functionName == "add_user") {
-        return ListViewScreen(listId: listId, listName: listName,isUsingDynamicLink: true);
+        return ChatListViewScreen(listId: listId, listName: listName,isUsingDynamicLink: true);
       }
       return const MainScreen();                                //in case functionName wasn't add_user
     }
