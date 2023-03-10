@@ -20,11 +20,12 @@ class DiscountItem extends StatelessWidget {
   final String jumboPriceAfter;
   final String measurement;
   final String imageURL;
+  final Function onShare;
   const DiscountItem(
       {Key? key,
       required this.name,
       required this.measurement,
-      required this.imageURL, this.albertPriceBefore, required this.albertPriceAfter,  this.sparPriceBefore, required this.sparPriceAfter,  this.jumboPriceBefore, required this.jumboPriceAfter})
+      required this.imageURL, this.albertPriceBefore, required this.albertPriceAfter,  this.sparPriceBefore, required this.sparPriceAfter,  this.jumboPriceBefore, required this.jumboPriceAfter, required this.onShare})
       : super(key: key);
 
 
@@ -83,7 +84,7 @@ class DiscountItem extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SvgPicture.asset(chatShare),
+                IconButton(onPressed: () => onShare(),icon: SvgPicture.asset(chatShare)),
                 PlusButton(onTap: () {}),
               ],
             ),

@@ -206,18 +206,24 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Row(
                     children: [
-                      isEditingName ? Expanded(
+                      isEditingName ? Container(
+                        width: 210.w,
                         child: TextFormField(
                           initialValue: widget.listName,
-                          style: TextStyles.textViewSemiBold30.copyWith(color: prussian),
+                          style: TextStyles.textViewSemiBold24.copyWith(color: prussian),
                           onFieldSubmitted: (value) async {
                             await updateListName(value);
                           },
                         ),
-                      ) : Text(
-                        widget.listName,
-                        style:
-                            TextStyles.textViewSemiBold30.copyWith(color: prussian),
+                      ) : Container(
+                        width: 210.w,
+                        child: Text(
+                          widget.listName,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              TextStyles.textViewSemiBold24.copyWith(color: prussian),
+                        ),
                       ),
                       Spacer(),
                       DropdownButton(
@@ -246,14 +252,13 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                           }
                         },
                       ),
-                      20.pw,
-                      GestureDetector(
-                        onTap: (){
+                      IconButton(
+                        onPressed: (){
                           setState(() {
                             widget.isListView = !widget.isListView;
                           });
                         },
-                          child: SvgPicture.asset(listViewIcon)),
+                          icon: widget.isListView ? Icon(Icons.chat_outlined) : SvgPicture.asset(listViewIcon)),
                     ],
                   ),
                 ),

@@ -379,6 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   size: size,
                                 )),
                             child: DiscountItem(
+                              onShare: (){},
                                 name: allProducts[i]['Name'],
                                 imageURL: allProducts[i]['Image_url'],
                                 albertPriceBefore: allProducts[i]['Old_price'].toString().isEmpty ? null : allProducts[i]['Old_price'],

@@ -31,6 +31,7 @@ class ProductsProvider with ChangeNotifier{
   String getImage(String storeName) {
     if(storeName == 'Albert Heijn') return albert;
     if(storeName == 'Jumbo') return jumbo;
+    if(storeName == 'Spar') return spar;
     return spar;
   }
 }

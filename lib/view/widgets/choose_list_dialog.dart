@@ -110,8 +110,8 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                     AppNavigator.pop(context: context);
                   }else {
                     //TODO: pass the item to the chooseStoreScreen page and add it as the first item in the list created
-                    AppNavigator.pushReplacement(
-                        context: context, screen: ChooseStoreScreen());
+                    // AppNavigator.pushReplacement(
+                    //     context: context, screen: ChooseStoreScreen());
                     }
                   },
                 height: 60.h,

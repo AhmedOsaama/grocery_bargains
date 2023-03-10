@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:swaav/config/routes/app_navigator.dart';
 import 'package:swaav/generated/locale_keys.g.dart';
@@ -21,6 +23,10 @@ import 'package:swaav/view/screens/profile_screen.dart';
 import 'package:swaav/view/screens/sub_categories_screen.dart';
 import 'package:swaav/view/widgets/backbutton.dart';
 
+import '../../providers/products_provider.dart';
+import '../screens/home_screen.dart';
+import '../screens/product_detail_screen.dart';
+import 'discountItem.dart';
 import 'message_bubble.dart';
 
 class ChatView extends StatefulWidget {
@@ -33,11 +39,24 @@ class ChatView extends StatefulWidget {
 
 class _ChatViewState extends State<ChatView> {
   bool isAddingItem = false;
+  late Future<int> getAllProductsFuture;
   var messageController = TextEditingController();
+  var panelController = PanelController();
+  List allProducts = [];
+  var isLoading = false;
+  var isCollapsed = true;
+
+  @override
+  void didChangeDependencies() {
+    getAllProductsFuture =
+        Provider.of<ProductsProvider>(context, listen: false).getProducts(0);
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SlidingUpPanel(
+      controller: panelController,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: StreamBuilder<QuerySnapshot>(
@@ -60,27 +79,32 @@ class _ChatViewState extends State<ChatView> {
                 );
               }
               return ListView.builder(
-                padding: EdgeInsets.only(bottom: 300),
+                  padding: EdgeInsets.only(bottom: 300),
                   reverse: true,
                   itemCount: messages.length,
                   itemBuilder: (ctx, index) => Container(
                         padding: const EdgeInsets.all(8.0),
                         child: MessageBubble(
                           itemName: messages[index]['item_name'],
+                          itemSize: messages[index]['item_description'],
+                          itemPrice: messages[index]['item_price'].toString(),
+                          itemOldPrice: messages[index]['item_oldPrice'],
                           itemImage: messages[index]['item_image'],
+                          storeName: messages[index]['store_name'],
                           isMe: messages[index]['userId'] ==
                               FirebaseAuth.instance.currentUser!.uid,
                           message: messages[index]['message'],
                           messageDocPath: messages[index].reference,
                           userName: messages[index]['username'],
                           userImage: messages[index]['userImageURL'],
-                          key: ValueKey(messages[index].id), isAddedToList: messages[index]['isAddedToList'],
+                          key: ValueKey(messages[index].id),
+                          isAddedToList: messages[index]['isAddedToList'],
                         ),
                       ));
             }),
       ),
       header: Container(
-        margin: EdgeInsets.only(left: 170.w, top: 10),
+        margin: EdgeInsets.only(left: 170.w, top: 5),
         width: 50.w,
         height: 5.h,
         decoration: BoxDecoration(
@@ -88,8 +112,8 @@ class _ChatViewState extends State<ChatView> {
           borderRadius: BorderRadius.circular(20),
         ),
       ),
-      panel: Container(
-        padding: EdgeInsets.symmetric(vertical: 30, horizontal: 15.w),
+      collapsed: Container(
+        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15.w),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -97,7 +121,13 @@ class _ChatViewState extends State<ChatView> {
               children: [
                 5.ph,
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    setState(() {
+                      panelController.isPanelClosed
+                          ? panelController.open()
+                          : panelController.close();
+                    });
+                  },
                   icon: SvgPicture.asset(cartAdd),
                   iconSize: 40,
                 ),
@@ -128,9 +158,119 @@ class _ChatViewState extends State<ChatView> {
           ],
         ),
       ),
+      onPanelOpened: () {
+        setState(() {
+          isCollapsed = false;
+        });
+      },
+      onPanelClosed: () {
+        setState(() {
+          isCollapsed = true;
+        });
+      },
+      panel: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            20.ph,
+            Opacity(
+              opacity: isCollapsed ? 0 : 1,
+                  child: GenericField(
+                      isFilled: true,
+                      onTap: () async {
+                        SharedPreferences pref =
+                            await SharedPreferences.getInstance();
+                        return showSearch(
+                            context: context, delegate: MySearchDelegate(pref));
+                      },
+                      prefixIcon: Icon(Icons.search),
+                      borderRaduis: 999,
+                      hintText: LocaleKeys.whatAreYouLookingFor.tr(),
+                      hintStyle:
+                          TextStyles.textViewSemiBold14.copyWith(color: gunmetal),
+                    ),
+                ),
+            30.ph,
+            Text(
+              LocaleKeys.latestBargains.tr(),
+              style:
+                  TextStylesInter.textViewRegular13.copyWith(color: mainPurple),
+            ),
+            6.ph,
+            Container(
+              height: 250.h,
+              child: FutureBuilder<int>(
+                  future: getAllProductsFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    if (snapshot.data != 200) {
+                      return const Center(
+                        child: Text(
+                            "Something went wrong. Please try again later"),
+                      );
+                    }
+                    allProducts =
+                        Provider.of<ProductsProvider>(context, listen: false)
+                            .allProducts;
+                    // print("\n RESPONSE: ${allProducts.length}");
+                    return ListView.builder(
+                      itemCount: allProducts.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (ctx, i) {
+                        var productName = allProducts[i]['Name'];
+                        var imageURL = allProducts[i]['Image_url'];
+                        var storeName = allProducts[i]['Store'];
+                        var description = allProducts[i]['Description'];
+                        var price = allProducts[i]['Current_price'];
+                        var oldPrice = allProducts[i]['Old_price'];
+                        var size = allProducts[i]['Size'];
+                        return GestureDetector(
+                          onTap: () => AppNavigator.push(
+                              context: context,
+                              screen: ProductDetailScreen(
+                                storeName: storeName,
+                                productName: productName,
+                                imageURL: imageURL,
+                                description: description,
+                                price: price.runtimeType == int
+                                    ? price.toDouble()
+                                    : price,
+                                size: size,
+                              )),
+                          child: DiscountItem(
+                            name: productName,
+                            imageURL: imageURL,
+                            albertPriceBefore:
+                                oldPrice.toString().isEmpty
+                                    ? null
+                                    : oldPrice,
+                            albertPriceAfter: price.toString(),
+                            measurement: size,
+                            onShare: () {
+                              panelController.close();
+                              shareItem(itemName: productName,itemSize: size,itemImage: imageURL,itemPrice: price,itemOldPrice: oldPrice,storeName: storeName);
+                            },
+                            sparPriceAfter: '0.0',
+                            jumboPriceAfter: '0.0',
+                          ),
+                        );
+                      },
+                    );
+                  }),
+            ),
+          ],
+        ),
+      ),
       borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
     );
   }
+
+
 
   Future<void> sendMessage() async {
     if (messageController.text.trim().isNotEmpty) {
@@ -144,21 +284,57 @@ class _ChatViewState extends State<ChatView> {
         'item_name': "",
         'item_image': "",
         'item_description': "",
-        'item_quantity': "",
+        'store_name': "",
         'isAddedToList': false,
         'item_price': 0.0,
+        'item_oldPrice': "",
         'message': messageController.text.trim(),
         'createdAt': Timestamp.now(),
         'userId': FirebaseAuth.instance.currentUser!.uid,
         'username': userData['username'],
         'userImageURL': userData['imageURL'],
       });
-      FirebaseFirestore.instance.collection('/lists').doc(widget.listId).update({
+      FirebaseFirestore.instance
+          .collection('/lists')
+          .doc(widget.listId)
+          .update({
         "last_message": messageController.text.trim(),
         "last_message_date": Timestamp.now(),
         "last_message_userId": FirebaseAuth.instance.currentUser?.uid,
       });
       messageController.clear();
     }
+  }
+
+  Future<void> shareItem({itemName,itemImage,itemSize,itemQuantity,isAddedToList,itemPrice,itemOldPrice,storeName}) async {
+      final userData = await FirebaseFirestore.instance
+          .collection('/users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+      await FirebaseFirestore.instance
+          .collection('/lists/${widget.listId}/messages')
+          .add({
+        'item_name': itemName,
+        'item_image': itemImage,
+        'item_description': itemSize,
+        'store_name': storeName,
+        'isAddedToList': false,
+        'item_price': itemPrice,
+        'item_oldPrice': itemOldPrice,
+        'message': messageController.text.trim(),
+        'createdAt': Timestamp.now(),
+        'userId': FirebaseAuth.instance.currentUser!.uid,
+        'username': userData['username'],
+        'userImageURL': userData['imageURL'],
+      });
+      FirebaseFirestore.instance
+          .collection('/lists')
+          .doc(widget.listId)
+          .update({
+        "last_message": messageController.text.trim(),
+        "last_message_date": Timestamp.now(),
+        "last_message_userId": FirebaseAuth.instance.currentUser?.uid,
+      });
+      messageController.clear();
   }
 }

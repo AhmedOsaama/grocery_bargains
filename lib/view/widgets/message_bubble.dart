@@ -19,7 +19,11 @@ import '../components/button.dart';
 class MessageBubble extends StatefulWidget {
   // final String message;
   final String itemName;
+  final String itemPrice;
+  final String itemOldPrice;
+  final String itemSize;
   final String itemImage;
+  final String storeName;
   final String userName;
   final String userImage;
   final String message;
@@ -39,7 +43,7 @@ class MessageBubble extends StatefulWidget {
       required this.messageDocPath,
       this.key,
       required this.message,
-      this.isInThread = false, required this.isAddedToList})
+      this.isInThread = false, required this.isAddedToList, required this.itemPrice, required this.itemOldPrice, required this.itemSize, required this.storeName})
       : super(key: key);
 
   @override
@@ -70,16 +74,17 @@ class _MessageBubbleState extends State<MessageBubble> {
           if (widget.message.isEmpty)
             Container(
               key: widget.key,
-              width: 160.w,
+              // width: ,
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
               margin: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
               child: ProductItemWidget(
-                  price: 1.25.toString(),
+                  price: widget.itemPrice,
                   name: widget.itemName,
-                  description: "description",
+                  size: widget.itemSize,
                   imagePath: widget.itemImage,
-                  fullPrice: 1.55.toString(),
-                  onTap: null),
+                  oldPrice: widget.itemOldPrice,
+                  onTap: null, isAddedToList: widget.isAddedToList,
+                storeName: widget.storeName,),
             ),
           if (widget.message.isNotEmpty)
             Row(
