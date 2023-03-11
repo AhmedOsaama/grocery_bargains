@@ -85,15 +85,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   future: getUserDataFuture,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container();
+                      return Container(
+                        height: 200,
+                      );
                     }
-                    return snapshot.data!['imageURL'] != ""
-                        ? Center(
+                    return Center(
                           child: Column(
                               children: [
                                 CircleAvatar(
                                   backgroundImage:
-                                      NetworkImage(snapshot.data!['imageURL']),
+                                  getUserImage(snapshot) as ImageProvider,
                                   radius: 100,
                                 ),
                                 10.ph,
@@ -116,8 +117,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ],
                               ],
                             ),
-                        )
-                        : SvgPicture.asset(personIcon);
+                        );
                   }),
               30.ph,
               if(!isEditing) ...[
@@ -169,6 +169,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+  }
+
+  Object getUserImage(AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+    return snapshot.data!['imageURL'] != "" ? NetworkImage(snapshot.data!['imageURL']) :
+                                AssetImage(personImage);
   }
 }
 

@@ -216,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   TextButton(
                       onPressed: () => AppNavigator.push(
-                          context: context, screen: ListsScreen()),
+                          context: context, screen: ChatlistsScreen()),
                       child: Text(
                         'See all',
                         style: textButtonStyle,
@@ -233,10 +233,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
                     var allLists = snapshot.data?.docs ?? [];
                     if (!snapshot.hasData || allLists.isEmpty) {
-                      return Image.asset(
-                        newChatList,
-                        // width: 358.w,
-                        // height: 154.h,
+                      return GestureDetector(
+                        onTap: (){
+                          AppNavigator.push(context: context, screen: ChatlistsScreen());
+                        },
+                        child: Image.asset(
+                          newChatList,
+                          // width: 358.w,
+                          // height: 154.h,
+                        ),
                       );
                     }
                     return SizedBox(
@@ -272,7 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   TextButton(
                       onPressed: () => AppNavigator.push(
-                          context: context, screen: ListsScreen()),
+                          context: context, screen: ChatlistsScreen()),
                       child: Text(
                         'See all',
                         style: textButtonStyle,

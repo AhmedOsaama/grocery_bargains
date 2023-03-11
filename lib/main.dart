@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'SWAAV',
+      title: 'BargainB',
       // theme: appTheme(),
       theme: ThemeData(
         canvasColor: lightPurple

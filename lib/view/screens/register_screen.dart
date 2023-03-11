@@ -69,6 +69,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           "username": username,
           'imageURL': "",
         });
+        AppNavigator.pushReplacement(context: context, screen: OnBoardingScreen());
       } else {
         setState(() {
           _isLoading = true;
@@ -250,14 +251,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: verdigris,
                     borderRadius: BorderRadius.circular(6),
                     width: double.infinity,
-                    onPressed: () {
+                    onPressed: () async {
                       var isValid = _formKey.currentState?.validate();
                       FocusScope.of(context).unfocus();
                       if (isValid!) {
                         _formKey.currentState?.save();
-                        _submitAuthForm(
+                        await _submitAuthForm(
                             email, username, null, password, context).timeout(Duration(seconds: 10),onTimeout: (){
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed to login or signup, Please check your internet and try again later")));
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to login or signup, Please check your internet and try again later")));
                         });
                       }
                     },
@@ -275,11 +276,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     height: 70.h,
                     width: double.infinity,
                     onPressed: () async {
-                      await Provider.of<GoogleSignInProvider>(context,
+                     UserCredential userCredential = await Provider.of<GoogleSignInProvider>(context,
                             listen: false)
                         .loginWithGoogle();
-                      saveRememberMePref();
+                     if(userCredential.user != null){
+                     saveRememberMePref();
                       AppNavigator.pushReplacement(context: context, screen: MainScreen());
+                     }
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

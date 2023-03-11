@@ -28,7 +28,7 @@ class _MainScreenState extends State<MainScreen> {
   var selectedIndex = 0;
   final _pages = [
     const HomeScreen(),
-    const ListsScreen(),
+    const ChatlistsScreen(),
     const ProfileScreen(),
   ];
   final selectedColor = Color.fromRGBO(99, 104, 176, 1);

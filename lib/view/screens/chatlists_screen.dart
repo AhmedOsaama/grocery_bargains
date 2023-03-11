@@ -31,18 +31,20 @@ import '../../config/routes/app_navigator.dart';
 import '../components/generic_field.dart';
 import '../widgets/chat_view_widget.dart';
 
-class ListsScreen extends StatefulWidget {
-  const ListsScreen({Key? key}) : super(key: key);
+class ChatlistsScreen extends StatefulWidget {
+  const ChatlistsScreen({Key? key}) : super(key: key);
 
   @override
-  State<ListsScreen> createState() => _ListsScreenState();
+  State<ChatlistsScreen> createState() => _ChatlistsScreenState();
 }
 
-class _ListsScreenState extends State<ListsScreen> {
+class _ChatlistsScreenState extends State<ChatlistsScreen> {
   late Future<QuerySnapshot> getAllListsFuture;
   late Future<QuerySnapshot> getListItemsFuture;
   var isFabPressed = false;
   var isChatView = true;
+
+  var canShowFab = true;
 
   @override
   void initState() {
@@ -68,7 +70,7 @@ class _ListsScreenState extends State<ListsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: getFab(),
+      floatingActionButton: canShowFab ? getFab() : null,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(
@@ -127,6 +129,7 @@ class _ListsScreenState extends State<ListsScreen> {
                     var allLists = snapshot.data?.docs ?? [];
                     // var allLists = [];
                     if (!snapshot.hasData || allLists.isEmpty) {
+                      canShowFab = false;
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -152,16 +155,15 @@ class _ListsScreenState extends State<ListsScreen> {
                             children: allLists.map(
                               (list) {
                                 return GestureDetector(
-                                    onTap: () => Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                            builder: (ctx) => ChatListViewScreen(
-                                                updateList: updateList,
-                                                storeName: list['storeName'],
-                                                storeImage:
-                                                    list['storeImageUrl'],
-                                                listId: list.id,
-                                                isListView: true,
-                                                listName: list['list_name']),
+                                    onTap: () => Navigator.of(context)
+                                            .push(MaterialPageRoute(
+                                          builder: (ctx) => ChatListViewScreen(
+                                              updateList: updateList,
+                                              storeName: list['storeName'],
+                                              storeImage: list['storeImageUrl'],
+                                              listId: list.id,
+                                              isListView: true,
+                                              listName: list['list_name']),
                                         )),
                                     child: StoreListWidget(
                                         listId: list.id,
@@ -172,13 +174,17 @@ class _ListsScreenState extends State<ListsScreen> {
                       );
                     }
                     return ListView.separated(
-                      separatorBuilder: (ctx,i) => Divider(),
+                        separatorBuilder: (ctx, i) => Divider(),
                         itemCount: allLists.length,
                         itemBuilder: (ctx, i) {
                           return InkWell(
-                            onTap: () => AppNavigator.push(context: context, screen: ChatListViewScreen(
-                              updateList: updateList,
-                              listId: allLists[i].id, listName: allLists[i]['list_name'],)),
+                            onTap: () => AppNavigator.push(
+                                context: context,
+                                screen: ChatListViewScreen(
+                                  updateList: updateList,
+                                  listId: allLists[i].id,
+                                  listName: allLists[i]['list_name'],
+                                )),
                             child: Row(
                               children: [
                                 Image.asset(
@@ -200,13 +206,15 @@ class _ListsScreenState extends State<ListsScreen> {
                                       children: [
                                         Text(
                                           "${allLists[i]['size']} items",
-                                          style: TextStylesInter.textViewMedium10
+                                          style: TextStylesInter
+                                              .textViewMedium10
                                               .copyWith(color: purple50),
                                         ),
                                         5.pw,
                                         Text(
                                           "€${allLists[i]['total_price']}",
-                                          style: TextStylesInter.textViewMedium10
+                                          style: TextStylesInter
+                                              .textViewMedium10
                                               .copyWith(color: black2),
                                         ),
                                       ],
@@ -248,8 +256,8 @@ class _ListsScreenState extends State<ListsScreen> {
                                           .split(' ')[0],
                                       style: TextStylesInter.textViewRegular14
                                           .copyWith(
-                                              color:
-                                                  Color.fromRGBO(72, 72, 74, 1)),
+                                              color: Color.fromRGBO(
+                                                  72, 72, 74, 1)),
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                     FutureBuilder(
@@ -258,7 +266,8 @@ class _ListsScreenState extends State<ListsScreen> {
                                           if (snapshot.connectionState ==
                                               ConnectionState.waiting) {
                                             return const Center(
-                                                child: CircularProgressIndicator(
+                                                child:
+                                                    CircularProgressIndicator(
                                               color: verdigris,
                                             ));
                                           }
@@ -317,11 +326,7 @@ class _ListsScreenState extends State<ListsScreen> {
       },
       child: Container(
         height: 50.h,
-        child: Row(
-          children: imageWidgets
-              .map((image) => image)
-              .toList()
-        ),
+        child: Row(children: imageWidgets.map((image) => image).toList()),
       ),
     );
   }
@@ -331,6 +336,7 @@ class _ListsScreenState extends State<ListsScreen> {
       "last_message": "",
       "last_message_date": Timestamp.now(),
       "last_message_userId": "",
+      "last_message_userName": "",
       "list_name": "Name...",
       "size": 0,
       "storeImageUrl": storePlaceholder,
@@ -340,8 +346,6 @@ class _ListsScreenState extends State<ListsScreen> {
     });
     return docRef.id;
   }
-
-
 
   Widget getFab() {
     return Column(
@@ -410,12 +414,16 @@ class _ListsScreenState extends State<ListsScreen> {
         ),
       ],
     );
-
-
   }
 
   Future<void> startChatList() async {
-     var listId = await createChatList();
-    AppNavigator.push(context: context, screen: ChatListViewScreen(listId: listId,listName: "Name...", isUsingDynamicLink: false,));
+    var listId = await createChatList();
+    AppNavigator.push(
+        context: context,
+        screen: ChatListViewScreen(
+          listId: listId,
+          listName: "Name...",
+          isUsingDynamicLink: false,
+        ));
   }
 }

@@ -138,7 +138,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             Spacer(),
-            GenericButton(onPressed: () => showDialog(context: context, builder: (ctx) => ProfileDialog(title: LocaleKeys.deleteYourAccount.tr(), body: LocaleKeys.allDataWillBeRemoved.tr(), buttonText: LocaleKeys.delete.tr())),
+            GenericButton(onPressed: () => showDialog(context: context, builder: (ctx) => ProfileDialog(title: LocaleKeys.deleteYourAccount.tr(), body: LocaleKeys.allDataWillBeRemoved.tr(), buttonText: LocaleKeys.delete.tr(), isSigningOut: false,)),
               width: double.infinity,
               height: 60.h,
               borderRadius: BorderRadius.circular(6),

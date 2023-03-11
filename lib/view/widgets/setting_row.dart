@@ -25,7 +25,7 @@ class SettingRow extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       onTap: () => route != null ? AppNavigator.push(context: context, screen: route!) : showDialog(
           context: context,
-          builder: (ctx) => ProfileDialog(title: LocaleKeys.signout.tr(),body: LocaleKeys.logoutFromAccount.tr(), buttonText: LocaleKeys.signout.tr(),)),
+          builder: (ctx) => ProfileDialog(title: LocaleKeys.signout.tr(),body: LocaleKeys.logoutFromAccount.tr(), buttonText: LocaleKeys.signout.tr(), isSigningOut: true,)),
       child: Row(
         children: [
           Container(

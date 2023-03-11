@@ -21,7 +21,7 @@ class NavBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           GestureDetector(
-              onTap: () => AppNavigator.push(context: context, screen: ListsScreen()),
+              onTap: () => AppNavigator.push(context: context, screen: ChatlistsScreen()),
               child: SvgPicture.asset(listIcon,width: 35.w,height: 51.h,)),
           SvgPicture.asset(profileIcon,width: 35.w,height: 51.h,),
           SvgPicture.asset(home,width: 35.w,height: 51.h,color: const Color.fromRGBO(81, 82, 80, 0.7),),
