@@ -15,8 +15,9 @@ import '../screens/choose_store_screen.dart';
 
 class ChooseListDialog extends StatefulWidget {
   final List allLists;
+  final bool isSharing;
   final ListItem item;
-  const ChooseListDialog({Key? key, required this.allLists, required this.item}) : super(key: key);
+  const ChooseListDialog({Key? key, required this.allLists, required this.item, required this.isSharing}) : super(key: key);
 
   @override
   State<ChooseListDialog> createState() => _ChooseListDialogState();
@@ -25,25 +26,57 @@ class ChooseListDialog extends StatefulWidget {
 class _ChooseListDialogState extends State<ChooseListDialog> {
   var selectedListId = "choose";
   var hasChosenList = false;
-  Future<void> addItemToList(ListItem item, String docId) async {
+
+  Future<void> addItemToList(ListItem item, String docId) async {             //TODO: duplicated with message_bubble line 179
     final userData = await FirebaseFirestore.instance
         .collection('/users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
-    FirebaseFirestore.instance.collection('/lists/$docId/items').add({
+    await FirebaseFirestore.instance.collection('/lists/$docId/items').add(
+        {
+          "item_name": item.name,
+          "item_size" : item.size,
+          "item_price" : item.price,
+          "item_image" : item.imageURL,
+          "item_isChecked" : false,
+          "text": "",
+          "owner": userData['username'],
+          "time": Timestamp.now(),
+        });
+  }
+  Future<void> shareItem({required ListItem item,required String docId}) async { //TODO: duplicated with chat_view_widget line 310
+    final userData = await FirebaseFirestore.instance
+        .collection('/users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    await FirebaseFirestore.instance
+        .collection('/lists/$docId/messages')
+        .add({
       'item_name': item.name,
       'item_image': item.imageURL,
-      'item_description': item.description,
-      'item_quantity': item.quantity,
-      'item_isChecked': item.isChecked,
+      'item_description': item.size,
+      'store_name': item.storeName,
+      'isAddedToList': false,
       'item_price': item.price,
+      'item_oldPrice': item.oldPrice,
+      'message': "",
       'createdAt': Timestamp.now(),
       'userId': FirebaseAuth.instance.currentUser!.uid,
-      'message': "",
       'username': userData['username'],
       'userImageURL': userData['imageURL'],
     });
+    FirebaseFirestore.instance
+        .collection('/lists')
+        .doc(docId)
+        .update({
+      "last_message": "Shared ${item.name}",
+      "last_message_date": Timestamp.now(),
+      "last_message_userId": FirebaseAuth.instance.currentUser?.uid,
+      "last_message_userName":  userData['username'],
+    });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +93,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
             ),
             Text(
               LocaleKeys.chooseList.tr(),
-              style: TextStyles.textViewSemiBold34.copyWith(color: prussian),
+              style: TextStyles.textViewSemiBold34.copyWith(color: black2),
             ),
             SizedBox(
               height: 25.h,
@@ -102,26 +135,28 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
               height: 10.h,
             ),
             GenericButton(
-                onPressed: () async {
-                  if (hasChosenList) {
+                onPressed: !hasChosenList ? null : () async {
+                  if (!widget.isSharing) {
                     await addItemToList(
                        widget.item,
                         selectedListId);
+                  }else{
+                    await shareItem(item: widget.item,docId: selectedListId);
+                  }
                     AppNavigator.pop(context: context);
-                  }else {
-                    //TODO: pass the item to the chooseStoreScreen page and add it as the first item in the list created
-                    // AppNavigator.pushReplacement(
-                    //     context: context, screen: ChooseStoreScreen());
-                    }
                   },
                 height: 60.h,
                 width: double.infinity,
-                color: verdigris,
+                color: yellow,
                 borderRadius: BorderRadius.circular(6),
-                child: Text(
-                  hasChosenList ? LocaleKeys.addToList.tr() : LocaleKeys.createNewList.tr(),
-                  style: TextStyles.textViewSemiBold16
-                      .copyWith(color: Colors.white),
+                child: widget.isSharing ?  Text(LocaleKeys.share.tr(),
+                  style: TextStylesInter.textViewSemiBold16
+                      .copyWith(color: black2),
+                ) : Text(
+                  // hasChosenList ? LocaleKeys.addToList.tr() : LocaleKeys.createNewList.tr(),
+                  LocaleKeys.addToList.tr(),
+                  style: TextStylesInter.textViewSemiBold16
+                      .copyWith(color: black2),
                 )),
             SizedBox(
               height: 30.h,

@@ -24,8 +24,17 @@ class ProductDetailScreen extends StatefulWidget {
   final String imageURL;
   final String description;
   final double price;
+  final String oldPrice;
   final String size;
-  const ProductDetailScreen({Key? key, required this.storeName, required this.productName, required this.imageURL, required this.description, required this.price, required this.size}) : super(key: key);
+  const ProductDetailScreen(
+      {Key? key,
+      required this.storeName,
+      required this.productName,
+      required this.imageURL,
+      required this.description,
+      required this.price,
+      required this.size, required this.oldPrice})
+      : super(key: key);
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -58,7 +67,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   List<Map> allLists = [];
-
 
   @override
   Widget build(BuildContext context) {
@@ -115,8 +123,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       width: 214.w,
                       child:
                           // Image.asset(productImages.elementAt(selectedIndex))
-                          Image.network(widget.imageURL,width: 214.w,height: 214.h,)
-                  ),
+                          Image.network(
+                        widget.imageURL,
+                        width: 214.w,
+                        height: 214.h,
+                      )),
                 ],
               ),
               SizedBox(
@@ -127,18 +138,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 children: [
                   Column(
                     children: [
-                      GestureDetector(
+                      GestureDetector(                                  //adding
                         onTap: () async {
                           await getAllLists();
                           showDialog(
                               context: context,
-                              builder: (ctx) => ChooseListDialog(allLists: allLists,item:  ListItem(
-                                  name: widget.productName,
-                                  price: widget.price,
-                                  isChecked: false,
-                                  quantity: quantity,
-                                  imageURL: widget.imageURL,
-                                  description: widget.size),));
+                              builder: (ctx) => ChooseListDialog(
+                                    allLists: allLists,
+                                    isSharing: false,
+                                    item: ListItem(
+                                        name: widget.productName,
+                                        oldPrice: widget.oldPrice,
+                                        price: widget.price,
+                                        isChecked: false,
+                                        quantity: quantity,
+                                        imageURL: widget.imageURL,
+                                        size: widget.size),
+                                  ));
                         },
                         child: Container(
                           padding: EdgeInsets.all(21),
@@ -165,7 +181,49 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       )
                     ],
                   ),
-                  shareButton,
+                  GestureDetector(            //sharing
+                    onTap: () async {
+                      await getAllLists();
+                      showDialog(
+                          context: context,
+                          builder: (ctx) => ChooseListDialog(
+                                allLists: allLists,
+                                isSharing: true,
+                                item: ListItem(
+                                    name: widget.productName,
+                                    oldPrice: widget.oldPrice,
+                                    price: widget.price,
+                                    isChecked: false,
+                                    quantity: quantity,
+                                    imageURL: widget.imageURL,
+                                    size: widget.size),
+                              ));
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 60,
+                          height: 60,
+                          margin: EdgeInsets.symmetric(horizontal: 10),
+                          decoration: BoxDecoration(
+                            color: Color.fromRGBO(135, 208, 192, 0.5),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Icon(
+                            Icons.share_outlined,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        Text(
+                          "Share",
+                          style: TextStyles.textViewMedium12
+                              .copyWith(color: prussian),
+                        )
+                      ],
+                    ),
+                  ),
                   priceAlertButton,
                 ],
               ),
@@ -185,10 +243,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       children: [
                         IconButton(
                           onPressed: () {
-                            if(quantity > 0) {
+                            if (quantity > 0) {
                               setState(() {
-                              quantity--;
-                            });
+                                quantity--;
+                              });
                             }
                           },
                           icon: Icon(Icons.remove),
@@ -375,10 +433,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               SizedBox(
                 height: 20.h,
               ),
-              Text("Description", style: TextStyles.textViewSemiBold18.copyWith(color: prussian)),
-              SizedBox(height: 10.h,),
-              Text(widget.description,style: TextStyles.textViewMedium14.copyWith(color: Color.fromRGBO(134, 136, 137, 1)),),
-            SizedBox(height: 20.h,)
+              Text("Description",
+                  style:
+                      TextStyles.textViewSemiBold18.copyWith(color: prussian)),
+              SizedBox(
+                height: 10.h,
+              ),
+              Text(
+                widget.description,
+                style: TextStyles.textViewMedium14
+                    .copyWith(color: Color.fromRGBO(134, 136, 137, 1)),
+              ),
+              SizedBox(
+                height: 20.h,
+              )
             ],
           ),
         ),
@@ -387,10 +455,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Future<void> getAllLists() async {
-    var allListsSnapshot =
-        await FirebaseFirestore.instance.collection('/lists').where("userIds", arrayContains: FirebaseAuth.instance.currentUser?.uid)
-            .get();
-      allLists.clear();
+    var allListsSnapshot = await FirebaseFirestore.instance
+        .collection('/lists')
+        .where("userIds", arrayContains: FirebaseAuth.instance.currentUser?.uid)
+        .get();
+    allLists.clear();
     for (var list in allListsSnapshot.docs) {
       allLists.add({
         "list_name": list['list_name'],
@@ -399,29 +468,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
   }
 
-  var shareButton = Column(
-    children: [
-      Container(
-        width: 60,
-        height: 60,
-        margin: EdgeInsets.symmetric(horizontal: 10),
-        decoration: BoxDecoration(
-          color: Color.fromRGBO(135, 208, 192, 0.5),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Icon(
-          Icons.share_outlined,
-        ),
-      ),
-      SizedBox(
-        height: 10.h,
-      ),
-      Text(
-        "Share",
-        style: TextStyles.textViewMedium12.copyWith(color: prussian),
-      )
-    ],
-  );
   var priceAlertButton = Column(
     children: [
       Container(

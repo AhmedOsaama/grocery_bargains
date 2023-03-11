@@ -366,6 +366,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           var storeName = allProducts[i]['Store'];
                           var description = allProducts[i]['Description'];
                           var price = allProducts[i]['Current_price'];
+                          var oldPrice = allProducts[i]['Old_price'];
                           var size = allProducts[i]['Size'];
                           return GestureDetector(
                             onTap: () => AppNavigator.push(
@@ -377,6 +378,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   description: description,
                                   price: price.runtimeType == int ? price.toDouble() : price,
                                   size: size,
+                                    oldPrice: oldPrice
                                 )),
                             child: DiscountItem(
                               onShare: (){},
@@ -473,11 +475,13 @@ class MySearchDelegate extends SearchDelegate {
                 var storeName = searchResults[i]['Store'];
                 var description = searchResults[i]['Description'];
                 var price = searchResults[i]['Current_price'];
+                var oldPrice = searchResults[i]['Old_price'];
                 var size = searchResults[i]['Size'];
                 return GestureDetector(
                   onTap: () => AppNavigator.push(
                       context: context,
                       screen: ProductDetailScreen(
+                        oldPrice: oldPrice,
                         storeName: storeName,
                         productName: productName,
                         imageURL: imageURL,

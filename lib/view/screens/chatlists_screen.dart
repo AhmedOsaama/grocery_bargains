@@ -213,16 +213,22 @@ class _ListsScreenState extends State<ListsScreen> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Text(
-                                          '${allLists[i]['last_message_userId'] == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : "They"}: ',
+                                          //TODO: replace "they" with the real user name who sent the last message
+                                          '${allLists[i]['last_message_userId'] == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : allLists[i]['last_message_userName']}: ',
+                                          // '${allLists[i]['last_message_userId'] == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : "They"}: ',
                                           style: TextStylesInter
                                               .textViewRegular14
                                               .copyWith(color: black2),
                                         ),
-                                        Text(
-                                          allLists[i]['last_message'],
-                                          style: TextStylesInter
-                                              .textViewRegular14
-                                              .copyWith(color: black2),
+                                        Container(
+                                          width: 150.w,
+                                          child: Text(
+                                            allLists[i]['last_message'],
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStylesInter
+                                                .textViewRegular14
+                                                .copyWith(color: black2),
+                                          ),
                                         ),
                                       ],
                                     ),

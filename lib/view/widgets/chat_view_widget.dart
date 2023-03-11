@@ -96,6 +96,7 @@ class _ChatViewState extends State<ChatView> {
                           message: messages[index]['message'],
                           messageDocPath: messages[index].reference,
                           userName: messages[index]['username'],
+                          userId: messages[index]['userId'],
                           userImage: messages[index]['userImageURL'],
                           key: ValueKey(messages[index].id),
                           isAddedToList: messages[index]['isAddedToList'],
@@ -234,6 +235,7 @@ class _ChatViewState extends State<ChatView> {
                               context: context,
                               screen: ProductDetailScreen(
                                 storeName: storeName,
+                                oldPrice: oldPrice,
                                 productName: productName,
                                 imageURL: imageURL,
                                 description: description,
@@ -306,7 +308,7 @@ class _ChatViewState extends State<ChatView> {
     }
   }
 
-  Future<void> shareItem({itemName,itemImage,itemSize,itemQuantity,isAddedToList,itemPrice,itemOldPrice,storeName}) async {
+  Future<void> shareItem({itemName,itemImage,itemSize,itemPrice,itemOldPrice,storeName}) async {
       final userData = await FirebaseFirestore.instance
           .collection('/users')
           .doc(FirebaseAuth.instance.currentUser!.uid)

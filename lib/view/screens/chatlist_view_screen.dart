@@ -51,6 +51,7 @@ class ChatListViewScreen extends StatefulWidget {
 class _ChatListViewScreenState extends State<ChatListViewScreen> {
   bool isDeleting = false;
   late Future<Widget> getUserImagesFuture;
+  late Future<QuerySnapshot> getListItemsFuture;
   bool isEditingName = false;
 
   @override
@@ -79,8 +80,13 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       });
     }
     getUserImagesFuture = getUserImages();
+    getListItemsFuture = FirebaseFirestore.instance
+        .collection('/lists/${widget.listId}/items')
+        .get();
     super.initState();
   }
+
+
 
   Future<Widget> getUserImages() async {
     List<Widget> imageWidgets = [];
@@ -121,10 +127,9 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
         // width: 100.w,
         height: 50.h,
         child: Stack(
-          alignment: Alignment.center,
           children: imageWidgets
               .map((image) => Positioned(
-                    left: imageWidgets.indexOf(image) * 20,
+                    left: imageWidgets.indexOf(image) * 10,
                     child: image,
                   ))
               .toList()
@@ -167,22 +172,23 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
               children: [
                 Row(
                   children: [
+                    30.pw,
                     widget.storeImage != null
                         ? Image.asset(widget.storeImage!,width: 45,)
                         : Container(),
                     SizedBox(
                       width: 10.w,
                     ),
-                    widget.storeName != null
-                        ? Text(
-                            widget.storeName!,
-                            style: TextStyles.textViewMedium16
-                                .copyWith(color: prussian),
-                          )
-                        : Container(),
-                    SizedBox(
-                      width: 10.w,
-                    ),
+                    // widget.storeName != null
+                    //     ? Text(
+                    //         widget.storeName!,
+                    //         style: TextStyles.textViewMedium16
+                    //             .copyWith(color: prussian),
+                    //       )
+                    //     : Container(),
+                    // SizedBox(
+                    //   width: 10.w,
+                    // ),
                     // widget.storeImage != null ? Image.asset(widget.storeImage!) : Container(),
                     Spacer(),
                     FutureBuilder(
@@ -270,12 +276,11 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                   child: FutureBuilder<QuerySnapshot>(
                       future: FirebaseFirestore.instance
                           .collection('/lists/${widget.listId}/items')
-                          // .where('message', isEqualTo: '')
                           .get(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
-                        }
+                        // if (snapshot.connectionState == ConnectionState.waiting) {
+                        //   return const Center(child: CircularProgressIndicator());
+                        // }
                         final items = snapshot.data?.docs ?? [];
                         if (items.isEmpty || !snapshot.hasData) {
                           return Container(
@@ -290,15 +295,15 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                         children: [
                           Row(
                             children: [
-                              IconButton(
-                                  onPressed: () => shareList(), icon: Icon(Icons.share_outlined)),
-                              IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      widget.isListView = !widget.isListView;
-                                    });
-                                  },
-                                  icon: Icon(Icons.message_outlined)),
+                              // IconButton(
+                              //     onPressed: () => shareListViaDeepLink(), icon: Icon(Icons.share_outlined)),
+                              // IconButton(
+                              //     onPressed: () {
+                              //       setState(() {
+                              //         widget.isListView = !widget.isListView;
+                              //       });
+                              //     },
+                              //     icon: Icon(Icons.message_outlined)),
                               Spacer(),
                               Text(
                                 "${items.length} items",
@@ -361,10 +366,9 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                       ),
                                     );
                                   }
-
                                   var itemName = items[i]['item_name'];
                                   var itemImage = items[i]['item_image'];
-                                  var itemDescription = items[i]['item_description'];
+                                  var itemDescription = items[i]['item_size'];
                                   var itemPrice = items[i]['item_price'];
                                   return Row(
                                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -374,6 +378,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                           opacity: isChecked ? 0.6 : 1,
                                           child: Row(
                                             children: [
+                                              30.pw,
                                               Checkbox(
                                                 value: isChecked,
                                                 onChanged: (value) {
@@ -421,15 +426,18 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                                                       .lineThrough
                                                                   : null),
                                                     ),
-                                                    Text(
-                                                      "$itemDescription",
-                                                      style: TextStyles.textViewLight12
-                                                          .copyWith(
-                                                              color: prussian,
-                                                              decoration: isChecked
-                                                                  ? TextDecoration
-                                                                      .lineThrough
-                                                                  : null),
+                                                    Container(
+                                                      width: 150.w,
+                                                      child: Text(
+                                                        "$itemDescription",
+                                                        style: TextStyles.textViewLight12
+                                                            .copyWith(
+                                                                color: prussian,
+                                                                decoration: isChecked
+                                                                    ? TextDecoration
+                                                                        .lineThrough
+                                                                    : null),
+                                                      ),
                                                     ),
                                                   ],
                                                 ),
@@ -476,7 +484,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     );
   }
 
-  Future<void> shareList() async {
+  Future<void> shareListViaDeepLink() async {
     final dynamicLinkParams = DynamicLinkParameters(
       link: Uri.parse(
           "https://www.google.com/add_user/${widget.listName}/${widget.listId}"), //TODO: listName has white space and that won't reflect well in using the link later

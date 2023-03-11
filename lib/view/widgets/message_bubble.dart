@@ -25,6 +25,7 @@ class MessageBubble extends StatefulWidget {
   final String itemImage;
   final String storeName;
   final String userName;
+  final String userId;
   final String userImage;
   final String message;
   final bool isAddedToList;
@@ -43,7 +44,7 @@ class MessageBubble extends StatefulWidget {
       required this.messageDocPath,
       this.key,
       required this.message,
-      this.isInThread = false, required this.isAddedToList, required this.itemPrice, required this.itemOldPrice, required this.itemSize, required this.storeName})
+      this.isInThread = false, required this.isAddedToList, required this.itemPrice, required this.itemOldPrice, required this.itemSize, required this.storeName, required this.userId})
       : super(key: key);
 
   @override
@@ -78,34 +79,22 @@ class _MessageBubbleState extends State<MessageBubble> {
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
               margin: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
               child: ProductItemWidget(
+                  onTap: () => addItemMessageToList(itemName: widget.itemName, itemSize: widget.itemSize, itemPrice: widget.itemPrice, itemImage: widget.itemImage),
                   price: widget.itemPrice,
                   name: widget.itemName,
                   size: widget.itemSize,
                   imagePath: widget.itemImage,
                   oldPrice: widget.itemOldPrice,
-                  onTap: null, isAddedToList: widget.isAddedToList,
-                storeName: widget.storeName,),
+                isAddedToList: widget.isAddedToList,
+                storeName: widget.storeName,
+              ),
             ),
           if (widget.message.isNotEmpty)
             Row(
               children: [
                 GestureDetector(
                   onTap: widget.isAddedToList ? (){} : () async {
-                    //widget.messageDocPath!.parent.path is equivalent to list id
-                    print(widget.messageDocPath.parent.parent?.path);
-                    await FirebaseFirestore.instance.collection('${widget.messageDocPath.parent.parent?.path}/items').add(
-                        {
-                          "text": widget.message,
-                          "chat_reference": widget.messageDocPath.path,
-                          "item_isChecked" : false,
-                          "owner": widget.userName,
-                          "time": Timestamp.now(),
-                        });
-                    widget.messageDocPath.update(
-                        {
-                          'isAddedToList': true,
-                        });
-
+                    await addMessageToList();
                   },
                     child: widget.isAddedToList ? SvgPicture.asset(checkMark) : SvgPicture.asset(add)
                 ) ,
@@ -173,4 +162,56 @@ class _MessageBubbleState extends State<MessageBubble> {
       ),
     );
   }
+
+  Future<void> addMessageToList() async {
+     await FirebaseFirestore.instance.collection('${widget.messageDocPath.parent.parent?.path}/items').add(
+        {
+          "text": widget.message,
+          "chat_reference": widget.messageDocPath.path,
+          "item_isChecked" : false,
+          "owner": widget.userName,
+          "time": Timestamp.now(),
+        });
+     await updateListInfo();
+    markItemAsAdded();
+  }
+
+  Future<void> addItemMessageToList({required String itemName, required String itemSize, required String itemPrice, required String itemImage}) async {
+    await FirebaseFirestore.instance.collection('${widget.messageDocPath.parent.parent?.path}/items').add(
+        {
+          "item_name": itemName,
+          "item_size" : itemSize,
+          "item_price" : itemPrice,
+          "item_image" : itemImage,
+          "item_isChecked" : false,
+          "text": "",
+          "chat_reference": widget.messageDocPath.path,
+          "owner": widget.userName,
+          "time": Timestamp.now(),
+        });
+    await updateListInfo();
+    markItemAsAdded();
+  }
+
+  Future<void> updateListInfo() async {
+     await FirebaseFirestore.instance.doc('${widget.messageDocPath.parent.parent?.path}').update(
+       {
+         "size": FieldValue.increment(1),
+         "total_price": FieldValue.increment(double.tryParse(widget.itemPrice) ?? 0),
+         "last_message": widget.message.isEmpty ? widget.itemName : widget.message,
+         "last_message_date": Timestamp.now(),
+         "last_message_userId": widget.userId,
+         "last_message_userName": widget.userName,
+       });
+  }
+
+    // updates the field isAddedToList to indicate that the chat message has been added to a list successfully hence the a checkmark will show beside the message
+  void markItemAsAdded() {
+    widget.messageDocPath.update(
+        {
+          'isAddedToList': true,
+        });
+  }
+
+
 }

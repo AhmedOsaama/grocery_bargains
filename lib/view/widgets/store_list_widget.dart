@@ -32,7 +32,13 @@ class _StoreListWidgetState extends State<StoreListWidget> {
   String getTotalListPrice(List storeItems){
     var total = 0.0;
     for (var item in storeItems) {
-      total += item['item_price'] ?? 99999;
+      if(item.data().containsKey('item_price') && item['item_price'].runtimeType == String) {
+        total += double.parse(item['item_price']);
+      } else if(item.data().containsKey('item_price') && item['item_price'].runtimeType == double) {
+        total += item['item_price'] ?? 0;
+      }else{
+        total += 0;
+      }
     }
     return total.toStringAsFixed(2);
   }
@@ -49,7 +55,7 @@ class _StoreListWidgetState extends State<StoreListWidget> {
           boxShadow: Utils.boxShadow),
       child: FutureBuilder<QuerySnapshot>(
         future: FirebaseFirestore.instance
-            .collection('/lists/${widget.listId}/items').where('message',isEqualTo: '')
+            .collection('/lists/${widget.listId}/items')
             .get(),
         builder: (context, snapshot) {
           if(!snapshot.hasData) return const Center(child: CircularProgressIndicator(),);
@@ -82,14 +88,15 @@ class _StoreListWidgetState extends State<StoreListWidget> {
                       itemCount: storeItems.length > 4 ? 4 : storeItems.length,
                       itemBuilder: (ctx, i) {
                         var isChecked = storeItems[i]['item_isChecked'];
-                        var itemName = storeItems[i]['item_name'];
-                        var itemPrice = storeItems[i]['item_price'];
+                        var itemName = storeItems[i].data().toString().contains('item_name') ? storeItems[i]['item_name'] : storeItems[i]['text'];
+                        var itemPrice = storeItems[i].data().toString().contains('item_price') ? storeItems[i]['item_price'] : "0.0";
                         var doc = storeItems[i];
                         if (i > 2) return const Text("...");
                         return Row(
                           // mainAxisSize: MainAxisSize.min,
                           children: [
                             Flexible(
+                              flex: 3,
                               child: Checkbox(
                                 value: isChecked,
                                 onChanged: (value) {
@@ -105,7 +112,6 @@ class _StoreListWidgetState extends State<StoreListWidget> {
                                 },
                                 visualDensity: VisualDensity.compact,
                               ),
-                              flex: 3,
                             ),
                             SizedBox(
                               width: 70.w,

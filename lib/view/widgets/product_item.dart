@@ -22,8 +22,8 @@ class ProductItemWidget extends StatelessWidget {
   final String imagePath;
   final bool isAddedToList;
   final String storeName;
-  final Function? onTap;
-  const ProductItemWidget({Key? key, required this.price, required this.name, required this.size, required this.imagePath, required this.oldPrice, this.onTap, required this.isAddedToList, required this.storeName}) : super(key: key);
+  final Function onTap;
+  const ProductItemWidget({Key? key, required this.price, required this.name, required this.size, required this.imagePath, required this.oldPrice, required this.onTap, required this.isAddedToList, required this.storeName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +78,6 @@ class ProductItemWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                 onTap != null ? PlusButton(onTap: () => onTap!()) : Container(),
                 ],
               ) : Text("€$price",style: TextStyles.textViewMedium15.copyWith(color: prussian),),
               SizedBox(height: 10.w,),
@@ -90,7 +89,7 @@ class ProductItemWidget extends StatelessWidget {
             children: [
               Image.asset(storeImage,width: 20,height: 20,),
               100.ph,
-              isAddedToList ? SvgPicture.asset(checkMark) : PlusButton(onTap: (){})
+              isAddedToList ? SvgPicture.asset(checkMark) : PlusButton(onTap: () => onTap())
             ],
           )
         ],
