@@ -176,7 +176,9 @@ class _ListsScreenState extends State<ListsScreen> {
                         itemCount: allLists.length,
                         itemBuilder: (ctx, i) {
                           return InkWell(
-                            onTap: () => AppNavigator.push(context: context, screen: ChatListViewScreen(listId: allLists[i].id, listName: allLists[i]['list_name'],)),
+                            onTap: () => AppNavigator.push(context: context, screen: ChatListViewScreen(
+                              updateList: updateList,
+                              listId: allLists[i].id, listName: allLists[i]['list_name'],)),
                             child: Row(
                               children: [
                                 Image.asset(
@@ -310,19 +312,15 @@ class _ListsScreenState extends State<ListsScreen> {
     }
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        print(imageWidgets.length);
+      },
       child: Container(
-        width: 50.w,
         height: 50.h,
-        alignment: Alignment.center,
-        child: Stack(
-          alignment: Alignment.center,
+        child: Row(
           children: imageWidgets
-              .map((image) => Positioned(
-                    left: imageWidgets.indexOf(image) * 15,
-                    child: image,
-                  ))
-              .toList(),
+              .map((image) => image)
+              .toList()
         ),
       ),
     );

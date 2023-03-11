@@ -91,7 +91,8 @@ class _MessageBubbleState extends State<MessageBubble> {
             ),
           if (widget.message.isNotEmpty)
             Row(
-              children: [
+              children: widget.isMe ?
+              [
                 GestureDetector(
                   onTap: widget.isAddedToList ? (){} : () async {
                     await addMessageToList();
@@ -121,7 +122,37 @@ class _MessageBubbleState extends State<MessageBubble> {
                     textAlign: widget.isMe ? TextAlign.right : TextAlign.left,
                   ),
                 ),
-              ],
+              ] : [
+                GestureDetector(
+                    onTap: widget.isAddedToList ? (){} : () async {
+                      await addMessageToList();
+                    },
+                    child: widget.isAddedToList ? SvgPicture.asset(checkMark) : SvgPicture.asset(add)
+                ) ,
+                5.pw,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
+                  margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topRight: const Radius.circular(18),
+                      topLeft: const Radius.circular(18),
+                      bottomLeft:
+                      widget.isMe ? const Radius.circular(18) : const Radius.circular(0),
+                      bottomRight:
+                      widget.isMe ? const Radius.circular(0) : const Radius.circular(18),
+                    ),
+                    color:
+                    widget.isMe ? iris : const Color.fromRGBO(233, 233, 235, 1),
+                  ),
+                  child: Text(
+                    widget.message,
+                    style: TextStyles.textViewRegular16
+                        .copyWith(color: widget.isMe ? Colors.white : Colors.black),
+                    textAlign: widget.isMe ? TextAlign.right : TextAlign.left,
+                  ),
+                ),
+              ].reversed.toList(),
             ),
           if(widget.isMe)
           widget.userImage.isNotEmpty

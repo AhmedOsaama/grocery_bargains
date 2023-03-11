@@ -12,6 +12,7 @@ import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/assets_manager.dart';
 import 'package:swaav/utils/fonts_utils.dart';
 import 'package:swaav/view/components/generic_appbar.dart';
+import 'package:swaav/view/components/generic_field.dart';
 import 'package:swaav/view/components/my_scaffold.dart';
 import 'package:swaav/view/components/plus_button.dart';
 import 'package:swaav/view/screens/category_items_screen.dart';
@@ -53,6 +54,11 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   late Future<Widget> getUserImagesFuture;
   late Future<QuerySnapshot> getListItemsFuture;
   bool isEditingName = false;
+  List<UserInfo> listUsers = [];
+  var inviteFriendController = TextEditingController();
+
+  var isInvitingFriends = false;
+
 
   @override
   void initState() {
@@ -90,8 +96,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
   Future<Widget> getUserImages() async {
     List<Widget> imageWidgets = [];
-    imageWidgets.clear();
     List userIds = [];
+    imageWidgets.clear();
     try {
       final list = await FirebaseFirestore.instance
           .collection('/lists')
@@ -105,13 +111,19 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     }
     if (userIds.isEmpty) return SvgPicture.asset(peopleIcon);
     String imageUrl = "";
+    String userName = "";
+    String email = "";
     for (var userId in userIds) {
       final userSnapshot = await FirebaseFirestore.instance
           .collection('/users')
           .doc(userId)
           .get();
       imageUrl = userSnapshot.data()!['imageURL'];
-      imageWidgets.add(CircleAvatar(
+      userName = userSnapshot.data()!['email'];
+      email = userSnapshot.data()!['username'];
+      listUsers.add(UserInfo(imageUrl,userName,email));
+      imageWidgets.add(
+          CircleAvatar(
         backgroundImage: NetworkImage(
           imageUrl,
         ),
@@ -119,34 +131,18 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       ));
     }
 
-    return GestureDetector(
-      onTap: (){
-
-      },
-      child: SizedBox(
-        // width: 100.w,
-        height: 50.h,
-        child: Stack(
-          children: imageWidgets
-              .map((image) => Positioned(
-                    left: imageWidgets.indexOf(image) * 10,
-                    child: image,
-                  ))
-              .toList()
-            ..add(Positioned(                                             //plus button
-              left: imageWidgets.length * 20,
-              child: Center(
-                child: Container(
-                    padding: EdgeInsets.all(5),
-                    margin: EdgeInsets.only(left: 5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      color: Color.fromRGBO(245, 245, 245, 1),
-                    ),
-                    child: SvgPicture.asset(plusIcon)),
-              ),
-            )),
-        ),
+    return Container(
+      // padding: EdgeInsets.symmetric(horizontal: 15),
+      // color: Colors.red,
+      // width: 50.w,
+      height: 50.h,
+      child: Stack(
+        children: imageWidgets
+            .map((image) => Positioned(
+                  right: imageWidgets.indexOf(image) * 25,
+                  child: image,
+                ))
+            .toList()
       ),
     );
   }
@@ -190,24 +186,90 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                     //   width: 10.w,
                     // ),
                     // widget.storeImage != null ? Image.asset(widget.storeImage!) : Container(),
-                    Spacer(),
-                    FutureBuilder(
-                        future: getUserImagesFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator(
-                              color: verdigris,
-                            ));
-                          }
-                          return Flexible(
-                            child: snapshot.data ??
-                                const Text("Something went wrong"),
-                          );
-                        }),
+                    Spacer(
+                    ),
+                    Expanded(
+                      child: InkWell(
+                        onTap: (){
+                          setState(() {
+                            isInvitingFriends = !isInvitingFriends;
+                          });
+                        },
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: FutureBuilder(
+                                  future: getUserImagesFuture,
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return const Center(
+                                          child: CircularProgressIndicator(
+                                        color: verdigris,
+                                      ));
+                                    }
+                                    return snapshot.data ??
+                                        const Text("Something went wrong");
+                                  }),
+                            ),
+                            // 5.pw,
+                            Icon(Icons.arrow_drop_down),
+                            10.pw,
+                          ],
+                        ),
+                      ),
+                    )
                   ],
                 ),
+                if(isInvitingFriends)
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        ListView(
+                          shrinkWrap: true,
+                        children: listUsers.map((userInfo)  {
+                          return Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                  userInfo.imageURL,
+                                ),
+                                radius: 20,
+                              ),
+                              20.pw,
+                              Text(userInfo.name,style: TextStylesInter.textViewRegular16.copyWith(color: black2),)
+                            ],
+                          );
+                        }).toList()
+                    ),
+                        10.ph,
+                        GenericField(
+                          controller: inviteFriendController,
+                          prefixIcon: Icon(Icons.person_add_alt),
+                          hintText: LocaleKeys.inputEmail.tr(),
+                          hintStyle: TextStylesDMSans.textViewBold14.copyWith(color: black2),
+                          onSubmitted: (email) async {
+                            try {
+                              var userData = await FirebaseFirestore.instance
+                                  .collection('/users').where(
+                                  'email', isEqualTo: email.trim()).get();
+                              var userId = userData.docs.first.id;
+                              FirebaseFirestore.instance
+                                  .collection('/lists')
+                                  .doc(widget.listId).update({
+                                "userIds": FieldValue.arrayUnion([userId])
+                              });
+                            }catch(e){
+                              print("ERROR: $e");
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Couldn't find a user with that email",),));
+                            }
+                            inviteFriendController.clear();
+                          },
+                        )
+                      ],
+                    ),
+                  ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Row(
@@ -524,4 +586,11 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
         ? widget.updateList!()
         : () {};
   }
+}
+
+class UserInfo{
+  String name;
+  String email;
+  String imageURL;
+  UserInfo(this.imageURL,this.name,this.email);
 }
