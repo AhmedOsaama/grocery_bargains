@@ -281,7 +281,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         .loginWithGoogle();
                      if(userCredential.user != null){
                      saveRememberMePref();
-                      AppNavigator.pushReplacement(context: context, screen: MainScreen());
+                     var pref = await SharedPreferences.getInstance();
+                     var isFirstTime = pref.getBool("firstTime") ?? true;
+                     if(isFirstTime) {
+                       pref.setBool("firstTime", false);
+                      AppNavigator.pushReplacement(context: context, screen: OnBoardingScreen());
+                     } else {
+                       AppNavigator.pushReplacement(context: context, screen: MainScreen());
+                     }
                      }
                     },
                     child: Row(

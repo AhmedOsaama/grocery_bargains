@@ -33,6 +33,10 @@ Future<void> main() async {
   );
   var pref = await SharedPreferences.getInstance();
   var isRemembered = pref.getBool("rememberMe") ?? false;
+  var isFirstTime = pref.getBool("firstTime") ?? true;
+  if(isFirstTime) {
+    pref.setBool("firstTime", false);
+  }
 
   final String path = await DynamicLinkService().handleDynamicLinks();
   runApp(EasyLocalization(
@@ -46,7 +50,8 @@ Future<void> main() async {
         ],
         child: MyApp(
           dynamicLinkPath: path,
-            isRemembered: isRemembered
+            isRemembered: isRemembered,
+            isFirstTime: isFirstTime
         ),
       )));
 }
@@ -54,7 +59,8 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   final String dynamicLinkPath;
   final bool isRemembered;
-  const MyApp({super.key, required this.dynamicLinkPath, required this.isRemembered});
+  final bool isFirstTime;
+  const MyApp({super.key, required this.dynamicLinkPath, required this.isRemembered, required this.isFirstTime});
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +88,7 @@ class MyApp extends StatelessWidget {
                   if (snapshot.hasData) {
                     // return DynamicLinkService()
                     //     .getStartPage(dynamicLinkPath); //case 1
-                    return OnBoardingScreen();
+                    return isFirstTime ? OnBoardingScreen() : MainScreen();
                   }
                   return RegisterScreen();
                 });
