@@ -223,9 +223,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         Text(
-                                          //TODO: replace "they" with the real user name who sent the last message
                                           '${allLists[i]['last_message_userId'] == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : allLists[i]['last_message_userName']}: ',
-                                          // '${allLists[i]['last_message_userId'] == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : "They"}: ',
                                           style: TextStylesInter
                                               .textViewRegular14
                                               .copyWith(color: black2),

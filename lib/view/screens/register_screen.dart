@@ -79,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       saveRememberMePref();
       //TODO: make a condition if the user is first time in app then go to oboarding, else go to homescreen
       //   AppNavigator.pushReplacement(context: context, screen: HomeScreen());
-        AppNavigator.pushReplacement(context: context, screen: OnBoardingScreen());
+        AppNavigator.pushReplacement(context: context, screen: MainScreen());
       }
     } on FirebaseAuthException catch (error) {
       var message = "An error occurred, please check your credentials";
