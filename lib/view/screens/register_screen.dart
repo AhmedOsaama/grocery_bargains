@@ -269,6 +269,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(
                   height: 12.h,
                 ),
+                if(Platform.isAndroid)
                 GenericButton(
                     borderRadius: BorderRadius.circular(6),
                     borderColor: borderColor,

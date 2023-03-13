@@ -315,13 +315,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  gdpr_dialog:
-    dependency: "direct main"
-    description:
-      name: gdpr_dialog
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.1"
   google_sign_in:
     dependency: "direct main"
     description:
@@ -782,13 +775,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.2"
-  whatsapp_share2:
-    dependency: "direct main"
-    description:
-      name: whatsapp_share2
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.2"
   win32:
     dependency: transitive
     description:
