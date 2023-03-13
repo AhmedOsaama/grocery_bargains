@@ -97,7 +97,7 @@ class _ChatViewState extends State<ChatView> {
                     );
                   }
                   return ListView.builder(
-                      padding: EdgeInsets.only(bottom: 300),
+                      padding: EdgeInsets.only(bottom: 250,top: 50),
                       reverse: true,
                       itemCount: messages.length,
                       itemBuilder: (ctx, index) => Container(

@@ -1,10 +1,13 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gdpr_dialog/gdpr_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swaav/config/themes/app_theme.dart';
 import 'package:swaav/providers/chatlists_provider.dart';
@@ -35,27 +38,42 @@ Future<void> main() async {
   var pref = await SharedPreferences.getInstance();
   var isRemembered = pref.getBool("rememberMe") ?? false;
   var isFirstTime = pref.getBool("firstTime") ?? true;
+
   if(isFirstTime) {
+      // var consentStatus = await GdprDialog.instance.getConsentStatus();
+      // print(consentStatus.name);
+      // if(consentStatus == ConsentStatus.required) {
+    // GdprDialog.instance.showDialog(isForTest: true,testDeviceId: '07EB556D7EBA611E395AAF54AB12E08C')
+    //     .then((onValue) {
+    //   print('result === $onValue');
+    // });
+      // }
     pref.setBool("firstTime", false);
   }
-
   final String path = await DynamicLinkService().handleDynamicLinks();
-  runApp(EasyLocalization(
-      supportedLocales: const [Locale('ar'), Locale('en')],
-      path: 'assets/translations',
-      fallbackLocale: const Locale('en'),
-      child: MultiProvider(
-        providers: [
-          ChangeNotifierProvider<GoogleSignInProvider>(create: (_) => GoogleSignInProvider()),
-          ChangeNotifierProvider<ProductsProvider>(create: (_) => ProductsProvider()),
-          ChangeNotifierProvider<ChatlistsProvider>(create: (_) => ChatlistsProvider()),
-        ],
-        child: MyApp(
-          dynamicLinkPath: path,
-            isRemembered: isRemembered,
-            isFirstTime: isFirstTime
-        ),
-      )));
+
+  await SentryFlutter.init(
+        (options) {
+      options.dsn = kReleaseMode ? 'https://9ac26c76cf0349d59d82538e91345ada@o4504179587940352.ingest.sentry.io/4504831610126336' : '' ;
+      options.tracesSampleRate = 1.0;
+    },
+    appRunner: () => runApp(EasyLocalization(
+        supportedLocales: const [Locale('ar'), Locale('en')],
+        path: 'assets/translations',
+        fallbackLocale: const Locale('en'),
+        child: MultiProvider(
+          providers: [
+            ChangeNotifierProvider<GoogleSignInProvider>(create: (_) => GoogleSignInProvider()),
+            ChangeNotifierProvider<ProductsProvider>(create: (_) => ProductsProvider()),
+            ChangeNotifierProvider<ChatlistsProvider>(create: (_) => ChatlistsProvider()),
+          ],
+          child: MyApp(
+              dynamicLinkPath: path,
+              isRemembered: isRemembered,
+              isFirstTime: isFirstTime
+          ),
+        ))),
+  );
 }
 
 class MyApp extends StatelessWidget {

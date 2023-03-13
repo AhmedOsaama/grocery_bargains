@@ -161,7 +161,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       Provider.of<ChatlistsProvider>(context, listen: false)
                           .showChooseListDialog(
                         context: context,
-                        isSharing: false,
+                        isSharing: true,
                         listItem: ListItem(
                             name: widget.productName,
                             oldPrice: widget.oldPrice,
