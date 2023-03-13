@@ -54,6 +54,7 @@ Future<void> main() async {
 
   await SentryFlutter.init(
         (options) {
+      // options.dsn = 'https://9ac26c76cf0349d59d82538e91345ada@o4504179587940352.ingest.sentry.io/4504831610126336' ;
       options.dsn = kReleaseMode ? 'https://9ac26c76cf0349d59d82538e91345ada@o4504179587940352.ingest.sentry.io/4504831610126336' : '' ;
       options.tracesSampleRate = 1.0;
     },
@@ -74,6 +75,23 @@ Future<void> main() async {
           ),
         ))),
   );
+
+  // runApp(EasyLocalization(
+  //     supportedLocales: const [Locale('ar'), Locale('en')],
+  //     path: 'assets/translations',
+  //     fallbackLocale: const Locale('en'),
+  //     child: MultiProvider(
+  //       providers: [
+  //         ChangeNotifierProvider<GoogleSignInProvider>(create: (_) => GoogleSignInProvider()),
+  //         ChangeNotifierProvider<ProductsProvider>(create: (_) => ProductsProvider()),
+  //         ChangeNotifierProvider<ChatlistsProvider>(create: (_) => ChatlistsProvider()),
+  //       ],
+  //       child: MyApp(
+  //           dynamicLinkPath: path,
+  //           isRemembered: isRemembered,
+  //           isFirstTime: isFirstTime
+  //       ),
+  //     )));
 }
 
 class MyApp extends StatelessWidget {

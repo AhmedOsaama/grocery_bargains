@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.swaav</string>
+	<string>thebaraginb.app</string>
 	<key>PROJECT_ID</key>
 	<string>swaav-3f4d4</string>
 	<key>STORAGE_BUCKET</key>

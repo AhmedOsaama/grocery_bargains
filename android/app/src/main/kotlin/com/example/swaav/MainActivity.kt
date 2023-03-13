@@ -1,4 +1,4 @@
-package com.example.swaav
+package thebaraginb.app
 
 import io.flutter.embedding.android.FlutterActivity
 
