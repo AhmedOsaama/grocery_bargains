@@ -101,6 +101,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                 ) ,
                 5.pw,
                 Container(
+                  width: 220.w,
                   padding: const EdgeInsets.symmetric(horizontal: 12,vertical: 5),
                   margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 8),
                   decoration: BoxDecoration(

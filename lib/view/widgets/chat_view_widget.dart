@@ -186,7 +186,7 @@ class _ChatViewState extends State<ChatView> {
                                       opacity: isChecked ? 0.6 : 1,
                                       child: Row(
                                         children: [
-                                          30.pw,
+                                          // 30.pw,
                                           Checkbox(
                                             value: isChecked,
                                             onChanged: (value) {
@@ -232,7 +232,7 @@ class _ChatViewState extends State<ChatView> {
                                           opacity: isChecked ? 0.6 : 1,
                                           child: Row(
                                             children: [
-                                              30.pw,
+                                              // 30.pw,
                                               Checkbox(
                                                 value: isChecked,
                                                 onChanged: (value) {
