@@ -3,6 +3,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:swaav/providers/chatlists_provider.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../generated/locale_keys.g.dart';
@@ -27,23 +29,8 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
   var selectedListId = "choose";
   var hasChosenList = false;
 
-  Future<void> addItemToList(ListItem item, String docId) async {             //TODO: duplicated with message_bubble line 179
-    final userData = await FirebaseFirestore.instance
-        .collection('/users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
-    await FirebaseFirestore.instance.collection('/lists/$docId/items').add(
-        {
-          "item_name": item.name,
-          "item_size" : item.size,
-          "item_price" : item.price,
-          "item_image" : item.imageURL,
-          "item_isChecked" : false,
-          "text": "",
-          "owner": userData['username'],
-          "time": Timestamp.now(),
-        });
-  }
+
+
   Future<void> shareItem({required ListItem item,required String docId}) async { //TODO: duplicated with chat_view_widget line 310
     final userData = await FirebaseFirestore.instance
         .collection('/users')
@@ -137,7 +124,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
             GenericButton(
                 onPressed: !hasChosenList ? null : () async {
                   if (!widget.isSharing) {
-                    await addItemToList(
+                    await Provider.of<ChatlistsProvider>(context,listen: false).addItemToList(
                        widget.item,
                         selectedListId);
                   }else{

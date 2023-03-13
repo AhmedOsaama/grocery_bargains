@@ -82,124 +82,126 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ))
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w),
-        child: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              24.ph,
-              FutureBuilder(
-                  future: getUserDataFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container(
-                        height: 200,
-                      );
-                    }
-                    return Center(
-                          child: Column(
-                              children: [
-                                GestureDetector(
-                                  onTap: () async {
-                                    ImageSource sourcePicker = Platform.isAndroid ? await showModalBottomSheet(context: context, builder: (ctx) => ImageSourcePickerSheet())
-                                        : await showCupertinoModalPopup(context: context, builder: (ctx) => ImageSourcePickerSheet());
-                                    // if(sourcePicker == ImageSource.gallery){
-                                      try{
-                                        final image = await ImagePicker().pickImage(source: sourcePicker);
-                                        if(image == null) return;
-                                        final imageFile = File(image.path);
-                                    final userImageRef = FirebaseStorage.instance.ref().child('user_image').child('${FirebaseAuth.instance.currentUser!.uid}.jpg');
-                                    await userImageRef.putFile(imageFile).whenComplete(() => null);
-                                    final url = await userImageRef.getDownloadURL();
-                                        await FirebaseFirestore.instance
-                                            .collection('users')
-                                            .doc(FirebaseAuth.instance.currentUser!.uid)
-                                            .update({
-                                          'imageURL': url,
-                                        });
-                                        setState(() {
-                                          updateUserDataFuture();
-                                        });
-                                      } on PlatformException catch(e){
-                                        print("Failed to pick image: $e");
-                                      }
-                                    // }
-                                  },
-                                  child: CircleAvatar(
-                                    backgroundImage:
-                                    getUserImage(snapshot) as ImageProvider,
-                                    radius: 100,
-                                  ),
-                                ),
-                                10.ph,
-                                if(!isEditing)
-                                  ...[
-                                Text(
-                                  snapshot.data!['username'],
-                                  style: TextStyle(
-                                      fontSize: 28.sp,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                4.ph,
-                                Text(
-                                  snapshot.data!['email'],
-                                  style: TextStyle(
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w300,
-                                      color: Colors.grey),
-                                ),
-                                  ],
-                              ],
-                            ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                24.ph,
+                FutureBuilder(
+                    future: getUserDataFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          height: 200,
                         );
-                  }),
-              30.ph,
-              if(!isEditing) ...[
-              SettingRow(
-                  icon: SvgPicture.asset(
-                    masterCard,
-                  ),
-                  settingText: LocaleKeys.settings.tr(),
-                  route: SettingsScreen()),
-              Divider(),
-              10.ph,
-              SettingRow(
-                  icon: const Icon(
-                    Icons.help_outline_outlined,
-                  ),
-                  settingText: LocaleKeys.support.tr(),
-                  route: SupportScreen()),
-              Divider(),
-              10.ph,
-              SettingRow(
-                  icon: const Icon(
-                    Icons.logout_outlined,
-                  ),
-                  settingText: LocaleKeys.signout.tr()),
-              10.ph,
-              Divider(),
-            60.ph,
-          ],
-              if(isEditing)
-                ...[
-                  Text(LocaleKeys.yourName.tr(),style: TextStylesDMSans.textViewBold12.copyWith(color: black1),),
-                  10.ph,
-                  GenericField(
-                    hintText: "Dina Tairovic",
-                    boxShadow: Utils.boxShadow[0],
-                    colorStyle: Color.fromRGBO(237, 237, 237, 1),
-                  ),
-                  20.ph,
-                  Text(LocaleKeys.email.tr(),style: TextStylesDMSans.textViewBold12.copyWith(color: black1),),
-                  10.ph,
-                  GenericField(
-                    hintText: "dina@me.com",
-                    boxShadow: Utils.boxShadow[0],
-                    colorStyle: Color.fromRGBO(237, 237, 237, 1),
-                  ),
-                ]
+                      }
+                      return Center(
+                            child: Column(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () async {
+                                      ImageSource sourcePicker = Platform.isAndroid ? await showModalBottomSheet(context: context, builder: (ctx) => ImageSourcePickerSheet())
+                                          : await showCupertinoModalPopup(context: context, builder: (ctx) => ImageSourcePickerSheet());
+                                      // if(sourcePicker == ImageSource.gallery){
+                                        try{
+                                          final image = await ImagePicker().pickImage(source: sourcePicker);
+                                          if(image == null) return;
+                                          final imageFile = File(image.path);
+                                      final userImageRef = FirebaseStorage.instance.ref().child('user_image').child('${FirebaseAuth.instance.currentUser!.uid}.jpg');
+                                      await userImageRef.putFile(imageFile).whenComplete(() => null);
+                                      final url = await userImageRef.getDownloadURL();
+                                          await FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc(FirebaseAuth.instance.currentUser!.uid)
+                                              .update({
+                                            'imageURL': url,
+                                          });
+                                          setState(() {
+                                            updateUserDataFuture();
+                                          });
+                                        } on PlatformException catch(e){
+                                          print("Failed to pick image: $e");
+                                        }
+                                      // }
+                                    },
+                                    child: CircleAvatar(
+                                      backgroundImage:
+                                      getUserImage(snapshot) as ImageProvider,
+                                      radius: 100,
+                                    ),
+                                  ),
+                                  10.ph,
+                                  if(!isEditing)
+                                    ...[
+                                  Text(
+                                    snapshot.data!['username'],
+                                    style: TextStyle(
+                                        fontSize: 28.sp,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  4.ph,
+                                  Text(
+                                    snapshot.data!['email'],
+                                    style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w300,
+                                        color: Colors.grey),
+                                  ),
+                                    ],
+                                ],
+                              ),
+                          );
+                    }),
+                30.ph,
+                if(!isEditing) ...[
+                SettingRow(
+                    icon: SvgPicture.asset(
+                      masterCard,
+                    ),
+                    settingText: LocaleKeys.settings.tr(),
+                    route: SettingsScreen()),
+                Divider(),
+                10.ph,
+                SettingRow(
+                    icon: const Icon(
+                      Icons.help_outline_outlined,
+                    ),
+                    settingText: LocaleKeys.support.tr(),
+                    route: SupportScreen()),
+                Divider(),
+                10.ph,
+                SettingRow(
+                    icon: const Icon(
+                      Icons.logout_outlined,
+                    ),
+                    settingText: LocaleKeys.signout.tr()),
+                10.ph,
+                Divider(),
+              60.ph,
             ],
+                if(isEditing)
+                  ...[
+                    Text(LocaleKeys.yourName.tr(),style: TextStylesDMSans.textViewBold12.copyWith(color: black1),),
+                    10.ph,
+                    GenericField(
+                      hintText: "Dina Tairovic",
+                      boxShadow: Utils.boxShadow[0],
+                      colorStyle: Color.fromRGBO(237, 237, 237, 1),
+                    ),
+                    20.ph,
+                    Text(LocaleKeys.email.tr(),style: TextStylesDMSans.textViewBold12.copyWith(color: black1),),
+                    10.ph,
+                    GenericField(
+                      hintText: "dina@me.com",
+                      boxShadow: Utils.boxShadow[0],
+                      colorStyle: Color.fromRGBO(237, 237, 237, 1),
+                    ),
+                  ]
+              ],
+            ),
           ),
         ),
       ),

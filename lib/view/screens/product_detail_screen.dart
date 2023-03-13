@@ -4,8 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:swaav/config/routes/app_navigator.dart';
 import 'package:swaav/generated/locale_keys.g.dart';
+import 'package:swaav/providers/chatlists_provider.dart';
 import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/assets_manager.dart';
 import 'package:swaav/utils/icons_manager.dart';
@@ -13,6 +15,7 @@ import 'package:swaav/utils/style_utils.dart';
 import 'package:swaav/view/components/button.dart';
 import 'package:swaav/view/components/plus_button.dart';
 import 'package:swaav/view/screens/choose_store_screen.dart';
+import 'package:swaav/view/screens/profile_screen.dart';
 import 'package:swaav/view/widgets/choose_list_dialog.dart';
 import 'package:swaav/view/widgets/price_comparison_item.dart';
 
@@ -33,7 +36,8 @@ class ProductDetailScreen extends StatefulWidget {
       required this.imageURL,
       required this.description,
       required this.price,
-      required this.size, required this.oldPrice})
+      required this.size,
+      required this.oldPrice})
       : super(key: key);
 
   @override
@@ -41,7 +45,7 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  final productImages = [milk, peach, spar];
+  // final productImages = [milk, peach, spar];
   final productSizes = ["285 ml", "250 ml", '211 ml'];
   bool isLoading = false;
   final comparisonItems = [
@@ -88,47 +92,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 widget.productName,
                 style: TextStyles.textViewLight15,
               ),
-              Row(
-                children: [
-                  Column(
-                      children: productImages.map((image) {
-                    var index = productImages.indexOf(image);
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedIndex = index;
-                        });
-                      },
-                      child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 3),
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                              width: 2.0,
-                              color: selectedIndex == index
-                                  ? verdigris
-                                  : Colors.grey),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Image.asset(image),
-                      ),
-                    );
-                  }).toList()),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Container(
-                      height: 214.h,
+              10.ph,
+              Center(
+                child: Container(
+                    height: 214.h,
+                    width: 214.w,
+                    child:
+                        // Image.asset(productImages.elementAt(selectedIndex))
+                        Image.network(
+                      widget.imageURL,
                       width: 214.w,
-                      child:
-                          // Image.asset(productImages.elementAt(selectedIndex))
-                          Image.network(
-                        widget.imageURL,
-                        width: 214.w,
-                        height: 214.h,
-                      )),
-                ],
+                      height: 214.h,
+                    )),
               ),
               SizedBox(
                 height: 30.h,
@@ -138,23 +113,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 children: [
                   Column(
                     children: [
-                      GestureDetector(                                  //adding
+                      GestureDetector(
+                        //adding
                         onTap: () async {
-                          await getAllLists();
-                          showDialog(
-                              context: context,
-                              builder: (ctx) => ChooseListDialog(
-                                    allLists: allLists,
-                                    isSharing: false,
-                                    item: ListItem(
-                                        name: widget.productName,
-                                        oldPrice: widget.oldPrice,
-                                        price: widget.price,
-                                        isChecked: false,
-                                        quantity: quantity,
-                                        imageURL: widget.imageURL,
-                                        size: widget.size),
-                                  ));
+                          Provider.of<ChatlistsProvider>(context, listen: false)
+                              .showChooseListDialog(
+                            context: context,
+                            isSharing: false,
+                            listItem: ListItem(
+                                name: widget.productName,
+                                oldPrice: widget.oldPrice,
+                                price: widget.price,
+                                isChecked: false,
+                                quantity: quantity,
+                                imageURL: widget.imageURL,
+                                size: widget.size),
+                          );
                         },
                         child: Container(
                           padding: EdgeInsets.all(21),
@@ -181,23 +155,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       )
                     ],
                   ),
-                  GestureDetector(            //sharing
+                  GestureDetector(
+                    //sharing
                     onTap: () async {
-                      await getAllLists();
-                      showDialog(
-                          context: context,
-                          builder: (ctx) => ChooseListDialog(
-                                allLists: allLists,
-                                isSharing: true,
-                                item: ListItem(
-                                    name: widget.productName,
-                                    oldPrice: widget.oldPrice,
-                                    price: widget.price,
-                                    isChecked: false,
-                                    quantity: quantity,
-                                    imageURL: widget.imageURL,
-                                    size: widget.size),
-                              ));
+                      Provider.of<ChatlistsProvider>(context, listen: false)
+                          .showChooseListDialog(
+                        context: context,
+                        isSharing: false,
+                        listItem: ListItem(
+                            name: widget.productName,
+                            oldPrice: widget.oldPrice,
+                            price: widget.price,
+                            isChecked: false,
+                            quantity: quantity,
+                            imageURL: widget.imageURL,
+                            size: widget.size),
+                      );
                     },
                     child: Column(
                       children: [
@@ -452,20 +425,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ),
       ),
     );
-  }
-
-  Future<void> getAllLists() async {
-    var allListsSnapshot = await FirebaseFirestore.instance
-        .collection('/lists')
-        .where("userIds", arrayContains: FirebaseAuth.instance.currentUser?.uid)
-        .get();
-    allLists.clear();
-    for (var list in allListsSnapshot.docs) {
-      allLists.add({
-        "list_name": list['list_name'],
-        'list_id': list.id,
-      });
-    }
   }
 
   var priceAlertButton = Column(

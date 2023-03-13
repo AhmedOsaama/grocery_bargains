@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:swaav/config/routes/app_navigator.dart';
 import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/assets_manager.dart';
@@ -14,6 +15,7 @@ import 'package:swaav/view/screens/chatlists_screen.dart';
 import 'package:swaav/view/screens/profile_screen.dart';
 import 'package:swaav/view/widgets/list_type_widget.dart';
 
+import '../../providers/chatlists_provider.dart';
 import '../../services/dynamic_link_service.dart';
 
 class MainScreen extends StatefulWidget {
@@ -67,7 +69,7 @@ class _MainScreenState extends State<MainScreen> {
                 Icons.sticky_note_2_outlined,
                 color: selectedIndex == 1 ? selectedColor : unSelectedColor,
               ),
-              onPressed: () {
+              onPressed: () async {
                 setState(() {
                   selectedIndex = 1;
                 });

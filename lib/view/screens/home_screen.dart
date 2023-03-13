@@ -10,13 +10,16 @@ import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swaav/generated/locale_keys.g.dart';
+import 'package:swaav/providers/chatlists_provider.dart';
 import 'package:swaav/providers/products_provider.dart';
 import 'package:swaav/services/network_services.dart';
 import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/style_utils.dart';
+import 'package:swaav/utils/utils.dart';
 import 'package:swaav/view/components/generic_field.dart';
 import 'package:swaav/view/screens/choose_store_screen.dart';
 import 'package:swaav/view/screens/chatlists_screen.dart';
+import 'package:swaav/view/screens/profile_screen.dart';
 import 'package:swaav/view/widgets/chat_view_widget.dart';
 import 'package:swaav/view/screens/product_detail_screen.dart';
 import 'package:swaav/view/screens/register_screen.dart';
@@ -26,6 +29,7 @@ import 'package:swaav/view/widgets/product_item.dart';
 import 'package:swaav/view/widgets/search_item.dart';
 
 import '../../config/routes/app_navigator.dart';
+import '../../models/list_item.dart';
 import '../../providers/google_sign_in_provider.dart';
 import '../../services/dynamic_link_service.dart';
 import '../../utils/assets_manager.dart';
@@ -53,10 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    getAllListsFuture = FirebaseFirestore.instance
-        .collection('/lists')
-        .where("userIds", arrayContains: FirebaseAuth.instance.currentUser?.uid)
-        .get();
+    getAllListsFuture = Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlistsFuture();
     getUserDataFuture = FirebaseFirestore.instance
         .collection('/users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -146,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
               SizedBox(
-                height: 24.h,
+                height: 15.h,
               ),
               GenericField(
                 isFilled: true,
@@ -163,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     TextStyles.textViewSemiBold14.copyWith(color: gunmetal),
               ),
               SizedBox(
-                height: 15.h,
+                height: 10.h,
               ),
               // SizedBox(
               //   height: 30.h,
@@ -223,6 +224,39 @@ class _HomeScreenState extends State<HomeScreen> {
                       ))
                 ],
               ),
+              // Consumer<ChatlistsProvider>(builder: (ctx, provider, _) {
+              //   var chatlists = provider.chatlists;
+              //   if (chatlists.isEmpty) {
+              //           return GestureDetector(
+              //             onTap: (){
+              //               AppNavigator.push(context: context, screen: ChatlistsScreen());
+              //             },
+              //             child: Image.asset(
+              //               newChatList,
+              //             ),
+              //           );
+              //         }
+              //   return SizedBox(
+              //     height: 260.h,
+              //     child: Stack(
+              //         alignment: Alignment.topCenter,
+              //         children: chatlists.map(
+              //           (list) {
+              //             return Positioned(
+              //               right: chatlists.indexOf(list) * 90.w,
+              //               child: Container(
+              //                 width: 170.w,
+              //                 child: StoreListWidget(
+              //                     listId: list.id,
+              //                     storeImagePath: list['storeImageUrl'],
+              //                     listName: list['list_name']),
+              //               ),
+              //             );
+              //           },
+              //         ).toList()),
+              //   );
+              // }),
+
               FutureBuilder(
                   future: getAllListsFuture,
                   builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -234,8 +268,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     var allLists = snapshot.data?.docs ?? [];
                     if (!snapshot.hasData || allLists.isEmpty) {
                       return GestureDetector(
-                        onTap: (){
-                          AppNavigator.push(context: context, screen: ChatlistsScreen());
+                        onTap: () {
+                          AppNavigator.push(
+                              context: context, screen: ChatlistsScreen());
                         },
                         child: Image.asset(
                           newChatList,
@@ -245,14 +280,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }
                     return SizedBox(
-                      height: 260.h,
+                      height: 170.h,
                       child: Stack(
                           alignment: Alignment.topCenter,
                           children: allLists.map(
                             (list) {
                               return Positioned(
                                 right: allLists.indexOf(list) * 90.w,
-                              child: Container(
+                                child: Container(
                                   width: 170.w,
                                   child: StoreListWidget(
                                       listId: list.id,
@@ -265,19 +300,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   }),
               SizedBox(
-                height: 30.h,
+                height: 10.h,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     LocaleKeys.latestBargains.tr(),
-                    style:
-                        TextStylesDMSans.textViewBold16.copyWith(color: prussian),
+                    style: TextStylesDMSans.textViewBold16
+                        .copyWith(color: prussian),
                   ),
                   TextButton(
-                      onPressed: () => AppNavigator.push(
-                          context: context, screen: ChatlistsScreen()),
+                      onPressed: () {},
                       child: Text(
                         'See all',
                         style: textButtonStyle,
@@ -288,7 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 10.h,
               ),
               Container(
-                height: 250.h,
+                height: 200.h,
                 child: FutureBuilder<int>(
                     future: getAllProductsFuture,
                     builder: (context, snapshot) {
@@ -377,27 +411,132 @@ class _HomeScreenState extends State<HomeScreen> {
                             onTap: () => AppNavigator.push(
                                 context: context,
                                 screen: ProductDetailScreen(
-                                  storeName: storeName,
-                                  productName: productName,
-                                  imageURL: imageURL,
-                                  description: description,
-                                  price: price.runtimeType == int ? price.toDouble() : price,
-                                  size: size,
-                                    oldPrice: oldPrice
-                                )),
+                                    storeName: storeName,
+                                    productName: productName,
+                                    imageURL: imageURL,
+                                    description: description,
+                                    price: price.runtimeType == int
+                                        ? price.toDouble()
+                                        : price,
+                                    size: size,
+                                    oldPrice: oldPrice)),
                             child: DiscountItem(
-                              onShare: (){},
-                                name: allProducts[i]['Name'],
-                                imageURL: allProducts[i]['Image_url'],
-                                albertPriceBefore: allProducts[i]['Old_price'].toString().isEmpty ? null : allProducts[i]['Old_price'],
-                                albertPriceAfter:
-                                    allProducts[i]['Current_price'].toString(),
-                                measurement: allProducts[i]['Size'], sparPriceAfter: '0.0', jumboPriceAfter: '0.0',),
+                              onAdd: () => Provider.of<ChatlistsProvider>(
+                                  context,
+                                  listen: false)
+                                  .showChooseListDialog(
+                                  context: context,
+                                  isSharing: false,
+                                  listItem: ListItem(
+                                      name: productName,
+                                      oldPrice: oldPrice,
+                                      price: price,
+                                      isChecked: false,
+                                      quantity: 1,
+                                      imageURL: imageURL,
+                                      size: size),
+                              ),
+                              onShare: () => Provider.of<ChatlistsProvider>(
+                                      context,
+                                      listen: false)
+                                  .showChooseListDialog(
+                                context: context,
+                                isSharing: true,
+                                listItem: ListItem(
+                                    name: productName,
+                                    oldPrice: oldPrice,
+                                    price: price,
+                                    isChecked: false,
+                                    quantity: 0,
+                                    imageURL: imageURL,
+                                    size: size),
+                              ),
+                              name: allProducts[i]['Name'],
+                              imageURL: allProducts[i]['Image_url'],
+                              albertPriceBefore:
+                                  allProducts[i]['Old_price'].toString().isEmpty
+                                      ? null
+                                      : allProducts[i]['Old_price'],
+                              albertPriceAfter:
+                                  allProducts[i]['Current_price'].toString(),
+                              measurement: allProducts[i]['Size'],
+                              sparPriceAfter: '0.0',
+                              jumboPriceAfter: '0.0',
+                            ),
                           );
                         },
                       );
                     }),
               ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Latest Value Bargains",
+                    style: TextStylesDMSans.textViewBold16
+                        .copyWith(color: prussian),
+                  ),
+                  TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        'See all',
+                        style: textButtonStyle,
+                      ))
+                ],
+              ),
+              Container(
+                height: 150.h,
+                child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: List.generate(10, (index) => null).map((size) {
+                      return Container(
+                        padding: EdgeInsets.all(10),
+                        margin: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          boxShadow: Utils.boxShadow,
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          children: [
+                            Image.asset(milk),
+                            SizedBox(
+                              width: 5.w,
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "250ml",
+                                  style: TextStyles.textViewSemiBold16,
+                                ),
+                                SizedBox(
+                                  height: 10.h,
+                                ),
+                                Text(
+                                  "\$2.22 x 4",
+                                  style: TextStyles.textViewMedium12
+                                      .copyWith(
+                                      color: const Color.fromRGBO(
+                                          108, 197, 29, 1)),
+                                ),
+                                SizedBox(
+                                  height: 5.w,
+                                ),
+                                Text(
+                                  "1.50 lbs",
+                                  style: TextStyles.textViewRegular12
+                                      .copyWith(color: Colors.grey),
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      );
+                    }).toList()),
+              ),
+              10.ph,
             ],
           ),
         ),

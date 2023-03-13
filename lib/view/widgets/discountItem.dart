@@ -21,26 +21,30 @@ class DiscountItem extends StatelessWidget {
   final String measurement;
   final String imageURL;
   final Function onShare;
+  final Function onAdd;
   const DiscountItem(
       {Key? key,
       required this.name,
       required this.measurement,
-      required this.imageURL, this.albertPriceBefore, required this.albertPriceAfter,  this.sparPriceBefore, required this.sparPriceAfter,  this.jumboPriceBefore, required this.jumboPriceAfter, required this.onShare})
+      required this.imageURL,
+      this.albertPriceBefore,
+      required this.albertPriceAfter,
+      this.sparPriceBefore,
+      required this.sparPriceAfter,
+      this.jumboPriceBefore,
+      required this.jumboPriceAfter,
+      required this.onShare, required this.onAdd})
       : super(key: key);
-
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-          color: Colors.white,
-          boxShadow: [BoxShadow(
-              color: Color.fromRGBO(59, 59, 59, 0.13),
-              blurRadius: 15,
-              offset: Offset(0, 4)
-          )
-          ]
-      ),
+      decoration: const BoxDecoration(color: Colors.white, boxShadow: [
+        BoxShadow(
+            color: Color.fromRGBO(59, 59, 59, 0.13),
+            blurRadius: 15,
+            offset: Offset(0, 4))
+      ]),
       margin: const EdgeInsets.all(10),
       padding: EdgeInsets.symmetric(horizontal: 15.w),
       child: Row(
@@ -50,12 +54,15 @@ class DiscountItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: EdgeInsets.symmetric(vertical: 20.h),
+                padding: EdgeInsets.symmetric(vertical: 10.h),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Image.network(imageURL, height: 80.h,),
+                child: Image.network(
+                  imageURL,
+                  height: 50.h,
+                ),
               ),
               SizedBox(
                 width: 130.w,
@@ -70,12 +77,14 @@ class DiscountItem extends StatelessWidget {
                 style: TextStyles.textViewMedium12
                     .copyWith(color: Color.fromRGBO(204, 204, 204, 1)),
               ),
-              TextButton(onPressed: (){}, child: Row(
-                children: [
-                  Text('View More '),
-                  Icon(Icons.arrow_forward_ios)
-                ],
-              ))
+              GestureDetector(
+                  onTap: () {},
+                  child: Row(
+                    children: [
+                      Text('View More ',style: TextStylesInter.textViewSemiBold14.copyWith(color: mainPurple),),
+                      Icon(Icons.arrow_forward_ios,color: mainPurple,)
+                    ],
+                  ))
             ],
           ),
           10.pw,
@@ -84,8 +93,10 @@ class DiscountItem extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(onPressed: () => onShare(),icon: SvgPicture.asset(chatShare)),
-                PlusButton(onTap: () {}),
+                IconButton(
+                    onPressed: () => onShare(),
+                    icon: SvgPicture.asset(chatShare)),
+                PlusButton(onTap: () => onAdd()),
               ],
             ),
           ),
@@ -94,10 +105,23 @@ class DiscountItem extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [             //TODO: create a list with the below items and use it to get the index of the pressed item to highlight it
-                ComparisonPrice(currentPrice: albertPriceAfter, oldPrice: albertPriceBefore,storeImagePath: albert,),
-                ComparisonPrice(currentPrice: sparPriceAfter, oldPrice: sparPriceBefore,storeImagePath: spar,),
-                ComparisonPrice(currentPrice: jumboPriceAfter, oldPrice: jumboPriceBefore, storeImagePath: jumbo,),
+              children: [
+                //TODO: create a list with the below items and use it to get the index of the pressed item to highlight it
+                ComparisonPrice(
+                  currentPrice: albertPriceAfter,
+                  oldPrice: albertPriceBefore,
+                  storeImagePath: albert,
+                ),
+                ComparisonPrice(
+                  currentPrice: sparPriceAfter,
+                  oldPrice: sparPriceBefore,
+                  storeImagePath: spar,
+                ),
+                ComparisonPrice(
+                  currentPrice: jumboPriceAfter,
+                  oldPrice: jumboPriceBefore,
+                  storeImagePath: jumbo,
+                ),
               ],
             ),
           )
@@ -111,38 +135,59 @@ class ComparisonPrice extends StatelessWidget {
   final String currentPrice;
   final String? oldPrice;
   final String storeImagePath;
-  ComparisonPrice({Key? key, required this.currentPrice, this.oldPrice, required this.storeImagePath}) : super(key: key);
+  ComparisonPrice(
+      {Key? key,
+      required this.currentPrice,
+      this.oldPrice,
+      required this.storeImagePath})
+      : super(key: key);
 
   var doubleOldPrice = 0.0;
   var doubleCurrentPrice = 0.0;
   @override
   Widget build(BuildContext context) {
-    if(oldPrice != null) {
+    if (oldPrice != null) {
       doubleOldPrice = double.tryParse(oldPrice!) ?? 0.0;
       doubleCurrentPrice = double.tryParse(currentPrice) ?? 0.0;
     }
     return Row(
       children: [
-        Image.asset(storeImagePath,width: 22,height: 22,),
-        20.pw,
-        if(oldPrice != null)
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('€$currentPrice', style: TextStylesInter.textViewMedium15.copyWith(color: black2),),
-            Text.rich(TextSpan(
-                text: '€$oldPrice',
-                style: TextStylesInter.textViewMedium10.copyWith(color: Color.fromRGBO(134, 136, 137, 1),decoration: TextDecoration.lineThrough),
-                children: [TextSpan(text: ' €${(doubleOldPrice - doubleCurrentPrice).toStringAsFixed(2)} less',
-                  style: TextStylesInter.textViewMedium10.copyWith(color: verdigris, decoration: TextDecoration.none),
-                )]
-            ))
-          ],
+        Image.asset(
+          storeImagePath,
+          width: 22,
+          height: 22,
         ),
-        if(oldPrice == null)
-          Text('€$currentPrice', style: TextStylesInter.textViewMedium12.copyWith(color: Color.fromRGBO(134, 136, 137, 1)),)
+        20.pw,
+        if (oldPrice != null)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '€$currentPrice',
+                style: TextStylesInter.textViewMedium15.copyWith(color: black2),
+              ),
+              Text.rich(TextSpan(
+                  text: '€$oldPrice',
+                  style: TextStylesInter.textViewMedium10.copyWith(
+                      color: Color.fromRGBO(134, 136, 137, 1),
+                      decoration: TextDecoration.lineThrough),
+                  children: [
+                    TextSpan(
+                      text:
+                          ' €${(doubleOldPrice - doubleCurrentPrice).toStringAsFixed(2)} less',
+                      style: TextStylesInter.textViewMedium10.copyWith(
+                          color: verdigris, decoration: TextDecoration.none),
+                    )
+                  ]))
+            ],
+          ),
+        if (oldPrice == null)
+          Text(
+            '€$currentPrice',
+            style: TextStylesInter.textViewMedium12
+                .copyWith(color: Color.fromRGBO(134, 136, 137, 1)),
+          )
       ],
     );
   }
 }
-

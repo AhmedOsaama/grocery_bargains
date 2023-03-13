@@ -7,8 +7,10 @@ import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swaav/generated/locale_keys.g.dart';
+import 'package:swaav/providers/chatlists_provider.dart';
 import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/assets_manager.dart';
 import 'package:swaav/utils/icons_manager.dart';
@@ -49,26 +51,21 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
   @override
   void initState() {
     super.initState();
-    getAllListsFuture = FirebaseFirestore.instance
-        .collection('/lists')
-        .where("userIds", arrayContains: FirebaseAuth.instance.currentUser?.uid)
-        .get();
+    getAllListsFuture = Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlistsFuture();
   }
 
   void updateList() async {
     print("RUN UPDATE LIST");
     setState(() {
-      getAllListsFuture = FirebaseFirestore.instance
-          .collection('/lists')
-          .where("userIds",
-              arrayContains: FirebaseAuth.instance.currentUser?.uid)
-          .get();
+      getAllListsFuture = Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlistsFuture();
     });
   }
 
   bool isAdding = false;
   @override
   Widget build(BuildContext context) {
+    context.watch<ChatlistsProvider>();
+    // Provider.of<ChatlistsProvider>(context);
     return Scaffold(
       floatingActionButton: canShowFab ? getFab() : null,
       body: Padding(
@@ -164,7 +161,9 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                                               listId: list.id,
                                               isListView: true,
                                               listName: list['list_name']),
-                                        )),
+                                        )).then((value) {
+                                          // updateList();
+                                    }),
                                     child: StoreListWidget(
                                         listId: list.id,
                                         storeImagePath: list['storeImageUrl'],
@@ -184,7 +183,8 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                                   updateList: updateList,
                                   listId: allLists[i].id,
                                   listName: allLists[i]['list_name'],
-                                )),
+                                )).then((value) {
+                            }),
                             child: Row(
                               children: [
                                 Image.asset(

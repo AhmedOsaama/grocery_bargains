@@ -41,9 +41,9 @@ abstract class  LocaleKeys {
   static const skip = 'skip';
   static const findAllTheDiscountsHere = 'findAllTheDiscountsHere';
   static const exploreAllTheLatest = 'exploreAllTheLatest';
-  static const createShoppingLists = 'createShoppingLists';
+  static const chatWithFriends = 'chatWithFriends';
   static const easilyAddItems = 'easilyAddItems';
-  static const shareTheLists = 'shareTheLists';
+  static const comparePricesAndLatest = 'comparePricesAndLatest';
   static const easilyAddFriends = 'easilyAddFriends';
   static const hello = 'hello';
   static const whatAreYouLookingFor = 'whatAreYouLookingFor';

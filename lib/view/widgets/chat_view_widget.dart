@@ -9,6 +9,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:swaav/config/routes/app_navigator.dart';
 import 'package:swaav/generated/locale_keys.g.dart';
+import 'package:swaav/models/list_item.dart';
+import 'package:swaav/providers/chatlists_provider.dart';
 import 'package:swaav/utils/app_colors.dart';
 import 'package:swaav/utils/assets_manager.dart';
 import 'package:swaav/utils/icons_manager.dart';
@@ -45,6 +47,8 @@ class _ChatViewState extends State<ChatView> {
   List allProducts = [];
   var isLoading = false;
   var isCollapsed = true;
+  var isExpandingChatlist = false;
+
 
   @override
   void didChangeDependencies() {
@@ -53,56 +57,281 @@ class _ChatViewState extends State<ChatView> {
     super.didChangeDependencies();
   }
 
+  String getTotalListPrice(List items) {
+    var total = 0.0;
+    for (var item in items) {
+      try {
+        total += item['item_price'].runtimeType == String ? double.parse(item['item_price']) : item['item_price'] ?? 99999;
+      }catch(e){
+        total += 0.0;
+      }
+    }
+    return total.toStringAsFixed(2);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SlidingUpPanel(
       controller: panelController,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection("/lists/${widget.listId}/messages")
-                .orderBy('createdAt', descending: true)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              final messages = snapshot.data?.docs ?? [];
-              if (messages.isEmpty || !snapshot.hasData) {
-                return Container(
-                  margin: EdgeInsets.only(top: 100.h),
-                  alignment: Alignment.topCenter,
-                  child: DottedContainer(
-                    text: LocaleKeys.startChatting.tr(),
-                  ),
-                );
-              }
-              return ListView.builder(
-                  padding: EdgeInsets.only(bottom: 300),
-                  reverse: true,
-                  itemCount: messages.length,
-                  itemBuilder: (ctx, index) => Container(
-                        padding: const EdgeInsets.all(8.0),
-                        child: MessageBubble(
-                          itemName: messages[index]['item_name'],
-                          itemSize: messages[index]['item_description'],
-                          itemPrice: messages[index]['item_price'].toString(),
-                          itemOldPrice: messages[index]['item_oldPrice'],
-                          itemImage: messages[index]['item_image'],
-                          storeName: messages[index]['store_name'],
-                          isMe: messages[index]['userId'] ==
-                              FirebaseAuth.instance.currentUser!.uid,
-                          message: messages[index]['message'],
-                          messageDocPath: messages[index].reference,
-                          userName: messages[index]['username'],
-                          userId: messages[index]['userId'],
-                          userImage: messages[index]['userImageURL'],
-                          key: ValueKey(messages[index].id),
-                          isAddedToList: messages[index]['isAddedToList'],
+        child: Stack(
+          children: [
+            StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("/lists/${widget.listId}/messages")
+                    .orderBy('createdAt', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  final messages = snapshot.data?.docs ?? [];
+                  if (messages.isEmpty || !snapshot.hasData) {
+                    return Container(
+                      margin: EdgeInsets.only(top: 100.h),
+                      alignment: Alignment.topCenter,
+                      child: DottedContainer(
+                        text: LocaleKeys.startChatting.tr(),
+                      ),
+                    );
+                  }
+                  return ListView.builder(
+                      padding: EdgeInsets.only(bottom: 300),
+                      reverse: true,
+                      itemCount: messages.length,
+                      itemBuilder: (ctx, index) => Container(
+                            padding: const EdgeInsets.all(8.0),
+                            child: MessageBubble(
+                              itemName: messages[index]['item_name'],
+                              itemSize: messages[index]['item_description'],
+                              itemPrice: messages[index]['item_price'].toString(),
+                              itemOldPrice: messages[index]['item_oldPrice'],
+                              itemImage: messages[index]['item_image'],
+                              storeName: messages[index]['store_name'],
+                              isMe: messages[index]['userId'] ==
+                                  FirebaseAuth.instance.currentUser!.uid,
+                              message: messages[index]['message'],
+                              messageDocPath: messages[index].reference,
+                              userName: messages[index]['username'],
+                              userId: messages[index]['userId'],
+                              userImage: messages[index]['userImageURL'],
+                              key: ValueKey(messages[index].id),
+                              isAddedToList: messages[index]['isAddedToList'],
+                            ),
+                          ));
+                }),
+            Container(
+              height: isExpandingChatlist ? 400.h : 60.h,
+              padding: EdgeInsets.symmetric(horizontal: 15),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+                boxShadow: Utils.boxShadow,
+              ),
+              child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection("/lists/${widget.listId}/items")
+                      .orderBy('time', descending: true)
+                      .snapshots(),
+                  builder: (context, snapshot){
+                    final items = snapshot.data?.docs ?? [];
+                    if (snapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return Container();
+                    }
+                    if(items.isEmpty){
+                      return Container();
+                    }
+                    return Column(
+                      children: [
+                        Row(
+                          children: [
+                            Text(LocaleKeys.chatlist.tr(),style: TextStylesInter.textViewBold12.copyWith(color: black2),),
+                            Spacer(),
+                            Text(
+                              "${items.length} items",
+                              style: TextStyles.textViewMedium10.copyWith(
+                                  color: Color.fromRGBO(204, 204, 203, 1)),
+                            ),
+                            SizedBox(
+                              width: 10.w,
+                            ),
+                            Text(
+                              LocaleKeys.total.tr(),
+                              style: TextStyles.textViewMedium15
+                                  .copyWith(color: black2),
+                            ),
+                            Text(" ${getTotalListPrice(items)}"),
+                            SizedBox(
+                              width: 10.w,
+                            ),
+                            IconButton(onPressed: (){
+                              setState(() {
+                                isExpandingChatlist = !isExpandingChatlist;
+                              });
+                            },icon: SvgPicture.asset(arrowDown)),
+                          ],
                         ),
-                      ));
-            }),
+                        if(isExpandingChatlist)
+                          Expanded(
+                            child: ListView.separated(
+                                itemCount: items.length,
+                                separatorBuilder: (ctx, _) => const Divider(),
+                                itemBuilder: (ctx, i) {
+                                  var doc = items[i];
+                                  var isChecked = items[i]['item_isChecked'];
+                                  if (items[i]['text'] != '') {
+                                    return Opacity(
+                                      opacity: isChecked ? 0.6 : 1,
+                                      child: Row(
+                                        children: [
+                                          30.pw,
+                                          Checkbox(
+                                            value: isChecked,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                isChecked = !isChecked;
+                                              });
+                                              FirebaseFirestore.instance
+                                                  .collection(
+                                                  "/lists/${doc.reference.parent.parent?.id}/items")
+                                                  .doc(doc.id)
+                                                  .update({
+                                                "item_isChecked": isChecked,
+                                              }).catchError((e) {
+                                                print(e);
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(const SnackBar(
+                                                    content: Text(
+                                                        "This operation couldn't be done please try again")));
+                                              });
+                                              // updateList();
+                                            },
+                                          ),
+                                          Text(
+                                            items[i]['text'],
+                                            style: TextStylesInter
+                                                .textViewRegular16
+                                                .copyWith(color: black2),
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                  var itemName = items[i]['item_name'];
+                                  var itemImage = items[i]['item_image'];
+                                  var itemDescription = items[i]['item_size'];
+                                  var itemPrice = items[i]['item_price'];
+                                  return Row(
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: Opacity(
+                                          opacity: isChecked ? 0.6 : 1,
+                                          child: Row(
+                                            children: [
+                                              30.pw,
+                                              Checkbox(
+                                                value: isChecked,
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    isChecked = !isChecked;
+                                                  });
+                                                  FirebaseFirestore.instance
+                                                      .collection(
+                                                      "/lists/${doc.reference.parent.parent?.id}/items")
+                                                      .doc(doc.id)
+                                                      .update({
+                                                    "item_isChecked":
+                                                    isChecked,
+                                                  }).catchError((e) {
+                                                    print(e);
+                                                    ScaffoldMessenger.of(
+                                                        context)
+                                                        .showSnackBar(
+                                                        const SnackBar(
+                                                            content: Text(
+                                                                "This operation couldn't be done please try again")));
+                                                  });
+                                                  // updateList();
+                                                },
+                                              ),
+                                              Image.network(
+                                                itemImage,
+                                                width: 55,
+                                                height: 55,
+                                              ),
+                                              SizedBox(
+                                                width: 12.w,
+                                              ),
+                                              Container(
+                                                width: 140.w,
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                  CrossAxisAlignment
+                                                      .start,
+                                                  children: [
+                                                    Text(
+                                                      itemName,
+                                                      overflow: TextOverflow
+                                                          .ellipsis,
+                                                      style: TextStyles
+                                                          .textViewSemiBold14
+                                                          .copyWith(
+                                                          color: prussian,
+                                                          decoration: isChecked
+                                                              ? TextDecoration
+                                                              .lineThrough
+                                                              : null),
+                                                    ),
+                                                    Container(
+                                                      width: 150.w,
+                                                      child: Text(
+                                                        "$itemDescription",
+                                                        style: TextStyles
+                                                            .textViewLight12
+                                                            .copyWith(
+                                                            color:
+                                                            prussian,
+                                                            decoration: isChecked
+                                                                ? TextDecoration
+                                                                .lineThrough
+                                                                : null),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              Spacer(),
+                                              Text(
+                                                "€ $itemPrice",
+                                                style: TextStyles
+                                                    .textViewMedium13
+                                                    .copyWith(
+                                                  color: prussian,
+                                                  decoration: isChecked
+                                                      ? TextDecoration
+                                                      .lineThrough
+                                                      : null,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                }),
+                          ),
+                      ],
+                    );
+
+                  }),
+            ),
+          ],
+        ),
       ),
       header: Container(
         margin: EdgeInsets.only(left: 170.w, top: 5),
@@ -140,10 +369,17 @@ class _ChatViewState extends State<ChatView> {
               hintText: LocaleKeys.textHere.tr(),
               hintStyle:
                   TextStylesInter.textViewRegular14.copyWith(color: black2),
-              onSubmitted: (_) async => await sendMessage(),
+              onSubmitted: (_) async {
+                await Provider.of<ChatlistsProvider>(context, listen: false)
+                    .sendMessage(messageController.text.trim(), widget.listId);
+                messageController.clear();
+              },
               suffixIcon: GestureDetector(
                 onTap: () async {
-                  await sendMessage();
+                  await Provider.of<ChatlistsProvider>(context, listen: false)
+                      .sendMessage(
+                          messageController.text.trim(), widget.listId);
+                  messageController.clear();
                   FocusScope.of(context).unfocus();
                 },
                 child: Padding(
@@ -177,21 +413,21 @@ class _ChatViewState extends State<ChatView> {
             20.ph,
             Opacity(
               opacity: isCollapsed ? 0 : 1,
-                  child: GenericField(
-                      isFilled: true,
-                      onTap: () async {
-                        SharedPreferences pref =
-                            await SharedPreferences.getInstance();
-                        return showSearch(
-                            context: context, delegate: MySearchDelegate(pref));
-                      },
-                      prefixIcon: Icon(Icons.search),
-                      borderRaduis: 999,
-                      hintText: LocaleKeys.whatAreYouLookingFor.tr(),
-                      hintStyle:
-                          TextStyles.textViewSemiBold14.copyWith(color: gunmetal),
-                    ),
-                ),
+              child: GenericField(
+                isFilled: true,
+                onTap: () async {
+                  SharedPreferences pref =
+                      await SharedPreferences.getInstance();
+                  return showSearch(
+                      context: context, delegate: MySearchDelegate(pref));
+                },
+                prefixIcon: Icon(Icons.search),
+                borderRaduis: 999,
+                hintText: LocaleKeys.whatAreYouLookingFor.tr(),
+                hintStyle:
+                    TextStyles.textViewSemiBold14.copyWith(color: gunmetal),
+              ),
+            ),
             30.ph,
             Text(
               LocaleKeys.latestBargains.tr(),
@@ -248,14 +484,36 @@ class _ChatViewState extends State<ChatView> {
                             name: productName,
                             imageURL: imageURL,
                             albertPriceBefore:
-                                oldPrice.toString().isEmpty
-                                    ? null
-                                    : oldPrice,
+                                oldPrice.toString().isEmpty ? null : oldPrice,
                             albertPriceAfter: price.toString(),
                             measurement: size,
+                            onAdd: () {
+                              panelController.close();
+                              Provider.of<ChatlistsProvider>(context,
+                                      listen: false)
+                                  .addItemToList(
+                                      ListItem(
+                                          oldPrice: oldPrice,
+                                          name: productName,
+                                          price: price,
+                                          isChecked: false,
+                                          quantity: 1,
+                                          imageURL: imageURL,
+                                          size: size),
+                                      widget.listId);
+                            },
                             onShare: () {
                               panelController.close();
-                              shareItem(itemName: productName,itemSize: size,itemImage: imageURL,itemPrice: price,itemOldPrice: oldPrice,storeName: storeName);
+                              Provider.of<ChatlistsProvider>(context,
+                                      listen: false)
+                                  .shareItemAsMessage(
+                                      itemName: productName,
+                                      itemSize: size,
+                                      itemImage: imageURL,
+                                      itemPrice: price,
+                                      itemOldPrice: oldPrice,
+                                      storeName: storeName,
+                                      listId: widget.listId);
                             },
                             sparPriceAfter: '0.0',
                             jumboPriceAfter: '0.0',
@@ -270,73 +528,5 @@ class _ChatViewState extends State<ChatView> {
       ),
       borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
     );
-  }
-
-
-
-  Future<void> sendMessage() async {
-    if (messageController.text.trim().isNotEmpty) {
-      final userData = await FirebaseFirestore.instance
-          .collection('/users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .get();
-      await FirebaseFirestore.instance
-          .collection('/lists/${widget.listId}/messages')
-          .add({
-        'item_name': "",
-        'item_image': "",
-        'item_description': "",
-        'store_name': "",
-        'isAddedToList': false,
-        'item_price': 0.0,
-        'item_oldPrice': "",
-        'message': messageController.text.trim(),
-        'createdAt': Timestamp.now(),
-        'userId': FirebaseAuth.instance.currentUser!.uid,
-        'username': userData['username'],
-        'userImageURL': userData['imageURL'],
-      });
-      FirebaseFirestore.instance
-          .collection('/lists')
-          .doc(widget.listId)
-          .update({
-        "last_message": messageController.text.trim(),
-        "last_message_date": Timestamp.now(),
-        "last_message_userId": FirebaseAuth.instance.currentUser?.uid,
-      });
-      messageController.clear();
-    }
-  }
-
-  Future<void> shareItem({itemName,itemImage,itemSize,itemPrice,itemOldPrice,storeName}) async {
-      final userData = await FirebaseFirestore.instance
-          .collection('/users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .get();
-      await FirebaseFirestore.instance
-          .collection('/lists/${widget.listId}/messages')
-          .add({
-        'item_name': itemName,
-        'item_image': itemImage,
-        'item_description': itemSize,
-        'store_name': storeName,
-        'isAddedToList': false,
-        'item_price': itemPrice,
-        'item_oldPrice': itemOldPrice,
-        'message': messageController.text.trim(),
-        'createdAt': Timestamp.now(),
-        'userId': FirebaseAuth.instance.currentUser!.uid,
-        'username': userData['username'],
-        'userImageURL': userData['imageURL'],
-      });
-      FirebaseFirestore.instance
-          .collection('/lists')
-          .doc(widget.listId)
-          .update({
-        "last_message": messageController.text.trim(),
-        "last_message_date": Timestamp.now(),
-        "last_message_userId": FirebaseAuth.instance.currentUser?.uid,
-      });
-      messageController.clear();
   }
 }

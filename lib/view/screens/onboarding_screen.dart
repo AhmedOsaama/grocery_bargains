@@ -46,10 +46,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  LocaleKeys.skip.tr(),
-                  style: TextStyles.textViewRegular14
-                      .copyWith(color: Color.fromRGBO(82, 75, 107, 1)),
+                TextButton(
+                  onPressed: () => AppNavigator.pushReplacement(context: context, screen: MainScreen()),
+                  child: Text(
+                    LocaleKeys.skip.tr(),
+                    style: TextStyles.textViewRegular14
+                        .copyWith(color: Color.fromRGBO(113, 146, 242, 1)),
+                  ),
                 ),
                 // SizedBox(width: 5.w,),
                 Container(
@@ -61,7 +64,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       spacing: EdgeInsets.symmetric(horizontal: 3),
                       size: Size.square(7),
                       activeSize: Size.square(7),
-                      activeColor: verdigris,
+                      activeColor: yellow,
                     ),
                   ),
                 ),
@@ -84,7 +87,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     Icons.arrow_forward_ios,
                     color: Colors.white,
                   ),
-                  color: verdigris,
+                  color: yellow,
                 ),
               ],
             ),
@@ -102,7 +105,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       SizedBox(
         height: 170.h,
       ),
-      SvgPicture.asset(discount),
+      Image.asset(onboarding1),
       Spacer(),
       Text(
         LocaleKeys.findAllTheDiscountsHere.tr(),
@@ -122,7 +125,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     children: [
       SizedBox(height: 100.h,),
       Text(
-        LocaleKeys.createShoppingLists.tr(),
+        LocaleKeys.chatWithFriends.tr(),
         style: TextStyles.textViewSemiBold40.copyWith(color: prussian),
         textAlign: TextAlign.center,
       ),
@@ -136,7 +139,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       SizedBox(
         height: 100.h,
       ),
-      SvgPicture.asset(lists),
+      Image.asset(onboarding2),
       Spacer(),
     ],
   );
@@ -144,7 +147,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     children: [
       SizedBox(height: 100.h,),
       Text(
-        LocaleKeys.shareTheLists.tr(),
+        LocaleKeys.comparePricesAndLatest.tr(),
         style: TextStyles.textViewSemiBold40.copyWith(color: prussian),
         textAlign: TextAlign.center,
       ),
@@ -159,7 +162,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       SizedBox(
         height: 100.h,
       ),
-      SvgPicture.asset(sharing),
+      Image.asset(onboarding3),
       Spacer(),
     ],
   );
