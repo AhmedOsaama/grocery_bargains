@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:swaav/config/routes/app_navigator.dart';
-import 'package:swaav/utils/fonts_utils.dart';
-import 'package:swaav/utils/style_utils.dart';
-import 'package:swaav/view/components/button.dart';
-import 'package:swaav/view/components/my_scaffold.dart';
-import 'package:swaav/view/screens/category_items_screen.dart';
+import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/utils/fonts_utils.dart';
+import 'package:bargainb/utils/style_utils.dart';
+import 'package:bargainb/view/components/button.dart';
+import 'package:bargainb/view/components/my_scaffold.dart';
+import 'package:bargainb/view/screens/category_items_screen.dart';
 
 import '../widgets/backbutton.dart';
 

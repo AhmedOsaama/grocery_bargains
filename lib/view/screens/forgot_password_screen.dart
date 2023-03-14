@@ -2,11 +2,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:swaav/config/routes/app_navigator.dart';
-import 'package:swaav/generated/locale_keys.g.dart';
-import 'package:swaav/utils/assets_manager.dart';
-import 'package:swaav/view/components/generic_field.dart';
-import 'package:swaav/view/screens/check_email_screen.dart';
+import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/generated/locale_keys.g.dart';
+import 'package:bargainb/utils/assets_manager.dart';
+import 'package:bargainb/view/components/generic_field.dart';
+import 'package:bargainb/view/screens/check_email_screen.dart';
 
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';

@@ -1,4 +1,4 @@
-import 'package:swaav/models/list_item.dart';
+import 'package:bargainb/models/list_item.dart';
 
 class StoreList{
   String docId;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:swaav/utils/app_colors.dart';
+import 'package:bargainb/utils/app_colors.dart';
 
 class GenericButton extends StatelessWidget {
   final BorderRadiusGeometry? borderRadius;

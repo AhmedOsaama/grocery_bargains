@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:swaav/providers/chatlists_provider.dart';
+import 'package:bargainb/providers/chatlists_provider.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../generated/locale_keys.g.dart';

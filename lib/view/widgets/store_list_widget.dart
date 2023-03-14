@@ -3,8 +3,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:swaav/generated/locale_keys.g.dart';
-import 'package:swaav/utils/app_colors.dart';
+import 'package:bargainb/generated/locale_keys.g.dart';
+import 'package:bargainb/utils/app_colors.dart';
 
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';

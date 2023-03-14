@@ -9,20 +9,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:swaav/config/routes/app_navigator.dart';
-import 'package:swaav/generated/locale_keys.g.dart';
-import 'package:swaav/providers/google_sign_in_provider.dart';
-import 'package:swaav/utils/app_colors.dart';
-import 'package:swaav/utils/app_strings.dart';
-import 'package:swaav/utils/assets_manager.dart';
-import 'package:swaav/utils/icons_manager.dart';
-import 'package:swaav/utils/style_utils.dart';
-import 'package:swaav/utils/validator.dart';
-import 'package:swaav/view/components/button.dart';
-import 'package:swaav/view/components/generic_field.dart';
-import 'package:swaav/view/screens/forgot_password_screen.dart';
-import 'package:swaav/view/screens/main_screen.dart';
-import 'package:swaav/view/screens/onboarding_screen.dart';
+
+import '../../config/routes/app_navigator.dart';
+import '../../generated/locale_keys.g.dart';
+import '../../providers/google_sign_in_provider.dart';
+import '../../utils/app_colors.dart';
+import '../../utils/icons_manager.dart';
+import '../../utils/style_utils.dart';
+import '../../utils/validator.dart';
+import '../components/button.dart';
+import '../components/generic_field.dart';
+import 'forgot_password_screen.dart';
+import 'main_screen.dart';
+import 'onboarding_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   RegisterScreen({Key? key}) : super(key: key);
@@ -129,7 +128,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Text(
                     isLogin
                         ? LocaleKeys.getTheLatestDiscounts.tr()
-                        : LocaleKeys.loremIpsum.tr(),
+                        : LocaleKeys.getTheLatestDiscounts.tr(),
                     style:
                         TextStyles.textViewRegular14.copyWith(color: gunmetal),
                     textAlign: TextAlign.center,

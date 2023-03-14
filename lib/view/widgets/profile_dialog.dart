@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:swaav/view/screens/profile_screen.dart';
+import 'package:bargainb/view/screens/profile_screen.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../generated/locale_keys.g.dart';

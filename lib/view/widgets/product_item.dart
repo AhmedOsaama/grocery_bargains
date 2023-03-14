@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:swaav/models/product.dart';
-import 'package:swaav/providers/products_provider.dart';
-import 'package:swaav/view/components/plus_button.dart';
-import 'package:swaav/view/screens/profile_screen.dart';
+import 'package:bargainb/models/product.dart';
+import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/view/components/plus_button.dart';
+import 'package:bargainb/view/screens/profile_screen.dart';
 
 import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';

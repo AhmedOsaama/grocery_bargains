@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:swaav/models/list_item.dart';
+import 'package:bargainb/models/list_item.dart';
 
 import '../view/widgets/choose_list_dialog.dart';
 

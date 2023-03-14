@@ -2,11 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:swaav/view/components/my_scaffold.dart';
-import 'package:swaav/view/screens/chatlist_view_screen.dart';
-import 'package:swaav/view/widgets/chat_view_widget.dart';
 
-import '../../config/routes/app_navigator.dart';
 import '../../models/item.dart';
 import '../../utils/style_utils.dart';
 import '../components/button.dart';

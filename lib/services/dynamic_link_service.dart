@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:swaav/config/routes/app_navigator.dart';
-import 'package:swaav/view/screens/main_screen.dart';
+import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/view/screens/main_screen.dart';
 
 import '../view/screens/chatlist_view_screen.dart';
 

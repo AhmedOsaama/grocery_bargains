@@ -1,9 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:swaav/utils/utils.dart';
-import 'package:swaav/view/components/generic_field.dart';
-import 'package:swaav/view/screens/profile_screen.dart';
+import 'package:bargainb/utils/utils.dart';
+import 'package:bargainb/view/components/generic_field.dart';
+import 'package:bargainb/view/screens/profile_screen.dart';
 
 import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';

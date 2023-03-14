@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:swaav/config/routes/app_navigator.dart';
-import 'package:swaav/utils/assets_manager.dart';
-import 'package:swaav/view/screens/register_screen.dart';
+import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/utils/assets_manager.dart';
+import 'package:bargainb/view/screens/register_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

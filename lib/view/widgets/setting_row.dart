@@ -2,10 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:swaav/config/routes/app_navigator.dart';
-import 'package:swaav/view/screens/chatlists_screen.dart';
-import 'package:swaav/view/screens/profile_screen.dart';
-import 'package:swaav/view/widgets/profile_dialog.dart';
+import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/view/screens/chatlists_screen.dart';
+import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:bargainb/view/widgets/profile_dialog.dart';
 
 import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';

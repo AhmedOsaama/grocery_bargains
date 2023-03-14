@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import 'package:swaav/providers/products_provider.dart';
+import 'package:bargainb/providers/products_provider.dart';
 
 import '../../utils/app_colors.dart';
 import '../../utils/assets_manager.dart';

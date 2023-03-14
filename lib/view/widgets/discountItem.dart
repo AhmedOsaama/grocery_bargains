@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:swaav/utils/app_colors.dart';
-import 'package:swaav/utils/icons_manager.dart';
-import 'package:swaav/utils/utils.dart';
-import 'package:swaav/view/components/plus_button.dart';
-import 'package:swaav/view/screens/profile_screen.dart';
+import 'package:bargainb/utils/app_colors.dart';
+import 'package:bargainb/utils/icons_manager.dart';
+import 'package:bargainb/utils/utils.dart';
+import 'package:bargainb/view/components/plus_button.dart';
+import 'package:bargainb/view/screens/profile_screen.dart';
 
 import '../../utils/assets_manager.dart';
 import '../../utils/style_utils.dart';

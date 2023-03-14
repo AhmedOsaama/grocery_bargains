@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:swaav/services/network_services.dart';
+import 'package:bargainb/services/network_services.dart';
 
 import '../utils/assets_manager.dart';
 

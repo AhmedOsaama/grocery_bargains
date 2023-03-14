@@ -9,19 +9,16 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:swaav/config/themes/app_theme.dart';
-import 'package:swaav/providers/chatlists_provider.dart';
-import 'package:swaav/providers/google_sign_in_provider.dart';
-import 'package:swaav/providers/products_provider.dart';
-import 'package:swaav/services/dynamic_link_service.dart';
-import 'package:swaav/utils/app_colors.dart';
-import 'package:swaav/view/screens/main_screen.dart';
-import 'package:swaav/view/screens/chatlist_view_screen.dart';
-import 'package:swaav/view/screens/onboarding_screen.dart';
-import 'package:swaav/view/screens/register_screen.dart';
-import 'package:swaav/view/screens/splash_screen.dart';
 
 import 'firebase_options.dart';
+import 'providers/chatlists_provider.dart';
+import 'providers/google_sign_in_provider.dart';
+import 'providers/products_provider.dart';
+import 'services/dynamic_link_service.dart';
+import 'utils/app_colors.dart';
+import 'view/screens/main_screen.dart';
+import 'view/screens/onboarding_screen.dart';
+import 'view/screens/register_screen.dart';
 
 //To apply keys for the various languages used.
 // flutter pub run easy_localization:generate -S ./assets/translations -f keys -o locale_keys.g.dart

@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 // import 'package:gdpr_dialog/gdpr_dialog.dart';
-import 'package:swaav/config/routes/app_navigator.dart';
-import 'package:swaav/generated/locale_keys.g.dart';
-import 'package:swaav/utils/app_colors.dart';
-import 'package:swaav/utils/assets_manager.dart';
-import 'package:swaav/utils/style_utils.dart';
-import 'package:swaav/view/components/button.dart';
-import 'package:swaav/view/screens/home_screen.dart';
-import 'package:swaav/view/screens/main_screen.dart';
+import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/generated/locale_keys.g.dart';
+import 'package:bargainb/utils/app_colors.dart';
+import 'package:bargainb/utils/assets_manager.dart';
+import 'package:bargainb/utils/style_utils.dart';
+import 'package:bargainb/view/components/button.dart';
+import 'package:bargainb/view/screens/home_screen.dart';
+import 'package:bargainb/view/screens/main_screen.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   OnBoardingScreen({Key? key}) : super(key: key);

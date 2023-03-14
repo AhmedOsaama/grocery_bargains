@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:swaav/utils/fonts_utils.dart';
-import 'package:swaav/utils/style_utils.dart';
-import 'package:swaav/view/components/button.dart';
-import 'package:swaav/view/components/generic_field.dart';
-import 'package:swaav/view/widgets/backbutton.dart';
-import 'package:swaav/view/widgets/share_option_widget.dart';
+import 'package:bargainb/utils/fonts_utils.dart';
+import 'package:bargainb/utils/style_utils.dart';
+import 'package:bargainb/view/components/button.dart';
+import 'package:bargainb/view/components/generic_field.dart';
+import 'package:bargainb/view/widgets/backbutton.dart';
+import 'package:bargainb/view/widgets/share_option_widget.dart';
 // import 'package:whatsapp_share2/whatsapp_share2.dart';
 
 class InviteScreen extends StatelessWidget {

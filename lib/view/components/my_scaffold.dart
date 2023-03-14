@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:swaav/view/components/nav_bar.dart';
+import 'package:bargainb/view/components/nav_bar.dart';
 
 class MyScaffold extends StatelessWidget {
   final Widget body;
