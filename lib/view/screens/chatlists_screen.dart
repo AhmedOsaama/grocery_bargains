@@ -327,21 +327,6 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
     );
   }
 
-  Future<String> createChatList() async {
-    var docRef = await FirebaseFirestore.instance.collection('/lists').add({
-      "last_message": "",
-      "last_message_date": Timestamp.now(),
-      "last_message_userId": "",
-      "last_message_userName": "",
-      "list_name": "Name...",
-      "size": 0,
-      "storeImageUrl": storePlaceholder,
-      "storeName": "None",
-      "total_price": 0.0,
-      "userIds": [FirebaseAuth.instance.currentUser?.uid],
-    });
-    return docRef.id;
-  }
 
   Widget getFab() {
     return Column(
@@ -413,7 +398,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
   }
 
   Future<void> startChatList() async {
-    var listId = await createChatList();
+    var listId = await Provider.of<ChatlistsProvider>(context,listen: false).createChatList();
     AppNavigator.push(
         context: context,
         screen: ChatListViewScreen(

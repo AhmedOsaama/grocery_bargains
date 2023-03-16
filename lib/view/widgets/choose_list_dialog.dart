@@ -145,6 +145,19 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                   style: TextStylesInter.textViewSemiBold16
                       .copyWith(color: black2),
                 )),
+            // GenericButton(                           //TODO: create and share or add an item button(Check the figma flow)
+            //     onPressed: () {
+            //         Provider.of<ChatlistsProvider>(context,listen: false).createChatList()
+            //       },
+            //     height: 60.h,
+            //     width: double.infinity,
+            //     color: yellow,
+            //     borderRadius: BorderRadius.circular(6),
+            //     child: Text(
+            //       LocaleKeys.createNewList.tr(),
+            //       style: TextStylesInter.textViewSemiBold16
+            //           .copyWith(color: black2),
+            //     )),
             SizedBox(
               height: 30.h,
             ),

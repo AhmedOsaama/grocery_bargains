@@ -1,4 +1,4 @@
-package thebaraginb.app
+package thebargainb.app
 
 import io.flutter.embedding.android.FlutterActivity
 

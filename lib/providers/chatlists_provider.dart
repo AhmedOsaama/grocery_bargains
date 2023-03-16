@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:bargainb/models/list_item.dart';
 
+import '../utils/assets_manager.dart';
 import '../view/widgets/choose_list_dialog.dart';
 
 class ChatlistsProvider with ChangeNotifier{
@@ -40,6 +41,23 @@ class ChatlistsProvider with ChangeNotifier{
           item: listItem
         ));
   }
+
+  Future<String> createChatList() async {
+    var docRef = await FirebaseFirestore.instance.collection('/lists').add({
+      "last_message": "",
+      "last_message_date": Timestamp.now(),
+      "last_message_userId": "",
+      "last_message_userName": "",
+      "list_name": "Name...",
+      "size": 0,
+      "storeImageUrl": storePlaceholder,
+      "storeName": "None",
+      "total_price": 0.0,
+      "userIds": [FirebaseAuth.instance.currentUser?.uid],
+    });
+    return docRef.id;
+  }
+
 
   Future<void> addItemToList(ListItem item, String docId) async {
     final userData = await FirebaseFirestore.instance
