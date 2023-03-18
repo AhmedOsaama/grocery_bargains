@@ -50,20 +50,21 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAJMEGe4QZMJUJNRHL1FB1yfTw9cu6LoIo',
+    apiKey: 'AIzaSyDtPDcahINRujuuC2djvRiIU-QlaQCwJqQ',
     appId: '1:482980918038:android:4fa3cdb6195575d4155637',
-    messagingSenderId: '870806539222',
-    projectId: 'swaav-3f4d4',
-    storageBucket: 'swaav-3f4d4.appspot.com',
+    messagingSenderId: '482980918038',
+    projectId: 'discountly',
+    storageBucket: 'discountly.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCU7mdaZ6qEOE_YrpjWI2bZHhl3FIHHFd4',
+    apiKey: 'AIzaSyAmfeB192or9_pazHBplSp8a9z5k6elO0w',
     appId: '1:482980918038:ios:fa10c1a6b5719271155637',
-    messagingSenderId: '870806539222',
-    projectId: 'swaav-3f4d4',
-    storageBucket: 'swaav-3f4d4.appspot.com',
-    iosClientId: '870806539222-9c7g0cekqv2vianoplijafhm5na402en.apps.googleusercontent.com',
-    iosBundleId: 'com.example.swaav',
+    messagingSenderId: '482980918038',
+    projectId: 'discountly',
+    storageBucket: 'discountly.appspot.com',
+    androidClientId: '482980918038-bpafq0068sgf6vtemnbitrov3esm5d8p.apps.googleusercontent.com',
+    iosClientId: '482980918038-lpplqbj7s1rn3ugms25src4rmbnprb0q.apps.googleusercontent.com',
+    iosBundleId: 'thebargainb.app',
   );
 }

@@ -14,7 +14,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "482980918038-arkbhb0b4030k9iu30kdqnitm34hhasf.apps.googleusercontent.com",
+          "client_id": "482980918038-bpafq0068sgf6vtemnbitrov3esm5d8p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "thebargainb.app",
+            "certificate_hash": "752d5b5bbc7e534d332e33bce1b6b72a17cd11de"
+          }
+        },
+        {
+          "client_id": "482980918038-0fjaabbmejs3ean7hltoe7t5tsujc6v1.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -27,7 +35,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "482980918038-arkbhb0b4030k9iu30kdqnitm34hhasf.apps.googleusercontent.com",
+              "client_id": "482980918038-0fjaabbmejs3ean7hltoe7t5tsujc6v1.apps.googleusercontent.com",
               "client_type": 3
             },
             {
