@@ -1,34 +1,41 @@
 {
   "project_info": {
-    "project_number": "870806539222",
-    "project_id": "swaav-3f4d4",
-    "storage_bucket": "swaav-3f4d4.appspot.com"
+    "project_number": "482980918038",
+    "project_id": "discountly",
+    "storage_bucket": "discountly.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:870806539222:android:df3052d72419c9f31af277",
+        "mobilesdk_app_id": "1:482980918038:android:4fa3cdb6195575d4155637",
         "android_client_info": {
           "package_name": "thebargainb.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "870806539222-smpufqnbi3d45sp1aa9kng7muvmn4ad5.apps.googleusercontent.com",
+          "client_id": "482980918038-arkbhb0b4030k9iu30kdqnitm34hhasf.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAJMEGe4QZMJUJNRHL1FB1yfTw9cu6LoIo"
+          "current_key": "AIzaSyDtPDcahINRujuuC2djvRiIU-QlaQCwJqQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "870806539222-smpufqnbi3d45sp1aa9kng7muvmn4ad5.apps.googleusercontent.com",
+              "client_id": "482980918038-arkbhb0b4030k9iu30kdqnitm34hhasf.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "482980918038-lpplqbj7s1rn3ugms25src4rmbnprb0q.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "thebargainb.app"
+              }
             }
           ]
         }
