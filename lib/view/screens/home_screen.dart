@@ -96,6 +96,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           return const Center(
                               child: CircularProgressIndicator());
                         }
+                        // if(googleProvider.isGoogleSignedIn){
+                        //   return Text(
+                        //     style: TextStylesInter.textViewSemiBold24
+                        //         .copyWith(color: mainPurple),
+                        //     '${'Hello, ' + (googleProvider.user.displayName ?? "Google user")}!',
+                        //   );
+                        // }
                         return Text(
                           style: TextStylesInter.textViewSemiBold24
                               .copyWith(color: mainPurple),
@@ -109,6 +116,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             ConnectionState.waiting) {
                           return Container();
                         }
+                        // if(googleProvider.isGoogleSignedIn){
+                        //   return googleProvider.user.photoUrl != "" && googleProvider.user.photoUrl != null
+                        //       ? CircleAvatar(
+                        //     backgroundImage:
+                        //     NetworkImage(googleProvider.user.photoUrl!),
+                        //     radius: 30,
+                        //   )
+                        //       : SvgPicture.asset(personIcon);
+                        // }
                         return snapshot.data!['imageURL'] != ""
                             ? CircleAvatar(
                                 backgroundImage:

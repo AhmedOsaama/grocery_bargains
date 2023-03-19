@@ -209,6 +209,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Object getUserImage(AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+    // var googleProvider = Provider.of<GoogleSignInProvider>(context,listen: false);
+    // if(googleProvider.isGoogleSignedIn){
+    //   return googleProvider.user.photoUrl != "" && googleProvider.user.photoUrl != null
+    //       ?
+    //     NetworkImage(googleProvider.user.photoUrl!)
+    //       : AssetImage(personImage);
+    // }
     return snapshot.data!['imageURL'] != "" ? NetworkImage(snapshot.data!['imageURL']) :
                                 AssetImage(personImage);
   }

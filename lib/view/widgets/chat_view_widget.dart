@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -48,6 +49,24 @@ class _ChatViewState extends State<ChatView> {
   var isLoading = false;
   var isCollapsed = true;
   var isExpandingChatlist = false;
+
+  @override
+  void initState() {
+    final fbm = FirebaseMessaging.instance;
+    FirebaseMessaging.onMessage.listen((message) {
+      print(message);
+      return;
+    });
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      print(message);
+      return;
+    });
+    FirebaseMessaging.onBackgroundMessage((message) async {
+      print(message);
+    });
+    fbm.subscribeToTopic('messages');
+    super.initState();
+  }
 
 
   @override

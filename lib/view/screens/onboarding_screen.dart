@@ -146,7 +146,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   );
   var slide3 = Column(
     children: [
-      SizedBox(height: 100.h,),
+      SizedBox(height: 90.h,),
       Text(
         LocaleKeys.comparePricesAndLatest.tr(),
         style: TextStyles.textViewSemiBold40.copyWith(color: prussian),

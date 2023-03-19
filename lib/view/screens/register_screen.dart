@@ -57,17 +57,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
         userCredential = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
-        // final userImageRef = FirebaseStorage.instance.ref().child('user_image').child(userCredential.user!.uid + '.jpg');
-        // await userImageRef.putFile(pickedImage!).whenComplete(() => null);
-        // final url = await userImageRef.getDownloadURL();
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userCredential.user!.uid)
-            .set({
-          "email": email,
-          "username": username,
-          'imageURL': "",
-        });
+        await saveUserData(userCredential);
         AppNavigator.pushReplacement(context: context, screen: OnBoardingScreen());
       } else {
         setState(() {
@@ -280,6 +270,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             listen: false)
                         .loginWithGoogle();
                      if(userCredential.user != null){
+                       //TODO: check if the google user has a record in the database(logged in before)
+                       //TODO: if logged in, continue. if not, save his data like any other user
+                       // await saveUserData(userCredential);
                      saveRememberMePref();
                      var pref = await SharedPreferences.getInstance();
                      var isFirstTime = pref.getBool("firstTime") ?? true;
@@ -342,5 +335,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> saveUserData(UserCredential userCredential) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userCredential.user!.uid)
+        .set({
+      "email": email,
+      "username": username,
+      'imageURL': "",
+    });
   }
 }

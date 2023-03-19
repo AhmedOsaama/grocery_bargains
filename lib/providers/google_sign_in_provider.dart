@@ -7,6 +7,7 @@ class GoogleSignInProvider extends ChangeNotifier{
 
   GoogleSignInAccount? _user;
   GoogleSignInAccount get user => _user!;
+  bool isGoogleSignedIn = false;
 
   Future loginWithGoogle() async {
     final googleUser = await googleSignIn.signIn();
@@ -18,11 +19,15 @@ class GoogleSignInProvider extends ChangeNotifier{
       accessToken: _googleAuth.accessToken,
       idToken: _googleAuth.idToken
     );
+    isGoogleSignedIn = await googleSignIn.isSignedIn();
 
     notifyListeners();
     return await FirebaseAuth.instance.signInWithCredential(credential);
-
   }
+
+  // Future<bool> isGoogleSignedIn(){
+  //       return googleSignIn.isSignedIn();
+  // }
 
   Future logout() async {
     await googleSignIn.disconnect();

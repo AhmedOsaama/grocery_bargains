@@ -595,7 +595,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
           "https://www.google.com/add_user/${widget.listName}/${widget.listId}"), //TODO: listName has white space and that won't reflect well in using the link later
       uriPrefix: "https://swaav.page.link",
       androidParameters:
-          const AndroidParameters(packageName: "com.example.swaav"),
+          const AndroidParameters(packageName: "thebargainb.app"),
       // iosParameters: const IOSParameters(bundleId: "com.example.app.ios"),
     );
     final dynamicLink =
