@@ -1,6 +1,10 @@
+import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/view/screens/chatlist_view_screen.dart';
+import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,7 +26,7 @@ import 'view/screens/register_screen.dart';
 
 //To apply keys for the various languages used.
 // flutter pub run easy_localization:generate -S ./assets/translations -f keys -o locale_keys.g.dart
-
+@pragma('vm:entry-point')
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
@@ -32,6 +36,14 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  var notificationMessage = await FirebaseMessaging.instance.getInitialMessage();
+  FirebaseMessaging.onMessageOpenedApp.listen((message) { //TODO: move this to home screen and listen for the background lifecycle event and go to the page accordingly
+    print("onMessageOpenedApp: " + message.data['listId']);
+    print("onMessageOpenedApp title: " + message.notification!.title!);
+    print("onMessageOpenedApp body: " + message.notification!.body!);
+    notificationMessage = message;
+  });
+
   var pref = await SharedPreferences.getInstance();
   var isRemembered = pref.getBool("rememberMe") ?? false;
   var isFirstTime = pref.getBool("firstTime") ?? true;
@@ -66,6 +78,7 @@ Future<void> main() async {
             ChangeNotifierProvider<ChatlistsProvider>(create: (_) => ChatlistsProvider()),
           ],
           child: MyApp(
+            notificationMessage: notificationMessage,
               dynamicLinkPath: path,
               isRemembered: isRemembered,
               isFirstTime: isFirstTime
@@ -93,9 +106,10 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   final String dynamicLinkPath;
+  final RemoteMessage? notificationMessage;
   final bool isRemembered;
   final bool isFirstTime;
-  const MyApp({super.key, required this.dynamicLinkPath, required this.isRemembered, required this.isFirstTime});
+  const MyApp({super.key, required this.dynamicLinkPath, required this.isRemembered, required this.isFirstTime, this.notificationMessage});
 
   @override
   Widget build(BuildContext context) {
@@ -121,6 +135,9 @@ class MyApp extends StatelessWidget {
                     );
                   }
                   if (snapshot.hasData) {
+                    if(notificationMessage != null){
+                      return ChatListViewScreen(listId: notificationMessage?.data['listId'], listName: notificationMessage!.notification!.title!);
+                    }
                     // return DynamicLinkService()
                     //     .getStartPage(dynamicLinkPath); //case 1
                     return isFirstTime ? OnBoardingScreen() : MainScreen();
