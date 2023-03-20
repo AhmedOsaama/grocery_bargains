@@ -258,7 +258,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(
                   height: 12.h,
                 ),
-                if(Platform.isAndroid)
+                // if(Platform.isAndroid)
                 GenericButton(
                     borderRadius: BorderRadius.circular(6),
                     borderColor: borderColor,
@@ -270,9 +270,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             listen: false)
                         .loginWithGoogle();
                      if(userCredential.user != null){
-                       //TODO: check if the google user has a record in the database(logged in before)
-                       //TODO: if logged in, continue. if not, save his data like any other user
-                       // await saveUserData(userCredential);
+                       var userSnapshot = await FirebaseFirestore.instance
+                           .collection('users')
+                           .doc(userCredential.user!.uid).get();
+                       if(!userSnapshot.exists)
+                         await saveUserData(userCredential);
                      saveRememberMePref();
                      var pref = await SharedPreferences.getInstance();
                      var isFirstTime = pref.getBool("firstTime") ?? true;
@@ -342,9 +344,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         .collection('users')
         .doc(userCredential.user!.uid)
         .set({
-      "email": email,
-      "username": username,
-      'imageURL': "",
+      "email": email.isEmpty ? userCredential.user?.email : email,
+      "username": username.isEmpty ? userCredential.user?.displayName : username,
+      'imageURL': userCredential.user?.photoURL,
     });
   }
 }
