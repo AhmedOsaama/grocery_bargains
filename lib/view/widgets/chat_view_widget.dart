@@ -54,15 +54,15 @@ class _ChatViewState extends State<ChatView> {
   void initState() {
     final fbm = FirebaseMessaging.instance;
     fbm.requestPermission();
-    FirebaseMessaging.onMessage.listen((message) {
-      print("onMessage: " + message.data.entries.toList().toString());
-    });
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      print("onMessageOpenedApp: " + message.toString());
-    });
-    FirebaseMessaging.onBackgroundMessage((message) async {
-      print("onBackgroundMessage: " + message.toString());
-    });
+    // FirebaseMessaging.onMessage.listen((message) {
+    //   print("onMessage: " + message.data.entries.toList().toString());
+    // });
+    // FirebaseMessaging.onMessageOpenedApp.listen((message) {
+    //   print("onMessageOpenedApp: " + message.toString());
+    // });
+    // FirebaseMessaging.onBackgroundMessage((message) async {
+    //   print("onBackgroundMessage: " + message.toString());
+    // });
     fbm.subscribeToTopic(widget.listId);
     super.initState();
   }

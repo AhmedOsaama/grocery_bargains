@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,8 +16,10 @@ import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/list_type_widget.dart';
 
+import '../../main.dart';
 import '../../providers/chatlists_provider.dart';
 import '../../services/dynamic_link_service.dart';
+import 'chatlist_view_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -25,7 +28,7 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   // Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
   var selectedIndex = 0;
   final _pages = [
@@ -42,6 +45,30 @@ class _MainScreenState extends State<MainScreen> {
   //   DynamicLinkService().listenToDynamicLinks(context);               //case 2 the app is open but in background and opened again via deep link
   //   super.initState();
   // }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if(state == AppLifecycleState.resumed){
+      FirebaseMessaging.onMessageOpenedApp.listen((message) {
+        print(message);
+        print("onMessageOpenedApp: " + message.data['listId']);
+        print("onMessageOpenedApp title: " + message.notification!.title!);
+        print("onMessageOpenedApp body: " + message.notification!.body!);
+        print('PUSHING A PAGE');
+        AppNavigator.push(context: context, screen: ChatListViewScreen(listId: message.data['listId'], listName: message.notification!.title!));
+      });
+    }
+    if(state == AppLifecycleState.paused){
+      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    }
+    super.didChangeAppLifecycleState(state);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(

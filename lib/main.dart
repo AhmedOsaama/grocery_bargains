@@ -1,7 +1,6 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
-import 'package:bargainb/view/screens/register_screen_two.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,6 +26,11 @@ import 'view/screens/register_screen.dart';
 
 //To apply keys for the various languages used.
 // flutter pub run easy_localization:generate -S ./assets/translations -f keys -o locale_keys.g.dart
+
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("Handling a background message");
+  print(message.notification!.title);
+}
 @pragma('vm:entry-point')
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,12 +45,6 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   var notificationMessage = await FirebaseMessaging.instance.getInitialMessage();
-  FirebaseMessaging.onMessageOpenedApp.listen((message) { //TODO: move this to home screen and listen for the background lifecycle event and go to the page accordingly
-    print("onMessageOpenedApp: " + message.data['listId']);
-    print("onMessageOpenedApp title: " + message.notification!.title!);
-    print("onMessageOpenedApp body: " + message.notification!.body!);
-    notificationMessage = message;
-  });
 
   var pref = await SharedPreferences.getInstance();
   var isRemembered = pref.getBool("rememberMe") ?? false;
@@ -108,54 +106,22 @@ Future<void> main() async {
   //     )));
 }
 
-class MyApp extends StatelessWidget {
+
+class MyApp extends StatefulWidget {
   final String dynamicLinkPath;
   final RemoteMessage? notificationMessage;
   final bool isRemembered;
   final bool isFirstTime;
   const MyApp({super.key, required this.dynamicLinkPath, required this.isRemembered, required this.isFirstTime, this.notificationMessage});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+
+
   // @override
-  // Widget build(BuildContext context) {
-  //   return MaterialApp(
-  //     title: 'BargainB',
-  //     // theme: appTheme(),
-  //     theme: ThemeData(
-  //       canvasColor: lightPurple
-  //     ),
-  //     debugShowCheckedModeBanner: false,
-  //     home: ScreenUtilInit(
-  //         designSize: Size(390, 844),
-  //         minTextAdapt: true,
-  //         splitScreenMode: true,
-  //         builder: (context, _) {
-  //           // if(!isRemembered) return RegisterScreen();
-  //           if(!isRemembered) return RegisterScreenTwo();
-  //           return StreamBuilder(
-  //               stream: FirebaseAuth.instance.authStateChanges(),
-  //               builder: (context, snapshot) {
-  //                 if (snapshot.connectionState == ConnectionState.waiting) {
-  //                   return Center(
-  //                     child: CircularProgressIndicator(),
-  //                   );
-  //                 }
-  //                 if (snapshot.hasData) {
-  //                   if(notificationMessage != null) {
-  //                     return ChatListViewScreen(listId: notificationMessage?.data['listId'], listName: notificationMessage!.notification!.title!);
-  //                   }
-  //                   // return DynamicLinkService()
-  //                   //     .getStartPage(dynamicLinkPath); //case 1
-  //                   return isFirstTime ? OnBoardingScreen() : MainScreen();
-  //                 }
-  //                 // return RegisterScreen();
-  //                 return RegisterScreenTwo();
-  //               });
-  //         }),
-  //     localizationsDelegates: context.localizationDelegates,
-  //     supportedLocales: context.supportedLocales,
-  //     locale: context.locale,
-  //   );
-  // }
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -171,19 +137,19 @@ class MyApp extends StatelessWidget {
         home: StreamBuilder(
                   stream: FirebaseAuth.instance.authStateChanges(),
                   builder: (context, snapshot) {
-                    if(!isRemembered) return RegisterScreen();
+                    if(!widget.isRemembered) return RegisterScreen();
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Center(
                         child: CircularProgressIndicator(),
                       );
                     }
                     if (snapshot.hasData) {
-                      if(notificationMessage != null) {
-                        return ChatListViewScreen(listId: notificationMessage?.data['listId'], listName: notificationMessage!.notification!.title!);
+                      if(widget.notificationMessage != null) {
+                        return ChatListViewScreen(listId: widget.notificationMessage?.data['listId'], listName: widget.notificationMessage!.notification!.title!);
                       }
                       // return DynamicLinkService()
                       //     .getStartPage(dynamicLinkPath); //case 1
-                      return isFirstTime ? OnBoardingScreen() : MainScreen();
+                      return widget.isFirstTime ? OnBoardingScreen() : MainScreen();
                     }
                     // return RegisterScreen();
                     return RegisterScreen();

@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -149,7 +152,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     for (var item in items) {
       try {
         total += item['item_price'] ?? 99999;
-      }catch(e){
+      } catch (e) {
         total += 0;
       }
     }
@@ -165,6 +168,12 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
         elevation: 0,
         backgroundColor: Theme.of(context).canvasColor,
         foregroundColor: Colors.black,
+        leading: IconButton(
+          icon: Icon(
+              Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios),
+          onPressed: () => AppNavigator.pushReplacement(
+              context: context, screen: MainScreen()),
+        ),
         actions: [
           Container(
             width: 150.w,
@@ -350,7 +359,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
               ? Expanded(
                   child: FutureBuilder<QuerySnapshot>(
                       future: FirebaseFirestore.instance
-                          .collection('/lists/${widget.listId}/items').orderBy('time')
+                          .collection('/lists/${widget.listId}/items')
+                          .orderBy('time')
                           .get(),
                       builder: (context, snapshot) {
                         final items = snapshot.data?.docs ?? [];
