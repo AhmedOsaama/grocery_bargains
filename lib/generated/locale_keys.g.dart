@@ -13,6 +13,7 @@ abstract class  LocaleKeys {
   static const forgotPassword = 'forgotPassword';
   static const signUp = 'signUp';
   static const signUpWithGoogle = 'signUpWithGoogle';
+  static const signUpWithApple = 'signUpWithApple';
   static const youDontHaveAnAccount = 'youDontHaveAnAccount';
   static const signIn = 'signIn';
   static const welcomeBack = 'welcomeBack';

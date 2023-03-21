@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../generated/locale_keys.g.dart';
@@ -37,7 +39,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String email = "";
   String password = "";
   bool _isLoading = false;
-  bool isLogin = false;
+  bool isLogin = true;
   bool isObscured = true;
 
   bool rememberMe = false;
@@ -90,8 +92,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 15.w),
+        // padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
@@ -99,7 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 105.h,
+                  height: 100.h,
                 ),
                 Center(
                   child: Text(
@@ -265,27 +269,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: Colors.white,
                     height: 70.h,
                     width: double.infinity,
-                    onPressed: () async {
-                     UserCredential userCredential = await Provider.of<GoogleSignInProvider>(context,
-                            listen: false)
-                        .loginWithGoogle();
-                     if(userCredential.user != null){
-                       var userSnapshot = await FirebaseFirestore.instance
-                           .collection('users')
-                           .doc(userCredential.user!.uid).get();
-                       if(!userSnapshot.exists)
-                         await saveUserData(userCredential);
-                     saveRememberMePref();
-                     var pref = await SharedPreferences.getInstance();
-                     var isFirstTime = pref.getBool("firstTime") ?? true;
-                     if(isFirstTime) {
-                       pref.setBool("firstTime", false);
-                      AppNavigator.pushReplacement(context: context, screen: OnBoardingScreen());
-                     } else {
-                       AppNavigator.pushReplacement(context: context, screen: MainScreen());
-                     }
-                     }
-                    },
+                    onPressed: () async => await loginWithGoogle(context,false),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -297,6 +281,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           LocaleKeys.signUpWithGoogle.tr(),
                           style: TextStyles.textViewSemiBold16
                               .copyWith(color: Colors.black),
+                        ),
+                      ],
+                    )),
+                10.ph,
+                GenericButton(
+                    borderRadius: BorderRadius.circular(6),
+                    borderColor: borderColor,
+                    color: Colors.black,
+                    height: 70.h,
+                    width: double.infinity,
+                    onPressed: () async => await loginWithGoogle(context,true),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(apple),
+                        SizedBox(
+                          width: 10.w,
+                        ),
+                        Text(
+                          LocaleKeys.signUpWithApple.tr(),
+                          style: TextStyles.textViewSemiBold16
+                              .copyWith(color: Colors.white),
                         ),
                       ],
                     )),
@@ -337,6 +343,46 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> loginWithGoogle(BuildContext context,bool isApple) async {
+    late UserCredential userCredential;
+    if(isApple){
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+      final appleCredential = OAuthProvider('apple.com').credential(
+        idToken: credential.identityToken,
+        accessToken: credential.authorizationCode,
+      );
+      print(appleCredential);
+      userCredential =
+      await FirebaseAuth.instance.signInWithCredential(appleCredential);
+      print(userCredential);
+    }else{
+      userCredential = await Provider.of<GoogleSignInProvider>(context,
+           listen: false)
+       .loginWithGoogle();
+    }
+    if(userCredential.user != null){
+      var userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid).get();
+      if(!userSnapshot.exists)
+        await saveUserData(userCredential);
+    saveRememberMePref();
+    var pref = await SharedPreferences.getInstance();
+    var isFirstTime = pref.getBool("firstTime") ?? true;
+    if(isFirstTime) {
+      pref.setBool("firstTime", false);
+     AppNavigator.pushReplacement(context: context, screen: OnBoardingScreen());
+    } else {
+      AppNavigator.pushReplacement(context: context, screen: MainScreen());
+    }
+    }
   }
 
   Future<void> saveUserData(UserCredential userCredential) async {

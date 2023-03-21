@@ -1,6 +1,7 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
+import 'package:bargainb/view/screens/register_screen_two.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -33,6 +34,9 @@ Future<void> main() async {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent, // transparent status bar
   ));
+  await SystemChrome.setPreferredOrientations(
+    [DeviceOrientation.portraitUp],
+  );
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -111,43 +115,82 @@ class MyApp extends StatelessWidget {
   final bool isFirstTime;
   const MyApp({super.key, required this.dynamicLinkPath, required this.isRemembered, required this.isFirstTime, this.notificationMessage});
 
+  // @override
+  // Widget build(BuildContext context) {
+  //   return MaterialApp(
+  //     title: 'BargainB',
+  //     // theme: appTheme(),
+  //     theme: ThemeData(
+  //       canvasColor: lightPurple
+  //     ),
+  //     debugShowCheckedModeBanner: false,
+  //     home: ScreenUtilInit(
+  //         designSize: Size(390, 844),
+  //         minTextAdapt: true,
+  //         splitScreenMode: true,
+  //         builder: (context, _) {
+  //           // if(!isRemembered) return RegisterScreen();
+  //           if(!isRemembered) return RegisterScreenTwo();
+  //           return StreamBuilder(
+  //               stream: FirebaseAuth.instance.authStateChanges(),
+  //               builder: (context, snapshot) {
+  //                 if (snapshot.connectionState == ConnectionState.waiting) {
+  //                   return Center(
+  //                     child: CircularProgressIndicator(),
+  //                   );
+  //                 }
+  //                 if (snapshot.hasData) {
+  //                   if(notificationMessage != null) {
+  //                     return ChatListViewScreen(listId: notificationMessage?.data['listId'], listName: notificationMessage!.notification!.title!);
+  //                   }
+  //                   // return DynamicLinkService()
+  //                   //     .getStartPage(dynamicLinkPath); //case 1
+  //                   return isFirstTime ? OnBoardingScreen() : MainScreen();
+  //                 }
+  //                 // return RegisterScreen();
+  //                 return RegisterScreenTwo();
+  //               });
+  //         }),
+  //     localizationsDelegates: context.localizationDelegates,
+  //     supportedLocales: context.supportedLocales,
+  //     locale: context.locale,
+  //   );
+  // }
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'BargainB',
-      // theme: appTheme(),
-      theme: ThemeData(
-        canvasColor: lightPurple
-      ),
-      debugShowCheckedModeBanner: false,
-      home: ScreenUtilInit(
-          designSize: const Size(390, 844),
-          minTextAdapt: true,
-          splitScreenMode: true,
-          builder: (context, _) {
-            if(!isRemembered) return RegisterScreen();
-            return StreamBuilder(
-                stream: FirebaseAuth.instance.authStateChanges(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                  if (snapshot.hasData) {
-                    if(notificationMessage != null){
-                      return ChatListViewScreen(listId: notificationMessage?.data['listId'], listName: notificationMessage!.notification!.title!);
+    return ScreenUtilInit(
+      designSize: Size(390, 844),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context,_) => MaterialApp(
+        title: 'BargainB',
+        theme: ThemeData(
+          canvasColor: lightPurple
+        ),
+        debugShowCheckedModeBanner: false,
+        home: StreamBuilder(
+                  stream: FirebaseAuth.instance.authStateChanges(),
+                  builder: (context, snapshot) {
+                    if(!isRemembered) return RegisterScreen();
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
                     }
-                    // return DynamicLinkService()
-                    //     .getStartPage(dynamicLinkPath); //case 1
-                    return isFirstTime ? OnBoardingScreen() : MainScreen();
-                  }
-                  return RegisterScreen();
-                });
-          }),
+                    if (snapshot.hasData) {
+                      if(notificationMessage != null) {
+                        return ChatListViewScreen(listId: notificationMessage?.data['listId'], listName: notificationMessage!.notification!.title!);
+                      }
+                      // return DynamicLinkService()
+                      //     .getStartPage(dynamicLinkPath); //case 1
+                      return isFirstTime ? OnBoardingScreen() : MainScreen();
+                    }
+                    // return RegisterScreen();
+                    return RegisterScreen();
+                  }),
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
+            ),
     );
-  }
-}
+}}
