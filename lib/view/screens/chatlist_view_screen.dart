@@ -36,6 +36,7 @@ class ChatListViewScreen extends StatefulWidget {
   final String? storeName;
   final String? storeImage;
   final bool isUsingDynamicLink;
+  final bool isNotificationOpened;
   bool isListView;
   final Function? updateList;
   ChatListViewScreen(
@@ -46,7 +47,8 @@ class ChatListViewScreen extends StatefulWidget {
       this.storeName,
       this.storeImage,
       this.updateList,
-      this.isListView = false //The screen opens on a Chat View by default
+      this.isListView = false, //The screen opens on a Chat View by default
+        this.isNotificationOpened = false,
       })
       : super(key: key);
 
@@ -168,12 +170,12 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
         elevation: 0,
         backgroundColor: Theme.of(context).canvasColor,
         foregroundColor: Colors.black,
-        leading: IconButton(
+        leading: widget.isNotificationOpened ? IconButton(
           icon: Icon(
               Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios),
           onPressed: () => AppNavigator.pushReplacement(
               context: context, screen: MainScreen()),
-        ),
+        ) : null,
         actions: [
           Container(
             width: 150.w,

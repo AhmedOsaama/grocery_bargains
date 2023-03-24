@@ -27,6 +27,19 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>thebargainb.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>BargainB</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -37,6 +50,12 @@
 	<string>We require access to gallery and camera to be able to change the profile picture</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -47,5 +66,19 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>branch_key</key>
+	<dict>
+		<key>live</key>
+		<string>key_live_jxfkdS38UM7kZTkoz0KXLpfeAwhFigcm</string>
+		<key>test</key>
+		<string>key_test_juokeN8WRT3m7Ppox3J67nkgAujrimfr</string>
+	</dict>
+	<key>branch_universal_link_domains</key>
+	<array>
+		<string>bargainb.app.link</string>
+		<string>bargainb.test-app.link</string>
+		<string>bargainb-alternate.app.link</string>
+		<string>bargainb-alternate.test-app.link</string>
+	</array>
 </dict>
 </plist>

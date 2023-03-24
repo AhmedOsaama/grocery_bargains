@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:bargainb/models/list_item.dart';
 
 import '../utils/assets_manager.dart';
+import '../view/screens/chatlists_screen.dart';
 import '../view/widgets/choose_list_dialog.dart';
 
 class ChatlistsProvider with ChangeNotifier{
@@ -22,6 +23,43 @@ class ChatlistsProvider with ChangeNotifier{
       .where("userIds", arrayContains: FirebaseAuth.instance.currentUser?.uid)
       .get();
     return chatlistsFuture;
+  }
+
+  Future<List> getAllFriends() async {
+    List<QueryDocumentSnapshot> allLists = [];
+    var allUserIds = [];
+    var allListsSnapshot = await chatlistsFuture;
+    allLists = allListsSnapshot.docs;
+    var myId = FirebaseAuth.instance.currentUser?.uid;
+    List<FriendChatLists> friendsList = [];
+    //getting all the users I have lists in common with
+    allLists.forEach((list) {
+      var userIds = list['userIds'] as List;
+      allUserIds.addAll([...userIds]);
+    });
+    print(allUserIds);
+    //removing duplicates
+    allUserIds = allUserIds.toSet().toList();
+    //removing my self
+    allUserIds.remove(myId);
+    print(allUserIds);
+    //for every user we get their name,image and lists in common
+    for(var userId in allUserIds){
+      var userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      var userName = userSnapshot.data()!['username'];
+      print(userName);
+      var userImage = userSnapshot.data()!['imageURL'];
+      var userEmail = userSnapshot.data()!['email'];
+
+      //getting all the lists with a particular user
+      var userLists = allLists.where((list){
+        var userIds = list['userIds'] as List;
+        return userIds.contains(userId);
+      }).toList();
+      print(userLists.length);
+      friendsList.add(FriendChatLists(imageURL: userImage,email: userEmail, name: userName, chatlists: userLists));
+    }
+    return friendsList;
   }
 
   Future<void> showChooseListDialog({required BuildContext context, required bool isSharing, required ListItem listItem}) async {

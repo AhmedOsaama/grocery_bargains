@@ -62,6 +62,7 @@ dependencies:
 #  gdpr_dialog: ^2.1.1
   sentry_flutter: ^6.22.0
   firebase_messaging: ^14.3.0
+  flutter_branch_sdk: ^6.4.0
 
 
 dev_dependencies:

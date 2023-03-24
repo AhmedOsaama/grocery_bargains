@@ -1,3 +1,4 @@
+import 'package:bargainb/view/screens/friend_chatlists_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -31,6 +32,8 @@ import '../../config/routes/app_navigator.dart';
 import '../components/generic_field.dart';
 import '../widgets/chat_view_widget.dart';
 
+enum ChatlistsView { CHATVIEW, LISTVIEW, PERSONVIEW }
+
 class ChatlistsScreen extends StatefulWidget {
   const ChatlistsScreen({Key? key}) : super(key: key);
 
@@ -42,27 +45,28 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
   late Future<QuerySnapshot> getAllListsFuture;
   late Future<QuerySnapshot> getListItemsFuture;
   var isFabPressed = false;
-  var isChatView = true;
-
+  var chatlistsView = ChatlistsView.CHATVIEW;
   var canShowFab = true;
 
   @override
   void initState() {
     super.initState();
-    getAllListsFuture = Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlistsFuture();
+    getAllListsFuture = Provider.of<ChatlistsProvider>(context, listen: false)
+        .getAllChatlistsFuture();
   }
 
   void updateList() async {
     print("RUN UPDATE LIST");
     setState(() {
-      getAllListsFuture = Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlistsFuture();
+      getAllListsFuture = Provider.of<ChatlistsProvider>(context, listen: false)
+          .getAllChatlistsFuture();
     });
   }
 
   bool isAdding = false;
   @override
   Widget build(BuildContext context) {
-    context.watch<ChatlistsProvider>();
+    var chatlistsProvider = context.watch<ChatlistsProvider>();
     // Provider.of<ChatlistsProvider>(context);
     return Scaffold(
       floatingActionButton: canShowFab ? getFab() : null,
@@ -75,22 +79,40 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
               height: 91.h,
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   LocaleKeys.myChatlists.tr(),
                   style:
                       TextStyles.textViewSemiBold30.copyWith(color: prussian),
                 ),
+                Spacer(),
                 IconButton(
                     onPressed: () {
                       setState(() {
-                        isChatView = !isChatView;
+                        if (chatlistsView == ChatlistsView.CHATVIEW) {
+                          chatlistsView = ChatlistsView.LISTVIEW;
+                        } else if (chatlistsView == ChatlistsView.LISTVIEW) {
+                          chatlistsView = ChatlistsView.CHATVIEW;
+                        } else {
+                          chatlistsView = ChatlistsView.CHATVIEW;
+                        }
                       });
                     },
-                    icon: isChatView
+                    icon: chatlistsView == ChatlistsView.CHATVIEW
                         ? SvgPicture.asset(listViewIcon)
-                        : Icon(Icons.chat_outlined))
+                        : Icon(Icons.chat_outlined)),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      if (chatlistsView != ChatlistsView.PERSONVIEW) {
+                        chatlistsView = ChatlistsView.PERSONVIEW;
+                      }
+                    });
+                  },
+                  icon: chatlistsView != ChatlistsView.PERSONVIEW
+                      ? Icon(Icons.account_circle_outlined)
+                      : Container(),
+                )
               ],
             ),
             SizedBox(
@@ -141,7 +163,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                         ],
                       );
                     }
-                    if (!isChatView) {
+                    if (chatlistsView == ChatlistsView.LISTVIEW) {
                       return SingleChildScrollView(
                         child: StaggeredGrid.count(
                             crossAxisCount: 2,
@@ -159,9 +181,10 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                                               listId: list.id,
                                               isListView: true,
                                               listName: list['list_name']),
-                                        )).then((value) {
+                                        ))
+                                            .then((value) {
                                           // updateList();
-                                    }),
+                                        }),
                                     child: StoreListWidget(
                                         listId: list.id,
                                         storeImagePath: list['storeImageUrl'],
@@ -170,113 +193,182 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                             ).toList()),
                       );
                     }
-                    return ListView.separated(
-                        separatorBuilder: (ctx, i) => Divider(),
-                        itemCount: allLists.length,
-                        itemBuilder: (ctx, i) {
-                          return InkWell(
-                            onTap: () => AppNavigator.push(
-                                context: context,
-                                screen: ChatListViewScreen(
-                                  updateList: updateList,
-                                  listId: allLists[i].id,
-                                  listName: allLists[i]['list_name'],
-                                )).then((value) {
-                            }),
-                            child: Row(
-                              children: [
-                                Image.asset(
-                                  storePlaceholder,
-                                  width: 45,
-                                  height: 45,
-                                ),
-                                18.pw,
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      allLists[i]['list_name'],
-                                      style: TextStylesInter.textViewSemiBold16
-                                          .copyWith(color: black2),
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          "${allLists[i]['size']} items",
-                                          style: TextStylesInter
-                                              .textViewMedium10
-                                              .copyWith(color: purple50),
-                                        ),
-                                        5.pw,
-                                        Text(
-                                          "€${allLists[i]['total_price']}",
-                                          style: TextStylesInter
-                                              .textViewMedium10
-                                              .copyWith(color: black2),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          '${allLists[i]['last_message_userId'] == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : allLists[i]['last_message_userName']}: ',
-                                          style: TextStylesInter
-                                              .textViewRegular14
-                                              .copyWith(color: black2),
-                                        ),
-                                        Container(
-                                          width: 150.w,
-                                          child: Text(
-                                            allLists[i]['last_message'],
-                                            overflow: TextOverflow.ellipsis,
+                    if (chatlistsView == ChatlistsView.CHATVIEW)
+                      return ListView.separated(
+                          separatorBuilder: (ctx, i) => Divider(),
+                          itemCount: allLists.length,
+                          itemBuilder: (ctx, i) {
+                            return InkWell(
+                              onTap: () => AppNavigator.push(
+                                  context: context,
+                                  screen: ChatListViewScreen(
+                                    updateList: updateList,
+                                    listId: allLists[i].id,
+                                    listName: allLists[i]['list_name'],
+                                  )),
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    storePlaceholder,
+                                    width: 45,
+                                    height: 45,
+                                  ),
+                                  18.pw,
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        allLists[i]['list_name'],
+                                        style: TextStylesInter
+                                            .textViewSemiBold16
+                                            .copyWith(color: black2),
+                                      ),
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            "${allLists[i]['size']} items",
+                                            style: TextStylesInter
+                                                .textViewMedium10
+                                                .copyWith(color: purple50),
+                                          ),
+                                          5.pw,
+                                          Text(
+                                            "€${allLists[i]['total_price']}",
+                                            style: TextStylesInter
+                                                .textViewMedium10
+                                                .copyWith(color: black2),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            '${allLists[i]['last_message_userId'] == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : allLists[i]['last_message_userName']}: ',
                                             style: TextStylesInter
                                                 .textViewRegular14
                                                 .copyWith(color: black2),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Spacer(),
-                                Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      (allLists[i]['last_message_date'].toDate()
-                                              as DateTime)
-                                          .toString()
-                                          .split(' ')[0],
-                                      style: TextStylesInter.textViewRegular14
-                                          .copyWith(
-                                              color: Color.fromRGBO(
-                                                  72, 72, 74, 1)),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    FutureBuilder(
-                                        future: getUserImages(allLists[i].id),
-                                        builder: (context, snapshot) {
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.waiting) {
-                                            return const Center(
-                                                child:
-                                                    CircularProgressIndicator(
-                                              color: verdigris,
-                                            ));
-                                          }
-                                          return snapshot.data ??
-                                              const Text(
-                                                  "Something went wrong");
-                                        }),
-                                  ],
-                                )
-                              ],
-                            ),
+                                          Container(
+                                            width: 150.w,
+                                            child: Text(
+                                              allLists[i]['last_message'],
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStylesInter
+                                                  .textViewRegular14
+                                                  .copyWith(color: black2),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                  Spacer(),
+                                  Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        (allLists[i]['last_message_date']
+                                                .toDate() as DateTime)
+                                            .toString()
+                                            .split(' ')[0],
+                                        style: TextStylesInter.textViewRegular14
+                                            .copyWith(
+                                                color: Color.fromRGBO(
+                                                    72, 72, 74, 1)),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      FutureBuilder(
+                                          future: getUserImages(allLists[i].id),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.connectionState ==
+                                                ConnectionState.waiting) {
+                                              return const Center(
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                color: verdigris,
+                                              ));
+                                            }
+                                            return snapshot.data ??
+                                                const Text(
+                                                    "Something went wrong");
+                                          }),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            );
+                          });
+                    //PERSONVIEW case
+                    return FutureBuilder(
+                      future: chatlistsProvider.getAllFriends(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting)
+                          return Center(
+                            child: CircularProgressIndicator(),
                           );
-                        });
+                        List<FriendChatLists> friendsList =
+                            (snapshot.data ?? []) as List<FriendChatLists>;
+                        return ListView.separated(
+                            itemCount: friendsList.length,
+                            separatorBuilder: (ctx, i) => Divider(),
+                            itemBuilder: (ctx, i) {
+                              return InkWell(
+                                onTap: () {
+                                  //TODO: go to the person's profile page and display mutual lists.
+                                  AppNavigator.push(
+                                      context: context,
+                                      screen: FriendChatlistsScreen(
+                                          friendName: friendsList[i].name,
+                                          friendEmail: friendsList[i].email,
+                                          friendImageURL: friendsList[i].imageURL,
+                                          friendChatlists: friendsList[i].chatlists));
+                                },
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  child: Row(
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                            friendsList[i].imageURL),
+                                        radius: 20,
+                                      ),
+                                      15.pw,
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            friendsList[i].name,
+                                            style: TextStylesInter
+                                                .textViewSemiBold16
+                                                .copyWith(color: black2),
+                                          ),
+                                          5.ph,
+                                          Text(
+                                            "On " +
+                                                friendsList[i]
+                                                    .chatlists
+                                                    .length
+                                                    .toString() +
+                                                " lists",
+                                            style: TextStylesInter
+                                                .textViewMedium10
+                                                .copyWith(color: purple50),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              );
+                            });
+                      },
+                    );
                   }),
             ),
           ],
@@ -326,7 +418,6 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
       ),
     );
   }
-
 
   Widget getFab() {
     return Column(
@@ -398,7 +489,8 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
   }
 
   Future<void> startChatList() async {
-    var listId = await Provider.of<ChatlistsProvider>(context,listen: false).createChatList();
+    var listId = await Provider.of<ChatlistsProvider>(context, listen: false)
+        .createChatList();
     AppNavigator.push(
         context: context,
         screen: ChatListViewScreen(
@@ -407,4 +499,14 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
           isUsingDynamicLink: false,
         ));
   }
+}
+
+class FriendChatLists {
+  String name;
+  String imageURL;
+  String email;
+  List<QueryDocumentSnapshot> chatlists;
+
+  FriendChatLists(
+      {required this.imageURL, required this.name, required this.chatlists,required this.email});
 }

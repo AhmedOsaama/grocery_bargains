@@ -145,7 +145,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                     }
                     if (snapshot.hasData) {
                       if(widget.notificationMessage != null) {
-                        return ChatListViewScreen(listId: widget.notificationMessage?.data['listId'], listName: widget.notificationMessage!.notification!.title!);
+                        return ChatListViewScreen(listId: widget.notificationMessage?.data['listId'], listName: widget.notificationMessage!.notification!.title!,isNotificationOpened: true);
                       }
                       // return DynamicLinkService()
                       //     .getStartPage(dynamicLinkPath); //case 1

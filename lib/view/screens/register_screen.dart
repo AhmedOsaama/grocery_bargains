@@ -60,16 +60,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         userCredential = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
         await saveUserData(userCredential);
-        AppNavigator.pushReplacement(context: context, screen: OnBoardingScreen());
+        AppNavigator.pushReplacement(
+            context: context, screen: OnBoardingScreen());
       } else {
         setState(() {
           _isLoading = true;
         });
         userCredential = await _auth.signInWithEmailAndPassword(
             email: email, password: password);
-      saveRememberMePref();
-      //TODO: make a condition if the user is first time in app then go to oboarding, else go to homescreen
-      //   AppNavigator.pushReplacement(context: context, screen: HomeScreen());
+        saveRememberMePref();
+        //TODO: make a condition if the user is first time in app then go to oboarding, else go to homescreen
+        //   AppNavigator.pushReplacement(context: context, screen: HomeScreen());
         AppNavigator.pushReplacement(context: context, screen: MainScreen());
       }
     } on FirebaseAuthException catch (error) {
@@ -180,12 +181,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 GenericField(
                   hintText: "***********",
                   suffixIcon: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isObscured = !isObscured;
-                      });
-                    },
-                      child: Icon(isObscured ? Icons.visibility : Icons.visibility_off)),
+                      onTap: () {
+                        setState(() {
+                          isObscured = !isObscured;
+                        });
+                      },
+                      child: Icon(isObscured
+                          ? Icons.visibility
+                          : Icons.visibility_off)),
                   validation: (value) => Validator.password(value),
                   obscureText: isObscured,
                   onSaved: (value) {
@@ -221,7 +224,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ],
                     ),
                     TextButton(
-                      onPressed: () => AppNavigator.push(context: context, screen: ForgotPasswordScreen()),
+                      onPressed: () => AppNavigator.push(
+                          context: context, screen: ForgotPasswordScreen()),
                       child: Text(
                         LocaleKeys.forgotPassword.tr(),
                         style: TextStylesDMSans.textViewRegular12
@@ -250,8 +254,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       if (isValid!) {
                         _formKey.currentState?.save();
                         await _submitAuthForm(
-                            email, username, null, password, context).timeout(Duration(seconds: 10),onTimeout: (){
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Failed to login or signup, Please check your internet and try again later")));
+                                email, username, null, password, context)
+                            .timeout(Duration(seconds: 10), onTimeout: () {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              content: Text(
+                                  "Failed to login or signup, Please check your internet and try again later")));
                         });
                       }
                     },
@@ -269,7 +276,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: Colors.white,
                     height: 70.h,
                     width: double.infinity,
-                    onPressed: () async => await loginWithGoogle(context,false),
+                    onPressed: () async =>
+                        await loginWithSocial(context, false),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -291,7 +299,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     color: Colors.black,
                     height: 70.h,
                     width: double.infinity,
-                    onPressed: () async => await loginWithGoogle(context,true),
+                    onPressed: () async => await loginWithSocial(context, true),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -326,7 +334,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                           children: [
                             TextSpan(
-                                text: " ${isLogin ? LocaleKeys.signUp.tr() : LocaleKeys.signIn.tr()}",
+                                text:
+                                    " ${isLogin ? LocaleKeys.signUp.tr() : LocaleKeys.signIn.tr()}",
                                 style: TextStyles.textViewRegular12.copyWith(
                                     decoration: TextDecoration.underline,
                                     color: Color.fromRGBO(255, 146, 40, 1)))
@@ -345,9 +354,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Future<void> loginWithGoogle(BuildContext context,bool isApple) async {
+  Future<void> loginWithSocial(BuildContext context, bool isApple) async {
     late UserCredential userCredential;
-    if(isApple){
+    if (isApple) {
       final credential = await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
@@ -360,28 +369,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
       print(appleCredential);
       userCredential =
-      await FirebaseAuth.instance.signInWithCredential(appleCredential);
+          await FirebaseAuth.instance.signInWithCredential(appleCredential);
       print(userCredential);
-    }else{
-      userCredential = await Provider.of<GoogleSignInProvider>(context,
-           listen: false)
-       .loginWithGoogle();
+    } else {
+      userCredential =
+          await Provider.of<GoogleSignInProvider>(context, listen: false)
+              .loginWithGoogle();
     }
-    if(userCredential.user != null){
+    if (userCredential.user != null) {
       var userSnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .doc(userCredential.user!.uid).get();
-      if(!userSnapshot.exists)
-        await saveUserData(userCredential);
-    saveRememberMePref();
-    var pref = await SharedPreferences.getInstance();
-    var isFirstTime = pref.getBool("firstTime") ?? true;
-    if(isFirstTime) {
-      pref.setBool("firstTime", false);
-     AppNavigator.pushReplacement(context: context, screen: OnBoardingScreen());
-    } else {
-      AppNavigator.pushReplacement(context: context, screen: MainScreen());
-    }
+          .doc(userCredential.user!.uid)
+          .get();
+      if (!userSnapshot.exists) await saveUserData(userCredential);
+      saveRememberMePref();
+      var pref = await SharedPreferences.getInstance();
+      var isFirstTime = pref.getBool("firstTime") ?? true;
+      if (isFirstTime) {
+        pref.setBool("firstTime", false);
+        AppNavigator.pushReplacement(
+            context: context, screen: OnBoardingScreen());
+      } else {
+        AppNavigator.pushReplacement(context: context, screen: MainScreen());
+      }
     }
   }
 
@@ -391,7 +401,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         .doc(userCredential.user!.uid)
         .set({
       "email": email.isEmpty ? userCredential.user?.email : email,
-      "username": username.isEmpty ? userCredential.user?.displayName : username,
+      "username":
+          username.isEmpty ? userCredential.user?.displayName : username,
       'imageURL': userCredential.user?.photoURL,
     });
   }
