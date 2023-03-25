@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -39,18 +40,17 @@ class ChatListViewScreen extends StatefulWidget {
   final bool isNotificationOpened;
   bool isListView;
   final Function? updateList;
-  ChatListViewScreen(
-      {Key? key,
-      required this.listId,
-      required this.listName,
-      this.isUsingDynamicLink = false,
-      this.storeName,
-      this.storeImage,
-      this.updateList,
-      this.isListView = false, //The screen opens on a Chat View by default
-        this.isNotificationOpened = false,
-      })
-      : super(key: key);
+  ChatListViewScreen({
+    Key? key,
+    required this.listId,
+    required this.listName,
+    this.isUsingDynamicLink = false,
+    this.storeName,
+    this.storeImage,
+    this.updateList,
+    this.isListView = false, //The screen opens on a Chat View by default
+    this.isNotificationOpened = false,
+  }) : super(key: key);
 
   @override
   State<ChatListViewScreen> createState() => _ChatListViewScreenState();
@@ -62,6 +62,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   late Future<QuerySnapshot> getListItemsFuture;
   bool isEditingName = false;
   List<UserInfo> listUsers = [];
+  List<UserInfo> contactsList = [];
   var inviteFriendController = TextEditingController();
 
   var isInvitingFriends = false;
@@ -92,6 +93,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       });
     }
     getUserImagesFuture = getUserImages();
+
     // getListItemsFuture = FirebaseFirestore.instance
     //     .collection('/lists/${widget.listId}/items')
     //     .get();
@@ -117,21 +119,64 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     String imageUrl = "";
     String userName = "";
     String email = "";
+    String phoneNumber = "";
     for (var userId in userIds) {
       final userSnapshot = await FirebaseFirestore.instance
           .collection('/users')
           .doc(userId)
           .get();
       imageUrl = userSnapshot.data()!['imageURL'];
-      userName = userSnapshot.data()!['email'];
-      email = userSnapshot.data()!['username'];
-      listUsers.add(UserInfo(imageUrl, userName, email));
+      email = userSnapshot.data()!['email'];
+      userName = userSnapshot.data()!['username'];
+      phoneNumber = userSnapshot.data()!['phoneNumber'];
+      listUsers.add(UserInfo(
+          phoneNumber: phoneNumber, imageURL: imageUrl, name: userName, email: email));
       imageWidgets.add(CircleAvatar(
         backgroundImage: NetworkImage(
           imageUrl,
         ),
         radius: 20,
       ));
+    }
+    var isPermissionGranted = await FlutterContacts.requestPermission();
+    if (isPermissionGranted) {
+      List<Contact> contacts =
+          await FlutterContacts.getContacts(withProperties: true);
+      print("Length: " + contacts.length.toString());
+      for (var contact in contacts) {
+        // print(contact.phones.first.normalizedNumber);
+        var users = await FirebaseFirestore.instance
+            .collection('users')
+            .where('phoneNumber',
+                isEqualTo: contact.phones.first.normalizedNumber)
+            .get();
+        print(users.docs.length);
+        if (users.docs.isNotEmpty) {
+          var userInfo = users.docs.first;
+          var name = userInfo.data()['username'];
+          print(name);
+          var email = userInfo.get('email');
+          var phoneNumber = userInfo.get('phoneNumber');
+          var imageURL = userInfo.get('imageURL');
+          print(listUsers.length);
+          var existingContact = listUsers.firstWhere(
+              (userInfo) {
+                print("UserInfo phoneNumber" + userInfo.phoneNumber);
+                print( "phoneNumber" + phoneNumber);
+                return userInfo.phoneNumber == phoneNumber;
+              },
+              orElse: () =>
+                  UserInfo(phoneNumber: "", imageURL: "", name: "", email: ""));
+          print( "EXISTING CONTACT: "+ existingContact.phoneNumber);
+          if (existingContact.phoneNumber !=
+              phoneNumber) //making sure no duplicates are added to the contacts list
+            contactsList.add(UserInfo(
+                phoneNumber: phoneNumber,
+                email: email,
+                name: name,
+                imageURL: imageURL));
+        }
+      }
     }
 
     return Container(
@@ -170,20 +215,54 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
         elevation: 0,
         backgroundColor: Theme.of(context).canvasColor,
         foregroundColor: Colors.black,
-        leading: widget.isNotificationOpened ? IconButton(
-          icon: Icon(
-              Platform.isAndroid ? Icons.arrow_back : Icons.arrow_back_ios),
-          onPressed: () => AppNavigator.pushReplacement(
-              context: context, screen: MainScreen()),
-        ) : null,
+        leading: widget.isNotificationOpened
+            ? IconButton(
+                icon: Icon(Platform.isAndroid
+                    ? Icons.arrow_back
+                    : Icons.arrow_back_ios),
+                onPressed: () => AppNavigator.pushReplacement(
+                    context: context, screen: MainScreen()),
+              )
+            : null,
         actions: [
           Container(
             width: 150.w,
             child: InkWell(
-              onTap: () {
+              onTap: () async {
                 setState(() {
                   isInvitingFriends = !isInvitingFriends;
                 });
+                // if (isInvitingFriends) {
+                //   var isPermissionGranted =
+                //       await FlutterContacts.requestPermission();
+                //   if (isPermissionGranted) {
+                //     List<Contact> contacts =
+                //         await FlutterContacts.getContacts(withProperties: true);
+                //     // print(contacts.length);
+                //     for (var contact in contacts) {
+                //       print(contact.phones.first.normalizedNumber);
+                //       var users = await FirebaseFirestore.instance
+                //           .collection('users')
+                //           .where('phoneNumber',
+                //               isEqualTo: contact.phones.first.normalizedNumber)
+                //           .get();
+                //       print(users.docs.length);
+                //       if (users.docs.isNotEmpty) {
+                //         var userInfo = users.docs.first;
+                //         var name = userInfo.data()['username'];
+                //         print(name);
+                //         var email = userInfo.get('email');
+                //         var phoneNumber = userInfo.get('phoneNumber');
+                //         var imageURL = userInfo.get('imageURL');
+                //         contactsList.add(UserInfo(
+                //             phoneNumber: phoneNumber,
+                //             email: email,
+                //             name: name,
+                //             imageURL: imageURL));
+                //       }
+                //     }
+                //   }
+                // }
               },
               child: Row(
                 children: [
@@ -232,58 +311,136 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
             Padding(
               padding: const EdgeInsets.all(10),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ListView(
-                      shrinkWrap: true,
-                      children: listUsers.map((userInfo) {
-                        return Row(
-                          children: [
-                            CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                userInfo.imageURL,
+                  if (listUsers.isNotEmpty) ...[
+                    Text(
+                      'Participants',
+                      style: TextStylesInter.textViewRegular12
+                          .copyWith(color: mainPurple),
+                    ),
+                    10.ph,
+                    ListView(
+                        shrinkWrap: true,
+                        children: listUsers.map((userInfo) {
+                          return Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                  userInfo.imageURL,
+                                ),
+                                radius: 20,
                               ),
-                              radius: 20,
-                            ),
-                            20.pw,
-                            Text(
-                              userInfo.name,
-                              style: TextStylesInter.textViewRegular16
-                                  .copyWith(color: black2),
-                            )
-                          ],
-                        );
-                      }).toList()),
+                              20.pw,
+                              Text(
+                                userInfo.name,
+                                style: TextStylesInter.textViewRegular16
+                                    .copyWith(color: black2),
+                              )
+                            ],
+                          );
+                        }).toList()),
+                  ],
                   10.ph,
-                  GenericField(
-                    controller: inviteFriendController,
-                    prefixIcon: Icon(Icons.person_add_alt),
-                    hintText: LocaleKeys.inputEmail.tr(),
-                    hintStyle:
-                        TextStylesDMSans.textViewBold14.copyWith(color: black2),
-                    onSubmitted: (email) async {
-                      try {
-                        var userData = await FirebaseFirestore.instance
-                            .collection('/users')
-                            .where('email', isEqualTo: email.trim())
-                            .get();
-                        var userId = userData.docs.first.id;
-                        FirebaseFirestore.instance
-                            .collection('/lists')
-                            .doc(widget.listId)
-                            .update({
-                          "userIds": FieldValue.arrayUnion([userId])
-                        });
-                      } catch (e) {
-                        print("ERROR: $e");
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                            "Couldn't find a user with that email",
-                          ),
-                        ));
-                      }
-                      inviteFriendController.clear();
-                    },
-                  )
+                  if (contactsList.isNotEmpty) ...[
+                    Text(
+                      'Your Contacts',
+                      style: TextStylesInter.textViewRegular12
+                          .copyWith(color: mainPurple),
+                    ),
+                    10.ph,
+                    ListView(
+                        shrinkWrap: true,
+                        children: contactsList.map((userInfo) {
+                          return Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                  userInfo.imageURL,
+                                ),
+                                radius: 20,
+                              ),
+                              20.pw,
+                              Text(
+                                userInfo.name,
+                                style: TextStylesInter.textViewRegular16
+                                    .copyWith(color: black2),
+                              ),
+                              Spacer(),
+                              TextButton(
+                                  onPressed: () async {
+                                    try {
+                                      var userData = await FirebaseFirestore
+                                          .instance
+                                          .collection('/users')
+                                          .where('phoneNumber',
+                                              isEqualTo: userInfo.phoneNumber)
+                                          .get();
+                                      var userId = userData.docs.first.id;
+                                      await FirebaseFirestore.instance
+                                          .collection('/lists')
+                                          .doc(widget.listId)
+                                          .update({
+                                        "userIds":
+                                            FieldValue.arrayUnion([userId])
+                                      });
+                                      setState(() {
+                                        isInvitingFriends = false;
+                                      });
+                                    } catch (e) {
+                                      print("ERROR: $e");
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        content: Text(
+                                          "Couldn't find a user with that email",
+                                        ),
+                                      ));
+                                    }
+                                  },
+                                  child: Text("Add")),
+                            ],
+                          );
+                        }).toList()),
+                  ],
+                  TextButton(
+                      onPressed: () {
+                        //TODO: share via link
+                      },
+                      child: Text(
+                        "Invite via link",
+                        style: TextStylesInter.textViewRegular15
+                            .copyWith(color: mainPurple),
+                      )),
+                  // GenericField(
+                  //   controller: inviteFriendController,
+                  //   prefixIcon: Icon(Icons.person_add_alt),
+                  //   hintText: LocaleKeys.inputEmail.tr(),
+                  //   hintStyle:
+                  //       TextStylesDMSans.textViewBold14.copyWith(color: black2),
+                  //   onSubmitted: (email) async {
+                  //     try {
+                  //       var userData = await FirebaseFirestore.instance
+                  //           .collection('/users')
+                  //           .where('email', isEqualTo: email.trim())
+                  //           .get();
+                  //       var userId = userData.docs.first.id;
+                  //       FirebaseFirestore.instance
+                  //           .collection('/lists')
+                  //           .doc(widget.listId)
+                  //           .update({
+                  //         "userIds": FieldValue.arrayUnion([userId])
+                  //       });
+                  //     } catch (e) {
+                  //       print("ERROR: $e");
+                  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  //         content: Text(
+                  //           "Couldn't find a user with that email",
+                  //         ),
+                  //       ));
+                  //     }
+                  //     inviteFriendController.clear();
+                  //   },
+                  // )
                 ],
               ),
             ),
@@ -651,5 +808,10 @@ class UserInfo {
   String name;
   String email;
   String imageURL;
-  UserInfo(this.imageURL, this.name, this.email);
+  String phoneNumber;
+  UserInfo(
+      {required this.phoneNumber,
+      required this.imageURL,
+      required this.name,
+      required this.email});
 }

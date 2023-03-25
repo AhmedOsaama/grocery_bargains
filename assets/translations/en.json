@@ -6,6 +6,7 @@
   "loremIpsum"                    : "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor",
   "fullName"                      : "Full name",
   "email"                         : "Email",
+  "phone"                         : "Phone",
   "password"                      : "Password",
   "rememberMe"                    : "Remember me",
   "forgotPassword"                : "Forgot Password ?",

@@ -63,6 +63,8 @@ dependencies:
   sentry_flutter: ^6.22.0
   firebase_messaging: ^14.3.0
   flutter_branch_sdk: ^6.4.0
+  flutter_contacts: ^1.1.6
+  intl_phone_field: ^3.1.0
 
 
 dev_dependencies:

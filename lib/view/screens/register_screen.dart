@@ -6,8 +6,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -44,21 +46,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   bool rememberMe = false;
 
+  String phoneNumber = '';
+
   Future<void> saveRememberMePref() async {
     var pref = await SharedPreferences.getInstance();
     pref.setBool("rememberMe", rememberMe);
   }
 
-  Future<void> _submitAuthForm(String email, String username, File? pickedImage,
-      String password, BuildContext ctx) async {
-    UserCredential userCredential;
+  Future<void> _submitAuthForm(String email, String username,
+      String phoneNumber, BuildContext ctx) async {
+    late UserCredential userCredential;
     try {
       if (!isLogin) {
         setState(() {
           _isLoading = true;
         });
-        userCredential = await _auth.createUserWithEmailAndPassword(
-            email: email, password: password);
+        // userCredential = await _auth.createUserWithEmailAndPassword(
+        //     email: email, password: password);
+        print("AUTHENTICATING: " + phoneNumber);
+        _auth.verifyPhoneNumber(
+          phoneNumber: '+20 100 846 7375',
+          // phoneNumber: phoneNumber,
+            verificationCompleted: (phoneCredential) async {
+          print("verification completed");
+          userCredential = await _auth.signInWithCredential(phoneCredential);
+
+        }, verificationFailed: (e){
+          print("Verification failed");
+          print(e.message);
+          print(e.code);
+          if (e.code == 'invalid-phone-number') {
+            print('The provided phone number is not valid.');
+          }
+
+        }, codeSent: (String verificationId,int? resendToken) async {
+            // Update the UI - wait for the user to enter the SMS code
+            String smsCode = 'xxxx';
+
+            // Create a PhoneAuthCredential with the code
+            PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
+
+            // Sign the user in (or link) with the credential
+            await _auth.signInWithCredential(credential);
+
+        }, timeout: const Duration(seconds: 60),
+            codeAutoRetrievalTimeout: (_){
+          print("Code auto retrieval failed");
+            });
+
         await saveUserData(userCredential);
         AppNavigator.pushReplacement(
             context: context, screen: OnBoardingScreen());
@@ -66,8 +101,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         setState(() {
           _isLoading = true;
         });
-        userCredential = await _auth.signInWithEmailAndPassword(
-            email: email, password: password);
+        // userCredential = await _auth.signInWithEmailAndPassword(
+        //     email: email, password: phoneNumber);
+        _auth.signInWithPhoneNumber(phoneNumber);
         saveRememberMePref();
         //TODO: make a condition if the user is first time in app then go to oboarding, else go to homescreen
         //   AppNavigator.pushReplacement(context: context, screen: HomeScreen());
@@ -171,30 +207,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   height: 15.h,
                 ),
                 Text(
-                  LocaleKeys.password.tr(),
+                  LocaleKeys.phone.tr(),
                   style:
                       TextStylesDMSans.textViewBold12.copyWith(color: gunmetal),
                 ),
                 SizedBox(
                   height: 10.h,
                 ),
-                GenericField(
-                  hintText: "***********",
-                  suffixIcon: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isObscured = !isObscured;
-                        });
-                      },
-                      child: Icon(isObscured
-                          ? Icons.visibility
-                          : Icons.visibility_off)),
-                  validation: (value) => Validator.password(value),
-                  obscureText: isObscured,
-                  onSaved: (value) {
-                    password = value!;
+                IntlPhoneField(
+                  disableLengthCheck: true,
+                  initialCountryCode: "EG",
+                  decoration: InputDecoration(
+                    hintText: "+91 90001 90001",
+                    hintStyle: TextStylesInter.textViewRegular16
+                  ),
+                  // inputFormatters: [],
+                  onSaved: (phone){
+                    print(phone?.completeNumber);
+                    phoneNumber = phone!.completeNumber;
                   },
+                  validator: (value) => Validator.defaultValidator(value?.number),
                 ),
+                // GenericField(
+                //   hintText: "***********",
+                //   suffixIcon: GestureDetector(
+                //       onTap: () {
+                //         setState(() {
+                //           isObscured = !isObscured;
+                //         });
+                //       },
+                //       child: Icon(isObscured
+                //           ? Icons.visibility
+                //           : Icons.visibility_off)),
+                //   validation: (value) => Validator.password(value),
+                //   obscureText: isObscured,
+                //   onSaved: (value) {
+                //     password = value!;
+                //   },
+                // ),
                 SizedBox(
                   height: 10.h,
                 ),
@@ -249,18 +299,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     borderRadius: BorderRadius.circular(6),
                     width: double.infinity,
                     onPressed: () async {
-                      var isValid = _formKey.currentState?.validate();
-                      FocusScope.of(context).unfocus();
-                      if (isValid!) {
-                        _formKey.currentState?.save();
-                        await _submitAuthForm(
-                                email, username, null, password, context)
-                            .timeout(Duration(seconds: 10), onTimeout: () {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                              content: Text(
-                                  "Failed to login or signup, Please check your internet and try again later")));
-                        });
-                      }
+                      await authenticateUser(context);
                     },
                     child: Text(
                       isLogin ? LocaleKeys.login.tr() : LocaleKeys.signUp.tr(),
@@ -352,6 +391,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> authenticateUser(BuildContext context) async {
+     var isValid = _formKey.currentState?.validate();
+    FocusScope.of(context).unfocus();
+    if (isValid!) {
+      _formKey.currentState?.save();
+      await _submitAuthForm(
+              email, username, phoneNumber, context)
+          .timeout(Duration(seconds: 10), onTimeout: () {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text(
+                "Failed to login or signup, Please check your internet and try again later")));
+      });
+    }
   }
 
   Future<void> loginWithSocial(BuildContext context, bool isApple) async {

@@ -8,6 +8,7 @@ abstract class  LocaleKeys {
   static const loremIpsum = 'loremIpsum';
   static const fullName = 'fullName';
   static const email = 'email';
+  static const phone = 'phone';
   static const password = 'password';
   static const rememberMe = 'rememberMe';
   static const forgotPassword = 'forgotPassword';
