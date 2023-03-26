@@ -63,9 +63,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
         // userCredential = await _auth.createUserWithEmailAndPassword(
         //     email: email, password: password);
+        FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false,forceRecaptchaFlow: true);
         print("AUTHENTICATING: " + phoneNumber);
-        _auth.verifyPhoneNumber(
+       await _auth.verifyPhoneNumber(
           phoneNumber: '+20 100 846 7375',
+          // phoneNumber: '+2010085',
           // phoneNumber: phoneNumber,
             verificationCompleted: (phoneCredential) async {
           print("verification completed");
@@ -73,8 +75,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         }, verificationFailed: (e){
           print("Verification failed");
+          print(e.toString());
+          print(e.plugin);
           print(e.message);
           print(e.code);
+          print(e.stackTrace);
           if (e.code == 'invalid-phone-number') {
             print('The provided phone number is not valid.');
           }
@@ -103,7 +108,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
         // userCredential = await _auth.signInWithEmailAndPassword(
         //     email: email, password: phoneNumber);
-        _auth.signInWithPhoneNumber(phoneNumber);
+        await _auth.signInWithPhoneNumber(phoneNumber);
         saveRememberMePref();
         //TODO: make a condition if the user is first time in app then go to oboarding, else go to homescreen
         //   AppNavigator.pushReplacement(context: context, screen: HomeScreen());

@@ -103,8 +103,19 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   Future<Widget> getUserImages() async {
     List<Widget> imageWidgets = [];
     List userIds = [];
+    List allUserIds = [];
     imageWidgets.clear();
     try {
+      // var allLists = await FirebaseFirestore.instance
+      //     .collection('/lists')
+      //     .get()
+      //     .timeout(Duration(seconds: 10));
+      // allLists.docs.forEach((doc) {
+      //   allUserIds.add(...(doc['userIds'] as List)
+      //       .where((userId) => !allUserIds.contains(userId))
+      //   );
+      // });
+      print(allUserIds);
       final list = await FirebaseFirestore.instance
           .collection('/lists')
           .doc(widget.listId)

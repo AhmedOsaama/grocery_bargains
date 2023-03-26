@@ -22,6 +22,22 @@
           }
         },
         {
+          "client_id": "482980918038-hhkbfnbak29k461u7h4fo2tdovs7g9ij.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "thebargainb.app",
+            "certificate_hash": "57c541ba325a6e1b5fdfab039f015a4a1c7f6824"
+          }
+        },
+        {
+          "client_id": "482980918038-j750m6phr0mk19fhrp1so2u05u1ldl29.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "thebargainb.app",
+            "certificate_hash": "1391beb9c3dcc742ba0f707f3602bac83a2064ca"
+          }
+        },
+        {
           "client_id": "482980918038-0fjaabbmejs3ean7hltoe7t5tsujc6v1.apps.googleusercontent.com",
           "client_type": 3
         }
