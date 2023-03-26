@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bargainb/view/screens/profile_screen.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -55,7 +57,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _submitAuthForm(String email, String username,
       String phoneNumber, BuildContext ctx) async {
-    late UserCredential userCredential;
+    // FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
     try {
       if (!isLogin) {
         setState(() {
@@ -63,43 +65,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
         // userCredential = await _auth.createUserWithEmailAndPassword(
         //     email: email, password: password);
-        FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false,forceRecaptchaFlow: true);
-        print("AUTHENTICATING: " + phoneNumber);
-       await _auth.verifyPhoneNumber(
-          phoneNumber: '+20 100 846 7375',
-          // phoneNumber: '+2010085',
-          // phoneNumber: phoneNumber,
-            verificationCompleted: (phoneCredential) async {
-          print("verification completed");
-          userCredential = await _auth.signInWithCredential(phoneCredential);
-
-        }, verificationFailed: (e){
-          print("Verification failed");
-          print(e.toString());
-          print(e.plugin);
-          print(e.message);
-          print(e.code);
-          print(e.stackTrace);
-          if (e.code == 'invalid-phone-number') {
-            print('The provided phone number is not valid.');
-          }
-
-        }, codeSent: (String verificationId,int? resendToken) async {
-            // Update the UI - wait for the user to enter the SMS code
-            String smsCode = 'xxxx';
-
-            // Create a PhoneAuthCredential with the code
-            PhoneAuthCredential credential = PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
-
-            // Sign the user in (or link) with the credential
-            await _auth.signInWithCredential(credential);
-
-        }, timeout: const Duration(seconds: 60),
-            codeAutoRetrievalTimeout: (_){
-          print("Code auto retrieval failed");
-            });
+        var userCredential = await loginWithPhoneNumber(phoneNumber);
 
         await saveUserData(userCredential);
+        saveRememberMePref();
         AppNavigator.pushReplacement(
             context: context, screen: OnBoardingScreen());
       } else {
@@ -108,7 +77,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
         // userCredential = await _auth.signInWithEmailAndPassword(
         //     email: email, password: phoneNumber);
-        await _auth.signInWithPhoneNumber(phoneNumber);
+        print("Logging in...");
+        var userCredential = await loginWithPhoneNumber(phoneNumber);
+        print(userCredential.user);
         saveRememberMePref();
         //TODO: make a condition if the user is first time in app then go to oboarding, else go to homescreen
         //   AppNavigator.pushReplacement(context: context, screen: HomeScreen());
@@ -223,15 +194,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   disableLengthCheck: true,
                   initialCountryCode: "EG",
                   decoration: InputDecoration(
-                    hintText: "+91 90001 90001",
-                    hintStyle: TextStylesInter.textViewRegular16
-                  ),
+                      hintText: "+91 90001 90001",
+                      hintStyle: TextStylesInter.textViewRegular16),
                   // inputFormatters: [],
-                  onSaved: (phone){
+                  onSaved: (phone) {
                     print(phone?.completeNumber);
                     phoneNumber = phone!.completeNumber;
                   },
-                  validator: (value) => Validator.defaultValidator(value?.number),
+                  validator: (value) =>
+                      Validator.defaultValidator(value?.number),
                 ),
                 // GenericField(
                 //   hintText: "***********",
@@ -399,18 +370,119 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> authenticateUser(BuildContext context) async {
-     var isValid = _formKey.currentState?.validate();
+    var isValid = _formKey.currentState?.validate();
     FocusScope.of(context).unfocus();
     if (isValid!) {
       _formKey.currentState?.save();
-      await _submitAuthForm(
-              email, username, phoneNumber, context)
+      await _submitAuthForm(email, username, phoneNumber, context)
           .timeout(Duration(seconds: 10), onTimeout: () {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text(
                 "Failed to login or signup, Please check your internet and try again later")));
       });
     }
+  }
+
+  Future<UserCredential> loginWithPhoneNumber(String phoneNumber) async {
+    var userCredential;
+    final completer = Completer<UserCredential>();
+    print("AUTHENTICATING: " + phoneNumber);
+
+    await _auth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: (phoneCredential) async {
+          print("verification completed");
+          userCredential = await _auth.signInWithCredential(phoneCredential);
+          completer.complete(userCredential);
+        },
+        verificationFailed: (e) {
+          print("Verification failed");
+          print(e.toString());
+          print(e.plugin);
+          print(e.message);
+          print(e.code);
+          print(e.stackTrace);
+          if (e.code == 'invalid-phone-number') {
+            print('The provided phone number is not valid.');
+          }
+          completer.complete(userCredential);
+        },
+        codeSent: (String verificationId, int? resendToken) async {
+          // Update the UI - wait for the user to enter the SMS code
+          var otp = await showDialog(
+              context: context,
+              builder: (ctx) => Dialog(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "Please enter your OTP",
+                            style: TextStylesInter.textViewSemiBold14,
+                          ),
+                          Pinput(
+                              // defaultPinTheme: defaultPinTheme,
+                              // focusedPinTheme: focusedPinTheme,
+                              // submittedPinTheme: submittedPinTheme,
+                              validator: (s) {
+                                return null;
+
+                                // var otp =
+                                //     widget.otp.substring(widget.otp.length - 4);
+                                // print(otp);
+                                // return s == otp ? null : 'Pin is incorrect';
+                              },
+                              length: 6,
+                              pinputAutovalidateMode:
+                                  PinputAutovalidateMode.onSubmit,
+                              showCursor: true,
+                              onCompleted: (pin) async {
+                                // print('=============>WidgetOTP${widget.otp}');
+                                print('=============>PIN$pin');
+                                await AppNavigator.pop(
+                                    context: context, object: pin);
+                                // otp = pin;
+                                // otpProvider.otpVendor(context: context, otp: pin);
+                                // if (pin == widget.otp) {
+                                //   Provider.of<AppStateProvider>(context,
+                                //           listen: false)
+                                //       .verified();
+                                //   await AppNavigator.pushReplacement(
+                                //       context: context,
+                                //       screen: const StoreSetupScreen());
+                                // } else {
+                                //   customToast(
+                                //       backgroundColor: Colors.red.shade300,
+                                //       textColor: white,
+                                //       content: widget.otp);
+                                // }
+                              }),
+                        ],
+                      ),
+                    ),
+                  ));
+
+          String smsCode = otp;
+
+          // Create a PhoneAuthCredential with the code
+          PhoneAuthCredential credential = PhoneAuthProvider.credential(
+              verificationId: verificationId, smsCode: smsCode);
+
+          // Sign the user in (or link) with the credential
+          // await _auth.signInWithCredential(credential);
+          userCredential = await _auth.signInWithCredential(credential);
+          print("Signed In...");
+          print(userCredential);
+          completer.complete(userCredential);
+
+          },
+        timeout: const Duration(seconds: 60),
+        codeAutoRetrievalTimeout: (message) {
+          print("Code auto retrieval failed");
+          completer.complete(userCredential);
+        });
+    return completer.future;
   }
 
   Future<void> loginWithSocial(BuildContext context, bool isApple) async {
@@ -463,6 +535,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       "username":
           username.isEmpty ? userCredential.user?.displayName : username,
       'imageURL': userCredential.user?.photoURL,
+      'phoneNumber': userCredential.user?.phoneNumber,
     });
   }
 }

@@ -66,6 +66,7 @@ dependencies:
   flutter_contacts: ^1.1.6
   intl_phone_field: ^3.1.0
   firebase_app_check: ^0.1.1+14
+  pinput: ^2.2.21
 
 
 dev_dependencies:
