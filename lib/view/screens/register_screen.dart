@@ -50,6 +50,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String phoneNumber = '';
 
+  var photoURL = "";
+
   Future<void> saveRememberMePref() async {
     var pref = await SharedPreferences.getInstance();
     pref.setBool("rememberMe", rememberMe);
@@ -57,7 +59,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _submitAuthForm(String email, String username,
       String phoneNumber, BuildContext ctx) async {
-    // FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
+    // FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
     try {
       if (!isLogin) {
         setState(() {
@@ -66,6 +68,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         // userCredential = await _auth.createUserWithEmailAndPassword(
         //     email: email, password: password);
         var userCredential = await loginWithPhoneNumber(phoneNumber);
+        if(userCredential == null){
+          throw "credential error";
+        }
+        this.phoneNumber = userCredential.user!.phoneNumber!;
 
         await saveUserData(userCredential);
         saveRememberMePref();
@@ -79,7 +85,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         //     email: email, password: phoneNumber);
         print("Logging in...");
         var userCredential = await loginWithPhoneNumber(phoneNumber);
-        print(userCredential.user);
+        if(userCredential == null){
+          throw "credential error";
+        }
+        print("logged in");
         saveRememberMePref();
         //TODO: make a condition if the user is first time in app then go to oboarding, else go to homescreen
         //   AppNavigator.pushReplacement(context: context, screen: HomeScreen());
@@ -164,21 +173,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(
                   height: 15.h,
                 ),
-                Text(
-                  LocaleKeys.email.tr(),
-                  style:
-                      TextStylesDMSans.textViewBold12.copyWith(color: gunmetal),
-                ),
-                SizedBox(
-                  height: 10.h,
-                ),
-                GenericField(
-                  hintText: "Brandonelouis@gmail.com",
-                  validation: (value) => Validator.email(value),
-                  onSaved: (value) {
-                    email = value!;
-                  },
-                ),
+                if(!isLogin)...[
+                  Text(
+                    LocaleKeys.email.tr(),
+                    style:
+                    TextStylesDMSans.textViewBold12.copyWith(color: gunmetal),
+                  ),
+                  SizedBox(
+                    height: 10.h,
+                  ),
+                  GenericField(
+                    hintText: "Brandonelouis@gmail.com",
+                    validation: (value) => Validator.email(value),
+                    onSaved: (value) {
+                      email = value!;
+                    },
+                  ),
+                ],
                 SizedBox(
                   height: 15.h,
                 ),
@@ -201,9 +212,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     print(phone?.completeNumber);
                     phoneNumber = phone!.completeNumber;
                   },
-                  validator: (value) =>
-                      Validator.defaultValidator(value?.number),
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) {
+                    print(value?.number);
+                    return Validator.phoneValidator(value?.number);
+                  },
                 ),
+
+
                 // GenericField(
                 //   hintText: "***********",
                 //   suffixIcon: GestureDetector(
@@ -284,7 +300,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(
                   height: 12.h,
                 ),
-                // if(Platform.isAndroid)
+                if(Platform.isAndroid)
                 GenericButton(
                     borderRadius: BorderRadius.circular(6),
                     borderColor: borderColor,
@@ -308,6 +324,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ],
                     )),
                 10.ph,
+                if(Platform.isIOS)
                 GenericButton(
                     borderRadius: BorderRadius.circular(6),
                     borderColor: borderColor,
@@ -375,7 +392,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (isValid!) {
       _formKey.currentState?.save();
       await _submitAuthForm(email, username, phoneNumber, context)
-          .timeout(Duration(seconds: 10), onTimeout: () {
+          .timeout(Duration(seconds: 60), onTimeout: () {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text(
                 "Failed to login or signup, Please check your internet and try again later")));
@@ -465,17 +482,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
           String smsCode = otp;
 
-          // Create a PhoneAuthCredential with the code
           PhoneAuthCredential credential = PhoneAuthProvider.credential(
               verificationId: verificationId, smsCode: smsCode);
 
-          // Sign the user in (or link) with the credential
-          // await _auth.signInWithCredential(credential);
           userCredential = await _auth.signInWithCredential(credential);
           print("Signed In...");
           print(userCredential);
           completer.complete(userCredential);
-
           },
         timeout: const Duration(seconds: 60),
         codeAutoRetrievalTimeout: (message) {
@@ -498,7 +511,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         idToken: credential.identityToken,
         accessToken: credential.authorizationCode,
       );
-      print(appleCredential);
+      // print(appleCredential);
       userCredential =
           await FirebaseAuth.instance.signInWithCredential(appleCredential);
       print(userCredential);
@@ -512,30 +525,62 @@ class _RegisterScreenState extends State<RegisterScreen> {
           .collection('users')
           .doc(userCredential.user!.uid)
           .get();
-      if (!userSnapshot.exists) await saveUserData(userCredential);
+
+      if (!userSnapshot.exists) {
+        try {
+          email = userCredential.user!.email!;
+          print(email);
+          username = userCredential.user!.displayName ?? "User";
+          print(username);
+          photoURL = userCredential.user!.photoURL ?? "";
+          print(photoURL);
+          phoneNumber = "";
+        }catch(e){
+          print(e);
+        }
+        await saveUserData(userCredential);
+      }
       saveRememberMePref();
+
       var pref = await SharedPreferences.getInstance();
       var isFirstTime = pref.getBool("firstTime") ?? true;
       if (isFirstTime) {
         pref.setBool("firstTime", false);
+
         AppNavigator.pushReplacement(
             context: context, screen: OnBoardingScreen());
       } else {
+
         AppNavigator.pushReplacement(context: context, screen: MainScreen());
       }
     }
   }
 
   Future<void> saveUserData(UserCredential userCredential) async {
+    print("Saving user data");
+    //in case of phone auth: only phone number is provided in usercredential
+    //in case of email auth: only email is provided in usercredential
+    //in case of social auth: email, username and photo are provided in usercredential
+    print(email);
+    print(username);
     await FirebaseFirestore.instance
         .collection('users')
         .doc(userCredential.user!.uid)
         .set({
-      "email": email.isEmpty ? userCredential.user?.email : email,
-      "username":
-          username.isEmpty ? userCredential.user?.displayName : username,
-      'imageURL': userCredential.user?.photoURL,
-      'phoneNumber': userCredential.user?.phoneNumber,
+      "email": email,
+      "username": username,
+      'imageURL': photoURL,
+      'phoneNumber':phoneNumber,
     });
+    // await FirebaseFirestore.instance
+    //     .collection('users')
+    //     .doc(userCredential.user!.uid)
+    //     .set({
+    //   "email": email.isEmpty ? userCredential.user?.email : email,
+    //   "username":
+    //       username.isEmpty ? userCredential.user?.displayName : username,
+    //   'imageURL': userCredential.user?.photoURL,
+    //   'phoneNumber': userCredential.user?.phoneNumber,
+    // });
   }
 }

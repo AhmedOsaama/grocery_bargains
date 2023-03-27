@@ -9,6 +9,14 @@ class Validator {
     return null;
   }
 
+  static String? phoneValidator(String? value) {
+    if (value != null && (value.trim().isEmpty || value.trim().length != 10)) {
+      // return tr("error_field_required");
+      return "Invalid phone number";
+    }
+    return null;
+  }
+
   static String? text(String? value) {
     if (value != null) {
       value = value.trim();

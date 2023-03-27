@@ -132,6 +132,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     String email = "";
     String phoneNumber = "";
     for (var userId in userIds) {
+      //for every userId in the chatlist
       final userSnapshot = await FirebaseFirestore.instance
           .collection('/users')
           .doc(userId)
@@ -141,7 +142,10 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       userName = userSnapshot.data()!['username'];
       phoneNumber = userSnapshot.data()!['phoneNumber'];
       listUsers.add(UserInfo(
-          phoneNumber: phoneNumber, imageURL: imageUrl, name: userName, email: email));
+          phoneNumber: phoneNumber,
+          imageURL: imageUrl,
+          name: userName,
+          email: email));
       imageWidgets.add(CircleAvatar(
         backgroundImage: NetworkImage(
           imageUrl,
@@ -149,43 +153,48 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
         radius: 20,
       ));
     }
-    var isPermissionGranted = await FlutterContacts.requestPermission();
-    if (isPermissionGranted) {
-      List<Contact> contacts =
-          await FlutterContacts.getContacts(withProperties: true);
-      print("Length: " + contacts.length.toString());
-      for (var contact in contacts) {
-        // print(contact.phones.first.normalizedNumber);
-        var users = await FirebaseFirestore.instance
-            .collection('users')
-            .where('phoneNumber',
-                isEqualTo: contact.phones.first.normalizedNumber)
-            .get();
-        print(users.docs.length);
-        if (users.docs.isNotEmpty) {
-          var userInfo = users.docs.first;
-          var name = userInfo.data()['username'];
-          print(name);
-          var email = userInfo.get('email');
-          var phoneNumber = userInfo.get('phoneNumber');
-          var imageURL = userInfo.get('imageURL');
-          print(listUsers.length);
-          var existingContact = listUsers.firstWhere(
-              (userInfo) {
-                print("UserInfo phoneNumber" + userInfo.phoneNumber);
-                print( "phoneNumber" + phoneNumber);
-                return userInfo.phoneNumber == phoneNumber;
-              },
-              orElse: () =>
-                  UserInfo(phoneNumber: "", imageURL: "", name: "", email: ""));
-          print( "EXISTING CONTACT: "+ existingContact.phoneNumber);
-          if (existingContact.phoneNumber !=
-              phoneNumber) //making sure no duplicates are added to the contacts list
-            contactsList.add(UserInfo(
-                phoneNumber: phoneNumber,
-                email: email,
-                name: name,
-                imageURL: imageURL));
+    var userInfo = await FirebaseFirestore.instance
+        .collection('/users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .get();
+
+    if (userInfo.get('phoneNumber').isNotEmpty) {
+      var isPermissionGranted = await FlutterContacts.requestPermission();
+      if (isPermissionGranted) {
+        List<Contact> contacts =
+            await FlutterContacts.getContacts(withProperties: true);
+        print("Contacts size: " + contacts.length.toString());
+        for (var contact in contacts) {
+          // print(contact.phones.first.normalizedNumber);
+          var users = await FirebaseFirestore.instance
+              .collection('users')
+              .where('phoneNumber',
+                  isEqualTo: contact.phones.first.normalizedNumber)
+              .get();
+          if (users.docs.isNotEmpty) {
+            var userInfo = users.docs.first;
+            var name = userInfo.data()['username'];
+            print(name);
+            var email = userInfo.get('email');
+            var phoneNumber = userInfo.get('phoneNumber');
+            var imageURL = userInfo.get('imageURL');
+            var existingContact = listUsers.firstWhere((userInfo) {
+              print("UserInfo phoneNumber" + userInfo.phoneNumber);
+              print("phoneNumber" + phoneNumber);
+              return userInfo.phoneNumber == phoneNumber;
+            },
+                orElse: () => UserInfo(
+                    phoneNumber: "", imageURL: "", name: "", email: ""));
+
+            print("EXISTING CONTACT: " + existingContact.phoneNumber);
+            if (existingContact.phoneNumber !=
+                phoneNumber) //making sure no duplicates are added to the contacts list
+              contactsList.add(UserInfo(
+                  phoneNumber: phoneNumber,
+                  email: email,
+                  name: name,
+                  imageURL: imageURL));
+          }
         }
       }
     }
@@ -413,6 +422,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                           );
                         }).toList()),
                   ],
+    if (contactsList.isEmpty) Text("Please add your number to see your friends on BargainB"),
                   TextButton(
                       onPressed: () {
                         //TODO: share via link
