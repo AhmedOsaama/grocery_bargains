@@ -10,6 +10,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 // import 'package:gdpr_dialog/gdpr_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -129,7 +130,19 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  late Mixpanel mixPanel;
 
+  @override
+  void initState() {
+    super.initState();
+    initMixpanel();
+  }
+
+  Future<void> initMixpanel() async {
+    // Replace with your Project Token
+    // Once you've called this method once, you can access `mixpanel` throughout the rest of your application.
+    mixPanel = await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true);
+  }
 
   // @override
   @override
