@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bargainb/models/bestValue_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -49,11 +50,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
   late Future<int> getAllProductsFuture;
   late Future<QuerySnapshot> getAllListsFuture;
+  late Future<List<BestValueItem>> getAllValueBargainsFuture;
   List allProducts = [];
 
   var isLoading = false;
   TextStyle textButtonStyle =
       TextStylesInter.textViewRegular16.copyWith(color: mainPurple);
+
+  List<BestValueItem> bestValueBargains = [];
+
   @override
   void initState() {
     super.initState();
@@ -70,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void didChangeDependencies() {
     getAllProductsFuture =
         Provider.of<ProductsProvider>(context, listen: false).getProducts(0);
+    getAllValueBargainsFuture = Provider.of<ProductsProvider>(context, listen: false).populateBestValueBargains();
     super.didChangeDependencies();
   }
 
@@ -386,6 +392,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                             );
                           }  // see more case
+                          var id = allProducts[i]['id'];
                           var productName = allProducts[i]['name'];
                           var imageURL = allProducts[i]['image_url'];
                           var storeName = allProducts[i]['product_brand'];
@@ -474,55 +481,69 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Container(
                 height: 150.h,
-                child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: List.generate(10, (index) => null).map((size) {
-                      return Container(
-                        padding: EdgeInsets.all(10),
-                        margin: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          boxShadow: Utils.boxShadow,
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Row(
-                          children: [
-                            Image.asset(milk),
-                            SizedBox(
-                              width: 5.w,
+                child: FutureBuilder(
+                  future: getAllValueBargainsFuture,
+                  builder: (context, snapshot) {
+                    if(snapshot.connectionState == ConnectionState.waiting){
+                      return Center(child: CircularProgressIndicator(),);
+                    }
+                    bestValueBargains = snapshot.data ?? [];
+                    return ListView(
+                        scrollDirection: Axis.horizontal,
+                        children: bestValueBargains.map((bargain) {
+                          return GestureDetector(
+                            onTap: (){
+                              //TODO: go to the product screen and pass the best value size to the widget
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(10),
+                              margin: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                boxShadow: Utils.boxShadow,
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Image.network(bargain.itemImage,width: 50,height: 50,),
+                                  SizedBox(
+                                    width: 15.w,
+                                  ),
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        bargain.size,
+                                        style: TextStyles.textViewSemiBold16,
+                                      ),
+                                      SizedBox(
+                                        height: 10.h,
+                                      ),
+                                      Text(
+                                         "\$"+ bargain.price,
+                                        style: TextStyles.textViewMedium12
+                                            .copyWith(
+                                            color: const Color.fromRGBO(
+                                                108, 197, 29, 1)),
+                                      ),
+                                      SizedBox(
+                                        height: 5.w,
+                                      ),
+                                      Text(
+                                        bargain.subCategory,
+                                        style: TextStyles.textViewRegular12
+                                            .copyWith(color: Colors.grey),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "250ml",
-                                  style: TextStyles.textViewSemiBold16,
-                                ),
-                                SizedBox(
-                                  height: 10.h,
-                                ),
-                                Text(
-                                  "\$2.22 x 4",
-                                  style: TextStyles.textViewMedium12
-                                      .copyWith(
-                                      color: const Color.fromRGBO(
-                                          108, 197, 29, 1)),
-                                ),
-                                SizedBox(
-                                  height: 5.w,
-                                ),
-                                Text(
-                                  "1.50 lbs",
-                                  style: TextStyles.textViewRegular12
-                                      .copyWith(color: Colors.grey),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      );
-                    }).toList()),
+                          );
+                        }).toList());
+                  }
+                ),
               ),
               10.ph,
             ],
@@ -531,6 +552,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
 
   Future fetch(int startingIndex) {
     return Provider.of<ProductsProvider>(context, listen: false)

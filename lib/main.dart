@@ -145,7 +145,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     mixPanel.track("test event");
   }
 
-  // @override
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
