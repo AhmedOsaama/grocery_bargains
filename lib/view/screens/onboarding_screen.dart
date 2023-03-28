@@ -1,3 +1,5 @@
+import 'package:bargainb/utils/icons_manager.dart';
+import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -104,13 +106,15 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   var slide1 = Column(
     children: [
       SizedBox(
-        height: 170.h,
+        height: 100.h,
       ),
+      SvgPicture.asset(bargainbIcon),
+      30.ph,
       Image.asset(onboarding1),
       Spacer(),
       Text(
         LocaleKeys.findAllTheDiscountsHere.tr(),
-        style: TextStyles.textViewSemiBold40.copyWith(color: prussian),
+        style: TextStyles.textViewSemiBold30.copyWith(color: prussian),
       ),
       SizedBox(
         height: 18.h,
@@ -124,10 +128,12 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   var slide2 = Column(
     children: [
-      SizedBox(height: 100.h,),
+      SizedBox(height: 80.h,),
+      SvgPicture.asset(bargainbIcon),
+      30.ph,
       Text(
         LocaleKeys.chatWithFriends.tr(),
-        style: TextStyles.textViewSemiBold40.copyWith(color: prussian),
+        style: TextStyles.textViewSemiBold30.copyWith(color: prussian),
         textAlign: TextAlign.center,
       ),
       SizedBox(
@@ -138,7 +144,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         style: TextStyles.textViewRegular14.copyWith(color: gunmetal),
       ),
       SizedBox(
-        height: 100.h,
+        height: 70.h,
       ),
       Image.asset(onboarding2),
       Spacer(),
@@ -146,10 +152,12 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   );
   var slide3 = Column(
     children: [
-      SizedBox(height: 90.h,),
+      SizedBox(height: 70.h,),
+      SvgPicture.asset(bargainbIcon),
+      30.ph,
       Text(
         LocaleKeys.comparePricesAndLatest.tr(),
-        style: TextStyles.textViewSemiBold40.copyWith(color: prussian),
+        style: TextStyles.textViewSemiBold30.copyWith(color: prussian),
         textAlign: TextAlign.center,
       ),
       SizedBox(
@@ -161,7 +169,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         textAlign: TextAlign.center,
       ),
       SizedBox(
-        height: 100.h,
+        height: 20.h,
       ),
       Image.asset(onboarding3),
       Spacer(),

@@ -19,6 +19,7 @@ class ProductsProvider with ChangeNotifier{
     if(startingIndex == 0) allProducts.clear();
     var response = await NetworkServices.getProducts(startingIndex);
     allProducts.addAll(jsonDecode(response.body));
+    allProducts.removeAt(0);
     print("Total number of products: ${allProducts.length}");
     notifyListeners();
     return response.statusCode;

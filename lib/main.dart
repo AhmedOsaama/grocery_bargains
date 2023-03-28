@@ -142,6 +142,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     // Replace with your Project Token
     // Once you've called this method once, you can access `mixpanel` throughout the rest of your application.
     mixPanel = await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true);
+    mixPanel.track("test event");
   }
 
   // @override
@@ -174,8 +175,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       //     .getStartPage(dynamicLinkPath); //case 1
                       return widget.isFirstTime ? OnBoardingScreen() : MainScreen();
                     }
-                    // return RegisterScreen();
                     return RegisterScreen();
+                    // return RegisterScreen();
                   }),
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,

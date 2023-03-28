@@ -27,3 +27,6 @@ const String send = "$imgPath/send.svg";
 const String add = "$imgPath/add.svg";
 const String checkMark = "$imgPath/checkmark.svg";
 const String arrowDown = "$imgPath/arrow_down.svg";
+const String bargainbIcon = "$imgPath/bargainb_icon.svg";
+const String lock = "$imgPath/lock.svg";
+const String bee = "$imgPath/bee.svg";

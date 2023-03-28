@@ -131,35 +131,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     NetworkImage(snapshot.data!['imageURL']),
                                 radius: 30,
                               )
-                            : SvgPicture.asset(personIcon);
+                            : SvgPicture.asset(bee);
                       }),
-                  // GenericButton(
-                  //     onPressed: () async {
-                  //       var pref = await SharedPreferences.getInstance();
-                  //       pref.setBool("rememberMe", false);
-                  //       var isGoogleSignedIn =
-                  //           await Provider.of<GoogleSignInProvider>(context,
-                  //                   listen: false)
-                  //               .googleSignIn
-                  //               .isSignedIn();
-                  //       if (isGoogleSignedIn) {
-                  //         await Provider.of<GoogleSignInProvider>(context,
-                  //                 listen: false)
-                  //             .logout();
-                  //       } else {
-                  //         FirebaseAuth.instance.signOut();
-                  //       }
-                  //       AppNavigator.pushReplacement(
-                  //           context: context, screen: RegisterScreen());
-                  //       print("SIGNED OUT...................");
-                  //     },
-                  //     borderRadius: BorderRadius.circular(10),
-                  //     height: 31.h,
-                  //     width: 100.w,
-                  //     child: Text(
-                  //       "Log out",
-                  //       style: TextStyles.textViewBold12,
-                  //     )),
                 ],
               ),
               SizedBox(
@@ -412,14 +385,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                     ),
                             );
-                          }
-                          var productName = allProducts[i]['Name'];
-                          var imageURL = allProducts[i]['Image_url'];
-                          var storeName = allProducts[i]['Store'];
-                          var description = allProducts[i]['Description'];
-                          var price = allProducts[i]['Current_price'];
-                          var oldPrice = allProducts[i]['Old_price'];
-                          var size = allProducts[i]['Size'];
+                          }  // see more case
+                          var productName = allProducts[i]['name'];
+                          var imageURL = allProducts[i]['image_url'];
+                          var storeName = allProducts[i]['product_brand'];
+                          var description = allProducts[i]['product_description'];
+                          var price1 = allProducts[i]['price_1'] ?? "";
+                          var price2 = allProducts[i]['price_2'];
+                          var oldPrice = allProducts[i]['befor_offer'];
+                          var size1 = allProducts[i]['unit_size_1'] ?? "";
+                          var size2 = allProducts[i]['unit_size_2'];
                           return GestureDetector(
                             onTap: () => AppNavigator.push(
                                 context: context,
@@ -428,10 +403,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                     productName: productName,
                                     imageURL: imageURL,
                                     description: description,
-                                    price: price.runtimeType == int
-                                        ? price.toDouble()
-                                        : price,
-                                    size: size,
+                                    price: price1.runtimeType == int
+                                        ? price1.toDouble()
+                                        : price1,
+                                    size: size1,
                                     oldPrice: oldPrice)),
                             child: DiscountItem(
                               onAdd: () => Provider.of<ChatlistsProvider>(
@@ -443,11 +418,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                   listItem: ListItem(
                                       name: productName,
                                       oldPrice: oldPrice,
-                                      price: price,
+                                      price: price1,
                                       isChecked: false,
                                       quantity: 1,
                                       imageURL: imageURL,
-                                      size: size),
+                                      size: size1),
                               ),
                               onShare: () => Provider.of<ChatlistsProvider>(
                                       context,
@@ -458,21 +433,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                 listItem: ListItem(
                                     name: productName,
                                     oldPrice: oldPrice,
-                                    price: price,
+                                    price: price1,
                                     isChecked: false,
                                     quantity: 0,
                                     imageURL: imageURL,
-                                    size: size),
+                                    size: size1),
                               ),
-                              name: allProducts[i]['Name'],
-                              imageURL: allProducts[i]['Image_url'],
+                              name: productName,
+                              imageURL: imageURL,
                               albertPriceBefore:
-                                  allProducts[i]['Old_price'].toString().isEmpty
+                              oldPrice.toString().isEmpty
                                       ? null
-                                      : allProducts[i]['Old_price'],
+                                      : oldPrice,
                               albertPriceAfter:
-                                  allProducts[i]['Current_price'].toString(),
-                              measurement: allProducts[i]['Size'],
+                              price1.toString(),
+                              measurement: size1,
                               sparPriceAfter: '0.0',
                               jumboPriceAfter: '0.0',
                             ),

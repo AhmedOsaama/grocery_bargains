@@ -47,11 +47,9 @@ class DiscountItem extends StatelessWidget {
       ]),
       margin: const EdgeInsets.all(10),
       padding: EdgeInsets.symmetric(horizontal: 15.w),
-      child: Row(
+      child: Column(
         children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: [
               Container(
                 padding: EdgeInsets.symmetric(vertical: 10.h),
@@ -64,66 +62,69 @@ class DiscountItem extends StatelessWidget {
                   height: 50.h,
                 ),
               ),
-              SizedBox(
-                width: 130.w,
-                child: Text(
-                  name,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyles.textViewSemiBold14,
+              20.pw,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 130.w,
+                    child: Text(
+                      name,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyles.textViewSemiBold14,
+                    ),
+                  ),
+                  Text(
+                    measurement,
+                    style: TextStyles.textViewMedium12
+                        .copyWith(color: Color.fromRGBO(204, 204, 204, 1)),
+                  ),
+                  GestureDetector(
+                      onTap: () {},
+                      child: Row(
+                        children: [
+                          Text('View More ',style: TextStylesInter.textViewSemiBold14.copyWith(color: mainPurple),),
+                          Icon(Icons.arrow_forward_ios,color: mainPurple,)
+                        ],
+                      )),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                        onPressed: () => onShare(),
+                        icon: SvgPicture.asset(chatShare)),
+                    20.ph,
+                    PlusButton(onTap: () => onAdd()),
+                  ],
                 ),
               ),
-              Text(
-                measurement,
-                style: TextStyles.textViewMedium12
-                    .copyWith(color: Color.fromRGBO(204, 204, 204, 1)),
-              ),
-              GestureDetector(
-                  onTap: () {},
-                  child: Row(
-                    children: [
-                      Text('View More ',style: TextStylesInter.textViewSemiBold14.copyWith(color: mainPurple),),
-                      Icon(Icons.arrow_forward_ios,color: mainPurple,)
-                    ],
-                  ))
             ],
           ),
-          10.pw,
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                    onPressed: () => onShare(),
-                    icon: SvgPicture.asset(chatShare)),
-                PlusButton(onTap: () => onAdd()),
-              ],
-            ),
-          ),
           20.pw,
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                //TODO: create a list with the below items and use it to get the index of the pressed item to highlight it
-                ComparisonPrice(
-                  currentPrice: albertPriceAfter,
-                  oldPrice: albertPriceBefore,
-                  storeImagePath: albert,
-                ),
-                ComparisonPrice(
-                  currentPrice: sparPriceAfter,
-                  oldPrice: sparPriceBefore,
-                  storeImagePath: spar,
-                ),
-                ComparisonPrice(
-                  currentPrice: jumboPriceAfter,
-                  oldPrice: jumboPriceBefore,
-                  storeImagePath: jumbo,
-                ),
-              ],
-            ),
+          Row(
+            children: [
+              //TODO: create a list with the below items and use it to get the index of the pressed item to highlight it
+              ComparisonPrice(
+                currentPrice: albertPriceAfter,
+                oldPrice: albertPriceBefore,
+                storeImagePath: albert,
+              ),
+              30.pw,
+              // ComparisonPrice(
+              //   currentPrice: sparPriceAfter,
+              //   oldPrice: sparPriceBefore,
+              //   storeImagePath: spar,
+              // ),
+              ComparisonPrice(
+                currentPrice: jumboPriceAfter,
+                oldPrice: jumboPriceBefore,
+                storeImagePath: jumbo,
+              ),
+            ],
           )
         ],
       ),
@@ -150,38 +151,38 @@ class ComparisonPrice extends StatelessWidget {
       doubleOldPrice = double.tryParse(oldPrice!) ?? 0.0;
       doubleCurrentPrice = double.tryParse(currentPrice) ?? 0.0;
     }
-    return Row(
+    return Column(
       children: [
         Image.asset(
           storeImagePath,
-          width: 22,
+          width: 30,
           height: 22,
         ),
-        20.pw,
-        if (oldPrice != null)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '€$currentPrice',
-                style: TextStylesInter.textViewMedium15.copyWith(color: black2),
-              ),
-              Text.rich(TextSpan(
-                  text: '€$oldPrice',
-                  style: TextStylesInter.textViewMedium10.copyWith(
-                      color: Color.fromRGBO(134, 136, 137, 1),
-                      decoration: TextDecoration.lineThrough),
-                  children: [
-                    TextSpan(
-                      text:
-                          ' €${(doubleOldPrice - doubleCurrentPrice).toStringAsFixed(2)} less',
-                      style: TextStylesInter.textViewMedium10.copyWith(
-                          color: verdigris, decoration: TextDecoration.none),
-                    )
-                  ]))
-            ],
-          ),
-        if (oldPrice == null)
+        10.ph,
+        // if (oldPrice != null)
+        //   Column(
+        //     crossAxisAlignment: CrossAxisAlignment.start,
+        //     children: [
+        //       Text(
+        //         '€$currentPrice',
+        //         style: TextStylesInter.textViewMedium15.copyWith(color: black2),
+        //       ),
+        //       Text.rich(TextSpan(
+        //           text: '€$oldPrice',
+        //           style: TextStylesInter.textViewMedium10.copyWith(
+        //               color: Color.fromRGBO(134, 136, 137, 1),
+        //               decoration: TextDecoration.lineThrough),
+        //           children: [
+        //             TextSpan(
+        //               text:
+        //                   ' €${(doubleOldPrice - doubleCurrentPrice).toStringAsFixed(2)} less',
+        //               style: TextStylesInter.textViewMedium10.copyWith(
+        //                   color: verdigris, decoration: TextDecoration.none),
+        //             )
+        //           ]))
+        //     ],
+        //   ),
+        // if (oldPrice == null)
           Text(
             '€$currentPrice',
             style: TextStylesInter.textViewMedium12

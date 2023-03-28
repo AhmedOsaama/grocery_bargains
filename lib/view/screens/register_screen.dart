@@ -22,6 +22,7 @@ import '../../providers/google_sign_in_provider.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
+import '../../utils/utils.dart';
 import '../../utils/validator.dart';
 import '../components/button.dart';
 import '../components/generic_field.dart';
@@ -46,7 +47,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool isLogin = true;
   bool isObscured = true;
 
-  bool rememberMe = false;
+  bool rememberMe = true;
 
   String phoneNumber = '';
 
@@ -59,7 +60,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _submitAuthForm(String email, String username,
       String phoneNumber, BuildContext ctx) async {
-    // FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
+    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
     try {
       if (!isLogin) {
         setState(() {
@@ -127,6 +128,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(
                   height: 100.h,
                 ),
+                if(isLogin)
+                  Center(child: SvgPicture.asset(bargainbIcon)),
+                30.ph,
                 Center(
                   child: Text(
                     isLogin
@@ -151,7 +155,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ),
                 SizedBox(
-                  height: 58.h,
+                  height: 20.h,
                 ),
                 if (!isLogin) ...[
                   Text(
@@ -201,25 +205,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(
                   height: 10.h,
                 ),
-                IntlPhoneField(
-                  disableLengthCheck: true,
-                  initialCountryCode: "EG",
-                  decoration: InputDecoration(
-                      hintText: "+91 90001 90001",
-                      hintStyle: TextStylesInter.textViewRegular16),
-                  // inputFormatters: [],
-                  onSaved: (phone) {
-                    print(phone?.completeNumber);
-                    phoneNumber = phone!.completeNumber;
-                  },
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) {
-                    print(value?.number);
-                    return Validator.phoneValidator(value?.number);
-                  },
+                Container(
+                  decoration: BoxDecoration(
+                      boxShadow:
+                            Utils.boxShadow
+                  ),
+                  child: IntlPhoneField(
+                    disableLengthCheck: true,
+                    initialCountryCode: "EG",
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.transparent,
+                          ),
+                          borderRadius: BorderRadius.circular(10)),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.transparent,
+                            ),
+                            borderRadius: BorderRadius.circular(10)),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.transparent,
+                            ),
+                            borderRadius: BorderRadius.circular(10)),
+                        errorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.transparent,
+                            ),
+                            borderRadius: BorderRadius.circular(10)),
+                        fillColor: Colors.white,
+                        filled: true,
+
+                        hintText: "+91 90001 90001",
+                        hintStyle: TextStylesInter.textViewRegular16),
+                    // inputFormatters: [],
+                    onSaved: (phone) {
+                      print(phone?.completeNumber);
+                      phoneNumber = phone!.completeNumber;
+                    },
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) {
+                      print(value?.number);
+                      return Validator.phoneValidator(value?.number);
+                    },
+                  ),
                 ),
-
-
                 // GenericField(
                 //   hintText: "***********",
                 //   suffixIcon: GestureDetector(
@@ -300,7 +331,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(
                   height: 12.h,
                 ),
-                if(Platform.isAndroid)
                 GenericButton(
                     borderRadius: BorderRadius.circular(6),
                     borderColor: borderColor,
