@@ -22,7 +22,9 @@ class ProductDetailScreen extends StatefulWidget {
   final String description;
   final double price;
   final String oldPrice;
-  final String size;
+  final String size1;
+  final String size2;
+  final String bestValueSize;
   const ProductDetailScreen(
       {Key? key,
       required this.storeName,
@@ -30,8 +32,7 @@ class ProductDetailScreen extends StatefulWidget {
       required this.imageURL,
       required this.description,
       required this.price,
-      required this.size,
-      required this.oldPrice})
+      required this.oldPrice, required this.size1, required this.size2, required this.bestValueSize})
       : super(key: key);
 
   @override
@@ -40,7 +41,7 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   // final productImages = [milk, peach, spar];
-  final productSizes = ["285 ml", "250 ml", '211 ml'];
+  final productSizes = [];
   bool isLoading = false;
   final comparisonItems = [
     PriceComparisonItem(),
@@ -65,6 +66,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   List<Map> allLists = [];
+
+  @override
+  void initState() {
+    productSizes.addAll([widget.size1,widget.size2]);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,7 +130,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 isChecked: false,
                                 quantity: quantity,
                                 imageURL: widget.imageURL,
-                                size: widget.size),
+                                size: widget.bestValueSize),
                           );
                         },
                         child: Container(
@@ -165,7 +172,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             isChecked: false,
                             quantity: quantity,
                             imageURL: widget.imageURL,
-                            size: widget.size),
+                            size: widget.bestValueSize),
                       );
                     },
                     child: Column(
@@ -358,7 +365,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                         child: Row(
                           children: [
-                            Image.asset(milk),
+                            Image.network(widget.imageURL),
                             SizedBox(
                               width: 15.w,
                             ),
@@ -375,7 +382,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 Row(
                                   children: [
                                     Text(
-                                      "\$2.22 x 4",
+                                      "\$${size}",
                                       style: TextStyles.textViewMedium12
                                           .copyWith(
                                               color: Color.fromRGBO(
@@ -385,7 +392,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                       width: 5.w,
                                     ),
                                     Text(
-                                      "1.50 lbs",
+                                      size,
                                       style: TextStyles.textViewRegular12
                                           .copyWith(color: Colors.grey),
                                     ),

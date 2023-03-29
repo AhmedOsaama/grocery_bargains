@@ -31,6 +31,7 @@ class ProductsProvider with ChangeNotifier{
       var oldPrice = product['befor_offer'];
       var size1 = product['unit_size_1'] ?? "";
       var size2 = product['unit_size_2'];
+
       if (price1.isNotEmpty && price2.isNotEmpty) {
         var numSize1 = 0;
         var numSize2 = 0;
@@ -46,16 +47,20 @@ class ProductsProvider with ChangeNotifier{
           bestValueBargains.add(BestValueItem(itemImage: imageURL,
               subCategory: subCategory,
               itemName: productName,
+              oldPrice: oldPrice,
+              description: description,
               size: size1,
               itemId: id,
-              price: price1));
+              price: price1, store: storeName));
         } else if (ratio2 > ratio1) {
           bestValueBargains.add(BestValueItem(itemImage: imageURL,
               subCategory: subCategory,
               itemName: productName,
+              oldPrice: oldPrice,
+              description: description,
               size: size2,
               itemId: id,
-              price: price2));
+              price: price2, store: storeName));
         }
       }
     }

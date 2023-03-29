@@ -494,6 +494,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           return GestureDetector(
                             onTap: (){
                               //TODO: go to the product screen and pass the best value size to the widget
+                              AppNavigator.push(
+                                  context: context,
+                                  screen: ProductDetailScreen(
+                                      storeName: bargain.store,
+                                      productName: bargain.itemName,
+                                      imageURL: bargain.itemImage,
+                                      description: bargain.description,
+                                      price: double.tryParse(bargain.price) ?? 0,
+                                    bestValueSize: bargain.bestValueSize,
+                                      oldPrice: bargain.oldPrice, size1: bargain.size1, size2: bargain.size2,
+                                  ));
                             },
                             child: Container(
                               padding: EdgeInsets.all(10),
