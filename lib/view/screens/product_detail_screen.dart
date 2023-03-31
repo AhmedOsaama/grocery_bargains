@@ -1,3 +1,5 @@
+import 'package:bargainb/models/item.dart';
+import 'package:bargainb/providers/products_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,23 +19,27 @@ import '../../models/list_item.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String storeName;
+  final int productId;
   final String productName;
   final String imageURL;
   final String description;
-  final double price;
-  final String oldPrice;
+  final double? price1;
+  final double? price2;
+  final String? oldPrice;
   final String size1;
   final String size2;
-  final String bestValueSize;
-  const ProductDetailScreen(
-      {Key? key,
-      required this.storeName,
-      required this.productName,
-      required this.imageURL,
-      required this.description,
-      required this.price,
-      required this.oldPrice, required this.size1, required this.size2, required this.bestValueSize})
-      : super(key: key);
+  const ProductDetailScreen({
+    Key? key,
+    required this.storeName,
+    required this.productName,
+    required this.imageURL,
+    required this.description,
+    required this.price1,
+    required this.price2,
+    required this.size1,
+    required this.size2,
+    required this.productId, this.oldPrice,
+  }) : super(key: key);
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -41,7 +47,8 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   // final productImages = [milk, peach, spar];
-  final productSizes = [];
+  List<ItemSize> productSizes = [];
+  var defaultPrice = 0.0;
   bool isLoading = false;
   final comparisonItems = [
     PriceComparisonItem(),
@@ -51,6 +58,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   var selectedIndex = 0;
   var selectedSizeIndex = 0;
+  var bestValueSize = "";
 
   int quantity = 1;
 
@@ -69,8 +77,28 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   void initState() {
-    productSizes.addAll([widget.size1,widget.size2]);
+    productSizes.addAll([
+      ItemSize(price: widget.price1.toString(), size: widget.size1),
+      ItemSize(price: widget.price2.toString(), size: widget.size2),
+    ]);
+    defaultPrice = widget.price1 == null
+        ? widget.price2 as double
+        : widget.price1 as double;
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    try {
+      bestValueSize = Provider.of<ProductsProvider>(context, listen: false)
+          .bestValueBargains
+          .firstWhere((bargain) => bargain.itemId == widget.productId)
+          .bestValueSize;
+    } catch (e) {
+      bestValueSize = "";
+    }
+    print(bestValueSize);
+    super.didChangeDependencies();
   }
 
   @override
@@ -126,11 +154,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             listItem: ListItem(
                                 name: widget.productName,
                                 oldPrice: widget.oldPrice,
-                                price: widget.price,
+                                price: defaultPrice.toString(),
                                 isChecked: false,
                                 quantity: quantity,
                                 imageURL: widget.imageURL,
-                                size: widget.bestValueSize),
+                                size: widget.size1),
                           );
                         },
                         child: Container(
@@ -168,11 +196,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         listItem: ListItem(
                             name: widget.productName,
                             oldPrice: widget.oldPrice,
-                            price: widget.price,
+                            price: defaultPrice.toString(),
                             isChecked: false,
                             quantity: quantity,
                             imageURL: widget.imageURL,
-                            size: widget.bestValueSize),
+                            size: widget.size1),
                       );
                     },
                     child: Column(
@@ -347,6 +375,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   physics: NeverScrollableScrollPhysics(),
                   children: productSizes.map((size) {
                     var index = productSizes.indexOf(size);
+                    if (size.size.isEmpty) {
+                      return Container();
+                    }
                     return GestureDetector(
                       onTap: () {
                         setState(() {
@@ -359,13 +390,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           border: Border.all(
                               width: 2.0,
                               color: selectedSizeIndex == index
-                                  ? verdigris
+                                  ? mainPurple
                                   : Colors.transparent),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Row(
                           children: [
-                            Image.network(widget.imageURL),
+                            Image.network(
+                              widget.imageURL,
+                              width: 64,
+                              height: 64,
+                            ),
                             SizedBox(
                               width: 15.w,
                             ),
@@ -373,7 +408,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  size,
+                                  size.size,
                                   style: TextStyles.textViewSemiBold16,
                                 ),
                                 SizedBox(
@@ -382,24 +417,31 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 Row(
                                   children: [
                                     Text(
-                                      "\$${size}",
+                                      "\€${size.price}", //to type euro: ALT + 0128
                                       style: TextStyles.textViewMedium12
                                           .copyWith(
                                               color: Color.fromRGBO(
                                                   108, 197, 29, 1)),
                                     ),
-                                    SizedBox(
-                                      width: 5.w,
-                                    ),
-                                    Text(
-                                      size,
-                                      style: TextStyles.textViewRegular12
-                                          .copyWith(color: Colors.grey),
-                                    ),
                                   ],
                                 )
                               ],
-                            )
+                            ),
+                            Spacer(),
+                            if (bestValueSize.isNotEmpty &&
+                                bestValueSize == size.size)
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 12,vertical: 3),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: purple70
+                                ),
+                                child: Text(
+                                  "BEST VALUE",
+                                  style: TextStyles.textViewRegular12
+                                      .copyWith(color: Colors.white),
+                                ),
+                              ),
                           ],
                         ),
                       ),
@@ -453,4 +495,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       )
     ],
   );
+}
+
+class ItemSize {
+  String price;
+  String size;
+
+  ItemSize({required this.price, required this.size});
 }

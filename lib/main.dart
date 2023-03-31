@@ -46,7 +46,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  print(await FirebaseAppCheck.instance.getToken());
+  // print(await FirebaseAppCheck.instance.getToken());
   await FirebaseAppCheck.instance.activate(
     // webRecaptchaSiteKey: 'recaptcha-v3-site-key',
     // Default provider for Android is the Play Integrity provider. You can use the "AndroidProvider" enum to choose
@@ -135,6 +135,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+
     initMixpanel();
   }
 

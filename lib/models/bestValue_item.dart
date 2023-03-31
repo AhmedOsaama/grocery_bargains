@@ -2,7 +2,8 @@ class BestValueItem {
   int itemId;
   String itemName;
   String itemImage;
-  String price;
+  String price1;
+  String price2;
   String oldPrice;
   String description;
   String bestValueSize;
@@ -12,7 +13,10 @@ class BestValueItem {
   String store;
 
   BestValueItem(
-      {required this.size2,
+      {
+       required this.price1,
+        required this.price2,
+        required this.size2,
       required this.size1,
       required this.bestValueSize,
       required this.store,
@@ -21,6 +25,5 @@ class BestValueItem {
       required this.subCategory,
       required this.itemImage,
       required this.itemName,
-      required this.itemId,
-      required this.price});
+      required this.itemId,});
 }

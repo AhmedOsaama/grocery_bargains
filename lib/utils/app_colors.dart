@@ -28,6 +28,7 @@ const Color black1 = Color.fromRGBO(61, 62, 59, 1);
 const Color black2 = Color.fromRGBO(14, 14, 14, 1);
 const Color purple30 = Color.fromRGBO(194, 208, 250, 1);
 const Color purple50 = Color.fromRGBO(153, 177, 246, 1);
+const Color purple70 = Color.fromRGBO(113, 146, 242, 1);
 const Color lightPurple = Color.fromRGBO(245, 247, 254, 1);
 
 

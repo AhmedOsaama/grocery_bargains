@@ -31,6 +31,7 @@ import 'package:bargainb/view/widgets/search_item.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../models/list_item.dart';
+import '../../models/product.dart';
 import '../../providers/google_sign_in_provider.dart';
 import '../../services/dynamic_link_service.dart';
 import '../../utils/assets_manager.dart';
@@ -48,9 +49,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
-  late Future<int> getAllProductsFuture;
+  // late Future<int> getAllProductsFuture;
   late Future<QuerySnapshot> getAllListsFuture;
-  late Future<List<BestValueItem>> getAllValueBargainsFuture;
+  // late Future<List<BestValueItem>> getAllValueBargainsFuture;
   List allProducts = [];
 
   var isLoading = false;
@@ -62,7 +63,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    getAllListsFuture = Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlistsFuture();
+    getAllListsFuture = Provider.of<ChatlistsProvider>(context, listen: false)
+        .getAllChatlistsFuture();
+    // getAllValueBargainsFuture =
+    //     Provider.of<ProductsProvider>(context, listen: false)
+    //         .populateBestValueBargains();
     getUserDataFuture = FirebaseFirestore.instance
         .collection('/users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -73,9 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void didChangeDependencies() {
-    getAllProductsFuture =
-        Provider.of<ProductsProvider>(context, listen: false).getProducts(0);
-    getAllValueBargainsFuture = Provider.of<ProductsProvider>(context, listen: false).populateBestValueBargains();
+    // getAllProductsFuture =
+    //     Provider.of<ProductsProvider>(context, listen: false).getProducts(0);
     super.didChangeDependencies();
   }
 
@@ -161,47 +165,6 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(
                 height: 10.h,
               ),
-              // SizedBox(
-              //   height: 30.h,
-              // ),
-              // Text(
-              //   LocaleKeys.recentSearches.tr(),
-              //   style:
-              //       TextStylesDMSans.textViewBold16.copyWith(color: prussian),
-              // ),
-              // SizedBox(
-              //   height: 10.h,
-              // ),
-              // Container(
-              //   height: 260.h,
-              //   child: ListView(
-              //     scrollDirection: Axis.horizontal,
-              //     children: [
-              //       ProductItemWidget(
-              //         price: "8.00",
-              //         fullPrice: "1.55",
-              //         name: "Fresh Peach",
-              //         description: "dozen",
-              //         imagePath: peach,
-              //         onTap: () {},
-              //       ),
-              //       ProductItemWidget(
-              //           onTap: () {},
-              //           price: "8.00",
-              //           fullPrice: "1.55",
-              //           name: "Fresh Peach",
-              //           description: "dozen",
-              //           imagePath: peach),
-              //       ProductItemWidget(
-              //           onTap: () {},
-              //           price: "8.00",
-              //           fullPrice: "1.55",
-              //           name: "Fresh Peach",
-              //           description: "dozen",
-              //           imagePath: peach),
-              //     ],
-              //   ),
-              // ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -313,155 +276,217 @@ class _HomeScreenState extends State<HomeScreen> {
                       ))
                 ],
               ),
+              // Container(
+              //   height: 200.h,
+              //   child: FutureBuilder<int>(
+              //       future: getAllProductsFuture,
+              //       builder: (context, snapshot) {
+              //         if (snapshot.connectionState == ConnectionState.waiting) {
+              //           return const Center(
+              //             child: CircularProgressIndicator(),
+              //           );
+              //         }
+              //         if (snapshot.data != 200) {
+              //           return const Center(
+              //             child: Text(
+              //                 "Something went wrong. Please try again later"),
+              //           );
+              //         }
+              //         allProducts =
+              //             Provider.of<ProductsProvider>(context, listen: false)
+              //                 .allProducts;
+              //         print("\n RESPONSE: ${allProducts.length}");
+              //         return ListView.builder(
+              //           itemCount: allProducts.length + 1,
+              //           scrollDirection: Axis.horizontal,
+              //           itemBuilder: (ctx, i) {
+              //             if (i >= allProducts.length) {
+              //               var productId = allProducts[i - 1]['id'];
+              //               return Padding(
+              //                 padding: EdgeInsets.symmetric(horizontal: 32),
+              //                 child: isLoading
+              //                     ? Center(
+              //                         child: CircularProgressIndicator(
+              //                         color: verdigris,
+              //                       ))
+              //                     : Center(
+              //                         child: Container(
+              //                           decoration: BoxDecoration(
+              //                             border:
+              //                                 Border.all(color: Colors.grey),
+              //                             borderRadius:
+              //                                 BorderRadius.circular(12),
+              //                           ),
+              //                           child: InkWell(
+              //                             onTap: () async {
+              //                               setState(() {
+              //                                 isLoading = true;
+              //                               });
+              //                               print(productId);
+              //                               await fetch(productId + 1);
+              //                               setState(() {
+              //                                 isLoading = false;
+              //                               });
+              //                             },
+              //                             borderRadius:
+              //                                 BorderRadius.circular(12),
+              //                             child: Padding(
+              //                               padding: const EdgeInsets.all(5),
+              //                               child: Row(
+              //                                 mainAxisSize: MainAxisSize.min,
+              //                                 children: [
+              //                                   Text(
+              //                                     "See more",
+              //                                     style: TextStyles
+              //                                         .textViewMedium10
+              //                                         .copyWith(
+              //                                             color: prussian),
+              //                                   ),
+              //                                   Icon(
+              //                                     Icons.arrow_forward_ios,
+              //                                     size: 18,
+              //                                     color: Colors.grey,
+              //                                   ),
+              //                                 ],
+              //                               ),
+              //                             ),
+              //                           ),
+              //                         ),
+              //                       ),
+              //               );
+              //             } // see more case
+              //             var id = allProducts[i]['id'];
+              //             var productName = allProducts[i]['name'];
+              //             var imageURL = allProducts[i]['image_url'];
+              //             var storeName = allProducts[i]['product_brand'];
+              //             var description =
+              //                 allProducts[i]['product_description'];
+              //             var price1 = allProducts[i]['price_1'];
+              //             var price2 = allProducts[i]['price_2'];
+              //             var oldPrice = allProducts[i]['befor_offer'];
+              //             var size1 = allProducts[i]['unit_size_1'] ?? "";
+              //             var size2 = allProducts[i]['unit_size_2'];
+              //             return DiscountItem(
+              //               onAdd: () => addDiscountItem(context, productName,
+              //                   oldPrice, price1, price2, imageURL, size1),
+              //               onShare: () => shareDiscountItem(
+              //                   context,
+              //                   productName,
+              //                   oldPrice,
+              //                   price1,
+              //                   price2,
+              //                   imageURL,
+              //                   size1),
+              //               name: productName,
+              //               imageURL: imageURL,
+              //               albertPriceAfter: price1 ?? price2,
+              //               measurement: size1 ?? size2,
+              //               jumboPriceAfter: '0.0',
+              //             );
+              //           },
+              //         );
+              //       }),
+              // ),
               Container(
                 height: 200.h,
-                child: FutureBuilder<int>(
-                    future: getAllProductsFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      }
-                      if (snapshot.data != 200) {
-                        return const Center(
-                          child: Text(
-                              "Something went wrong. Please try again later"),
-                        );
-                      }
-                      allProducts =
-                          Provider.of<ProductsProvider>(context, listen: false)
-                              .allProducts;
-                      print("\n RESPONSE: ${allProducts.length}");
-                      return ListView.builder(
-                        itemCount: allProducts.length + 1,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (ctx, i) {
-                          if (i >= allProducts.length) {
-                            var productId = allProducts[i - 1]['id'];
-                            return Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 32),
-                              child: isLoading
-                                  ? Center(
-                                      child: CircularProgressIndicator(
-                                      color: verdigris,
-                                    ))
-                                  : Center(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          border:
-                                              Border.all(color: Colors.grey),
-                                          borderRadius:
-                                              BorderRadius.circular(12),
+                child: Consumer<ProductsProvider>(
+                  builder: (ctx,provider,_){
+                    var comparisonProducts = provider.comparisonProducts;
+                    if(comparisonProducts.isEmpty) return Center(child: CircularProgressIndicator(),);
+                    return ListView.builder(
+                      itemCount: comparisonProducts.length + 1,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (ctx, i) {
+                        if (i >= comparisonProducts.length) {
+                          var productId = comparisonProducts[i-1].id;
+                          return Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 32),
+                            child: isLoading
+                                ? Center(
+                                child: CircularProgressIndicator(
+                                  color: verdigris,
+                                ))
+                                : Center(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border:
+                                  Border.all(color: Colors.grey),
+                                  borderRadius:
+                                  BorderRadius.circular(12),
+                                ),
+                                child: InkWell(
+                                  onTap: () async {
+                                    setState(() {
+                                      isLoading = true;
+                                    });
+                                    print(productId);
+                                    await fetch(productId + 1);
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                  },
+                                  borderRadius:
+                                  BorderRadius.circular(12),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(5),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Text(
+                                          "See more",
+                                          style: TextStyles
+                                              .textViewMedium10
+                                              .copyWith(
+                                              color: prussian),
                                         ),
-                                        child: InkWell(
-                                          onTap: () async {
-                                            setState(() {
-                                              isLoading = true;
-                                            });
-                                            print(productId);
-                                            await fetch(productId + 1);
-                                            setState(() {
-                                              isLoading = false;
-                                            });
-                                          },
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(5),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(
-                                                  "See more",
-                                                  style: TextStyles
-                                                      .textViewMedium10
-                                                      .copyWith(
-                                                          color: prussian),
-                                                ),
-                                                Icon(
-                                                  Icons.arrow_forward_ios,
-                                                  size: 18,
-                                                  color: Colors.grey,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
+                                        Icon(
+                                          Icons.arrow_forward_ios,
+                                          size: 18,
+                                          color: Colors.grey,
                                         ),
-                                      ),
+                                      ],
                                     ),
-                            );
-                          }  // see more case
-                          var id = allProducts[i]['id'];
-                          var productName = allProducts[i]['name'];
-                          var imageURL = allProducts[i]['image_url'];
-                          var storeName = allProducts[i]['product_brand'];
-                          var description = allProducts[i]['product_description'];
-                          var price1 = allProducts[i]['price_1'] ?? "";
-                          var price2 = allProducts[i]['price_2'];
-                          var oldPrice = allProducts[i]['befor_offer'];
-                          var size1 = allProducts[i]['unit_size_1'] ?? "";
-                          var size2 = allProducts[i]['unit_size_2'];
-                          return GestureDetector(
-                            onTap: () => AppNavigator.push(
-                                context: context,
-                                screen: ProductDetailScreen(
-                                    storeName: storeName,
-                                    productName: productName,
-                                    imageURL: imageURL,
-                                    description: description,
-                                    price: price1.runtimeType == int
-                                        ? price1.toDouble()
-                                        : price1,
-                                    size: size1,
-                                    oldPrice: oldPrice)),
-                            child: DiscountItem(
-                              onAdd: () => Provider.of<ChatlistsProvider>(
-                                  context,
-                                  listen: false)
-                                  .showChooseListDialog(
-                                  context: context,
-                                  isSharing: false,
-                                  listItem: ListItem(
-                                      name: productName,
-                                      oldPrice: oldPrice,
-                                      price: price1,
-                                      isChecked: false,
-                                      quantity: 1,
-                                      imageURL: imageURL,
-                                      size: size1),
+                                  ),
+                                ),
                               ),
-                              onShare: () => Provider.of<ChatlistsProvider>(
-                                      context,
-                                      listen: false)
-                                  .showChooseListDialog(
-                                context: context,
-                                isSharing: true,
-                                listItem: ListItem(
-                                    name: productName,
-                                    oldPrice: oldPrice,
-                                    price: price1,
-                                    isChecked: false,
-                                    quantity: 0,
-                                    imageURL: imageURL,
-                                    size: size1),
-                              ),
-                              name: productName,
-                              imageURL: imageURL,
-                              albertPriceBefore:
-                              oldPrice.toString().isEmpty
-                                      ? null
-                                      : oldPrice,
-                              albertPriceAfter:
-                              price1.toString(),
-                              measurement: size1,
-                              sparPriceAfter: '0.0',
-                              jumboPriceAfter: '0.0',
                             ),
                           );
-                        },
-                      );
-                    }),
+                        } // see more case
+                        var id = comparisonProducts[i].id;
+                        var productName = comparisonProducts[i].name;
+                        var imageURL = comparisonProducts[i].imageURL;
+                        var storeName = comparisonProducts[i].storeName;
+                        var description =
+                        comparisonProducts[i].description;
+                        var price1 = comparisonProducts[i].price;
+                        var price2 = comparisonProducts[i].price2;
+                        var oldPrice = comparisonProducts[i].oldPrice;
+                        var size1 = comparisonProducts[i].size;
+                        var size2 = comparisonProducts[i].size2;
+                        return DiscountItem(
+                          onAdd: () => addDiscountItem(context, productName,
+                              oldPrice, price1, price2, imageURL, size1),
+                          onShare: () => shareDiscountItem(
+                              context,
+                              productName,
+                              oldPrice,
+                              price1,
+                              price2,
+                              imageURL,
+                              size1),
+                          id: id,
+                          name: productName,
+                          imageURL: imageURL,
+                          // albertPriceAfter: price1 ?? price2,
+                          albertPriceAfter: price1,
+                          // measurement: size1 ?? size2,
+                          measurement: size1,
+                          jumboPriceAfter: '0.0',
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -481,80 +506,91 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Container(
                 height: 150.h,
-                child: FutureBuilder(
-                  future: getAllValueBargainsFuture,
-                  builder: (context, snapshot) {
-                    if(snapshot.connectionState == ConnectionState.waiting){
-                      return Center(child: CircularProgressIndicator(),);
-                    }
-                    bestValueBargains = snapshot.data ?? [];
-                    return ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: bestValueBargains.map((bargain) {
-                          return GestureDetector(
-                            onTap: (){
-                              //TODO: go to the product screen and pass the best value size to the widget
-                              AppNavigator.push(
-                                  context: context,
-                                  screen: ProductDetailScreen(
+                child: Consumer<ProductsProvider>(
+                    builder: (context, provider,_) {
+                      bestValueBargains = provider.bestValueBargains;
+                      print(bestValueBargains.length);
+                      // print(bestValueBargains.length);
+                      return ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: bestValueBargains.map((bargain) {
+                            return GestureDetector(
+                              onTap: () {
+                                AppNavigator.push(
+                                    context: context,
+                                    screen: ProductDetailScreen(
+                                      productId: bargain.itemId,
                                       storeName: bargain.store,
                                       productName: bargain.itemName,
                                       imageURL: bargain.itemImage,
                                       description: bargain.description,
-                                      price: double.tryParse(bargain.price) ?? 0,
-                                    bestValueSize: bargain.bestValueSize,
-                                      oldPrice: bargain.oldPrice, size1: bargain.size1, size2: bargain.size2,
-                                  ));
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(10),
-                              margin: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                boxShadow: Utils.boxShadow,
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
+                                      price1:
+                                          double.tryParse(bargain.price1) ?? 0,
+                                      price2:
+                                          double.tryParse(bargain.price2) ?? 0,
+                                      oldPrice: bargain.oldPrice,
+                                      size1: bargain.size1,
+                                      size2: bargain.size2,
+                                    ));
+                              },
+                              child: Container(
+                                padding: EdgeInsets.all(10),
+                                margin: EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  boxShadow: Utils.boxShadow,
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Image.network(
+                                      bargain.itemImage,
+                                      width: 50,
+                                      height: 50,
+                                    ),
+                                    SizedBox(
+                                      width: 15.w,
+                                    ),
+                                    Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          bargain.bestValueSize,
+                                          style: TextStyles.textViewSemiBold16,
+                                        ),
+                                        SizedBox(
+                                          height: 10.h,
+                                        ),
+                                        Text(
+                                          "\€" +
+                                              (bargain.bestValueSize ==
+                                                      bargain.size1
+                                                  ? bargain.price1
+                                                  : bargain
+                                                      .price2), //should be the best price
+                                          style: TextStyles.textViewMedium12
+                                              .copyWith(
+                                                  color: const Color.fromRGBO(
+                                                      108, 197, 29, 1)),
+                                        ),
+                                        SizedBox(
+                                          height: 5.w,
+                                        ),
+                                        Text(
+                                          bargain.subCategory,
+                                          style: TextStyles.textViewRegular12
+                                              .copyWith(color: Colors.grey),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
                               ),
-                              child: Row(
-                                children: [
-                                  Image.network(bargain.itemImage,width: 50,height: 50,),
-                                  SizedBox(
-                                    width: 15.w,
-                                  ),
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        bargain.size,
-                                        style: TextStyles.textViewSemiBold16,
-                                      ),
-                                      SizedBox(
-                                        height: 10.h,
-                                      ),
-                                      Text(
-                                         "\$"+ bargain.price,
-                                        style: TextStyles.textViewMedium12
-                                            .copyWith(
-                                            color: const Color.fromRGBO(
-                                                108, 197, 29, 1)),
-                                      ),
-                                      SizedBox(
-                                        height: 5.w,
-                                      ),
-                                      Text(
-                                        bargain.subCategory,
-                                        style: TextStyles.textViewRegular12
-                                            .copyWith(color: Colors.grey),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList());
-                  }
-                ),
+                            );
+                          }).toList());
+                    }),
               ),
               10.ph,
             ],
@@ -564,6 +600,39 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<void> shareDiscountItem(BuildContext context, productName, oldPrice,
+      price1, price2, imageURL, size1) {
+    return Provider.of<ChatlistsProvider>(context, listen: false)
+        .showChooseListDialog(
+      context: context,
+      isSharing: true,
+      listItem: ListItem(
+          name: productName,
+          oldPrice: oldPrice,
+          price: price1 ?? price2,
+          isChecked: false,
+          quantity: 0,
+          imageURL: imageURL,
+          size: size1),
+    );
+  }
+
+  Future<void> addDiscountItem(BuildContext context, productName, oldPrice,
+      price1, price2, imageURL, size1) {
+    return Provider.of<ChatlistsProvider>(context, listen: false)
+        .showChooseListDialog(
+      context: context,
+      isSharing: false,
+      listItem: ListItem(
+          name: productName,
+          oldPrice: oldPrice,
+          price: price1 ?? price2,
+          isChecked: false,
+          quantity: 1,
+          imageURL: imageURL,
+          size: size1),
+    );
+  }
 
   Future fetch(int startingIndex) {
     return Provider.of<ProductsProvider>(context, listen: false)
@@ -614,18 +683,18 @@ class MySearchDelegate extends SearchDelegate {
     // var searchResults = allProducts
     //     .where((product) => product['Name'].toString().contains(query))
     //     .toList();
-    return FutureBuilder<Response>(
-        future: NetworkServices.searchProducts(query),
+    return FutureBuilder<List<Product>>(
+        future: Provider.of<ProductsProvider>(context,listen: false).searchProducts(query),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting)
             return const Center(
               child: CircularProgressIndicator(),
             );
-          if (snapshot.data?.statusCode != 200)
+          if (!snapshot.hasData || snapshot.hasError)
             return const Center(
               child: Text("Something went wrong please try again"),
             );
-          var searchResults = jsonDecode(snapshot.data?.body as String);
+          var searchResults = snapshot.data ?? [];
           if (searchResults.isEmpty)
             return const Center(
               child: Text("No matches found :("),
@@ -635,31 +704,37 @@ class MySearchDelegate extends SearchDelegate {
             child: ListView.builder(
               itemCount: searchResults.length,
               itemBuilder: (ctx, i) {
-                var productName = searchResults[i]['Name'];
-                var imageURL = searchResults[i]['Image_url'];
-                var storeName = searchResults[i]['Store'];
-                var description = searchResults[i]['Description'];
-                var price = searchResults[i]['Current_price'];
-                var oldPrice = searchResults[i]['Old_price'];
-                var size = searchResults[i]['Size'];
+                var id = searchResults[i].id;
+                var productName = searchResults[i].name;
+                var imageURL = searchResults[i].imageURL;
+                var storeName = searchResults[i].storeName;
+                var description = searchResults[i].description;
+                var price1 = searchResults[i].price;
+                var price2 = searchResults[i].price2 ?? '';
+                var oldPrice = searchResults[i].oldPrice;
+                var size1 = searchResults[i].size ?? "";
+                var size2 = searchResults[i].size2 ?? "";
                 return GestureDetector(
                   onTap: () => AppNavigator.push(
                       context: context,
                       screen: ProductDetailScreen(
+                        productId: id,
                         oldPrice: oldPrice,
                         storeName: storeName,
                         productName: productName,
                         imageURL: imageURL,
                         description: description,
-                        price: price,
-                        size: size,
+                        size1: size1,
+                        size2: size2,
+                        price1: double.tryParse(price1) ?? 0.0,
+                        price2: double.tryParse(price2) ?? 0.0,
                       )),
                   child: SearchItem(
-                    name: searchResults[i]['Name'],
-                    imageURL: searchResults[i]['Image_url'],
-                    currentPrice: searchResults[i]['Current_price'].toString(),
-                    size: searchResults[i]['Size'],
-                    store: searchResults[i]['Store'],
+                    name: productName,
+                    imageURL: imageURL,
+                    currentPrice: price1,
+                    size: size1,
+                    store: storeName,
                   ),
                 );
               },

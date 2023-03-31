@@ -4,88 +4,240 @@ import 'package:flutter/material.dart';
 import 'package:bargainb/services/network_services.dart';
 
 import '../models/bestValue_item.dart';
+import '../models/product.dart';
 import '../utils/assets_manager.dart';
 
-class ProductsProvider with ChangeNotifier{
-  List allProducts = [];
-  Future<int> getAllProducts() async {
-    var response = await NetworkServices.getAllProducts();
-    allProducts = jsonDecode(response.body);
-    print("Total number of products: ${allProducts.length}");
+class ProductsProvider with ChangeNotifier {
+  List<Product> jumboProducts = [];
+  List<Product> albertProducts = [];
+  List<Product> comparisonProducts = [];
+  List<BestValueItem> bestValueBargains = [];
+
+  List<Product> convertToProductListFromJson(decodedProductsList) {
+    List<Product> productList = [];
+    try {
+      for (var product in decodedProductsList) {
+        var id = product['id'];
+        var productName = product['name'];
+        var imageURL = product['image_url'];
+        var storeName = product.containsKey('product_brand')
+            ? product['product_brand']
+            : "Jumbo";
+        var description = product['product_description'];
+        var category = product['product_category'] ?? "";
+        var subCategory = product.containsKey('type_of_product')
+            ? product['type_of_product']
+            : null;
+        var price1 = product.containsKey('price_1')
+            ? product['price_1'] ?? product['price_2']
+            : product['price'];
+        var price2 = product.containsKey('price_2') ? product['price_2'] : null;
+        var oldPrice = product.containsKey('befor_offer')
+            ? product['befor_offer']
+            : product['old_price'];
+        var size1 = product.containsKey('unit_size_1')
+            ? product['unit_size_1'] ?? ""
+            : product['unit_size'] ?? "";
+        var size2 =
+        product.containsKey('unit_size_2') ? product['unit_size_2'] : null;
+        var offer = product.containsKey('new_offer')
+            ? product['new_offer']
+            : product['offer'];
+        var productURL = product['product_link'];
+        productList.add(Product(
+            storeName: storeName,
+            id: id,
+            offer: offer,
+            subCategory: subCategory,
+            oldPrice: oldPrice,
+            price: price1,
+            price2: price2,
+            description: description,
+            imageURL: imageURL,
+            name: productName,
+            size: size1,
+            size2: size2,
+            category: category,
+            url: productURL));
+      }
+    }catch(e){
+      print(e);
+    }
+    print("PRODUCTS LENGTH: " + productList.length.toString());
+    return productList;
+  }
+
+  Future<int> getAllPriceComparisons() async {
+    var decodedProductsList = [];
+    var response = await NetworkServices.getAllPriceComparisons();
+    decodedProductsList = jsonDecode(response.body);
+    comparisonProducts = convertToProductListFromJson(decodedProductsList);
+    print("Total number of comparison products: ${comparisonProducts.length}");
     notifyListeners();
     return response.statusCode;
+  }
+
+  Future<int> getAllAlbertProducts() async {
+    var decodedProductsList = [];
+    var response = await NetworkServices.getAllAlbertProducts();
+    try {
+      decodedProductsList = jsonDecode(response.body);
+      albertProducts =
+          convertToProductListFromJson(decodedProductsList);
+    }catch(e){
+      print(e);
+    }
+    print("Total number of Albert products: ${albertProducts.length}");
+    notifyListeners();
+    return response.statusCode;
+  }
+
+  Future<int> getAllJumboProducts() async {
+    var decodedProductsList = [];
+    var response = await NetworkServices.getAllJumboProducts();
+    decodedProductsList = jsonDecode(response.body);
+    jumboProducts = convertToProductListFromJson(decodedProductsList);
+    print("Total number of jumbo products: ${jumboProducts.length}");
+    notifyListeners();
+    return response.statusCode;
+  }
+
+  int getMeasurementConversion(String measurement) {
+    if (measurement == "g" || measurement == "gram" || measurement == "ml") {
+      return 1;
+    }
+    if (measurement == "KG" ||
+        measurement == "kg" ||
+        measurement == "LT" ||
+        measurement == "l") {
+      return 1000;
+    }
+    if (measurement == "100g") {
+      return 100; //case ca. 100g where this will be considered as 1 * 100 = 100 g
+    }
+    return 1;
   }
 
   Future<List<BestValueItem>> populateBestValueBargains() async {
-    List<BestValueItem> bestValueBargains = [];
-    await getAllProducts();
-    for(var product in allProducts) {
-      var id = product['id'];
-      var productName = product['name'];
-      var imageURL = product['image_url'];
-      var subCategory = product['type_of_product'];
-      var storeName = product['product_brand'];
-      var description = product['product_description'];
-      var price1 = product['price_1'] ?? "";
-      var price2 = product['price_2'];
-      var oldPrice = product['befor_offer'];
-      var size1 = product['unit_size_1'] ?? "";
-      var size2 = product['unit_size_2'];
+    await getAllAlbertProducts(); //stuk: piece, tros: bunch
+    bestValueBargains.clear();
+    try {
+      for (var product in albertProducts) {
+        var id = product.id;
+        var productName = product.name;
+        var imageURL = product.imageURL;
+        var subCategory = product.subCategory ?? "";
+        var storeName = product.storeName;
+        var description = product.description;
+        var price1 = product.price;
+        var price2 = product.price2 ?? "";
+        var oldPrice = product.oldPrice ?? "";
+        String size1 = product.size;
+        String size2 = product.size2 ?? "";
 
-      if (price1.isNotEmpty && price2.isNotEmpty) {
-        var numSize1 = 0;
-        var numSize2 = 0;
-        var numPrice1 = 0.0;
-        var numPrice2 = 0.0;
-        if (size1.contains("KG")) numSize1 = 1000;
-        numSize2 = int.tryParse(size2.split(' ')[0]) ?? 0;
-        numPrice1 = double.parse(price1);
-        numPrice2 = double.parse(price2);
-        var ratio1 = numPrice1 / numSize1;
-        var ratio2 = numPrice2 / numSize2;
-        if (ratio1 > ratio2) {
-          bestValueBargains.add(BestValueItem(itemImage: imageURL,
-              subCategory: subCategory,
-              itemName: productName,
-              oldPrice: oldPrice,
-              description: description,
-              size: size1,
-              itemId: id,
-              price: price1, store: storeName));
-        } else if (ratio2 > ratio1) {
-          bestValueBargains.add(BestValueItem(itemImage: imageURL,
-              subCategory: subCategory,
-              itemName: productName,
-              oldPrice: oldPrice,
-              description: description,
-              size: size2,
-              itemId: id,
-              price: price2, store: storeName));
+        if (size2.contains("stuk") || size2.contains("stuks")) continue;
+
+        if (price1.isNotEmpty && price2.isNotEmpty) {
+          //if both prices are not empty strings then sizes are not either
+          var numSize1 = 0;
+          var numSize2 = 0;
+          var numPrice1 = 0.0;
+          var numPrice2 = 0.0;
+          var ratio1;
+          var ratio2;
+          try {
+            numSize1 = getMeasurementConversion(size1);
+            numSize2 = int.tryParse(size2.split(' ')[0]) ?? 1; //case: per stuk
+
+            if (size2.split(' ').length == 2)
+              numSize2 = numSize2 *
+                  getMeasurementConversion(
+                      size2.split(' ')[1]); //case: 150 g or 1 kg or 12 stuks
+            if (size2.split(' ').length == 3)
+              numSize2 = numSize2 *
+                  (int.tryParse(size2.split(' ')[1]) ?? 1) *
+                  getMeasurementConversion(size2.split(' ')[
+                      2]); //case: ca. 120 g or per 2 stuks        note: ca. means approx.
+            if (size2.split(' ').length == 4)
+              numSize2 = numSize2 *
+                  (int.tryParse(size2.split(' ')[2]) ?? 1) *
+                  getMeasurementConversion(
+                      size2.split(' ')[3]); //case: 2 x 160 g or 2 x 90 gram
+
+            numPrice1 = double.parse(price1);
+            numPrice2 = double.parse(price2);
+            ratio1 = numSize1 / numPrice1;
+            ratio2 = numSize2 / numPrice2;
+          } catch (e) {
+            print("ERROR IN CALCULATION");
+            print(e);
+          }
+
+          if (ratio1 > ratio2) {
+            bestValueBargains.add(BestValueItem(
+                itemImage: imageURL,
+                subCategory: subCategory,
+                itemName: productName,
+                oldPrice: oldPrice,
+                description: description,
+                size1: size1,
+                size2: size2,
+                bestValueSize: size1,
+                itemId: id,
+                price1: price1,
+                price2: price2,
+                store: storeName));
+          } else if (ratio2 > ratio1) {
+            bestValueBargains.add(BestValueItem(
+                itemImage: imageURL,
+                subCategory: subCategory,
+                itemName: productName,
+                oldPrice: oldPrice,
+                description: description,
+                bestValueSize: size2,
+                size2: size2,
+                size1: size1,
+                itemId: id,
+                price1: price1,
+                price2: price2,
+                store: storeName));
+          }
         }
       }
+    } catch (e) {
+      print(e);
     }
+    print(bestValueBargains.length);
+    notifyListeners();
+
     return bestValueBargains;
   }
 
-
   Future<int> getProducts(int startingIndex) async {
-    if(startingIndex == 0) allProducts.clear();
+    var decodedProductsList = [];
+    if (startingIndex == 0) albertProducts.clear();
     var response = await NetworkServices.getProducts(startingIndex);
-    allProducts.addAll(jsonDecode(response.body));
-    allProducts.removeAt(0);
-    print("Total number of products: ${allProducts.length}");
+    decodedProductsList = jsonDecode(response.body);
+    albertProducts.addAll(convertToProductListFromJson(decodedProductsList as List<Map>));
+    albertProducts.removeAt(0);
+    print(
+        "Total number of products from Index $startingIndex: ${albertProducts.length}");
     notifyListeners();
     return response.statusCode;
   }
 
-  // Future<void> searchProducts(String searchTerm) async {
-  //   var response = await NetworkServices.searchProducts(searchTerm);
-  // }
+  Future<List<Product>> searchProducts(String searchTerm) async {
+    var albertResponse = jsonDecode((await NetworkServices.searchAlbertProducts(searchTerm)).body);
+    var jumboResponse = jsonDecode((await NetworkServices.searchJumboProducts(searchTerm)).body);
+   var albertProducts =  convertToProductListFromJson(albertResponse);
+   var jumboProducts =  convertToProductListFromJson(jumboResponse);
+   var searchResult = [...jumboProducts,...albertProducts]..shuffle();
+    return searchResult;
+  }
 
   String getImage(String storeName) {
-    if(storeName == 'Albert Heijn') return albert;
-    if(storeName == 'Jumbo') return jumbo;
-    if(storeName == 'Spar') return spar;
-    return spar;
+    if (storeName == 'AH') return albert;
+    if (storeName == 'Jumbo') return jumbo;
+    return albert;
   }
 }

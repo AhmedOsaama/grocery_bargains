@@ -1,3 +1,4 @@
+import 'package:bargainb/providers/products_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -6,23 +7,28 @@ import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/utils/utils.dart';
 import 'package:bargainb/view/components/plus_button.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:provider/provider.dart';
 
+import '../../config/routes/app_navigator.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/style_utils.dart';
+import '../screens/product_detail_screen.dart';
 
 class DiscountItem extends StatelessWidget {
+  final int id;
   final String name;
   final String? albertPriceBefore;
   final String albertPriceAfter;
   final String? sparPriceBefore;
-  final String sparPriceAfter;
+  final String? sparPriceAfter;
   final String? jumboPriceBefore;
   final String jumboPriceAfter;
   final String measurement;
   final String imageURL;
   final Function onShare;
   final Function onAdd;
-  const DiscountItem(
+
+  DiscountItem(
       {Key? key,
       required this.name,
       required this.measurement,
@@ -30,103 +36,146 @@ class DiscountItem extends StatelessWidget {
       this.albertPriceBefore,
       required this.albertPriceAfter,
       this.sparPriceBefore,
-      required this.sparPriceAfter,
+        this.sparPriceAfter,
       this.jumboPriceBefore,
       required this.jumboPriceAfter,
-      required this.onShare, required this.onAdd})
+      required this.onShare, required this.onAdd, required this.id})
       : super(key: key);
+
+  var selectedStore = 'Albert';
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(color: Colors.white, boxShadow: [
-        BoxShadow(
-            color: Color.fromRGBO(59, 59, 59, 0.13),
-            blurRadius: 15,
-            offset: Offset(0, 4))
-      ]),
-      margin: const EdgeInsets.all(10),
-      padding: EdgeInsets.symmetric(horizontal: 15.w),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: EdgeInsets.symmetric(vertical: 10.h),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Image.network(
-                  imageURL,
-                  height: 50.h,
-                ),
-              ),
-              20.pw,
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    width: 130.w,
-                    child: Text(
-                      name,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyles.textViewSemiBold14,
-                    ),
+    var productsProvider = Provider.of<ProductsProvider>(context,listen: false);
+    return GestureDetector(
+      onTap: () {
+        if(selectedStore == "Albert") {
+          var product = productsProvider.albertProducts.firstWhere((product) {
+            return product.id == id;
+          });
+          AppNavigator.push(
+              context: context,
+              screen: ProductDetailScreen(
+                productId: product.id,
+                storeName: selectedStore,
+                productName: product.name,
+                imageURL: product.imageURL,
+                description: product.description,
+                price1:
+                double.tryParse(product.price) ?? 0.0,
+                price2: double.tryParse(product.price2 ?? "") ?? 0.0,
+                size1: product.size,
+                size2: product.size2 ?? "",
+              ));
+        }
+        if(selectedStore == "Jumbo") {
+          var product = productsProvider.jumboProducts.firstWhere((product) => product.id == id);
+          AppNavigator.push(
+              context: context,
+              screen: ProductDetailScreen(
+                productId: product.id,
+                storeName: selectedStore,
+                productName: product.name,
+                imageURL: imageURL,
+                description: product.description,
+                price1:
+                double.tryParse(product.price) ?? 0.0,
+                price2: null,
+                size1: product.size,
+                size2: product.size2 ?? "",
+              ));
+        }
+      },
+      child: Container(
+        decoration: const BoxDecoration(color: Colors.white, boxShadow: [
+          BoxShadow(
+              color: Color.fromRGBO(59, 59, 59, 0.13),
+              blurRadius: 15,
+              offset: Offset(0, 4))
+        ]),
+        margin: const EdgeInsets.all(10),
+        padding: EdgeInsets.symmetric(horizontal: 15.w),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 10.h),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  Text(
-                    measurement,
-                    style: TextStyles.textViewMedium12
-                        .copyWith(color: Color.fromRGBO(204, 204, 204, 1)),
+                  child: Image.network(
+                    imageURL,
+                    height: 50.h,
                   ),
-                  GestureDetector(
-                      onTap: () {},
-                      child: Row(
-                        children: [
-                          Text('View More ',style: TextStylesInter.textViewSemiBold14.copyWith(color: mainPurple),),
-                          Icon(Icons.arrow_forward_ios,color: mainPurple,)
-                        ],
-                      )),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ),
+                20.pw,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    IconButton(
-                        onPressed: () => onShare(),
-                        icon: SvgPicture.asset(chatShare)),
-                    20.ph,
-                    PlusButton(onTap: () => onAdd()),
+                    SizedBox(
+                      width: 130.w,
+                      child: Text(
+                        name,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyles.textViewSemiBold14,
+                      ),
+                    ),
+                    Text(
+                      measurement,
+                      style: TextStyles.textViewMedium12
+                          .copyWith(color: Color.fromRGBO(204, 204, 204, 1)),
+                    ),
+                    GestureDetector(
+                        onTap: () {},
+                        child: Row(
+                          children: [
+                            Text('View More ',style: TextStylesInter.textViewSemiBold14.copyWith(color: mainPurple),),
+                            Icon(Icons.arrow_forward_ios,color: mainPurple,)
+                          ],
+                        )),
                   ],
                 ),
-              ),
-            ],
-          ),
-          20.pw,
-          Row(
-            children: [
-              //TODO: create a list with the below items and use it to get the index of the pressed item to highlight it
-              ComparisonPrice(
-                currentPrice: albertPriceAfter,
-                oldPrice: albertPriceBefore,
-                storeImagePath: albert,
-              ),
-              30.pw,
-              // ComparisonPrice(
-              //   currentPrice: sparPriceAfter,
-              //   oldPrice: sparPriceBefore,
-              //   storeImagePath: spar,
-              // ),
-              ComparisonPrice(
-                currentPrice: jumboPriceAfter,
-                oldPrice: jumboPriceBefore,
-                storeImagePath: jumbo,
-              ),
-            ],
-          )
-        ],
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton(
+                          onPressed: () => onShare(),
+                          icon: SvgPicture.asset(chatShare)),
+                      20.ph,
+                      PlusButton(onTap: () => onAdd()),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            20.pw,
+            Row(
+              children: [
+                //TODO: create a list with the below items and use it to get the index of the pressed store to highlight it
+                ComparisonPrice(
+                  currentPrice: albertPriceAfter,
+                  oldPrice: albertPriceBefore,
+                  storeImagePath: albert,
+                ),
+                30.pw,
+                // ComparisonPrice(
+                //   currentPrice: sparPriceAfter,
+                //   oldPrice: sparPriceBefore,
+                //   storeImagePath: spar,
+                // ),
+                ComparisonPrice(
+                  currentPrice: jumboPriceAfter,
+                  oldPrice: jumboPriceBefore,
+                  storeImagePath: jumbo,
+                ),
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

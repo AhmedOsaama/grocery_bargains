@@ -454,93 +454,164 @@ class _ChatViewState extends State<ChatView> {
             ),
             6.ph,
             Container(
-              height: 250.h,
-              child: FutureBuilder<int>(
-                  future: getAllProductsFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
+              height: 200.h,
+              child: Consumer<ProductsProvider>(
+                builder: (ctx,provider,_){
+                  var comparisonProducts = provider.comparisonProducts;
+                  if(comparisonProducts.isEmpty) return Center(child: CircularProgressIndicator(),);
+                  return ListView.builder(
+                    itemCount: comparisonProducts.length,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (ctx, i) {
+                      var id = comparisonProducts[i].id;
+                      var productName = comparisonProducts[i].name;
+                      var imageURL = comparisonProducts[i].imageURL;
+                      var storeName = comparisonProducts[i].storeName;
+                      var description =
+                          comparisonProducts[i].description;
+                      var price1 = comparisonProducts[i].price;
+                      var price2 = comparisonProducts[i].price2;
+                      var oldPrice = comparisonProducts[i].oldPrice;
+                      var size1 = comparisonProducts[i].size;
+                      var size2 = comparisonProducts[i].size2;
+                      return DiscountItem(
+                        onAdd: () {
+                          panelController.close();
+                                            Provider.of<ChatlistsProvider>(context,
+                                                    listen: false)
+                                                .addItemToList(
+                                                    ListItem(
+                                                        oldPrice: oldPrice,
+                                                        name: productName,
+                                                        price: price1,
+                                                        isChecked: false,
+                                                        quantity: 1,
+                                                        imageURL: imageURL,
+                                                        size: size1),
+                                                    widget.listId);
+                        },
+                        onShare: () {
+                          panelController.close();
+                                            Provider.of<ChatlistsProvider>(context,
+                                                    listen: false)
+                                                .shareItemAsMessage(
+                                                    itemName: productName,
+                                                    itemSize: size1,
+                                                    itemImage: imageURL,
+                                                    itemPrice: price1,
+                                                    itemOldPrice: oldPrice,
+                                                    storeName: storeName,
+                                                    listId: widget.listId);
+                        },
+                        id: id,
+                        name: productName,
+                        imageURL: imageURL,
+                        // albertPriceAfter: price1 ?? price2,
+                        albertPriceAfter: price1,
+                        // measurement: size1 ?? size2,
+                        measurement: size1,
+                        jumboPriceAfter: '0.0',
                       );
-                    }
-                    if (snapshot.data != 200) {
-                      return const Center(
-                        child: Text(
-                            "Something went wrong. Please try again later"),
-                      );
-                    }
-                    allProducts =
-                        Provider.of<ProductsProvider>(context, listen: false)
-                            .allProducts;
-                    // print("\n RESPONSE: ${allProducts.length}");
-                    return ListView.builder(
-                      itemCount: allProducts.length,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (ctx, i) {
-                        var productName = allProducts[i]['Name'];
-                        var imageURL = allProducts[i]['Image_url'];
-                        var storeName = allProducts[i]['Store'];
-                        var description = allProducts[i]['Description'];
-                        var price = allProducts[i]['Current_price'];
-                        var oldPrice = allProducts[i]['Old_price'];
-                        var size = allProducts[i]['Size'];
-                        return GestureDetector(
-                          onTap: () => AppNavigator.push(
-                              context: context,
-                              screen: ProductDetailScreen(
-                                storeName: storeName,
-                                oldPrice: oldPrice,
-                                productName: productName,
-                                imageURL: imageURL,
-                                description: description,
-                                price: price.runtimeType == int
-                                    ? price.toDouble()
-                                    : price,
-                                size: size,
-                              )),
-                          child: DiscountItem(
-                            name: productName,
-                            imageURL: imageURL,
-                            albertPriceBefore:
-                                oldPrice.toString().isEmpty ? null : oldPrice,
-                            albertPriceAfter: price.toString(),
-                            measurement: size,
-                            onAdd: () {
-                              panelController.close();
-                              Provider.of<ChatlistsProvider>(context,
-                                      listen: false)
-                                  .addItemToList(
-                                      ListItem(
-                                          oldPrice: oldPrice,
-                                          name: productName,
-                                          price: price,
-                                          isChecked: false,
-                                          quantity: 1,
-                                          imageURL: imageURL,
-                                          size: size),
-                                      widget.listId);
-                            },
-                            onShare: () {
-                              panelController.close();
-                              Provider.of<ChatlistsProvider>(context,
-                                      listen: false)
-                                  .shareItemAsMessage(
-                                      itemName: productName,
-                                      itemSize: size,
-                                      itemImage: imageURL,
-                                      itemPrice: price,
-                                      itemOldPrice: oldPrice,
-                                      storeName: storeName,
-                                      listId: widget.listId);
-                            },
-                            sparPriceAfter: '0.0',
-                            jumboPriceAfter: '0.0',
-                          ),
-                        );
-                      },
-                    );
-                  }),
+                    },
+                  );
+                },
+              ),
             ),
+
+            // Container(
+            //   height: 250.h,
+            //   child: FutureBuilder<int>(
+            //       future: getAllProductsFuture,
+            //       builder: (context, snapshot) {
+            //         if (snapshot.connectionState == ConnectionState.waiting) {
+            //           return const Center(
+            //             child: CircularProgressIndicator(),
+            //           );
+            //         }
+            //         if (snapshot.data != 200) {
+            //           return const Center(
+            //             child: Text(
+            //                 "Something went wrong. Please try again later"),
+            //           );
+            //         }
+            //         allProducts =
+            //             Provider.of<ProductsProvider>(context, listen: false)
+            //                 .allProducts;
+            //         // print("\n RESPONSE: ${allProducts.length}");
+            //         return ListView.builder(
+            //           itemCount: allProducts.length,
+            //           scrollDirection: Axis.horizontal,
+            //           itemBuilder: (ctx, i) {
+            //             var id = allProducts[i]['id'];
+            //             var productName = allProducts[i]['name'];
+            //             var imageURL = allProducts[i]['image_url'];
+            //             var storeName = allProducts[i]['product_brand'];
+            //             var description = allProducts[i]['product_description'];
+            //             var price1 = allProducts[i]['price_1'] ?? "";
+            //             var price2 = allProducts[i]['price_2'];
+            //             var oldPrice = allProducts[i]['befor_offer'];
+            //             var size1 = allProducts[i]['unit_size_1'] ?? "";
+            //             var size2 = allProducts[i]['unit_size_2'];
+            //             return GestureDetector(
+            //               onTap: () => AppNavigator.push(
+            //                   context: context,
+            //                   screen: ProductDetailScreen(
+            //                     productId: id,
+            //                     storeName: storeName,
+            //                     productName: productName,
+            //                     imageURL: imageURL,
+            //                     description: description,
+            //                     price: price1.runtimeType == int
+            //                         ? price1.toDouble()
+            //                         : price1,
+            //                     oldPrice: oldPrice,
+            //                     size1: size1,
+            //                     size2: size2,
+            //                   )
+            //               ),
+            //               child: DiscountItem(
+            //                 name: productName,
+            //                 imageURL: imageURL,
+            //                 albertPriceBefore:
+            //                     oldPrice.toString().isEmpty ? null : oldPrice,
+            //                 albertPriceAfter: price.toString(),
+            //                 measurement: size,
+            //                 onAdd: () {
+            //                   panelController.close();
+            //                   Provider.of<ChatlistsProvider>(context,
+            //                           listen: false)
+            //                       .addItemToList(
+            //                           ListItem(
+            //                               oldPrice: oldPrice,
+            //                               name: productName,
+            //                               price: price,
+            //                               isChecked: false,
+            //                               quantity: 1,
+            //                               imageURL: imageURL,
+            //                               size: size),
+            //                           widget.listId);
+            //                 },
+            //                 onShare: () {
+            //                   panelController.close();
+            //                   Provider.of<ChatlistsProvider>(context,
+            //                           listen: false)
+            //                       .shareItemAsMessage(
+            //                           itemName: productName,
+            //                           itemSize: size,
+            //                           itemImage: imageURL,
+            //                           itemPrice: price,
+            //                           itemOldPrice: oldPrice,
+            //                           storeName: storeName,
+            //                           listId: widget.listId);
+            //                 },
+            //                 sparPriceAfter: '0.0',
+            //                 jumboPriceAfter: '0.0',
+            //               ),
+            //             );
+            //           },
+            //         );
+            //       }),
+            // ),
           ],
         ),
       ),

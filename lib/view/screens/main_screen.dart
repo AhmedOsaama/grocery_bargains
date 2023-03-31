@@ -1,3 +1,4 @@
+import 'package:bargainb/providers/products_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -31,7 +32,8 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
-  // Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
+// class _MainScreenState extends State<MainScreen> {
+  late Future getAllProductsFuture;
   var selectedIndex = 0;
   final _pages = [
     const HomeScreen(),
@@ -41,15 +43,27 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   final selectedColor = Color.fromRGBO(99, 104, 176, 1);
   final unSelectedColor = Color.fromRGBO(219, 221, 228, 1);
 
-  // @override
   // void initState() {
   //   getUserDataFuture = FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
   //   DynamicLinkService().listenToDynamicLinks(context);               //case 2 the app is open but in background and opened again via deep link
   //   super.initState();
   // }
 
+  Future<void> getAllProducts() async {
+    print("1");
+    await Provider.of<ProductsProvider>(context,listen: false).getAllAlbertProducts();
+    print("2");
+    await Provider.of<ProductsProvider>(context,listen: false).getAllJumboProducts();
+    print("3");
+    await Provider.of<ProductsProvider>(context,listen: false).getAllPriceComparisons();
+    print("4");
+    await Provider.of<ProductsProvider>(context,listen: false).populateBestValueBargains();
+    print("5");
+  }
+
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addObserver(this);
 
     FlutterBranchSdk.initSession().listen((data) {
@@ -67,7 +81,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     });
     // FlutterBranchSdk.validateSDKIntegration();
 
-    super.initState();
+    getAllProductsFuture = getAllProducts()
+        .timeout(Duration(seconds: 6),onTimeout: (){});
+
   }
 
   @override
@@ -87,53 +103,71 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     }
     super.didChangeAppLifecycleState(state);
   }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _pages[selectedIndex],
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(vertical: 10.h),
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(6),),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              icon: Icon(
-                Icons.home_outlined,
-                color: selectedIndex == 0 ? selectedColor : unSelectedColor,
+    return FutureBuilder(
+      future: getAllProductsFuture,
+      builder: (context, snapshot) {
+        if(snapshot.connectionState == ConnectionState.waiting) return Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(
+                splashImage
               ),
-              onPressed: () {
-                setState(() {
-                  selectedIndex = 0;
-                });
-              },
+              fit: BoxFit.fill
             ),
-            IconButton(
-              icon: Icon(
-                Icons.sticky_note_2_outlined,
-                color: selectedIndex == 1 ? selectedColor : unSelectedColor,
-              ),
-              onPressed: () async {
-                setState(() {
-                  selectedIndex = 1;
-                });
-              },
+          ),
+        );
+        return Scaffold(
+          body: _pages[selectedIndex],
+          bottomNavigationBar: Container(
+            padding: EdgeInsets.symmetric(vertical: 10.h),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.home_outlined,
+                    color: selectedIndex == 0 ? selectedColor : unSelectedColor,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      selectedIndex = 0;
+                    });
+                  },
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.sticky_note_2_outlined,
+                    color: selectedIndex == 1 ? selectedColor : unSelectedColor,
+                  ),
+                  onPressed: () async {
+                    setState(() {
+                      selectedIndex = 1;
+                    });
+                  },
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.account_circle_outlined,
+                    color: selectedIndex == 2 ? selectedColor : unSelectedColor,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      selectedIndex = 2;
+                    });
+                  },
+                ),
+              ],
             ),
-            IconButton(
-              icon: Icon(
-                Icons.account_circle_outlined,
-                color: selectedIndex == 2 ? selectedColor : unSelectedColor,
-              ),
-              onPressed: () {
-                setState(() {
-                  selectedIndex = 2;
-                });
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
 }
