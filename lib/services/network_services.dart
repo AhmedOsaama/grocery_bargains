@@ -30,7 +30,7 @@ class NetworkServices {
 
  static Future<http.Response> getAllPriceComparisons() async {
    final url = Uri.parse(
-       'https://europe-west1-discountly.cloudfunctions.net/function-1');
+       'https://europe-west1-discountly.cloudfunctions.net/get_all_price_comparisons');
    var response = await http.get(
        url, headers: {'Content-Type': 'application/json'});
    return response;

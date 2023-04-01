@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bargainb/models/comparison_product.dart';
 import 'package:flutter/material.dart';
 import 'package:bargainb/services/network_services.dart';
 
@@ -10,7 +11,7 @@ import '../utils/assets_manager.dart';
 class ProductsProvider with ChangeNotifier {
   List<Product> jumboProducts = [];
   List<Product> albertProducts = [];
-  List<Product> comparisonProducts = [];
+  List<ComparisonProduct> comparisonProducts = [];
   List<BestValueItem> bestValueBargains = [];
 
   List<Product> convertToProductListFromJson(decodedProductsList) {
@@ -39,7 +40,7 @@ class ProductsProvider with ChangeNotifier {
             ? product['unit_size_1'] ?? ""
             : product['unit_size'] ?? "";
         var size2 =
-        product.containsKey('unit_size_2') ? product['unit_size_2'] : null;
+            product.containsKey('unit_size_2') ? product['unit_size_2'] : null;
         var offer = product.containsKey('new_offer')
             ? product['new_offer']
             : product['offer'];
@@ -60,18 +61,61 @@ class ProductsProvider with ChangeNotifier {
             category: category,
             url: productURL));
       }
-    }catch(e){
+    } catch (e) {
       print(e);
     }
     print("PRODUCTS LENGTH: " + productList.length.toString());
     return productList;
   }
 
+  List<ComparisonProduct> convertToComparisonProductListFromJson(decodedProductsList) {
+    List<ComparisonProduct> comparisonList = [];
+
+    try {
+      for (var product in decodedProductsList) {
+        var id = product['id'];
+        var jumboName = product['jumbo_product_name'];
+        var jumboLink = product['jumbo_product_link'];
+        if(jumboProducts.indexWhere((product) => product.url == jumboLink) == -1) continue;
+        var jumboImageURL = product['jumbo_image_url'];
+        var jumboPrice = product['jumbo_price'];
+        if (jumboPrice == null) continue;
+        var jumboSize = product['jumbo_unit'];
+        var albertName = product['albert_product_name'];
+        var albertLink = product['albert_product_link'];
+        if(albertProducts.indexWhere((product) => product.url == albertLink) == -1) continue;
+        var albertId = product['albert_product_id'];
+        var albertImageURL = product['albert_image_url'];
+        var albertPrice = product['albert_price'];
+        var albertSize = product['albert_unit_size'];
+        comparisonList.add(
+        ComparisonProduct(
+          id: id,
+          jumboSize: jumboSize,
+            albertId: albertId,
+            albertImageURL: albertImageURL,
+            albertLink: albertLink,
+            albertName: albertName,
+            albertPrice: albertPrice,
+            albertSize: albertSize,
+            jumboImageURL: jumboImageURL,
+            jumboLink: jumboLink,
+            jumboName: jumboName,
+            jumboPrice: jumboPrice));
+      }
+    } catch (e) {
+      print("Error in comparisons");
+      print(e);
+    }
+    print("COMPARISON PRODUCTS LENGTH: " + comparisonList.length.toString());
+    return comparisonList;
+  }
+
   Future<int> getAllPriceComparisons() async {
     var decodedProductsList = [];
     var response = await NetworkServices.getAllPriceComparisons();
     decodedProductsList = jsonDecode(response.body);
-    comparisonProducts = convertToProductListFromJson(decodedProductsList);
+    comparisonProducts = convertToComparisonProductListFromJson(decodedProductsList);
     print("Total number of comparison products: ${comparisonProducts.length}");
     notifyListeners();
     return response.statusCode;
@@ -82,9 +126,8 @@ class ProductsProvider with ChangeNotifier {
     var response = await NetworkServices.getAllAlbertProducts();
     try {
       decodedProductsList = jsonDecode(response.body);
-      albertProducts =
-          convertToProductListFromJson(decodedProductsList);
-    }catch(e){
+      albertProducts = convertToProductListFromJson(decodedProductsList);
+    } catch (e) {
       print(e);
     }
     print("Total number of Albert products: ${albertProducts.length}");
@@ -127,7 +170,7 @@ class ProductsProvider with ChangeNotifier {
         var productName = product.name;
         var imageURL = product.imageURL;
         var subCategory = product.subCategory ?? "";
-        var storeName = product.storeName;
+        var storeName = "Albert";
         var description = product.description;
         var price1 = product.price;
         var price2 = product.price2 ?? "";
@@ -218,7 +261,8 @@ class ProductsProvider with ChangeNotifier {
     if (startingIndex == 0) albertProducts.clear();
     var response = await NetworkServices.getProducts(startingIndex);
     decodedProductsList = jsonDecode(response.body);
-    albertProducts.addAll(convertToProductListFromJson(decodedProductsList as List<Map>));
+    albertProducts
+        .addAll(convertToProductListFromJson(decodedProductsList as List<Map>));
     albertProducts.removeAt(0);
     print(
         "Total number of products from Index $startingIndex: ${albertProducts.length}");
@@ -227,11 +271,13 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<List<Product>> searchProducts(String searchTerm) async {
-    var albertResponse = jsonDecode((await NetworkServices.searchAlbertProducts(searchTerm)).body);
-    var jumboResponse = jsonDecode((await NetworkServices.searchJumboProducts(searchTerm)).body);
-   var albertProducts =  convertToProductListFromJson(albertResponse);
-   var jumboProducts =  convertToProductListFromJson(jumboResponse);
-   var searchResult = [...jumboProducts,...albertProducts]..shuffle();
+    var albertResponse = jsonDecode(
+        (await NetworkServices.searchAlbertProducts(searchTerm)).body);
+    var jumboResponse = jsonDecode(
+        (await NetworkServices.searchJumboProducts(searchTerm)).body);
+    var albertProducts = convertToProductListFromJson(albertResponse);
+    var jumboProducts = convertToProductListFromJson(jumboResponse);
+    var searchResult = [...jumboProducts, ...albertProducts]..shuffle();
     return searchResult;
   }
 

@@ -10,38 +10,28 @@ import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/routes/app_navigator.dart';
+import '../../models/comparison_product.dart';
+import '../../models/list_item.dart';
+import '../../providers/chatlists_provider.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/style_utils.dart';
 import '../screens/product_detail_screen.dart';
 
-class DiscountItem extends StatelessWidget {
-  final int id;
-  final String name;
-  final String? albertPriceBefore;
-  final String albertPriceAfter;
-  final String? sparPriceBefore;
-  final String? sparPriceAfter;
-  final String? jumboPriceBefore;
-  final String jumboPriceAfter;
-  final String measurement;
-  final String imageURL;
-  final Function onShare;
-  final Function onAdd;
+class DiscountItem extends StatefulWidget {
+ final ComparisonProduct comparisonProduct;
 
   DiscountItem(
-      {Key? key,
-      required this.name,
-      required this.measurement,
-      required this.imageURL,
-      this.albertPriceBefore,
-      required this.albertPriceAfter,
-      this.sparPriceBefore,
-        this.sparPriceAfter,
-      this.jumboPriceBefore,
-      required this.jumboPriceAfter,
-      required this.onShare, required this.onAdd, required this.id})
+      {
+        Key? key,
+        required this.comparisonProduct
+      })
       : super(key: key);
 
+  @override
+  State<DiscountItem> createState() => _DiscountItemState();
+}
+
+class _DiscountItemState extends State<DiscountItem> {
   var selectedStore = 'Albert';
 
   @override
@@ -51,11 +41,12 @@ class DiscountItem extends StatelessWidget {
       onTap: () {
         if(selectedStore == "Albert") {
           var product = productsProvider.albertProducts.firstWhere((product) {
-            return product.id == id;
+            return product.url == widget.comparisonProduct.albertLink;
           });
           AppNavigator.push(
               context: context,
               screen: ProductDetailScreen(
+                comparisonId: widget.comparisonProduct.id,
                 productId: product.id,
                 storeName: selectedStore,
                 productName: product.name,
@@ -69,14 +60,15 @@ class DiscountItem extends StatelessWidget {
               ));
         }
         if(selectedStore == "Jumbo") {
-          var product = productsProvider.jumboProducts.firstWhere((product) => product.id == id);
+          var product = productsProvider.jumboProducts.firstWhere((product) => product.url == widget.comparisonProduct.jumboLink);
           AppNavigator.push(
               context: context,
               screen: ProductDetailScreen(
+                comparisonId: widget.comparisonProduct.id,
                 productId: product.id,
                 storeName: selectedStore,
                 productName: product.name,
-                imageURL: imageURL,
+                imageURL: product.imageURL,
                 description: product.description,
                 price1:
                 double.tryParse(product.price) ?? 0.0,
@@ -106,7 +98,7 @@ class DiscountItem extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Image.network(
-                    imageURL,
+                    selectedStore == "Albert" ? widget.comparisonProduct.albertImageURL : widget.comparisonProduct.jumboImageURL,
                     height: 50.h,
                   ),
                 ),
@@ -117,13 +109,13 @@ class DiscountItem extends StatelessWidget {
                     SizedBox(
                       width: 130.w,
                       child: Text(
-                        name,
+                        selectedStore == "Albert" ? widget.comparisonProduct.albertName : widget.comparisonProduct.jumboName,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyles.textViewSemiBold14,
                       ),
                     ),
                     Text(
-                      measurement,
+                      selectedStore == "Albert" ? widget.comparisonProduct.albertSize : widget.comparisonProduct.jumboSize ?? "N/A",
                       style: TextStyles.textViewMedium12
                           .copyWith(color: Color.fromRGBO(204, 204, 204, 1)),
                     ),
@@ -143,10 +135,33 @@ class DiscountItem extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       IconButton(
-                          onPressed: () => onShare(),
+                          onPressed: () {
+                            if(selectedStore == "Albert") {
+                              var product = productsProvider.albertProducts.firstWhere((product) => product.id == widget.comparisonProduct.albertId);
+                              addDiscountItem(context, product.name,
+                                  product.oldPrice, product.price, product.price2, product.imageURL, product.size);
+                            }
+                            if(selectedStore == "Jumbo") {
+                              var product = productsProvider.jumboProducts.firstWhere((product) => product.url == widget.comparisonProduct.jumboLink);
+                              addDiscountItem(context, product.name,
+                                  product.oldPrice, product.price, product.price2, product.imageURL, product.size);
+                            }
+
+                          },
                           icon: SvgPicture.asset(chatShare)),
                       20.ph,
-                      PlusButton(onTap: () => onAdd()),
+                      PlusButton(onTap: () {
+                        if(selectedStore == "Albert") {
+                          var product = productsProvider.albertProducts.firstWhere((product) => product.id == widget.comparisonProduct.albertId);
+                          shareDiscountItem(context, product.name,
+                              product.oldPrice, product.price, product.price2, product.imageURL, product.size);
+                        }
+                        if(selectedStore == "Jumbo") {
+                          var product = productsProvider.jumboProducts.firstWhere((product) => product.url == widget.comparisonProduct.jumboLink);
+                          shareDiscountItem(context, product.name,
+                              product.oldPrice, product.price, product.price2, product.imageURL, product.size);
+                        }
+                      }),
                     ],
                   ),
                 ),
@@ -155,22 +170,44 @@ class DiscountItem extends StatelessWidget {
             20.pw,
             Row(
               children: [
-                //TODO: create a list with the below items and use it to get the index of the pressed store to highlight it
-                ComparisonPrice(
-                  currentPrice: albertPriceAfter,
-                  oldPrice: albertPriceBefore,
-                  storeImagePath: albert,
+                GestureDetector(
+                  onTap: (){
+                    setState(() {
+                      selectedStore = "Albert";
+                    });
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: selectedStore == "Albert" ? BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: mainPurple)
+                    ) : null,
+                    child: StorePrice(
+                      currentPrice: widget.comparisonProduct.albertPrice,
+                      // oldPrice: widget.albertPriceBefore,
+                      storeImagePath: albert,
+                    ),
+                  ),
                 ),
                 30.pw,
-                // ComparisonPrice(
-                //   currentPrice: sparPriceAfter,
-                //   oldPrice: sparPriceBefore,
-                //   storeImagePath: spar,
-                // ),
-                ComparisonPrice(
-                  currentPrice: jumboPriceAfter,
-                  oldPrice: jumboPriceBefore,
-                  storeImagePath: jumbo,
+                GestureDetector(
+                  onTap: (){
+                    setState(() {
+                      selectedStore = "Jumbo";
+                    });
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: selectedStore == "Jumbo" ? BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: mainPurple)
+                    ) : null,
+                    child: StorePrice(
+                      currentPrice: widget.comparisonProduct.jumboPrice,
+                      // oldPrice: widget.jumboPriceBefore,
+                      storeImagePath: jumbo,
+                    ),
+                  ),
                 ),
               ],
             )
@@ -179,13 +216,46 @@ class DiscountItem extends StatelessWidget {
       ),
     );
   }
+  Future<void> shareDiscountItem(BuildContext context, productName, oldPrice,
+      price1, price2, imageURL, size1) {
+    return Provider.of<ChatlistsProvider>(context, listen: false)
+        .showChooseListDialog(
+      context: context,
+      isSharing: true,
+      listItem: ListItem(
+          name: productName,
+          oldPrice: oldPrice,
+          price: price1 ?? price2,
+          isChecked: false,
+          quantity: 0,
+          imageURL: imageURL,
+          size: size1),
+    );
+  }
+
+  Future<void> addDiscountItem(BuildContext context, productName, oldPrice,
+      price1, price2, imageURL, size1) {
+    return Provider.of<ChatlistsProvider>(context, listen: false)
+        .showChooseListDialog(
+      context: context,
+      isSharing: false,
+      listItem: ListItem(
+          name: productName,
+          oldPrice: oldPrice,
+          price: price1 ?? price2,
+          isChecked: false,
+          quantity: 1,
+          imageURL: imageURL,
+          size: size1),
+    );
+  }
 }
 
-class ComparisonPrice extends StatelessWidget {
+class StorePrice extends StatelessWidget {
   final String currentPrice;
   final String? oldPrice;
   final String storeImagePath;
-  ComparisonPrice(
+  StorePrice(
       {Key? key,
       required this.currentPrice,
       this.oldPrice,
@@ -240,4 +310,6 @@ class ComparisonPrice extends StatelessWidget {
       ],
     );
   }
+
+
 }

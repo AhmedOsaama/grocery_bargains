@@ -454,7 +454,7 @@ class _ChatViewState extends State<ChatView> {
             ),
             6.ph,
             Container(
-              height: 200.h,
+              height: 220.h,
               child: Consumer<ProductsProvider>(
                 builder: (ctx,provider,_){
                   var comparisonProducts = provider.comparisonProducts;
@@ -463,61 +463,53 @@ class _ChatViewState extends State<ChatView> {
                     itemCount: comparisonProducts.length,
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (ctx, i) {
-                      var id = comparisonProducts[i].id;
-                      var productName = comparisonProducts[i].name;
-                      var imageURL = comparisonProducts[i].imageURL;
-                      var storeName = comparisonProducts[i].storeName;
-                      var description =
-                          comparisonProducts[i].description;
-                      var price1 = comparisonProducts[i].price;
-                      var price2 = comparisonProducts[i].price2;
-                      var oldPrice = comparisonProducts[i].oldPrice;
-                      var size1 = comparisonProducts[i].size;
-                      var size2 = comparisonProducts[i].size2;
                       return DiscountItem(
-                        onAdd: () {
-                          panelController.close();
-                                            Provider.of<ChatlistsProvider>(context,
-                                                    listen: false)
-                                                .addItemToList(
-                                                    ListItem(
-                                                        oldPrice: oldPrice,
-                                                        name: productName,
-                                                        price: price1,
-                                                        isChecked: false,
-                                                        quantity: 1,
-                                                        imageURL: imageURL,
-                                                        size: size1),
-                                                    widget.listId);
-                        },
-                        onShare: () {
-                          panelController.close();
-                                            Provider.of<ChatlistsProvider>(context,
-                                                    listen: false)
-                                                .shareItemAsMessage(
-                                                    itemName: productName,
-                                                    itemSize: size1,
-                                                    itemImage: imageURL,
-                                                    itemPrice: price1,
-                                                    itemOldPrice: oldPrice,
-                                                    storeName: storeName,
-                                                    listId: widget.listId);
-                        },
-                        id: id,
-                        name: productName,
-                        imageURL: imageURL,
-                        // albertPriceAfter: price1 ?? price2,
-                        albertPriceAfter: price1,
-                        // measurement: size1 ?? size2,
-                        measurement: size1,
-                        jumboPriceAfter: '0.0',
+                        comparisonProduct: comparisonProducts[i],
                       );
+                      // return DiscountItem(
+                      //   onAdd: () {
+                      //     panelController.close();
+                      //                       Provider.of<ChatlistsProvider>(context,
+                      //                               listen: false)
+                      //                           .addItemToList(
+                      //                               ListItem(
+                      //                                   oldPrice: oldPrice,
+                      //                                   name: productName,
+                      //                                   price: price1,
+                      //                                   isChecked: false,
+                      //                                   quantity: 1,
+                      //                                   imageURL: imageURL,
+                      //                                   size: size1),
+                      //                               widget.listId);
+                      //   },
+                      //   onShare: () {
+                      //     panelController.close();
+                      //                       Provider.of<ChatlistsProvider>(context,
+                      //                               listen: false)
+                      //                           .shareItemAsMessage(
+                      //                               itemName: productName,
+                      //                               itemSize: size1,
+                      //                               itemImage: imageURL,
+                      //                               itemPrice: price1,
+                      //                               itemOldPrice: oldPrice,
+                      //                               storeName: storeName,
+                      //                               listId: widget.listId);
+                      //   },
+                      //   id: id,
+                      //   name: productName,
+                      //   imageURL: imageURL,
+                      //   // albertPriceAfter: price1 ?? price2,
+                      //   albertPriceAfter: price1,
+                      //   // measurement: size1 ?? size2,
+                      //   measurement: size1,
+                      //   jumboPriceAfter: '0.0',
+                      // );
                     },
                   );
                 },
               ),
             ),
-
+            6.ph,
             // Container(
             //   height: 250.h,
             //   child: FutureBuilder<int>(

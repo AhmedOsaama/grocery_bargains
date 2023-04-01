@@ -268,12 +268,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStylesDMSans.textViewBold16
                         .copyWith(color: prussian),
                   ),
-                  TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'See all',
-                        style: textButtonStyle,
-                      ))
+                  // TextButton(
+                  //     onPressed: () {},
+                  //     child: Text(
+                  //       'See all',
+                  //       style: textButtonStyle,
+                  //     ))
                 ],
               ),
               // Container(
@@ -388,100 +388,72 @@ class _HomeScreenState extends State<HomeScreen> {
               //       }),
               // ),
               Container(
-                height: 200.h,
+                height: 220.h,
                 child: Consumer<ProductsProvider>(
                   builder: (ctx,provider,_){
                     var comparisonProducts = provider.comparisonProducts;
                     if(comparisonProducts.isEmpty) return Center(child: CircularProgressIndicator(),);
                     return ListView.builder(
-                      itemCount: comparisonProducts.length + 1,
+                      itemCount: comparisonProducts.length,
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (ctx, i) {
-                        if (i >= comparisonProducts.length) {
-                          var productId = comparisonProducts[i-1].id;
-                          return Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 32),
-                            child: isLoading
-                                ? Center(
-                                child: CircularProgressIndicator(
-                                  color: verdigris,
-                                ))
-                                : Center(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  border:
-                                  Border.all(color: Colors.grey),
-                                  borderRadius:
-                                  BorderRadius.circular(12),
-                                ),
-                                child: InkWell(
-                                  onTap: () async {
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-                                    print(productId);
-                                    await fetch(productId + 1);
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                  },
-                                  borderRadius:
-                                  BorderRadius.circular(12),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(5),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Text(
-                                          "See more",
-                                          style: TextStyles
-                                              .textViewMedium10
-                                              .copyWith(
-                                              color: prussian),
-                                        ),
-                                        Icon(
-                                          Icons.arrow_forward_ios,
-                                          size: 18,
-                                          color: Colors.grey,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        } // see more case
-                        var id = comparisonProducts[i].id;
-                        var productName = comparisonProducts[i].name;
-                        var imageURL = comparisonProducts[i].imageURL;
-                        var storeName = comparisonProducts[i].storeName;
-                        var description =
-                        comparisonProducts[i].description;
-                        var price1 = comparisonProducts[i].price;
-                        var price2 = comparisonProducts[i].price2;
-                        var oldPrice = comparisonProducts[i].oldPrice;
-                        var size1 = comparisonProducts[i].size;
-                        var size2 = comparisonProducts[i].size2;
+                        // if (i >= comparisonProducts.length) {
+                        //   var productId = comparisonProducts[i-1].id;
+                        //   return Padding(
+                        //     padding: EdgeInsets.symmetric(horizontal: 32),
+                        //     child: isLoading
+                        //         ? Center(
+                        //         child: CircularProgressIndicator(
+                        //           color: verdigris,
+                        //         ))
+                        //         : Center(
+                        //       child: Container(
+                        //         decoration: BoxDecoration(
+                        //           border:
+                        //           Border.all(color: Colors.grey),
+                        //           borderRadius:
+                        //           BorderRadius.circular(12),
+                        //         ),
+                        //         child: InkWell(
+                        //           onTap: () async {
+                        //             setState(() {
+                        //               isLoading = true;
+                        //             });
+                        //             print(productId);
+                        //             await fetch(productId + 1);
+                        //             setState(() {
+                        //               isLoading = false;
+                        //             });
+                        //           },
+                        //           borderRadius:
+                        //           BorderRadius.circular(12),
+                        //           child: Padding(
+                        //             padding: const EdgeInsets.all(5),
+                        //             child: Row(
+                        //               mainAxisSize: MainAxisSize.min,
+                        //               children: [
+                        //                 Text(
+                        //                   "See more",
+                        //                   style: TextStyles
+                        //                       .textViewMedium10
+                        //                       .copyWith(
+                        //                       color: prussian),
+                        //                 ),
+                        //                 Icon(
+                        //                   Icons.arrow_forward_ios,
+                        //                   size: 18,
+                        //                   color: Colors.grey,
+                        //                 ),
+                        //               ],
+                        //             ),
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     ),
+                        //   );
+                        // } // see more case
                         return DiscountItem(
-                          onAdd: () => addDiscountItem(context, productName,
-                              oldPrice, price1, price2, imageURL, size1),
-                          onShare: () => shareDiscountItem(
-                              context,
-                              productName,
-                              oldPrice,
-                              price1,
-                              price2,
-                              imageURL,
-                              size1),
-                          id: id,
-                          name: productName,
-                          imageURL: imageURL,
-                          // albertPriceAfter: price1 ?? price2,
-                          albertPriceAfter: price1,
-                          // measurement: size1 ?? size2,
-                          measurement: size1,
-                          jumboPriceAfter: '0.0',
+                          comparisonProduct: comparisonProducts[i],
                         );
                       },
                     );
@@ -496,12 +468,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStylesDMSans.textViewBold16
                         .copyWith(color: prussian),
                   ),
-                  TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        'See all',
-                        style: textButtonStyle,
-                      ))
+                  // TextButton(
+                  //     onPressed: () {},
+                  //     child: Text(
+                  //       'See all',
+                  //       style: textButtonStyle,
+                  //     ))
                 ],
               ),
               Container(
@@ -519,6 +491,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 AppNavigator.push(
                                     context: context,
                                     screen: ProductDetailScreen(
+                                      comparisonId: -1,
                                       productId: bargain.itemId,
                                       storeName: bargain.store,
                                       productName: bargain.itemName,
@@ -600,39 +573,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> shareDiscountItem(BuildContext context, productName, oldPrice,
-      price1, price2, imageURL, size1) {
-    return Provider.of<ChatlistsProvider>(context, listen: false)
-        .showChooseListDialog(
-      context: context,
-      isSharing: true,
-      listItem: ListItem(
-          name: productName,
-          oldPrice: oldPrice,
-          price: price1 ?? price2,
-          isChecked: false,
-          quantity: 0,
-          imageURL: imageURL,
-          size: size1),
-    );
-  }
-
-  Future<void> addDiscountItem(BuildContext context, productName, oldPrice,
-      price1, price2, imageURL, size1) {
-    return Provider.of<ChatlistsProvider>(context, listen: false)
-        .showChooseListDialog(
-      context: context,
-      isSharing: false,
-      listItem: ListItem(
-          name: productName,
-          oldPrice: oldPrice,
-          price: price1 ?? price2,
-          isChecked: false,
-          quantity: 1,
-          imageURL: imageURL,
-          size: size1),
-    );
-  }
 
   Future fetch(int startingIndex) {
     return Provider.of<ProductsProvider>(context, listen: false)
@@ -718,6 +658,7 @@ class MySearchDelegate extends SearchDelegate {
                   onTap: () => AppNavigator.push(
                       context: context,
                       screen: ProductDetailScreen(
+                        comparisonId: -1,
                         productId: id,
                         oldPrice: oldPrice,
                         storeName: storeName,

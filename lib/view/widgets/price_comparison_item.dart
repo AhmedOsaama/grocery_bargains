@@ -7,7 +7,10 @@ import '../../utils/style_utils.dart';
 import '../components/plus_button.dart';
 
 class PriceComparisonItem extends StatelessWidget {
-  const PriceComparisonItem({Key? key}) : super(key: key);
+  final String price;
+  final String size;
+  final String storeImagePath;
+  const PriceComparisonItem({Key? key, required this.price, required this.size, required this.storeImagePath}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +30,7 @@ class PriceComparisonItem extends StatelessWidget {
       padding: EdgeInsets.all(10),
       child: Row(
         children: [
-          Image.asset(spar,width: 50,height: 50,),
+          Image.asset(storeImagePath,width: 50,height: 50,),
           SizedBox(width: 20.w,),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,23 +39,23 @@ class PriceComparisonItem extends StatelessWidget {
                   TextSpan(
                       text: "€",style: TextStyles.textViewRegular20.copyWith(color: verdigris),
                       children: [
-                        TextSpan(text: "1.19",style: TextStyles.textViewBold23.copyWith(color: verdigris))
+                        TextSpan(text: price,style: TextStyles.textViewBold23.copyWith(color: verdigris))
                       ]
                   )),
-              Text("1 Liter  l  Price per LT € 1.19",style: TextStyles.textViewLight12.copyWith(color: const Color.fromRGBO(62, 62, 62, 1)),),
+              Text(size,style: TextStyles.textViewLight12.copyWith(color: const Color.fromRGBO(62, 62, 62, 1)),),
               SizedBox(height: 5.h,),
-              Container(
-                padding: EdgeInsets.all(3),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                  border: Border.all(color: verdigris),
-                ),
-                child: Text("2 for € 4",style: TextStyles.textViewMedium10.copyWith(color: verdigris),),
-              )
+              // Container(
+              //   padding: EdgeInsets.all(3),
+              //   decoration: BoxDecoration(
+              //     borderRadius: BorderRadius.circular(15),
+              //     border: Border.all(color: verdigris),
+              //   ),
+              //   child: Text("2 for € 4",style: TextStyles.textViewMedium10.copyWith(color: verdigris),),
+              // )
             ],
           ),
           Spacer(),
-          PlusButton(onTap: (){}),
+          // PlusButton(onTap: (){}),
           SizedBox(width: 20.w,),
           Icon(Icons.arrow_forward_ios,)
         ],
