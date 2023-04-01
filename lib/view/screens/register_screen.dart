@@ -60,7 +60,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _submitAuthForm(String email, String username,
       String phoneNumber, BuildContext ctx) async {
-    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
+    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
     try {
       if (!isLogin) {
         setState(() {
@@ -91,7 +91,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
         print("logged in");
         saveRememberMePref();
-        //TODO: make a condition if the user is first time in app then go to oboarding, else go to homescreen
         //   AppNavigator.pushReplacement(context: context, screen: HomeScreen());
         AppNavigator.pushReplacement(context: context, screen: MainScreen());
       }
@@ -296,15 +295,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ],
                     ),
-                    TextButton(
-                      onPressed: () => AppNavigator.push(
-                          context: context, screen: ForgotPasswordScreen()),
-                      child: Text(
-                        LocaleKeys.forgotPassword.tr(),
-                        style: TextStylesDMSans.textViewRegular12
-                            .copyWith(color: Color.fromRGBO(13, 1, 64, 1)),
-                      ),
-                    ),
+                    // TextButton(
+                    //   onPressed: () => AppNavigator.push(
+                    //       context: context, screen: ForgotPasswordScreen()),
+                    //   child: Text(
+                    //     LocaleKeys.forgotPassword.tr(),
+                    //     style: TextStylesDMSans.textViewRegular12
+                    //         .copyWith(color: Color.fromRGBO(13, 1, 64, 1)),
+                    //   ),
+                    // ),
                   ],
                 ),
                 SizedBox(

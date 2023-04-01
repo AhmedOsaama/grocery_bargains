@@ -56,8 +56,8 @@ class PriceComparisonItem extends StatelessWidget {
           ),
           Spacer(),
           // PlusButton(onTap: (){}),
-          SizedBox(width: 20.w,),
-          Icon(Icons.arrow_forward_ios,)
+          // SizedBox(width: 20.w,),
+          // Icon(Icons.arrow_forward_ios,)
         ],
       ),
     );

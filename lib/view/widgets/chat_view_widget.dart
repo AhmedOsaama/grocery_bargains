@@ -124,7 +124,7 @@ class _ChatViewState extends State<ChatView> {
                               itemName: messages[index]['item_name'],
                               itemSize: messages[index]['item_description'],
                               itemPrice: messages[index]['item_price'].toString(),
-                              itemOldPrice: messages[index]['item_oldPrice'],
+                              itemOldPrice: messages[index]['item_oldPrice'] ?? "0.0",
                               itemImage: messages[index]['item_image'],
                               storeName: messages[index]['store_name'],
                               isMe: messages[index]['userId'] ==
