@@ -64,6 +64,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   List<UserInfo> listUsers = [];
   List<UserInfo> contactsList = [];
   var inviteFriendController = TextEditingController();
+  bool isContactsPermissionGranted = false;
 
   var isInvitingFriends = false;
 
@@ -160,27 +161,28 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
     if (userInfo.get('phoneNumber').isNotEmpty) {
       var isPermissionGranted = await FlutterContacts.requestPermission();
+      isContactsPermissionGranted = isPermissionGranted;
       if (isPermissionGranted) {
         List<Contact> contacts =
             await FlutterContacts.getContacts(withProperties: true);
         print("Contacts size: " + contacts.length.toString());
         for (var contact in contacts) {
-          // print(contact.phones.first.normalizedNumber);
-          var users = await FirebaseFirestore.instance
-              .collection('users')
-              .where('phoneNumber',
-                  isEqualTo: contact.phones.first.normalizedNumber)
-              .get();
+          try {
+            var users = await FirebaseFirestore.instance
+                .collection('users')
+                .where('phoneNumber',
+                isEqualTo: contact.phones.first.normalizedNumber)
+                .get();
           if (users.docs.isNotEmpty) {
             var userInfo = users.docs.first;
             var name = userInfo.data()['username'];
-            print(name);
+            // print(name);
             var email = userInfo.get('email');
             var phoneNumber = userInfo.get('phoneNumber');
             var imageURL = userInfo.get('imageURL');
             var existingContact = listUsers.firstWhere((userInfo) {
-              print("UserInfo phoneNumber" + userInfo.phoneNumber);
-              print("phoneNumber" + phoneNumber);
+              // print("UserInfo phoneNumber" + userInfo.phoneNumber);
+              // print("phoneNumber" + phoneNumber);
               return userInfo.phoneNumber == phoneNumber;
             },
                 orElse: () => UserInfo(
@@ -194,6 +196,9 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                   email: email,
                   name: name,
                   imageURL: imageURL));
+          }
+          }catch(e){
+            print("ERROR IN CONTACTS: $e");
           }
         }
       }
@@ -422,7 +427,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                           );
                         }).toList()),
                   ],
-    if (contactsList.isEmpty) Text("Please add your number to see your friends on BargainB"),
+    if (contactsList.isEmpty && !isContactsPermissionGranted) Text("Please add your number to see your friends on BargainB"),
+    if (contactsList.isEmpty && isContactsPermissionGranted) Text("No contacts found on BargainB"),
                   TextButton(
                       onPressed: () {
                         //TODO: share via link
