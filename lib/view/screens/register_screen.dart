@@ -60,7 +60,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _submitAuthForm(String email, String username,
       String phoneNumber, BuildContext ctx) async {
-    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
+    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
     try {
       if (!isLogin) {
         setState(() {
@@ -68,6 +68,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
         // userCredential = await _auth.createUserWithEmailAndPassword(
         //     email: email, password: password);
+        var result = await FirebaseFirestore.instance.collection('users').where('phoneNumber',isEqualTo: phoneNumber).get();
+        if(result.docs.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Theme.of(context).errorColor,content: Text(
+              "Phone number is already registered with another account. Please enter a different phone number")));
+          return;
+        }
         var userCredential = await loginWithPhoneNumber(phoneNumber);
         if(userCredential == null){
           throw "credential error";
@@ -78,6 +84,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         saveRememberMePref();
         AppNavigator.pushReplacement(
             context: context, screen: OnBoardingScreen());
+        print("SIGNED UP");
       } else {
         setState(() {
           _isLoading = true;
@@ -85,6 +92,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         // userCredential = await _auth.signInWithEmailAndPassword(
         //     email: email, password: phoneNumber);
         print("Logging in...");
+        var result = await FirebaseFirestore.instance.collection('users').where('phoneNumber',isEqualTo: phoneNumber).get();
+        if(result.docs.isEmpty) {          //phone number doesn't exist
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Theme.of(context).errorColor,content: Text(
+              "This phone number doesn't appear to be associated with any account. Please enter a different phone number")));
+          return;
+        }
         var userCredential = await loginWithPhoneNumber(phoneNumber);
         if(userCredential == null){
           throw "credential error";
@@ -421,7 +434,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (isValid!) {
       _formKey.currentState?.save();
       await _submitAuthForm(email, username, phoneNumber, context)
-          .timeout(Duration(seconds: 60), onTimeout: () {
+          .timeout(Duration(seconds: 180), onTimeout: () {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
             content: Text(
                 "Failed to login or signup, Please check your internet and try again later")));
