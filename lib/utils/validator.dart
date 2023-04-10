@@ -9,11 +9,19 @@ class Validator {
     return null;
   }
 
+  static String? phoneValidator(String? value) {
+    if (value != null && (value.trim().isEmpty || value.trim().length != 10)) {
+      // return tr("error_field_required");
+      return "Invalid phone number";
+    }
+    return null;
+  }
+
   static String? text(String? value) {
     if (value != null) {
       value = value.trim();
       if (value.isEmpty) {
-        return "error_field_required";
+        return "Full name is required";
       } else if (!RegExp('[a-zA-Z]').hasMatch(value)) {
         return "enter_correct_name";
       }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:swaav/utils/icons_manager.dart';
-import 'package:swaav/utils/style_utils.dart';
+import 'package:bargainb/utils/icons_manager.dart';
+import 'package:bargainb/utils/style_utils.dart';
 
 import '../widgets/backbutton.dart';
 

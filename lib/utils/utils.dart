@@ -57,6 +57,12 @@ class Utils {
     return utf8.decode(base64Url.decode(output));
   }
 
+  static const boxShadow = [BoxShadow(
+    color: Color.fromRGBO(59, 59, 59, 0.13),
+    blurRadius: 28,
+    offset: Offset(0, 4)
+  )];
+
   static TextStyle textStyleblackBold({
     double size = 14,
     double height = 1,

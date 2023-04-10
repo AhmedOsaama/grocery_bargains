@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:swaav/view/components/nav_bar.dart';
+import 'package:bargainb/view/components/nav_bar.dart';
 
 class MyScaffold extends StatelessWidget {
   final Widget body;
@@ -10,10 +10,9 @@ class MyScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        padding: EdgeInsets.symmetric(horizontal: 15.w),
         child: body,
       ),
-      bottomNavigationBar: const NavBar(),
     );
   }
 }

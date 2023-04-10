@@ -1,22 +1,36 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:swaav/config/routes/app_navigator.dart';
-import 'package:swaav/utils/app_colors.dart';
-import 'package:swaav/utils/icons_manager.dart';
-import 'package:swaav/utils/style_utils.dart';
-import 'package:swaav/view/components/button.dart';
-import 'package:swaav/view/screens/invite_screen.dart';
-import 'package:swaav/view/widgets/backbutton.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/generated/locale_keys.g.dart';
+import 'package:bargainb/providers/google_sign_in_provider.dart';
+import 'package:bargainb/utils/app_colors.dart';
+import 'package:bargainb/utils/icons_manager.dart';
+import 'package:bargainb/utils/style_utils.dart';
+import 'package:bargainb/view/components/button.dart';
+import 'package:bargainb/view/screens/invite_screen.dart';
+import 'package:bargainb/view/screens/register_screen.dart';
+import 'package:bargainb/view/screens/settings_screen.dart';
+import 'package:bargainb/view/screens/support_screen.dart';
+import 'package:bargainb/view/widgets/backbutton.dart';
+import 'package:bargainb/view/widgets/setting_row.dart';
 
 import '../../utils/assets_manager.dart';
+import '../../utils/utils.dart';
+import '../components/generic_field.dart';
+import '../widgets/image_source_picker_dialog.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -29,218 +43,185 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
   @override
   void initState() {
-    getUserDataFuture = FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
+    updateUserDataFuture();
     super.initState();
   }
-  bool isEditingPicture = false;
-  File? _pickedImage;
+
+  void updateUserDataFuture() {
+     getUserDataFuture = FirebaseFirestore.instance
+        .collection('/users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+  }
+
+  bool isEditing = false;
+
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 30.w),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 70.h,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      appBar: AppBar(
+        centerTitle: true,
+        elevation: 0.2,
+        backgroundColor: Colors.white,
+        title: Text(
+          LocaleKeys.profile.tr(),
+          style: TextStyles.textViewSemiBold16.copyWith(color: black1),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () {
+                setState(() {
+                  isEditing = !isEditing;
+                });
+              },
+              child: Text(
+                LocaleKeys.edit.tr(),
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 17.sp),
+              ))
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: Center(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const MyBackButton(),
-                if (isEditingPicture)
-                  Column(
-                    children: [
-                      GenericButton(
-                          onPressed: () {},
-                          borderRadius: BorderRadius.circular(10),
-                          height: 31.h,
-                          width: 165.w,
-                          child: Text(
-                            "View Profile Picture",
-                            style: TextStyles.textViewBold12,
-                          )),
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                      GenericButton(
-                          onPressed: () async {
-                              final picker = ImagePicker();
-                              final pickedImage = await picker.pickImage(source: ImageSource.gallery,
-                              );
-                              final pickedImageFile = File(pickedImage!.path);
-
-                            final userImageRef = FirebaseStorage.instance.ref().child('user_image').child('${FirebaseAuth.instance.currentUser?.uid}.jpg');
-                            await userImageRef.putFile(pickedImageFile).whenComplete(() => null);
-                            final url = await userImageRef.getDownloadURL();
-                             await FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).update({
-                                "imageURL": url,
-                              });
-                             setState(() {
-                              isEditingPicture = false;
-                             });
-                          },
-                          borderRadius: BorderRadius.circular(10),
-                          height: 31.h,
-                          width: 165.w,
-                          child: Text(
-                            "Change Profile Picture",
-                            style: TextStyles.textViewBold12,
-                          )),
-                      SizedBox(height: 10.h,),
-                      GenericButton(
-                          onPressed: () {
-                            FirebaseAuth.instance.signOut();
-                            AppNavigator.pop(context: context);
-                          },
-                          borderRadius: BorderRadius.circular(10),
-                          height: 31.h,
-                          width: 165.w,
-                          child: Text(
-                            "Log out",
-                            style: TextStyles.textViewBold12,
-                          )),
-                    ],
-                  ),
-                Column(
-                  children: [
-                    // isEditingPicture ? Container(
-                    //     decoration: BoxDecoration(
-                    //         border: Border.all(
-                    //             color: Colors.black, width: 5),
-                    //         shape: BoxShape.circle),
-                    //     child: Container()) :
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          isEditingPicture = true;
-                        });
-                      },
-                      child: FutureBuilder(
-                        future: getUserDataFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Container(
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.black, width: 5),
-                                    shape: BoxShape.circle),
-                                child: Container());
-                          }
-                          return Container(
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Colors.black, width: 5),
-                                  shape: BoxShape.circle),
-                              child: snapshot.data!['imageURL'] != "" ? CircleAvatar(backgroundImage: NetworkImage(snapshot.data!['imageURL']),radius: 30,) : SvgPicture.asset(personIcon));
-                        }
-                      ),
-                    ),
-                    FutureBuilder(
-                      future: getUserDataFuture,
-                      builder: (context, snapshot) {
-                        if(snapshot.connectionState == ConnectionState.waiting){
-                          return const Center(child: CircularProgressIndicator());
-                        }
-                        return Text(
-                          snapshot.data!['username'],
-                          style: TextStyles.textViewBold15
-                              .copyWith(color: Colors.black),
+                24.ph,
+                FutureBuilder(
+                    future: getUserDataFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          height: 200,
                         );
                       }
+                      return Center(
+                            child: Column(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () async {
+                                      ImageSource sourcePicker = Platform.isAndroid ? await showModalBottomSheet(context: context, builder: (ctx) => ImageSourcePickerSheet())
+                                          : await showCupertinoModalPopup(context: context, builder: (ctx) => ImageSourcePickerSheet());
+                                      // if(sourcePicker == ImageSource.gallery){
+                                        try{
+                                          final image = await ImagePicker().pickImage(source: sourcePicker);
+                                          if(image == null) return;
+                                          final imageFile = File(image.path);
+                                      final userImageRef = FirebaseStorage.instance.ref().child('user_image').child('${FirebaseAuth.instance.currentUser!.uid}.jpg');
+                                      await userImageRef.putFile(imageFile).whenComplete(() => null);
+                                      final url = await userImageRef.getDownloadURL();
+                                          await FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc(FirebaseAuth.instance.currentUser!.uid)
+                                              .update({
+                                            'imageURL': url,
+                                          });
+                                          setState(() {
+                                            updateUserDataFuture();
+                                          });
+                                        } on PlatformException catch(e){
+                                          print("Failed to pick image: $e");
+                                        }
+                                      // }
+                                    },
+                                    child: CircleAvatar(
+                                      backgroundImage:
+                                      getUserImage(snapshot) as ImageProvider,
+                                      radius: 100,
+                                    ),
+                                  ),
+                                  10.ph,
+                                  if(!isEditing)
+                                    ...[
+                                  Text(
+                                    snapshot.data!['username'],
+                                    style: TextStyle(
+                                        fontSize: 28.sp,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  4.ph,
+                                  Text(
+                                    snapshot.data!['email'],
+                                    style: TextStyle(
+                                        fontSize: 14.sp,
+                                        fontWeight: FontWeight.w300,
+                                        color: Colors.grey),
+                                  ),
+                                    ],
+                                ],
+                              ),
+                          );
+                    }),
+                30.ph,
+                if(!isEditing) ...[
+                SettingRow(
+                    icon: SvgPicture.asset(
+                      masterCard,
                     ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 50.h,
-            ),
-            Row(
-              children: [
-                GenericButton(
-                  onPressed: () {},
-                  child: Text(
-                    "My Friends",
-                    style: TextStyles.textViewBold15,
-                  ),
-                  borderRadius: BorderRadius.circular(5),
-                  height: 40.h,
-                ),
-                SizedBox(
-                  width: 11.w,
-                ),
-                GestureDetector(
-                  onTap: () => AppNavigator.push(
-                      context: context, screen: InviteScreen()),
-                  child: Container(
-                    width: 21.w,
-                    height: 21.h,
-                    decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: buttonColor,
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 4,
-                            color: Colors.black.withOpacity(0.25),
-                          )
-                        ]),
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                      size: 12,
+                    settingText: LocaleKeys.settings.tr(),
+                    route: SettingsScreen()),
+                Divider(),
+                10.ph,
+                SettingRow(
+                    icon: const Icon(
+                      Icons.help_outline_outlined,
                     ),
-                  ),
-                ),
-                Spacer(),
+                    settingText: LocaleKeys.support.tr(),
+                    route: SupportScreen()),
+                Divider(),
+                10.ph,
+                SettingRow(
+                    icon: const Icon(
+                      Icons.logout_outlined,
+                    ),
+                    settingText: LocaleKeys.signout.tr()),
+                10.ph,
+                Divider(),
+              60.ph,
+            ],
+                if(isEditing)
+                  ...[
+                    Text(LocaleKeys.yourName.tr(),style: TextStylesDMSans.textViewBold12.copyWith(color: black1),),
+                    10.ph,
+                    GenericField(
+                      hintText: "Dina Tairovic",
+                      boxShadow: Utils.boxShadow[0],
+                      colorStyle: Color.fromRGBO(237, 237, 237, 1),
+                    ),
+                    20.ph,
+                    Text(LocaleKeys.email.tr(),style: TextStylesDMSans.textViewBold12.copyWith(color: black1),),
+                    10.ph,
+                    GenericField(
+                      hintText: "dina@me.com",
+                      boxShadow: Utils.boxShadow[0],
+                      colorStyle: Color.fromRGBO(237, 237, 237, 1),
+                    ),
+                  ]
               ],
             ),
-            SizedBox(
-              height: 73.h,
-            ),
-            GenericButton(
-                onPressed: () {},
-                child: Text(
-                  "Favourites",
-                  style: TextStyles.textViewBold15,
-                ),
-                width: 270.w,
-                borderRadius: BorderRadius.circular(5),
-                height: 40.h),
-            SizedBox(
-              height: 37.h,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Container(
-                  width: 100.w,
-                  height: 137.h,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(18),
-                      color: Color.fromRGBO(217, 217, 217, 1)),
-                ),
-                Container(
-                  width: 100.w,
-                  height: 137.h,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(18),
-                      color: Color.fromRGBO(217, 217, 217, 1)),
-                ),
-                Container(
-                  width: 100.w,
-                  height: 137.h,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(18),
-                      color: Color.fromRGBO(217, 217, 217, 1)),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
+
+  Object getUserImage(AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+    // var googleProvider = Provider.of<GoogleSignInProvider>(context,listen: false);
+    // if(googleProvider.isGoogleSignedIn){
+    //   return googleProvider.user.photoUrl != "" && googleProvider.user.photoUrl != null
+    //       ?
+    //     NetworkImage(googleProvider.user.photoUrl!)
+    //       : AssetImage(personImage);
+    // }
+    return snapshot.data!['imageURL'] != "" ? NetworkImage(snapshot.data!['imageURL']) :
+                                AssetImage(personImage);
+  }
+}
+
+extension EmptyPadding on num {
+  SizedBox get ph => SizedBox(height: toDouble().h);
+  SizedBox get pw => SizedBox(width: toDouble().w);
 }

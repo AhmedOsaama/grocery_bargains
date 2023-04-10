@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../utils/icons_manager.dart';
-import '../screens/lists_screen.dart';
+import '../screens/chatlists_screen.dart';
 
 class NavBar extends StatelessWidget {
   const NavBar({Key? key}) : super(key: key);
@@ -13,7 +13,6 @@ class NavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10.h),
-      margin: EdgeInsets.symmetric(horizontal: 41.w,vertical: 12.h),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6),
           color: Color.fromRGBO(204, 204, 204, 1)
@@ -22,7 +21,7 @@ class NavBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           GestureDetector(
-              onTap: () => AppNavigator.push(context: context, screen: ListsScreen()),
+              onTap: () => AppNavigator.push(context: context, screen: ChatlistsScreen()),
               child: SvgPicture.asset(listIcon,width: 35.w,height: 51.h,)),
           SvgPicture.asset(profileIcon,width: 35.w,height: 51.h,),
           SvgPicture.asset(home,width: 35.w,height: 51.h,color: const Color.fromRGBO(81, 82, 80, 0.7),),

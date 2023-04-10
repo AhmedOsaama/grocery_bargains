@@ -10,7 +10,7 @@ ThemeData appTheme() {
       hintColor: hintColor,
       brightness: Brightness.light,
       scaffoldBackgroundColor: Colors.white,
-      fontFamily: fontFamily,
+      fontFamily: fontFamilyPoppins,
       appBarTheme: const AppBarTheme(
           centerTitle: true,
           color: Colors.transparent,
