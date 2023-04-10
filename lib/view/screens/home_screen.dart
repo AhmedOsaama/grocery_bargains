@@ -4,6 +4,7 @@ import 'package:bargainb/models/bestValue_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -30,6 +31,7 @@ import 'package:bargainb/view/widgets/product_item.dart';
 import 'package:bargainb/view/widgets/search_item.dart';
 
 import '../../config/routes/app_navigator.dart';
+import '../../main.dart';
 import '../../models/list_item.dart';
 import '../../models/product.dart';
 import '../../providers/google_sign_in_provider.dart';
@@ -74,14 +76,27 @@ class _HomeScreenState extends State<HomeScreen> {
         .get();
     DynamicLinkService().listenToDynamicLinks(
         context); //case 2 the app is open but in background and opened again via deep link
+    // WidgetsBinding.instance.addObserver(this);
+
   }
 
-  @override
-  void didChangeDependencies() {
-    // getAllProductsFuture =
-    //     Provider.of<ProductsProvider>(context, listen: false).getProducts(0);
-    super.didChangeDependencies();
-  }
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   if(state == AppLifecycleState.resumed){
+  //     FirebaseMessaging.onMessageOpenedApp.listen((message) {
+  //       print(message);
+  //       print("onMessageOpenedApp: " + message.data['listId']);
+  //       print("onMessageOpenedApp title: " + message.notification!.title!);
+  //       print("onMessageOpenedApp body: " + message.notification!.body!);
+  //       print('PUSHING A PAGE');
+  //       AppNavigator.push(context: context, screen: ChatListViewScreen(listId: message.data['listId'], listName: message.notification!.title!));
+  //     });
+  //   }
+  //   if(state == AppLifecycleState.paused){
+  //     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  //   }
+  //   super.didChangeAppLifecycleState(state);
+  // }
 
   @override
   Widget build(BuildContext context) {

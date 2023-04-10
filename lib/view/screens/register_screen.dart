@@ -78,13 +78,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if(userCredential == null){
           throw "credential error";
         }
-        this.phoneNumber = userCredential.user!.phoneNumber!;
 
+
+        this.phoneNumber = userCredential.user!.phoneNumber!;
         await saveUserData(userCredential);
+
         saveRememberMePref();
         AppNavigator.pushReplacement(
             context: context, screen: OnBoardingScreen());
-        print("SIGNED UP");
       } else {
         setState(() {
           _isLoading = true;
