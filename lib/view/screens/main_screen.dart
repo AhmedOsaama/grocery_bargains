@@ -31,7 +31,7 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
+class _MainScreenState extends State<MainScreen> {
 // class _MainScreenState extends State<MainScreen> {
   late Future getAllProductsFuture;
   var selectedIndex = 0;
@@ -64,7 +64,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addObserver(this);
 
     FlutterBranchSdk.initSession().listen((data) {
       print(data.entries.toList().toString());
@@ -86,23 +85,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if(state == AppLifecycleState.resumed){
-      FirebaseMessaging.onMessageOpenedApp.listen((message) {
-        print(message);
-        print("onMessageOpenedApp: " + message.data['listId']);
-        print("onMessageOpenedApp title: " + message.notification!.title!);
-        print("onMessageOpenedApp body: " + message.notification!.body!);
-        print('PUSHING A PAGE');
-        AppNavigator.push(context: context, screen: ChatListViewScreen(listId: message.data['listId'], listName: message.notification!.title!));
-      });
-    }
-    if(state == AppLifecycleState.paused){
-      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-    }
-    super.didChangeAppLifecycleState(state);
-  }
+
 
   @override
   Widget build(BuildContext context) {

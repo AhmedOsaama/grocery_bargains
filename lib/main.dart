@@ -1,6 +1,8 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
+import 'package:bargainb/view/screens/home_screen.dart';
+import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -129,7 +131,7 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+class _MyAppState extends State<MyApp> {
   late Mixpanel mixPanel;
 
   @override
@@ -174,9 +176,10 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                       // return DynamicLinkService()
                       //     .getStartPage(dynamicLinkPath); //case 1
                       return widget.isFirstTime ? OnBoardingScreen() : MainScreen();
+                      // return ProfileScreen();
                     }
+                    // return HomeScreen();
                     return RegisterScreen();
-                    // return RegisterScreen();
                   }),
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
