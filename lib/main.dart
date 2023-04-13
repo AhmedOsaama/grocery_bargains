@@ -1,3 +1,4 @@
+import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
@@ -19,7 +20,6 @@ import 'providers/chatlists_provider.dart';
 import 'providers/google_sign_in_provider.dart';
 import 'providers/products_provider.dart';
 import 'services/dynamic_link_service.dart';
-import 'utils/app_colors.dart';
 import 'view/screens/main_screen.dart';
 import 'view/screens/onboarding_screen.dart';
 import 'view/screens/register_screen.dart';
@@ -139,12 +139,33 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late Mixpanel mixPanel;
+  late Future getAllProductsFuture;
+  late Stream authStateChangesStream;
 
   @override
   void initState() {
     super.initState();
-
     initMixpanel();
+    Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists();
+    getAllProductsFuture =
+        getAllProducts().timeout(Duration(seconds: 6), onTimeout: () {});
+    authStateChangesStream = FirebaseAuth.instance.authStateChanges();
+  }
+
+  Future<void> getAllProducts() async {
+    print("1");
+    await Provider.of<ProductsProvider>(context, listen: false)
+        .getAllAlbertProducts();
+    print("2");
+    await Provider.of<ProductsProvider>(context, listen: false)
+        .getAllJumboProducts();
+    print("3");
+    await Provider.of<ProductsProvider>(context, listen: false)
+        .getAllPriceComparisons();
+    print("4");
+    await Provider.of<ProductsProvider>(context, listen: false)
+        .populateBestValueBargains();
+    print("5");
   }
 
   Future<void> initMixpanel() async {
@@ -163,32 +184,59 @@ class _MyAppState extends State<MyApp> {
       splitScreenMode: true,
       builder: (context, _) => MaterialApp(
         title: 'BargainB',
-        theme: ThemeData(canvasColor: lightPurple),
+        theme: ThemeData(canvasColor: Colors.white),
         debugShowCheckedModeBanner: false,
-        home: StreamBuilder(
-            stream: FirebaseAuth.instance.authStateChanges(),
+        home: FutureBuilder(
+            future: getAllProductsFuture,
             builder: (context, snapshot) {
-              if (!widget.isRemembered) return RegisterScreen();
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: CircularProgressIndicator(),
+              if (snapshot.connectionState == ConnectionState.waiting)
+                return Stack(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage(splashImage), fit: BoxFit.fill),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 250),
+                      alignment: Alignment.center,
+                      child: CircularProgressIndicator(),
+                    )
+                  ],
                 );
-              }
-              if (snapshot.hasData) {
-                if (widget.notificationMessage != null) {
-                  return ChatListViewScreen(
-                      listId: widget.notificationMessage?.data['listId'],
-                      listName:
-                          widget.notificationMessage!.notification!.title!,
-                      isNotificationOpened: true);
-                }
-                // return DynamicLinkService()
-                //     .getStartPage(dynamicLinkPath); //case 1
-                return widget.isFirstTime ? OnBoardingScreen() : MainScreen();
-                // return ProfileScreen();
-              }
-              // return HomeScreen();
-              return RegisterScreen();
+              return StreamBuilder(
+                  stream: authStateChangesStream,
+                  builder: (context, snapshot) {
+                    if (!widget.isRemembered) return RegisterScreen();
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage(splashImage), fit: BoxFit.fill),
+                        ),
+                      );
+                    }
+                    if (snapshot.hasData) {
+                      if (widget.notificationMessage != null) {
+                        return ChatListViewScreen(
+                            listId: widget.notificationMessage?.data['listId'],
+                            isNotificationOpened: true);
+                      }
+                      // return DynamicLinkService()
+                      //     .getStartPage(dynamicLinkPath); //case 1
+                      return widget.isFirstTime
+                          ? OnBoardingScreen()
+                          : MainScreen();
+                      // return HomeScreen();
+                    }
+                    // return HomeScreen();
+                    return RegisterScreen();
+                  });
             }),
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,

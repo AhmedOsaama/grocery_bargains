@@ -35,8 +35,8 @@ class DynamicLinkService {
       if (functionName == "add_user") {
         AppNavigator.push(
             context: context,
-            screen: ChatListViewScreen(
-                listId: listId, listName: listName, isUsingDynamicLink: true));
+            screen:
+                ChatListViewScreen(listId: listId, isUsingDynamicLink: true));
       }
     }
   }
@@ -49,8 +49,7 @@ class DynamicLinkService {
       var listName = parsedPath[2];
       var listId = parsedPath[3];
       if (functionName == "add_user") {
-        return ChatListViewScreen(
-            listId: listId, listName: listName, isUsingDynamicLink: true);
+        return ChatListViewScreen(listId: listId, isUsingDynamicLink: true);
       }
       return const MainScreen(); //in case functionName wasn't add_user
     }

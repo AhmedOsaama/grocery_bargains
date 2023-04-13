@@ -20,7 +20,6 @@ import 'package:bargainb/view/components/generic_field.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 
 import '../../providers/products_provider.dart';
-import '../screens/home_screen.dart';
 import 'discountItem.dart';
 import 'message_bubble.dart';
 
@@ -61,8 +60,8 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   void didChangeDependencies() {
-    getAllProductsFuture =
-        Provider.of<ProductsProvider>(context, listen: false).getProducts(0);
+    getAllProductsFuture = Provider.of<ProductsProvider>(context, listen: false)
+        .getProducts(0); //TODO: change this
     super.didChangeDependencies();
   }
 
@@ -108,7 +107,7 @@ class _ChatViewState extends State<ChatView> {
                     );
                   }
                   return ListView.builder(
-                      padding: EdgeInsets.only(bottom: 250, top: 50),
+                      padding: EdgeInsets.only(bottom: 300, top: 50),
                       reverse: true,
                       itemCount: messages.length,
                       itemBuilder: (ctx, index) => Container(
@@ -134,28 +133,28 @@ class _ChatViewState extends State<ChatView> {
                             ),
                           ));
                 }),
-            Container(
-              height: isExpandingChatlist ? 400.h : 60.h,
-              padding: EdgeInsets.symmetric(horizontal: 15),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
-                boxShadow: Utils.boxShadow,
-              ),
-              child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection("/lists/${widget.listId}/items")
-                      .orderBy('time', descending: true)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    final items = snapshot.data?.docs ?? [];
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container();
-                    }
-                    if (items.isEmpty) {
-                      return Container();
-                    }
-                    return Column(
+            StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection("/lists/${widget.listId}/items")
+                    .orderBy('time', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  final items = snapshot.data?.docs ?? [];
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container();
+                  }
+                  if (items.isEmpty) {
+                    return Container();
+                  }
+                  return Container(
+                    height: isExpandingChatlist ? 400.h : 60.h,
+                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
+                      boxShadow: Utils.boxShadow,
+                    ),
+                    child: Column(
                       children: [
                         Row(
                           children: [
@@ -341,9 +340,9 @@ class _ChatViewState extends State<ChatView> {
                                 }),
                           ),
                       ],
-                    );
-                  }),
-            ),
+                    ),
+                  );
+                }),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bargainb/utils/app_colors.dart';
 
@@ -7,6 +8,9 @@ import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/product_item.dart';
+import 'package:provider/provider.dart';
+
+import '../../providers/chatlists_provider.dart';
 
 class MessageBubble extends StatefulWidget {
   // final String message;
@@ -50,15 +54,17 @@ class MessageBubble extends StatefulWidget {
 }
 
 class _MessageBubbleState extends State<MessageBubble> {
-  bool isDisplayingOptions = false;
+  // bool isDisplayingOptions = false;
 
   @override
   Widget build(BuildContext context) {
+    var chatlistProvider =
+        Provider.of<ChatlistsProvider>(context, listen: false);
     return GestureDetector(
       onTap: () {
-        setState(() {
-          isDisplayingOptions = !isDisplayingOptions;
-        });
+        // setState(() {
+        //   isDisplayingOptions = !isDisplayingOptions;
+        // });
       },
       child: Row(
         mainAxisAlignment:
@@ -78,11 +84,15 @@ class _MessageBubbleState extends State<MessageBubble> {
               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
               margin: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
               child: ProductItemWidget(
-                onTap: () => addItemMessageToList(
-                    itemName: widget.itemName,
-                    itemSize: widget.itemSize,
-                    itemPrice: widget.itemPrice,
-                    itemImage: widget.itemImage),
+                onTap: () => chatlistProvider.addItemMessageToList(
+                  itemName: widget.itemName,
+                  itemSize: widget.itemSize,
+                  itemPrice: widget.itemPrice,
+                  itemImage: widget.itemImage,
+                  messageDocPath: widget.messageDocPath,
+                  userName: widget.userName,
+                  userId: widget.userId,
+                ),
                 price: widget.itemPrice,
                 name: widget.itemName,
                 size: widget.itemSize,
@@ -100,14 +110,20 @@ class _MessageBubbleState extends State<MessageBubble> {
                           onTap: widget.isAddedToList
                               ? () {}
                               : () async {
-                                  await addMessageToList();
+                                  await chatlistProvider.addMessageToList(
+                                    messageDocPath: widget.messageDocPath,
+                                    userName: widget.userName,
+                                    userId: widget.userId,
+                                    message: widget.message,
+                                  );
                                 },
                           child: widget.isAddedToList
                               ? SvgPicture.asset(checkMark)
                               : SvgPicture.asset(add)),
                       5.pw,
                       Container(
-                        // width: 220.w,
+                        // width: 10,
+                        width: widget.message.length > 40 ? 220.w : null,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 5),
                         margin: const EdgeInsets.symmetric(
@@ -131,6 +147,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                           widget.message,
                           style: TextStyles.textViewRegular16.copyWith(
                               color: widget.isMe ? Colors.white : Colors.black),
+                          softWrap: true,
                           textAlign:
                               widget.isMe ? TextAlign.right : TextAlign.left,
                         ),
@@ -141,7 +158,12 @@ class _MessageBubbleState extends State<MessageBubble> {
                           onTap: widget.isAddedToList
                               ? () {}
                               : () async {
-                                  await addMessageToList();
+                                  await chatlistProvider.addMessageToList(
+                                    messageDocPath: widget.messageDocPath,
+                                    userName: widget.userName,
+                                    userId: widget.userId,
+                                    message: widget.message,
+                                  );
                                 },
                           child: widget.isAddedToList
                               ? SvgPicture.asset(checkMark)
@@ -217,60 +239,55 @@ class _MessageBubbleState extends State<MessageBubble> {
     );
   }
 
-  Future<void> addMessageToList() async {
-    await FirebaseFirestore.instance
-        .collection('${widget.messageDocPath.parent.parent?.path}/items')
-        .add({
-      "text": widget.message,
-      "chat_reference": widget.messageDocPath.path,
-      "item_isChecked": false,
-      "owner": widget.userName,
-      "time": Timestamp.now(),
-    });
-    await updateListInfo();
-    markItemAsAdded();
-  }
-
-  Future<void> addItemMessageToList(
-      {required String itemName,
-      required String itemSize,
-      required String itemPrice,
-      required String itemImage}) async {
-    await FirebaseFirestore.instance
-        .collection('${widget.messageDocPath.parent.parent?.path}/items')
-        .add({
-      "item_name": itemName,
-      "item_size": itemSize,
-      "item_price": itemPrice,
-      "item_image": itemImage,
-      "item_isChecked": false,
-      "text": "",
-      "chat_reference": widget.messageDocPath.path,
-      "owner": widget.userName,
-      "time": Timestamp.now(),
-    });
-    await updateListInfo();
-    markItemAsAdded();
-  }
-
-  Future<void> updateListInfo() async {
-    await FirebaseFirestore.instance
-        .doc('${widget.messageDocPath.parent.parent?.path}')
-        .update({
-      "size": FieldValue.increment(1),
-      "total_price":
-          FieldValue.increment(double.tryParse(widget.itemPrice) ?? 0),
-      "last_message": widget.message.isEmpty ? widget.itemName : widget.message,
-      "last_message_date": Timestamp.now(),
-      "last_message_userId": widget.userId,
-      "last_message_userName": widget.userName,
-    });
-  }
-
-  // updates the field isAddedToList to indicate that the chat message has been added to a list successfully hence the a checkmark will show beside the message
-  void markItemAsAdded() {
-    widget.messageDocPath.update({
-      'isAddedToList': true,
-    });
-  }
+  // Future<void> addMessageToList() async {
+  //    await FirebaseFirestore.instance.collection('${widget.messageDocPath.parent.parent?.path}/items').add(
+  //       {
+  //         "text": widget.message,
+  //         "chat_reference": widget.messageDocPath.path,
+  //         "item_isChecked" : false,
+  //         "owner": widget.userName,
+  //         "time": Timestamp.now(),
+  //       });
+  //    await updateListInfo();
+  //   markItemAsAdded();
+  // }
+  //
+  // Future<void> addItemMessageToList({required String itemName, required String itemSize, required String itemPrice, required String itemImage}) async {
+  //   await FirebaseFirestore.instance.collection('${widget.messageDocPath.parent.parent?.path}/items').add(
+  //       {
+  //         "item_name": itemName,
+  //         "item_size" : itemSize,
+  //         "item_price" : itemPrice,
+  //         "item_image" : itemImage,
+  //         "item_isChecked" : false,
+  //         "text": "",
+  //         "chat_reference": widget.messageDocPath.path,
+  //         "owner": widget.userName,
+  //         "time": Timestamp.now(),
+  //       });
+  //   await updateListInfo();
+  //   markItemAsAdded();
+  // }
+  //
+  // Future<void> updateListInfo() async {
+  //   await FirebaseFirestore.instance
+  //       .doc('${widget.messageDocPath.parent.parent?.path}')
+  //       .update({
+  //     "size": FieldValue.increment(1),
+  //     "total_price":
+  //         FieldValue.increment(double.tryParse(widget.itemPrice) ?? 0),
+  //     "last_message": widget.message.isEmpty ? widget.itemName : widget.message,
+  //     "last_message_date": Timestamp.now(),
+  //     "last_message_userId": widget.userId,
+  //     "last_message_userName": widget.userName,
+  //   });
+  // }
+  //
+  //   // updates the field isAddedToList to indicate that the chat message has been added to a list successfully hence the a checkmark will show beside the message
+  // void markItemAsAdded() {
+  //   widget.messageDocPath.update(
+  //       {
+  //         'isAddedToList': true,
+  //       });
+  // }
 }

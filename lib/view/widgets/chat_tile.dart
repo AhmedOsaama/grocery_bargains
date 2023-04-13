@@ -38,9 +38,8 @@ class ChatTile extends StatelessWidget {
       onTap: () => AppNavigator.push(
           context: context,
           screen: ChatListViewScreen(
-            updateList: updateList,
+            // updateList: updateList,
             listId: listId,
-            listName: listName,
           )),
       child: Row(
         children: [
@@ -96,30 +95,6 @@ class ChatTile extends StatelessWidget {
             ],
           ),
           Spacer(),
-          // Column(
-          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //   children: [
-          //     Text(
-          //       (allLists[i]['last_message_date'].toDate() as DateTime)
-          //           .toString()
-          //           .split(' ')[0],
-          //       style: TextStylesInter.textViewRegular14
-          //           .copyWith(color: Color.fromRGBO(72, 72, 74, 1)),
-          //       overflow: TextOverflow.ellipsis,
-          //     ),
-          //     // FutureBuilder(
-          //     //     future: getUserImages(allLists[i].id),
-          //     //     builder: (context, snapshot) {
-          //     //       if (snapshot.connectionState == ConnectionState.waiting) {
-          //     //         return const Center(
-          //     //             child: CircularProgressIndicator(
-          //     //           color: verdigris,
-          //     //         ));
-          //     //       }
-          //     //       return snapshot.data ?? const Text("Something went wrong");
-          //     //     }),
-          //   ],
-          // )
         ],
       ),
     );
