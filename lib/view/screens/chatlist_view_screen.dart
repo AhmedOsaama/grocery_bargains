@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:bargainb/models/chatlist.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -33,21 +35,21 @@ import '../components/dotted_container.dart';
 
 class ChatListViewScreen extends StatefulWidget {
   final String listId;
-  String listName;
-  final String? storeName;
-  final String? storeImage;
+  // String listName;
+  // final String? storeName;
+  // final String? storeImage;
   final bool isUsingDynamicLink;
   final bool isNotificationOpened;
   bool isListView;
-  final Function? updateList;
+  // final Function? updateList;
   ChatListViewScreen({
     Key? key,
     required this.listId,
-    required this.listName,
+    // required this.listName,
     this.isUsingDynamicLink = false,
-    this.storeName,
-    this.storeImage,
-    this.updateList,
+    // this.storeName,
+    // this.storeImage,
+    // this.updateList,
     this.isListView = false, //The screen opens on a Chat View by default
     this.isNotificationOpened = false,
   }) : super(key: key);
@@ -67,9 +69,13 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   bool isContactsPermissionGranted = false;
 
   var isInvitingFriends = false;
+  late ChatList chatList;
 
   @override
   void initState() {
+    chatList = Provider.of<ChatlistsProvider>(context, listen: false)
+        .chatlists
+        .firstWhere((chatList) => chatList.id == widget.listId);
     if (widget.isUsingDynamicLink) {
       var currentUserId = FirebaseAuth.instance.currentUser?.uid;
       FirebaseFirestore.instance
@@ -86,7 +92,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
               .update({"userIds": userIds});
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content:
-                  Text("User added successfully to list ${widget.listName}")));
+                  Text("User added successfully to list ${chatList.name}")));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("User Already Exists in the list")));
@@ -171,33 +177,33 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
             var users = await FirebaseFirestore.instance
                 .collection('users')
                 .where('phoneNumber',
-                isEqualTo: contact.phones.first.normalizedNumber)
+                    isEqualTo: contact.phones.first.normalizedNumber)
                 .get();
-          if (users.docs.isNotEmpty) {
-            var userInfo = users.docs.first;
-            var name = userInfo.data()['username'];
-            // print(name);
-            var email = userInfo.get('email');
-            var phoneNumber = userInfo.get('phoneNumber');
-            var imageURL = userInfo.get('imageURL');
-            var existingContact = listUsers.firstWhere((userInfo) {
-              // print("UserInfo phoneNumber" + userInfo.phoneNumber);
-              // print("phoneNumber" + phoneNumber);
-              return userInfo.phoneNumber == phoneNumber;
-            },
-                orElse: () => UserInfo(
-                    phoneNumber: "", imageURL: "", name: "", email: ""));
+            if (users.docs.isNotEmpty) {
+              var userInfo = users.docs.first;
+              var name = userInfo.data()['username'];
+              // print(name);
+              var email = userInfo.get('email');
+              var phoneNumber = userInfo.get('phoneNumber');
+              var imageURL = userInfo.get('imageURL');
+              var existingContact = listUsers.firstWhere((userInfo) {
+                // print("UserInfo phoneNumber" + userInfo.phoneNumber);
+                // print("phoneNumber" + phoneNumber);
+                return userInfo.phoneNumber == phoneNumber;
+              },
+                  orElse: () => UserInfo(
+                      phoneNumber: "", imageURL: "", name: "", email: ""));
 
-            print("EXISTING CONTACT: " + existingContact.phoneNumber);
-            if (existingContact.phoneNumber !=
-                phoneNumber) //making sure no duplicates are added to the contacts list
-              contactsList.add(UserInfo(
-                  phoneNumber: phoneNumber,
-                  email: email,
-                  name: name,
-                  imageURL: imageURL));
-          }
-          }catch(e){
+              print("EXISTING CONTACT: " + existingContact.phoneNumber);
+              if (existingContact.phoneNumber !=
+                  phoneNumber) //making sure no duplicates are added to the contacts list
+                contactsList.add(UserInfo(
+                    phoneNumber: phoneNumber,
+                    email: email,
+                    name: name,
+                    imageURL: imageURL));
+            }
+          } catch (e) {
             print("ERROR IN CONTACTS: $e");
           }
         }
@@ -233,8 +239,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var chatlistsProvider =
-        Provider.of<ChatlistsProvider>(context, listen: false);
+    // var chatlistsProvider =
+    //     Provider.of<ChatlistsProvider>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -257,37 +263,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                 setState(() {
                   isInvitingFriends = !isInvitingFriends;
                 });
-                // if (isInvitingFriends) {
-                //   var isPermissionGranted =
-                //       await FlutterContacts.requestPermission();
-                //   if (isPermissionGranted) {
-                //     List<Contact> contacts =
-                //         await FlutterContacts.getContacts(withProperties: true);
-                //     // print(contacts.length);
-                //     for (var contact in contacts) {
-                //       print(contact.phones.first.normalizedNumber);
-                //       var users = await FirebaseFirestore.instance
-                //           .collection('users')
-                //           .where('phoneNumber',
-                //               isEqualTo: contact.phones.first.normalizedNumber)
-                //           .get();
-                //       print(users.docs.length);
-                //       if (users.docs.isNotEmpty) {
-                //         var userInfo = users.docs.first;
-                //         var name = userInfo.data()['username'];
-                //         print(name);
-                //         var email = userInfo.get('email');
-                //         var phoneNumber = userInfo.get('phoneNumber');
-                //         var imageURL = userInfo.get('imageURL');
-                //         contactsList.add(UserInfo(
-                //             phoneNumber: phoneNumber,
-                //             email: email,
-                //             name: name,
-                //             imageURL: imageURL));
-                //       }
-                //     }
-                //   }
-                // }
               },
               child: Row(
                 children: [
@@ -321,12 +296,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
           Row(
             children: [
               30.pw,
-              widget.storeImage != null
-                  ? Image.asset(
-                      widget.storeImage!,
-                      width: 45,
-                    )
-                  : Container(),
               SizedBox(
                 width: 10.w,
               ),
@@ -393,45 +362,21 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                               ),
                               Spacer(),
                               TextButton(
-                                  onPressed: () async {
-                                    try {
-                                      var userData = await FirebaseFirestore
-                                          .instance
-                                          .collection('/users')
-                                          .where('phoneNumber',
-                                              isEqualTo: userInfo.phoneNumber)
-                                          .get();
-                                      var userId = userData.docs.first.id;
-                                      await FirebaseFirestore.instance
-                                          .collection('/lists')
-                                          .doc(widget.listId)
-                                          .update({
-                                        "userIds":
-                                            FieldValue.arrayUnion([userId])
-                                      });
-                                      setState(() {
-                                        isInvitingFriends = false;
-                                      });
-                                    } catch (e) {
-                                      print("ERROR: $e");
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                        content: Text(
-                                          "Couldn't find a user with that email",
-                                        ),
-                                      ));
-                                    }
-                                  },
+                                  onPressed: () => addContactToChatlist(userInfo,context),
                                   child: Text("Add")),
                             ],
                           );
                         }).toList()),
                   ],
-    if (contactsList.isEmpty && !isContactsPermissionGranted) Text("Please add your number to see your friends on BargainB"),
-    if (contactsList.isEmpty && isContactsPermissionGranted) Text("No contacts found on BargainB"),
+                  if (contactsList.isEmpty && !isContactsPermissionGranted)
+                    Text(
+                        "Please add your number to see your friends on BargainB"),
+                  if (contactsList.isEmpty && isContactsPermissionGranted)
+                    Text("No contacts found on BargainB"),
                   TextButton(
                       onPressed: () {
                         //TODO: share via link
+                        // shareListViaDeepLink();
                       },
                       child: Text(
                         "Invite via link",
@@ -479,7 +424,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                     ? Container(
                         width: 210.w,
                         child: TextFormField(
-                          initialValue: widget.listName,
+                          initialValue: chatList.name,
                           style: TextStyles.textViewSemiBold24
                               .copyWith(color: prussian),
                           onFieldSubmitted: (value) async {
@@ -490,7 +435,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                     : Container(
                         width: 210.w,
                         child: Text(
-                          widget.listName,
+                          chatList.name,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyles.textViewSemiBold24
@@ -515,6 +460,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                   ],
                   onChanged: (option) {
                     if (option == 'rename') {
+                      // Share.share("text");
+
                       setState(() {
                         isEditingName = true;
                       });
@@ -539,7 +486,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
             ),
           ),
           Divider(
-            height: 10.h,
+            height: 20.h,
           ),
           widget.isListView
               ? Expanded(
@@ -627,7 +574,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                                           content: Text(
                                                               "This operation couldn't be done please try again")));
                                                 });
-                                                updateList();
+                                                // updateList();
                                               },
                                             ),
                                             Text(
@@ -676,7 +623,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                                                   content: Text(
                                                                       "This operation couldn't be done please try again")));
                                                     });
-                                                    updateList();
+                                                    // updateList();
                                                   },
                                                 ),
                                                 Image.network(
@@ -759,23 +706,52 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                         );
                       }),
                 )
-              : Expanded(child: ChatView(listId: widget.listId))
+              : Expanded(child: ChatView(listId: widget.listId,))
         ],
       ),
     );
   }
 
+  Future<void> addContactToChatlist(
+      UserInfo userInfo, BuildContext context) async {
+      try {
+        var userData = await FirebaseFirestore.instance
+            .collection('/users')
+            .where('phoneNumber', isEqualTo: userInfo.phoneNumber)
+            .get();
+        var userId = userData.docs.first.id;
+        await FirebaseFirestore.instance
+            .collection('/lists')
+            .doc(widget.listId)
+            .update({
+          "userIds": FieldValue.arrayUnion([userId])
+        });
+        setState(() {
+          isInvitingFriends = false;
+        });
+      } catch (e) {
+        print("ERROR: $e");
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            "Couldn't find a user with that email",
+          ),
+        ));
+      }
+  }
+
   Future<void> deleteItemFromList(List<QueryDocumentSnapshot<Object?>> items,
       int i, QueryDocumentSnapshot<Object?> doc) async {
+    try {
+      await Provider.of<ChatlistsProvider>(context, listen: false)
+          .deleteItemFromChatlist(
+          widget.listId, doc.id, items[i]['item_price']);
+    }catch(e){
+      print(e);
+    }
     setState(() {
       items.remove(items[i]);
     });
-    await FirebaseFirestore.instance
-        .collection('/lists/${widget.listId}/items')
-        .doc(doc.id)
-        .delete();
     //TODO: check if the item has a chat reference before deleting and if it has then mark the item as un added
-    updateList();
   }
 
   // void markItemAsAdded() {
@@ -785,49 +761,33 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   //       });
   // }
 
-  Future<void> shareListViaDeepLink() async {
-    final dynamicLinkParams = DynamicLinkParameters(
-      link: Uri.parse(
-          "https://www.google.com/add_user/${widget.listName}/${widget.listId}"), //TODO: listName has white space and that won't reflect well in using the link later
-      uriPrefix: "https://swaav.page.link",
-      androidParameters:
-          const AndroidParameters(packageName: "thebargainb.app"),
-      // iosParameters: const IOSParameters(bundleId: "com.example.app.ios"),
-    );
-    final dynamicLink =
-        await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-    Share.share(dynamicLink.shortUrl.toString());
-  }
+  // Future<void> shareListViaDeepLink() async {
+  //   // final dynamicLinkParams = DynamicLinkParameters(
+  //   //   link: Uri.parse(
+  //   //       "https://www.google.com/add_user/${widget.listName}/${widget.listId}"), //TODO: listName has white space and that won't reflect well in using the link later
+  //   //   uriPrefix: "https://swaav.page.link",
+  //   //   androidParameters:
+  //   //       const AndroidParameters(packageName: "thebargainb.app"),
+  //   //   // iosParameters: const IOSParameters(bundleId: "com.example.app.ios"),
+  //   // );
+  //   // final dynamicLink =
+  //   //     await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
+  //   // Share.share(dynamicLink.shortUrl.toString());
+  //   Share.share("https://bargainb.app.link?bnc_validate=true");
+  // }
 
   Future<void> updateListName(String value) async {
     setState(() {
       isEditingName = false;
-      widget.listName = value;
+      chatList.name = value;
     });
-    await FirebaseFirestore.instance
-        .collection('/lists')
-        .doc(widget.listId)
-        .update({"list_name": value});
-    updateList();
+    Provider.of<ChatlistsProvider>(context, listen: false)
+        .updateListName(value, widget.listId);
   }
 
   void deleteList(BuildContext context) {
-    FirebaseFirestore.instance
-        .collection('/lists')
-        .doc(widget.listId)
-        .delete()
-        .then((value) {
-      updateList();
-      return AppNavigator.pop(context: context);
-    }).onError((error, stackTrace) {
-      print(error);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Couldn't delete list. Please try again later")));
-    });
-  }
-
-  void updateList() {
-    widget.updateList != null ? widget.updateList!() : () {};
+    Provider.of<ChatlistsProvider>(context, listen: false)
+        .deleteList(context, widget.listId);
   }
 }
 

@@ -20,6 +20,7 @@ class NetworkServices {
     // }
     return response;
   }
+
   static Future<http.Response> getAllJumboProducts() async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/get_all_products_JUMBO');

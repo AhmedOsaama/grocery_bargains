@@ -1,4 +1,5 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:bargainb/view/screens/home_screen.dart';
@@ -133,12 +134,30 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late Mixpanel mixPanel;
+  late Future getAllProductsFuture;
+  late Stream authStateChangesStream;
+
 
   @override
   void initState() {
     super.initState();
-
     initMixpanel();
+    Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlists();
+    getAllProductsFuture = getAllProducts()
+        .timeout(Duration(seconds: 6),onTimeout: (){});
+    authStateChangesStream = FirebaseAuth.instance.authStateChanges();
+  }
+
+  Future<void> getAllProducts() async {
+    print("1");
+    await Provider.of<ProductsProvider>(context,listen: false).getAllAlbertProducts();
+    print("2");
+    await Provider.of<ProductsProvider>(context,listen: false).getAllJumboProducts();
+    print("3");
+    await Provider.of<ProductsProvider>(context,listen: false).getAllPriceComparisons();
+    print("4");
+    await Provider.of<ProductsProvider>(context,listen: false).populateBestValueBargains();
+    print("5");
   }
 
   Future<void> initMixpanel() async {
@@ -157,30 +176,65 @@ class _MyAppState extends State<MyApp> {
       builder: (context,_) => MaterialApp(
         title: 'BargainB',
         theme: ThemeData(
-          canvasColor: lightPurple
+          canvasColor: Colors.white
         ),
         debugShowCheckedModeBanner: false,
-        home: StreamBuilder(
-                  stream: FirebaseAuth.instance.authStateChanges(),
-                  builder: (context, snapshot) {
-                    if(!widget.isRemembered) return RegisterScreen();
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    if (snapshot.hasData) {
-                      if(widget.notificationMessage != null) {
-                        return ChatListViewScreen(listId: widget.notificationMessage?.data['listId'], listName: widget.notificationMessage!.notification!.title!,isNotificationOpened: true);
-                      }
-                      // return DynamicLinkService()
-                      //     .getStartPage(dynamicLinkPath); //case 1
-                      return widget.isFirstTime ? OnBoardingScreen() : MainScreen();
-                      // return ProfileScreen();
-                    }
-                    // return HomeScreen();
-                    return RegisterScreen();
-                  }),
+        home:
+        FutureBuilder(
+            future: getAllProductsFuture,
+            builder: (context, snapshot) {
+              if(snapshot.connectionState == ConnectionState.waiting) return Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(
+                          splashImage
+                        ),
+                        fit: BoxFit.fill
+                      ),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(top: 250),
+                    alignment: Alignment.center,
+                  child: CircularProgressIndicator(),)
+                ],
+              );
+            return StreamBuilder(
+                      stream: authStateChangesStream,
+                      builder: (context, snapshot) {
+                        if(!widget.isRemembered) return RegisterScreen();
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Container(
+                            width: double.infinity,
+                            height: double.infinity,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: AssetImage(
+                                      splashImage
+                                  ),
+                                  fit: BoxFit.fill
+                              ),
+                            ),
+                          );
+                        }
+                        if (snapshot.hasData) {
+                          if(widget.notificationMessage != null) {
+                            return ChatListViewScreen(listId: widget.notificationMessage?.data['listId'], isNotificationOpened: true);
+                          }
+                          // return DynamicLinkService()
+                          //     .getStartPage(dynamicLinkPath); //case 1
+                          return widget.isFirstTime ? OnBoardingScreen() : MainScreen();
+                          // return HomeScreen();
+                        }
+                        // return HomeScreen();
+                        return RegisterScreen();
+                      });
+          }
+        ),
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
