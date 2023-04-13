@@ -33,7 +33,6 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
 // class _MainScreenState extends State<MainScreen> {
-  late Future getAllProductsFuture;
   var selectedIndex = 0;
   final _pages = [
     const HomeScreen(),
@@ -49,24 +48,14 @@ class _MainScreenState extends State<MainScreen> {
   //   super.initState();
   // }
 
-  Future<void> getAllProducts() async {
-    print("1");
-    await Provider.of<ProductsProvider>(context,listen: false).getAllAlbertProducts();
-    print("2");
-    await Provider.of<ProductsProvider>(context,listen: false).getAllJumboProducts();
-    print("3");
-    await Provider.of<ProductsProvider>(context,listen: false).getAllPriceComparisons();
-    print("4");
-    await Provider.of<ProductsProvider>(context,listen: false).populateBestValueBargains();
-    print("5");
-  }
+
 
   @override
   void initState() {
     super.initState();
 
     FlutterBranchSdk.initSession().listen((data) {
-      print(data.entries.toList().toString());
+      print("branch data: " + data.entries.toList().toString());
       if (data.containsKey("+clicked_branch_link") &&
           data["+clicked_branch_link"] == true) {
         //Link clicked. Add logic to get link data and route user to correct screen
@@ -80,8 +69,7 @@ class _MainScreenState extends State<MainScreen> {
     });
     // FlutterBranchSdk.validateSDKIntegration();
 
-    getAllProductsFuture = getAllProducts()
-        .timeout(Duration(seconds: 6),onTimeout: (){});
+
 
   }
 
@@ -89,29 +77,29 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getAllProductsFuture,
-      builder: (context, snapshot) {
-        if(snapshot.connectionState == ConnectionState.waiting) return Stack(
-          children: [
-            Container(
-              width: double.infinity,
-              height: double.infinity,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage(
-                    splashImage
-                  ),
-                  fit: BoxFit.fill
-                ),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: 250),
-              alignment: Alignment.center,
-            child: CircularProgressIndicator(),)
-          ],
-        );
+    // return FutureBuilder(
+    //   future: getAllProductsFuture,
+    //   builder: (context, snapshot) {
+    //     if(snapshot.connectionState == ConnectionState.waiting) return Stack(
+    //       children: [
+    //         Container(
+    //           width: double.infinity,
+    //           height: double.infinity,
+    //           decoration: BoxDecoration(
+    //             image: DecorationImage(
+    //               image: AssetImage(
+    //                 splashImage
+    //               ),
+    //               fit: BoxFit.fill
+    //             ),
+    //           ),
+    //         ),
+    //         Container(
+    //           margin: EdgeInsets.only(top: 250),
+    //           alignment: Alignment.center,
+    //         child: CircularProgressIndicator(),)
+    //       ],
+    //     );
         return Scaffold(
           body: _pages[selectedIndex],
           bottomNavigationBar: Container(
@@ -158,7 +146,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
         );
-      }
-    );
+      // }
+    // );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:bargainb/view/screens/friend_chatlists_screen.dart';
+import 'package:bargainb/view/widgets/chat_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -42,26 +43,11 @@ class ChatlistsScreen extends StatefulWidget {
 }
 
 class _ChatlistsScreenState extends State<ChatlistsScreen> {
-  late Future<QuerySnapshot> getAllListsFuture;
+  // late Future<QuerySnapshot> getAllListsFuture;
   late Future<QuerySnapshot> getListItemsFuture;
   var isFabPressed = false;
   var chatlistsView = ChatlistsView.CHATVIEW;
-  var canShowFab = true;
 
-  @override
-  void initState() {
-    super.initState();
-    getAllListsFuture = Provider.of<ChatlistsProvider>(context, listen: false)
-        .getAllChatlistsFuture();
-  }
-
-  void updateList() async {
-    print("RUN UPDATE LIST");
-    setState(() {
-      getAllListsFuture = Provider.of<ChatlistsProvider>(context, listen: false)
-          .getAllChatlistsFuture();
-    });
-  }
 
   bool isAdding = false;
   @override
@@ -69,15 +55,17 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
     var chatlistsProvider = context.watch<ChatlistsProvider>();
     // Provider.of<ChatlistsProvider>(context);
     return Scaffold(
-      floatingActionButton: canShowFab ? getFab() : null,
+      floatingActionButton: getFab(),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0.2,
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Column(
           // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 91.h,
-            ),
             Row(
               children: [
                 Text(
@@ -135,18 +123,11 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
               height: 20.h,
             ),
             Expanded(
-              child: FutureBuilder(
-                  future: getAllListsFuture,
-                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    var allLists = snapshot.data?.docs ?? [];
+              child: Consumer<ChatlistsProvider>(
+                  builder: (context,provider,_) {
+                    var allLists = provider.chatlists;
                     // var allLists = [];
-                    if (!snapshot.hasData || allLists.isEmpty) {
-                      canShowFab = false;
+                    if (allLists.isEmpty) {
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -155,11 +136,6 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                           SizedBox(
                             height: 45.h,
                           ),
-                          GestureDetector(
-                              onTap: () async {
-                                await startChatList();
-                              },
-                              child: SvgPicture.asset(cartIcon)),
                         ],
                       );
                     }
@@ -170,25 +146,20 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                             mainAxisSpacing: 24.h,
                             crossAxisSpacing: 10,
                             children: allLists.map(
-                              (list) {
+                              (chatlist) {
                                 return GestureDetector(
                                     onTap: () => Navigator.of(context)
                                             .push(MaterialPageRoute(
                                           builder: (ctx) => ChatListViewScreen(
-                                              updateList: updateList,
-                                              storeName: list['storeName'],
-                                              storeImage: list['storeImageUrl'],
-                                              listId: list.id,
+                                              // updateList: updateList,
+                                              listId: chatlist.id,
                                               isListView: true,
-                                              listName: list['list_name']),
-                                        ))
-                                            .then((value) {
-                                          // updateList();
-                                        }),
+                                          ),
+                                        )),
                                     child: StoreListWidget(
-                                        listId: list.id,
-                                        storeImagePath: list['storeImageUrl'],
-                                        listName: list['list_name']));
+                                        listId: chatlist.id,
+                                        storeImagePath:chatlist.storeImageUrl,
+                                        listName: chatlist.name));
                               },
                             ).toList()),
                       );
@@ -198,109 +169,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                           separatorBuilder: (ctx, i) => Divider(),
                           itemCount: allLists.length,
                           itemBuilder: (ctx, i) {
-                            return InkWell(
-                              onTap: () => AppNavigator.push(
-                                  context: context,
-                                  screen: ChatListViewScreen(
-                                    updateList: updateList,
-                                    listId: allLists[i].id,
-                                    listName: allLists[i]['list_name'],
-                                  )),
-                              child: Row(
-                                children: [
-                                  Image.asset(
-                                    storePlaceholder,
-                                    width: 45,
-                                    height: 45,
-                                  ),
-                                  18.pw,
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        allLists[i]['list_name'],
-                                        style: TextStylesInter
-                                            .textViewSemiBold16
-                                            .copyWith(color: black2),
-                                      ),
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            "${allLists[i]['size']} items",
-                                            style: TextStylesInter
-                                                .textViewMedium10
-                                                .copyWith(color: purple50),
-                                          ),
-                                          5.pw,
-                                          Text(
-                                            "€${allLists[i]['total_price']}",
-                                            style: TextStylesInter
-                                                .textViewMedium10
-                                                .copyWith(color: black2),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            '${allLists[i]['last_message_userId'] == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : allLists[i]['last_message_userName']}: ',
-                                            style: TextStylesInter
-                                                .textViewRegular14
-                                                .copyWith(color: black2),
-                                          ),
-                                          Container(
-                                            width: 150.w,
-                                            child: Text(
-                                              allLists[i]['last_message'],
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStylesInter
-                                                  .textViewRegular14
-                                                  .copyWith(color: black2),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                  Spacer(),
-                                  Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        (allLists[i]['last_message_date']
-                                                .toDate() as DateTime)
-                                            .toString()
-                                            .split(' ')[0],
-                                        style: TextStylesInter.textViewRegular14
-                                            .copyWith(
-                                                color: Color.fromRGBO(
-                                                    72, 72, 74, 1)),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      FutureBuilder(
-                                          future: getUserImages(allLists[i].id),
-                                          builder: (context, snapshot) {
-                                            if (snapshot.connectionState ==
-                                                ConnectionState.waiting) {
-                                              return const Center(
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                color: verdigris,
-                                              ));
-                                            }
-                                            return snapshot.data ??
-                                                const Text(
-                                                    "Something went wrong");
-                                          }),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            );
+                            return ChatCard(allLists, i);
                           });
                     //PERSONVIEW case
                     return FutureBuilder(
@@ -324,8 +193,10 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                                       screen: FriendChatlistsScreen(
                                           friendName: friendsList[i].name,
                                           friendEmail: friendsList[i].email,
-                                          friendImageURL: friendsList[i].imageURL,
-                                          friendChatlists: friendsList[i].chatlists));
+                                          friendImageURL:
+                                              friendsList[i].imageURL,
+                                          friendChatlists:
+                                              friendsList[i].chatlists));
                                 },
                                 child: Padding(
                                   padding:
@@ -377,47 +248,6 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
     );
   }
 
-  Future<Widget> getUserImages(String docId) async {
-    List<Widget> imageWidgets = [];
-    imageWidgets.clear();
-    List userIds = [];
-    try {
-      final list = await FirebaseFirestore.instance
-          .collection('/lists')
-          .doc(docId)
-          .get()
-          .timeout(Duration(seconds: 10));
-      userIds = list['userIds'];
-    } catch (e) {
-      print(e);
-      return SvgPicture.asset(peopleIcon);
-    }
-    if (userIds.isEmpty) return SvgPicture.asset(peopleIcon);
-    String imageUrl = "";
-    for (var userId in userIds) {
-      final userSnapshot = await FirebaseFirestore.instance
-          .collection('/users')
-          .doc(userId)
-          .get();
-      imageUrl = userSnapshot.data()!['imageURL'];
-      imageWidgets.add(CircleAvatar(
-        backgroundImage: NetworkImage(
-          imageUrl,
-        ),
-        radius: 12,
-      ));
-    }
-
-    return GestureDetector(
-      onTap: () {
-        print(imageWidgets.length);
-      },
-      child: Container(
-        height: 50.h,
-        child: Row(children: imageWidgets.map((image) => image).toList()),
-      ),
-    );
-  }
 
   Widget getFab() {
     return Column(
@@ -495,7 +325,6 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
         context: context,
         screen: ChatListViewScreen(
           listId: listId,
-          listName: "Name...",
           isUsingDynamicLink: false,
         ));
   }
@@ -508,5 +337,8 @@ class FriendChatLists {
   List<QueryDocumentSnapshot> chatlists;
 
   FriendChatLists(
-      {required this.imageURL, required this.name, required this.chatlists,required this.email});
+      {required this.imageURL,
+      required this.name,
+      required this.chatlists,
+      required this.email});
 }
