@@ -130,5 +130,6 @@
   "owner"                  : "owner",
   "inputEmail"                  : "Input email...",
   "addToListFirstItem"                  : "Add To List first item",
-  "you"                  : "You"
+  "you"                  : "You",
+  "subcategories"                  : "Subcategories"
 }

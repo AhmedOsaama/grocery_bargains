@@ -9,7 +9,6 @@ import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
 import '../components/button.dart';
-import '../widgets/profile_dialog.dart';
 
 class SupportScreen extends StatelessWidget {
   const SupportScreen({Key? key}) : super(key: key);
@@ -79,7 +78,8 @@ class SupportScreen extends StatelessWidget {
               color: yellow,
               child: Text(
                 LocaleKeys.submit.tr(),
-                style: TextStylesDMSans.textViewSemiBold16.copyWith(color: black2),
+                style:
+                    TextStylesDMSans.textViewSemiBold16.copyWith(color: black2),
               ),
             ),
             10.ph

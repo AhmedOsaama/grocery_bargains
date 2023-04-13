@@ -1,10 +1,9 @@
+import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/screens/friend_chatlists_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,22 +14,15 @@ import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/icons_manager.dart';
-import 'package:bargainb/utils/media_query_values.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/button.dart';
 import 'package:bargainb/view/components/dotted_container.dart';
-import 'package:bargainb/view/components/generic_menu.dart';
-import 'package:bargainb/view/components/nav_bar.dart';
-import 'package:bargainb/view/components/plus_button.dart';
-import 'package:bargainb/view/screens/choose_store_screen.dart';
-import 'package:bargainb/view/screens/home_screen.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/store_list_widget.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../components/generic_field.dart';
-import '../widgets/chat_view_widget.dart';
 
 enum ChatlistsView { CHATVIEW, LISTVIEW, PERSONVIEW }
 
@@ -324,8 +316,10 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                                       screen: FriendChatlistsScreen(
                                           friendName: friendsList[i].name,
                                           friendEmail: friendsList[i].email,
-                                          friendImageURL: friendsList[i].imageURL,
-                                          friendChatlists: friendsList[i].chatlists));
+                                          friendImageURL:
+                                              friendsList[i].imageURL,
+                                          friendChatlists:
+                                              friendsList[i].chatlists));
                                 },
                                 child: Padding(
                                   padding:
@@ -508,5 +502,8 @@ class FriendChatLists {
   List<QueryDocumentSnapshot> chatlists;
 
   FriendChatLists(
-      {required this.imageURL, required this.name, required this.chatlists,required this.email});
+      {required this.imageURL,
+      required this.name,
+      required this.chatlists,
+      required this.email});
 }

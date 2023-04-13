@@ -9,26 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
-import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
-import 'package:bargainb/utils/assets_manager.dart';
-import 'package:bargainb/utils/fonts_utils.dart';
-import 'package:bargainb/view/components/generic_appbar.dart';
-import 'package:bargainb/view/components/generic_field.dart';
-import 'package:bargainb/view/components/my_scaffold.dart';
-import 'package:bargainb/view/components/plus_button.dart';
-import 'package:bargainb/view/screens/category_items_screen.dart';
-import 'package:bargainb/view/screens/chat_view_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/chat_view_widget.dart';
 
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
-import '../components/button.dart';
 import '../components/dotted_container.dart';
 
 class ChatListViewScreen extends StatefulWidget {
@@ -116,7 +105,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       //       .where((userId) => !allUserIds.contains(userId))
       //   );
       // });
-      print(allUserIds);
+
       final list = await FirebaseFirestore.instance
           .collection('/lists')
           .doc(widget.listId)
@@ -165,39 +154,39 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       if (isPermissionGranted) {
         List<Contact> contacts =
             await FlutterContacts.getContacts(withProperties: true);
-        print("Contacts size: " + contacts.length.toString());
+
         for (var contact in contacts) {
           try {
             var users = await FirebaseFirestore.instance
                 .collection('users')
                 .where('phoneNumber',
-                isEqualTo: contact.phones.first.normalizedNumber)
+                    isEqualTo: contact.phones.first.normalizedNumber)
                 .get();
-          if (users.docs.isNotEmpty) {
-            var userInfo = users.docs.first;
-            var name = userInfo.data()['username'];
-            // print(name);
-            var email = userInfo.get('email');
-            var phoneNumber = userInfo.get('phoneNumber');
-            var imageURL = userInfo.get('imageURL');
-            var existingContact = listUsers.firstWhere((userInfo) {
-              // print("UserInfo phoneNumber" + userInfo.phoneNumber);
-              // print("phoneNumber" + phoneNumber);
-              return userInfo.phoneNumber == phoneNumber;
-            },
-                orElse: () => UserInfo(
-                    phoneNumber: "", imageURL: "", name: "", email: ""));
+            if (users.docs.isNotEmpty) {
+              var userInfo = users.docs.first;
+              var name = userInfo.data()['username'];
+              // print(name);
+              var email = userInfo.get('email');
+              var phoneNumber = userInfo.get('phoneNumber');
+              var imageURL = userInfo.get('imageURL');
+              var existingContact = listUsers.firstWhere((userInfo) {
+                // print("UserInfo phoneNumber" + userInfo.phoneNumber);
+                // print("phoneNumber" + phoneNumber);
+                return userInfo.phoneNumber == phoneNumber;
+              },
+                  orElse: () => UserInfo(
+                      phoneNumber: "", imageURL: "", name: "", email: ""));
 
-            print("EXISTING CONTACT: " + existingContact.phoneNumber);
-            if (existingContact.phoneNumber !=
-                phoneNumber) //making sure no duplicates are added to the contacts list
-              contactsList.add(UserInfo(
-                  phoneNumber: phoneNumber,
-                  email: email,
-                  name: name,
-                  imageURL: imageURL));
-          }
-          }catch(e){
+              print("EXISTING CONTACT: " + existingContact.phoneNumber);
+              if (existingContact.phoneNumber !=
+                  phoneNumber) //making sure no duplicates are added to the contacts list
+                contactsList.add(UserInfo(
+                    phoneNumber: phoneNumber,
+                    email: email,
+                    name: name,
+                    imageURL: imageURL));
+            }
+          } catch (e) {
             print("ERROR IN CONTACTS: $e");
           }
         }
@@ -233,8 +222,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var chatlistsProvider =
-        Provider.of<ChatlistsProvider>(context, listen: false);
+    /*   var chatlistsProvider =
+        Provider.of<ChatlistsProvider>(context, listen: false); */
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -427,8 +416,11 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                           );
                         }).toList()),
                   ],
-    if (contactsList.isEmpty && !isContactsPermissionGranted) Text("Please add your number to see your friends on BargainB"),
-    if (contactsList.isEmpty && isContactsPermissionGranted) Text("No contacts found on BargainB"),
+                  if (contactsList.isEmpty && !isContactsPermissionGranted)
+                    Text(
+                        "Please add your number to see your friends on BargainB"),
+                  if (contactsList.isEmpty && isContactsPermissionGranted)
+                    Text("No contacts found on BargainB"),
                   TextButton(
                       onPressed: () {
                         //TODO: share via link

@@ -1,4 +1,3 @@
-import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/chat_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -61,15 +60,17 @@ class FriendChatlistsScreen extends StatelessWidget {
             20.ph,
             Expanded(
               child: ListView.separated(
-                separatorBuilder: (ctx,_) => Divider(),
+                separatorBuilder: (ctx, _) => Divider(),
                 itemCount: friendChatlists.length,
                 itemBuilder: (ctx, i) {
                   var listId = friendChatlists[i].id;
                   var listName = friendChatlists[i]['list_name'];
                   var size = friendChatlists[i]['size'];
                   var totalPrice = friendChatlists[i]['total_price'];
-                  var lastMessageUserId = friendChatlists[i]['last_message_userId'];
-                  var lastMessageUserName = friendChatlists[i]['last_message_userName'];
+                  var lastMessageUserId =
+                      friendChatlists[i]['last_message_userId'];
+                  var lastMessageUserName =
+                      friendChatlists[i]['last_message_userName'];
                   var lastMessage = friendChatlists[i]['last_message'];
                   return ChatTile(
                       updateList: () {},

@@ -1,3 +1,4 @@
+import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,27 +9,18 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
-import 'package:bargainb/models/list_item.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
-import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/utils/utils.dart';
 import 'package:bargainb/view/components/dotted_container.dart';
 import 'package:bargainb/view/components/generic_field.dart';
-import 'package:bargainb/view/components/generic_menu.dart';
-import 'package:bargainb/view/components/my_scaffold.dart';
-import 'package:bargainb/view/components/plus_button.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
-import 'package:bargainb/view/screens/sub_categories_screen.dart';
-import 'package:bargainb/view/widgets/backbutton.dart';
 
 import '../../providers/products_provider.dart';
 import '../screens/home_screen.dart';
-import '../screens/product_detail_screen.dart';
 import 'discountItem.dart';
 import 'message_bubble.dart';
 
@@ -67,7 +59,6 @@ class _ChatViewState extends State<ChatView> {
     super.initState();
   }
 
-
   @override
   void didChangeDependencies() {
     getAllProductsFuture =
@@ -79,8 +70,10 @@ class _ChatViewState extends State<ChatView> {
     var total = 0.0;
     for (var item in items) {
       try {
-        total += item['item_price'].runtimeType == String ? double.parse(item['item_price']) : item['item_price'] ?? 99999;
-      }catch(e){
+        total += item['item_price'].runtimeType == String
+            ? double.parse(item['item_price'])
+            : item['item_price'] ?? 99999;
+      } catch (e) {
         total += 0.0;
       }
     }
@@ -115,7 +108,7 @@ class _ChatViewState extends State<ChatView> {
                     );
                   }
                   return ListView.builder(
-                      padding: EdgeInsets.only(bottom: 250,top: 50),
+                      padding: EdgeInsets.only(bottom: 250, top: 50),
                       reverse: true,
                       itemCount: messages.length,
                       itemBuilder: (ctx, index) => Container(
@@ -123,8 +116,10 @@ class _ChatViewState extends State<ChatView> {
                             child: MessageBubble(
                               itemName: messages[index]['item_name'],
                               itemSize: messages[index]['item_description'],
-                              itemPrice: messages[index]['item_price'].toString(),
-                              itemOldPrice: messages[index]['item_oldPrice'] ?? "0.0",
+                              itemPrice:
+                                  messages[index]['item_price'].toString(),
+                              itemOldPrice:
+                                  messages[index]['item_oldPrice'] ?? "0.0",
                               itemImage: messages[index]['item_image'],
                               storeName: messages[index]['store_name'],
                               isMe: messages[index]['userId'] ==
@@ -152,20 +147,23 @@ class _ChatViewState extends State<ChatView> {
                       .collection("/lists/${widget.listId}/items")
                       .orderBy('time', descending: true)
                       .snapshots(),
-                  builder: (context, snapshot){
+                  builder: (context, snapshot) {
                     final items = snapshot.data?.docs ?? [];
-                    if (snapshot.connectionState ==
-                        ConnectionState.waiting) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
                       return Container();
                     }
-                    if(items.isEmpty){
+                    if (items.isEmpty) {
                       return Container();
                     }
                     return Column(
                       children: [
                         Row(
                           children: [
-                            Text(LocaleKeys.chatlist.tr(),style: TextStylesInter.textViewBold12.copyWith(color: black2),),
+                            Text(
+                              LocaleKeys.chatlist.tr(),
+                              style: TextStylesInter.textViewBold12
+                                  .copyWith(color: black2),
+                            ),
                             Spacer(),
                             Text(
                               "${items.length} items",
@@ -184,14 +182,16 @@ class _ChatViewState extends State<ChatView> {
                             SizedBox(
                               width: 10.w,
                             ),
-                            IconButton(onPressed: (){
-                              setState(() {
-                                isExpandingChatlist = !isExpandingChatlist;
-                              });
-                            },icon: SvgPicture.asset(arrowDown)),
+                            IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    isExpandingChatlist = !isExpandingChatlist;
+                                  });
+                                },
+                                icon: SvgPicture.asset(arrowDown)),
                           ],
                         ),
-                        if(isExpandingChatlist)
+                        if (isExpandingChatlist)
                           Expanded(
                             child: ListView.separated(
                                 itemCount: items.length,
@@ -213,7 +213,7 @@ class _ChatViewState extends State<ChatView> {
                                               });
                                               FirebaseFirestore.instance
                                                   .collection(
-                                                  "/lists/${doc.reference.parent.parent?.id}/items")
+                                                      "/lists/${doc.reference.parent.parent?.id}/items")
                                                   .doc(doc.id)
                                                   .update({
                                                 "item_isChecked": isChecked,
@@ -221,8 +221,8 @@ class _ChatViewState extends State<ChatView> {
                                                 print(e);
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(const SnackBar(
-                                                    content: Text(
-                                                        "This operation couldn't be done please try again")));
+                                                        content: Text(
+                                                            "This operation couldn't be done please try again")));
                                               });
                                               // updateList();
                                             },
@@ -243,7 +243,7 @@ class _ChatViewState extends State<ChatView> {
                                   var itemPrice = items[i]['item_price'];
                                   return Row(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                     children: [
                                       Expanded(
                                         child: Opacity(
@@ -259,19 +259,18 @@ class _ChatViewState extends State<ChatView> {
                                                   });
                                                   FirebaseFirestore.instance
                                                       .collection(
-                                                      "/lists/${doc.reference.parent.parent?.id}/items")
+                                                          "/lists/${doc.reference.parent.parent?.id}/items")
                                                       .doc(doc.id)
                                                       .update({
-                                                    "item_isChecked":
-                                                    isChecked,
+                                                    "item_isChecked": isChecked,
                                                   }).catchError((e) {
                                                     print(e);
                                                     ScaffoldMessenger.of(
-                                                        context)
+                                                            context)
                                                         .showSnackBar(
-                                                        const SnackBar(
-                                                            content: Text(
-                                                                "This operation couldn't be done please try again")));
+                                                            const SnackBar(
+                                                                content: Text(
+                                                                    "This operation couldn't be done please try again")));
                                                   });
                                                   // updateList();
                                                 },
@@ -288,21 +287,20 @@ class _ChatViewState extends State<ChatView> {
                                                 width: 140.w,
                                                 child: Column(
                                                   crossAxisAlignment:
-                                                  CrossAxisAlignment
-                                                      .start,
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
                                                       itemName,
-                                                      overflow: TextOverflow
-                                                          .ellipsis,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                       style: TextStyles
                                                           .textViewSemiBold14
                                                           .copyWith(
-                                                          color: prussian,
-                                                          decoration: isChecked
-                                                              ? TextDecoration
-                                                              .lineThrough
-                                                              : null),
+                                                              color: prussian,
+                                                              decoration: isChecked
+                                                                  ? TextDecoration
+                                                                      .lineThrough
+                                                                  : null),
                                                     ),
                                                     Container(
                                                       width: 150.w,
@@ -311,12 +309,11 @@ class _ChatViewState extends State<ChatView> {
                                                         style: TextStyles
                                                             .textViewLight12
                                                             .copyWith(
-                                                            color:
-                                                            prussian,
-                                                            decoration: isChecked
-                                                                ? TextDecoration
-                                                                .lineThrough
-                                                                : null),
+                                                                color: prussian,
+                                                                decoration: isChecked
+                                                                    ? TextDecoration
+                                                                        .lineThrough
+                                                                    : null),
                                                       ),
                                                     ),
                                                   ],
@@ -331,7 +328,7 @@ class _ChatViewState extends State<ChatView> {
                                                   color: prussian,
                                                   decoration: isChecked
                                                       ? TextDecoration
-                                                      .lineThrough
+                                                          .lineThrough
                                                       : null,
                                                 ),
                                               ),
@@ -345,7 +342,6 @@ class _ChatViewState extends State<ChatView> {
                           ),
                       ],
                     );
-
                   }),
             ),
           ],
@@ -456,9 +452,12 @@ class _ChatViewState extends State<ChatView> {
             Container(
               height: 220.h,
               child: Consumer<ProductsProvider>(
-                builder: (ctx,provider,_){
+                builder: (ctx, provider, _) {
                   var comparisonProducts = provider.comparisonProducts;
-                  if(comparisonProducts.isEmpty) return Center(child: CircularProgressIndicator(),);
+                  if (comparisonProducts.isEmpty)
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
                   return ListView.builder(
                     itemCount: comparisonProducts.length,
                     scrollDirection: Axis.horizontal,

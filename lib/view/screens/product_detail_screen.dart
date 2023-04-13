@@ -1,9 +1,5 @@
 import 'package:bargainb/models/comparison_product.dart';
-import 'package:bargainb/models/item.dart';
 import 'package:bargainb/providers/products_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,7 +13,6 @@ import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/price_comparison_item.dart';
 
 import '../../models/list_item.dart';
-import '../../models/product.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String storeName;
@@ -41,7 +36,9 @@ class ProductDetailScreen extends StatefulWidget {
     required this.price2,
     required this.size1,
     required this.size2,
-    required this.productId, this.oldPrice, required this.comparisonId,
+    required this.productId,
+    this.oldPrice,
+    required this.comparisonId,
   }) : super(key: key);
 
   @override
@@ -89,20 +86,24 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     ComparisonProduct productComparison;
 
     try {
-      productComparison = Provider                    //get the opposite store product
-          .of<ProductsProvider>(context, listen: false)
+      productComparison = Provider //get the opposite store product
+              .of<ProductsProvider>(context, listen: false)
           .comparisonProducts
-          .firstWhere((comparisonProduct) => comparisonProduct.id == widget.comparisonId);
-      if(widget.storeName == "Albert") {
-        comparisonItems.add(PriceComparisonItem(price: productComparison.jumboPrice,
+          .firstWhere((comparisonProduct) =>
+              comparisonProduct.id == widget.comparisonId);
+      if (widget.storeName == "Albert") {
+        comparisonItems.add(PriceComparisonItem(
+            price: productComparison.jumboPrice,
             size: productComparison.jumboSize ?? "N/A",
             storeImagePath: jumbo));
-      } if(widget.storeName == "Jumbo"){
-        comparisonItems.add(PriceComparisonItem(price: productComparison.albertPrice,
+      }
+      if (widget.storeName == "Jumbo") {
+        comparisonItems.add(PriceComparisonItem(
+            price: productComparison.albertPrice,
             size: productComparison.albertPrice,
             storeImagePath: albert));
       }
-      } catch (e) {
+    } catch (e) {
       print("Failed to get price comparisons");
     }
 
@@ -286,74 +287,73 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               SizedBox(
                 height: 30.h,
               ),
-              if(comparisonItems.isNotEmpty)
-                ...[
-                  Text(
-                    "Price Comparison",
-                    style: TextStyles.textViewSemiBold18.copyWith(color: prussian),
-                  ),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: comparisonItems.length,
-                    itemBuilder: (context, index) {
-                      // if (index < comparisonItems.length) {
-                      return comparisonItems[index];
-                      // }
-                      // else
-                      // {
-                      //   return Padding(
-                      //     padding: EdgeInsets.symmetric(vertical: 32),
-                      //     child: isLoading
-                      //         ? Center(
-                      //             child: CircularProgressIndicator(
-                      //             color: verdigris,
-                      //           ))
-                      //         : Center(
-                      //             child: Container(
-                      //               decoration: BoxDecoration(
-                      //                 border: Border.all(color: Colors.grey),
-                      //                 borderRadius: BorderRadius.circular(12),
-                      //               ),
-                      //               child: InkWell(
-                      //                 onTap: () async {
-                      //                   setState(() {
-                      //                     isLoading = true;
-                      //                   });
-                      //                   await Future.delayed(Duration(seconds: 1));
-                      //                   await fetch();
-                      //                   setState(() {
-                      //                     isLoading = false;
-                      //                   });
-                      //                 },
-                      //                 borderRadius: BorderRadius.circular(12),
-                      //                 child: Padding(
-                      //                   padding: const EdgeInsets.all(5),
-                      //                   child: Row(
-                      //                     mainAxisSize: MainAxisSize.min,
-                      //                     children: [
-                      //                       Text(
-                      //                         "See more",
-                      //                         style: TextStyles.textViewMedium10
-                      //                             .copyWith(color: prussian),
-                      //                       ),
-                      //                       Icon(
-                      //                         Icons.keyboard_arrow_down,
-                      //                         size: 18,
-                      //                         color: Colors.grey,
-                      //                       ),
-                      //                     ],
-                      //                   ),
-                      //                 ),
-                      //               ),
-                      //             ),
-                      //           ),
-                      //   );
-                      // }
-                    },
-                  ),
+              if (comparisonItems.isNotEmpty) ...[
+                Text(
+                  "Price Comparison",
+                  style:
+                      TextStyles.textViewSemiBold18.copyWith(color: prussian),
+                ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: comparisonItems.length,
+                  itemBuilder: (context, index) {
+                    // if (index < comparisonItems.length) {
+                    return comparisonItems[index];
+                    // }
+                    // else
+                    // {
+                    //   return Padding(
+                    //     padding: EdgeInsets.symmetric(vertical: 32),
+                    //     child: isLoading
+                    //         ? Center(
+                    //             child: CircularProgressIndicator(
+                    //             color: verdigris,
+                    //           ))
+                    //         : Center(
+                    //             child: Container(
+                    //               decoration: BoxDecoration(
+                    //                 border: Border.all(color: Colors.grey),
+                    //                 borderRadius: BorderRadius.circular(12),
+                    //               ),
+                    //               child: InkWell(
+                    //                 onTap: () async {
+                    //                   setState(() {
+                    //                     isLoading = true;
+                    //                   });
+                    //                   await Future.delayed(Duration(seconds: 1));
+                    //                   await fetch();
+                    //                   setState(() {
+                    //                     isLoading = false;
+                    //                   });
+                    //                 },
+                    //                 borderRadius: BorderRadius.circular(12),
+                    //                 child: Padding(
+                    //                   padding: const EdgeInsets.all(5),
+                    //                   child: Row(
+                    //                     mainAxisSize: MainAxisSize.min,
+                    //                     children: [
+                    //                       Text(
+                    //                         "See more",
+                    //                         style: TextStyles.textViewMedium10
+                    //                             .copyWith(color: prussian),
+                    //                       ),
+                    //                       Icon(
+                    //                         Icons.keyboard_arrow_down,
+                    //                         size: 18,
+                    //                         color: Colors.grey,
+                    //                       ),
+                    //                     ],
+                    //                   ),
+                    //                 ),
+                    //               ),
+                    //             ),
+                    //           ),
+                    //   );
+                    // }
+                  },
+                ),
               ],
-
               SizedBox(
                 height: 10.h,
               ),
@@ -445,11 +445,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             if (bestValueSize.isNotEmpty &&
                                 bestValueSize == size.size)
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 12,vertical: 3),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 3),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
-                                    color: purple70
-                                ),
+                                    color: purple70),
                                 child: Text(
                                   "BEST VALUE",
                                   style: TextStyles.textViewRegular12

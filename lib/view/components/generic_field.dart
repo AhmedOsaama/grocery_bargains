@@ -12,11 +12,11 @@ class GenericField extends StatefulWidget {
   final void Function(String?)? onChanged;
   final Function()? onTap;
   final String? labeltext;
-  String? hintText;
+  final String? hintText;
   final TextStyle? hintStyle;
   final bool readOnly;
   final Widget? prefixIcon;
-  Widget? suffixIcon;
+  final Widget? suffixIcon;
   final bool isProfile;
   final bool obscureText;
   final bool? autoFocus;
@@ -49,7 +49,13 @@ class GenericField extends StatefulWidget {
     this.maxLines = 1,
     this.colorStyle = lightGrey,
     this.borderRaduis = 10,
-    this.obscureText = false, this.onChanged, this.hintStyle, this.isSearchField = false, this.onTap, this.boxShadow, this.suffixConstraints,
+    this.obscureText = false,
+    this.onChanged,
+    this.hintStyle,
+    this.isSearchField = false,
+    this.onTap,
+    this.boxShadow,
+    this.suffixConstraints,
   });
 
   @override
@@ -61,17 +67,15 @@ class _GenericFieldState extends State<GenericField> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: widget.colorStyle),
-        borderRadius: BorderRadius.circular(widget.borderRaduis),
-        boxShadow:  [
-          widget.boxShadow ??
-          const BoxShadow(
-            blurRadius: 62,
-            offset: Offset(0,4),
-            color: Color.fromRGBO(153, 171, 198, 0.18)
-          )
-        ]
-      ),
+          border: Border.all(color: widget.colorStyle),
+          borderRadius: BorderRadius.circular(widget.borderRaduis),
+          boxShadow: [
+            widget.boxShadow ??
+                const BoxShadow(
+                    blurRadius: 62,
+                    offset: Offset(0, 4),
+                    color: Color.fromRGBO(153, 171, 198, 0.18))
+          ]),
       //height: 55.h,
       child: TextFormField(
         focusNode: widget.focusNode,
@@ -115,27 +119,35 @@ class _GenericFieldState extends State<GenericField> {
           // suffixIconConstraints: widget.suffixConstraints ?? BoxConstraints.tight(Size.square(40)),
           suffixIconConstraints: widget.suffixConstraints,
           labelStyle: const TextStyle(fontSize: 16, color: Color(0xff343434)),
-          hintStyle: widget.hintStyle ?? TextStylesDMSans.textViewRegular12.copyWith(color: Color.fromRGBO(13, 1, 64, 0.6)),
+          hintStyle: widget.hintStyle ??
+              TextStylesDMSans.textViewRegular12
+                  .copyWith(color: Color.fromRGBO(13, 1, 64, 0.6)),
           border: OutlineInputBorder(
               borderSide: BorderSide(
-                color: widget.isFilled == true ? Colors.transparent : widget.colorStyle!,
+                color: widget.isFilled == true
+                    ? Colors.transparent
+                    : widget.colorStyle,
               ),
-              borderRadius: BorderRadius.circular(widget.borderRaduis!.sp)),
+              borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
 
           focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: widget.isFilled == true ? Colors.transparent : widget.colorStyle!,
+                color: widget.isFilled == true
+                    ? Colors.transparent
+                    : widget.colorStyle,
               ),
-              borderRadius: BorderRadius.circular(widget.borderRaduis!.sp)),
+              borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
           enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                  color: widget.isFilled == true ? Colors.transparent : widget.colorStyle!),
-              borderRadius: BorderRadius.circular(widget.borderRaduis!.sp)),
+                  color: widget.isFilled == true
+                      ? Colors.transparent
+                      : widget.colorStyle),
+              borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
           errorBorder: OutlineInputBorder(
               borderSide: const BorderSide(
                 color: primary,
               ),
-              borderRadius: BorderRadius.circular(widget.borderRaduis!.sp)),
+              borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
           // border: const OutlineInputBorder(
           //   borderSide: BorderSide(color: Colors.black, width: 1.0),
           // ),

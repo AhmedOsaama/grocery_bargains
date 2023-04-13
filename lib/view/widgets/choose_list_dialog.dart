@@ -10,16 +10,19 @@ import '../../config/routes/app_navigator.dart';
 import '../../generated/locale_keys.g.dart';
 import '../../models/list_item.dart';
 import '../../utils/app_colors.dart';
-import '../../utils/assets_manager.dart';
 import '../../utils/style_utils.dart';
 import '../components/button.dart';
-import '../screens/choose_store_screen.dart';
 
 class ChooseListDialog extends StatefulWidget {
   final List allLists;
   final bool isSharing;
   final ListItem item;
-  const ChooseListDialog({Key? key, required this.allLists, required this.item, required this.isSharing}) : super(key: key);
+  const ChooseListDialog(
+      {Key? key,
+      required this.allLists,
+      required this.item,
+      required this.isSharing})
+      : super(key: key);
 
   @override
   State<ChooseListDialog> createState() => _ChooseListDialogState();
@@ -29,16 +32,14 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
   var selectedListId = "choose";
   var hasChosenList = false;
 
-
-
-  Future<void> shareItem({required ListItem item,required String docId}) async { //TODO: duplicated with chat_view_widget line 310
+  Future<void> shareItem(
+      {required ListItem item, required String docId}) async {
+    //TODO: duplicated with chat_view_widget line 310
     final userData = await FirebaseFirestore.instance
         .collection('/users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
-    await FirebaseFirestore.instance
-        .collection('/lists/$docId/messages')
-        .add({
+    await FirebaseFirestore.instance.collection('/lists/$docId/messages').add({
       'item_name': item.name,
       'item_image': item.imageURL,
       'item_description': item.size,
@@ -52,18 +53,13 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
       'username': userData['username'],
       'userImageURL': userData['imageURL'],
     });
-    FirebaseFirestore.instance
-        .collection('/lists')
-        .doc(docId)
-        .update({
+    FirebaseFirestore.instance.collection('/lists').doc(docId).update({
       "last_message": "Shared ${item.name}",
       "last_message_date": Timestamp.now(),
       "last_message_userId": FirebaseAuth.instance.currentUser?.uid,
-      "last_message_userName":  userData['username'],
+      "last_message_userName": userData['username'],
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -112,7 +108,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                     if (value != 'choose') {
                       selectedListId = value!;
                       hasChosenList = true;
-                    }else{
+                    } else {
                       selectedListId = 'choose';
                       hasChosenList = false;
                     }
@@ -122,29 +118,35 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
               height: 10.h,
             ),
             GenericButton(
-                onPressed: !hasChosenList ? null : () async {
-                  if (!widget.isSharing) {
-                    await Provider.of<ChatlistsProvider>(context,listen: false).addItemToList(
-                       widget.item,
-                        selectedListId);
-                  }else{
-                    await shareItem(item: widget.item,docId: selectedListId);
-                  }
-                    AppNavigator.pop(context: context);
-                  },
+                onPressed: !hasChosenList
+                    ? null
+                    : () async {
+                        if (!widget.isSharing) {
+                          await Provider.of<ChatlistsProvider>(context,
+                                  listen: false)
+                              .addItemToList(widget.item, selectedListId);
+                        } else {
+                          await shareItem(
+                              item: widget.item, docId: selectedListId);
+                        }
+                        AppNavigator.pop(context: context);
+                      },
                 height: 60.h,
                 width: double.infinity,
                 color: yellow,
                 borderRadius: BorderRadius.circular(6),
-                child: widget.isSharing ?  Text(LocaleKeys.share.tr(),
-                  style: TextStylesInter.textViewSemiBold16
-                      .copyWith(color: black2),
-                ) : Text(
-                  // hasChosenList ? LocaleKeys.addToList.tr() : LocaleKeys.createNewList.tr(),
-                  LocaleKeys.addToList.tr(),
-                  style: TextStylesInter.textViewSemiBold16
-                      .copyWith(color: black2),
-                )),
+                child: widget.isSharing
+                    ? Text(
+                        LocaleKeys.share.tr(),
+                        style: TextStylesInter.textViewSemiBold16
+                            .copyWith(color: black2),
+                      )
+                    : Text(
+                        // hasChosenList ? LocaleKeys.addToList.tr() : LocaleKeys.createNewList.tr(),
+                        LocaleKeys.addToList.tr(),
+                        style: TextStylesInter.textViewSemiBold16
+                            .copyWith(color: black2),
+                      )),
             // GenericButton(                           //TODO: create and share or add an item button(Check the figma flow)
             //     onPressed: () {
             //         Provider.of<ChatlistsProvider>(context,listen: false).createChatList()
