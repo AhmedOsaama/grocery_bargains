@@ -153,6 +153,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> getAllProducts() async {
+    await Provider.of<ProductsProvider>(context, listen: false)
+        .getAllCategories();
     print("1");
     await Provider.of<ProductsProvider>(context, listen: false)
         .getAllAlbertProducts();

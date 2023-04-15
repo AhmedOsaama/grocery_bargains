@@ -28,6 +28,15 @@ class NetworkServices {
     return response;
   }
 
+  static Future<http.Response> getAllAlbertCategories() async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/get_all_albert_categories');
+    var response =
+        await http.get(url, headers: {'Content-Type': 'application/json'});
+
+    return response;
+  }
+
   static Future<http.Response> getAllPriceComparisons() async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/get_all_price_comparisons');

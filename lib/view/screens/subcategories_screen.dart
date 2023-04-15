@@ -246,10 +246,22 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                     builder: (ctx, provider, _) {
                       var products =
                           provider.getProductsBySubCategory(widget.subCategory);
-                      if (products.isEmpty)
+                      if (provider.albertProducts.isEmpty &&
+                          provider.jumboProducts.isEmpty) {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
+                      } else if (products.isEmpty) {
+                        return Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              50.ph,
+                              Text("No products matches this category"),
+                            ],
+                          ),
+                        );
+                      }
                       return GridView.builder(
                           physics:
                               ScrollPhysics(), // to disable GridView's scrolling

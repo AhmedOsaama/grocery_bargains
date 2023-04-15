@@ -1,6 +1,7 @@
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/components/plus_button.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
+import 'package:bargainb/view/screens/home_screen.dart';
 import 'package:bargainb/view/screens/subcategories_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -34,7 +35,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       TextStylesInter.textViewRegular16.copyWith(color: mainPurple);
   bool switchValue = false;
 
-  int? _selectedIndex;
   String sortDropdownValue = 'Sort';
   String sizeDropdownValue = 'Size';
   String brandDropdownValue = 'Brand';
@@ -60,520 +60,513 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         leading: IconButton(
             onPressed: () {
               FocusScope.of(context).unfocus();
-              AppNavigator.pop(context: context);
-              AppNavigator.pop(context: context);
+              AppNavigator.pushReplacement(
+                  context: context, screen: HomeScreen());
             },
             icon: Icon(
               Icons.arrow_back,
               color: black,
             )),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 20.h,
-              ),
-              GenericField(
-                isFilled: true,
-                onTap: () async {
-                  SharedPreferences pref =
-                      await SharedPreferences.getInstance();
-                  return showSearch(
-                      context: context, delegate: MySearchDelegate(pref));
-                },
-                prefixIcon: Icon(Icons.search),
-                borderRaduis: 999,
-                boxShadow: BoxShadow(
-                  color: shadowColor,
-                  blurRadius: 28.0,
+      body: WillPopScope(
+        onWillPop: () {
+          FocusScope.of(context).unfocus();
+          AppNavigator.pushReplacement(context: context, screen: HomeScreen());
+          return Future.value(true);
+        },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 20.h,
                 ),
-              ),
-              SizedBox(
-                height: 10.h,
-              ),
-              Consumer<ProductsProvider>(builder: (c, provider, _) {
-                List<String> allSubCategories = provider.subCategories;
-                List<String> subCategories = [];
-                allSubCategories.forEach((element) {
-                  if (widget.category.contains(element) ||
-                      widget.category.contains(element.toLowerCase())) {
-                    subCategories.add(element);
+                GenericField(
+                  isFilled: true,
+                  onTap: () async {
+                    SharedPreferences pref =
+                        await SharedPreferences.getInstance();
+                    return showSearch(
+                        context: context, delegate: MySearchDelegate(pref));
+                  },
+                  prefixIcon: Icon(Icons.search),
+                  borderRaduis: 999,
+                  boxShadow: BoxShadow(
+                    color: shadowColor,
+                    blurRadius: 28.0,
+                  ),
+                ),
+                SizedBox(
+                  height: 10.h,
+                ),
+                Text(
+                  "Subcategories",
+                  style: TextStylesInter.textViewSemiBold16
+                      .copyWith(color: black2),
+                ),
+                Consumer<ProductsProvider>(builder: (c, provider, _) {
+                  String sub = "";
+                  List<String> subCategories = [];
+                  provider.categories.forEach((element) {
+                    if (element.category == widget.category) {
+                      sub = element.subcategories;
+                    }
+                  });
+                  if (sub.isNotEmpty) {
+                    sub.split(",").forEach((element) {
+                      subCategories.add(element);
+                    });
                   }
-                });
-                if (subCategories.isNotEmpty) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Subcategories",
-                        style: TextStylesInter.textViewSemiBold16
-                            .copyWith(color: black2),
-                      ),
-                      Row(
-                        children: [
-                          TextButton(
-                              onPressed: () {},
-                              child: Text(
-                                'See all',
-                                style: textButtonStyle,
-                              )),
-                          20.pw
-                        ],
-                      )
-                    ],
+                  if (subCategories.isNotEmpty) {
+                    return choiceChips(subCategories);
+                  }
+                  return Center(
+                    child: Text(
+                      "No subcategories found",
+                      style: TextStylesInter.textViewMedium10
+                          .copyWith(color: black),
+                    ),
                   );
-                }
-                return Container();
-              }),
-              Consumer<ProductsProvider>(builder: (c, provider, _) {
-                List<String> allSubCategories = provider.subCategories;
-                List<String> subCategories = [];
-                allSubCategories.forEach((element) {
-                  if (widget.category.contains(element) ||
-                      widget.category.contains(element.toLowerCase())) {
-                    subCategories.add(element);
-                  }
-                });
-                if (subCategories.isNotEmpty) {
-                  return choiceChips(subCategories);
-                }
-                return Container();
-              }),
-              16.ph,
-              SizedBox(
-                height: 30.h,
-                child: Row(children: [
-                  Container(
-                    width: 70.w,
-                    decoration: BoxDecoration(
-                        color: white,
-                        border: Border.all(color: dropBorderColor),
-                        borderRadius: BorderRadius.all(Radius.circular(4.r))),
-                    child: Center(
-                      child: DropdownButton<String>(
-                        value: sortDropdownValue,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: mainPurple,
+                }),
+                16.ph,
+                SizedBox(
+                  height: 30.h,
+                  child: Row(children: [
+                    Container(
+                      width: 70.w,
+                      decoration: BoxDecoration(
+                          color: white,
+                          border: Border.all(color: dropBorderColor),
+                          borderRadius: BorderRadius.all(Radius.circular(4.r))),
+                      child: Center(
+                        child: DropdownButton<String>(
+                          value: sortDropdownValue,
+                          icon: Icon(
+                            Icons.keyboard_arrow_down,
+                            color: mainPurple,
+                          ),
+                          iconSize: 24,
+                          //elevation: 16,
+                          underline: Container(),
+                          style: TextStyle(color: purple50, fontSize: 16.sp),
+                          borderRadius: BorderRadius.circular(4.r),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              sortDropdownValue = newValue!;
+                            });
+                          },
+                          items: <String>['Sort', 'Two', 'Free', 'Four']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
                         ),
-                        iconSize: 24,
-                        //elevation: 16,
-                        underline: Container(),
-                        style: TextStyle(color: purple50, fontSize: 16.sp),
-                        borderRadius: BorderRadius.circular(4.r),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            sortDropdownValue = newValue!;
-                          });
-                        },
-                        items: <String>['Sort', 'Two', 'Free', 'Four']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
                       ),
                     ),
-                  ),
-                  8.pw,
-                  Container(
-                    width: 80.w,
-                    decoration: BoxDecoration(
-                        color: white,
-                        border: Border.all(color: dropBorderColor),
-                        borderRadius: BorderRadius.all(Radius.circular(4.r))),
-                    child: Center(
-                      child: DropdownButton<String>(
-                        value: brandDropdownValue,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: mainPurple,
+                    8.pw,
+                    Container(
+                      width: 80.w,
+                      decoration: BoxDecoration(
+                          color: white,
+                          border: Border.all(color: dropBorderColor),
+                          borderRadius: BorderRadius.all(Radius.circular(4.r))),
+                      child: Center(
+                        child: DropdownButton<String>(
+                          value: brandDropdownValue,
+                          icon: Icon(
+                            Icons.keyboard_arrow_down,
+                            color: mainPurple,
+                          ),
+                          iconSize: 24,
+                          //elevation: 16,
+                          underline: Container(),
+                          style: TextStyle(color: purple50, fontSize: 16.sp),
+                          borderRadius: BorderRadius.circular(4.r),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              brandDropdownValue = newValue!;
+                            });
+                          },
+                          items: <String>['Brand', 'Two', 'Free', 'Four']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
                         ),
-                        iconSize: 24,
-                        //elevation: 16,
-                        underline: Container(),
-                        style: TextStyle(color: purple50, fontSize: 16.sp),
-                        borderRadius: BorderRadius.circular(4.r),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            brandDropdownValue = newValue!;
-                          });
-                        },
-                        items: <String>['Brand', 'Two', 'Free', 'Four']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
                       ),
                     ),
-                  ),
-                  8.pw,
-                  Container(
-                    width: 76.w,
-                    decoration: BoxDecoration(
-                        color: white,
-                        border: Border.all(color: dropBorderColor),
-                        borderRadius: BorderRadius.all(Radius.circular(4.r))),
-                    child: Center(
-                      child: DropdownButton<String>(
-                        value: storeDropdownValue,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: mainPurple,
+                    8.pw,
+                    Container(
+                      width: 76.w,
+                      decoration: BoxDecoration(
+                          color: white,
+                          border: Border.all(color: dropBorderColor),
+                          borderRadius: BorderRadius.all(Radius.circular(4.r))),
+                      child: Center(
+                        child: DropdownButton<String>(
+                          value: storeDropdownValue,
+                          icon: Icon(
+                            Icons.keyboard_arrow_down,
+                            color: mainPurple,
+                          ),
+                          iconSize: 24,
+                          //elevation: 16,
+                          underline: Container(),
+                          style: TextStyle(color: purple50, fontSize: 16.sp),
+                          borderRadius: BorderRadius.circular(4.r),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              storeDropdownValue = newValue!;
+                            });
+                          },
+                          items: <String>['Store', 'Two', 'Free', 'Four']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
                         ),
-                        iconSize: 24,
-                        //elevation: 16,
-                        underline: Container(),
-                        style: TextStyle(color: purple50, fontSize: 16.sp),
-                        borderRadius: BorderRadius.circular(4.r),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            storeDropdownValue = newValue!;
-                          });
-                        },
-                        items: <String>['Store', 'Two', 'Free', 'Four']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
                       ),
                     ),
-                  ),
-                  8.pw,
-                  Container(
-                    width: 68.w,
-                    decoration: BoxDecoration(
-                        color: white,
-                        border: Border.all(color: dropBorderColor),
-                        borderRadius: BorderRadius.all(Radius.circular(4.r))),
-                    child: Center(
-                      child: DropdownButton<String>(
-                        value: sizeDropdownValue,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: mainPurple,
+                    8.pw,
+                    Container(
+                      width: 68.w,
+                      decoration: BoxDecoration(
+                          color: white,
+                          border: Border.all(color: dropBorderColor),
+                          borderRadius: BorderRadius.all(Radius.circular(4.r))),
+                      child: Center(
+                        child: DropdownButton<String>(
+                          value: sizeDropdownValue,
+                          icon: Icon(
+                            Icons.keyboard_arrow_down,
+                            color: mainPurple,
+                          ),
+                          underline: Container(),
+                          iconSize: 24,
+                          //elevation: 16,
+                          style: TextStyle(color: purple50, fontSize: 16.sp),
+                          borderRadius: BorderRadius.circular(4.r),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              sizeDropdownValue = newValue!;
+                            });
+                          },
+                          items: <String>['Size', 'Two', 'Free', 'Four']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
                         ),
-                        underline: Container(),
-                        iconSize: 24,
-                        //elevation: 16,
-                        style: TextStyle(color: purple50, fontSize: 16.sp),
-                        borderRadius: BorderRadius.circular(4.r),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            sizeDropdownValue = newValue!;
-                          });
-                        },
-                        items: <String>['Size', 'Two', 'Free', 'Four']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
                       ),
                     ),
-                  ),
-                ]),
-              ),
-              16.ph,
-              Text(
-                widget.category,
-                style:
-                    TextStylesInter.textViewSemiBold16.copyWith(color: black2),
-              ),
-              10.ph,
-              SingleChildScrollView(
-                child: Container(
-                  //  height: ScreenUtil().screenHeight,
-                  child: Consumer<ProductsProvider>(
-                    builder: (ctx, provider, _) {
-                      var products =
-                          provider.getProductsByCategory(widget.category);
-                      if (products.isEmpty)
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      return GridView.builder(
-                          physics:
-                              ScrollPhysics(), // to disable GridView's scrolling
-                          shrinkWrap: true,
-                          gridDelegate:
-                              const SliverGridDelegateWithMaxCrossAxisExtent(
-                                  maxCrossAxisExtent: 200,
-                                  childAspectRatio: 0.6,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10),
-                          itemCount: products.length,
-                          itemBuilder: (BuildContext ctx, index) {
-                            var oldPriceExists = true;
-                            if (products.elementAt(index).oldPrice == null) {
-                              products.elementAt(index).oldPrice = "";
-                              oldPriceExists = false;
-                            }
-                            if (products.elementAt(index).oldPrice == "") {
-                              oldPriceExists = false;
-                            }
-                            if (oldPriceExists) {
-                              if ((double.parse(
-                                          products.elementAt(index).oldPrice!) -
-                                      double.parse(
-                                          products.elementAt(index).price)) <=
-                                  0) {
+                  ]),
+                ),
+                16.ph,
+                Text(
+                  widget.category,
+                  style: TextStylesInter.textViewSemiBold16
+                      .copyWith(color: black2),
+                ),
+                10.ph,
+                SingleChildScrollView(
+                  child: Container(
+                    //  height: ScreenUtil().screenHeight,
+                    child: Consumer<ProductsProvider>(
+                      builder: (ctx, provider, _) {
+                        var products =
+                            provider.getProductsByCategory(widget.category);
+                        if (products.isEmpty)
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        return GridView.builder(
+                            physics:
+                                ScrollPhysics(), // to disable GridView's scrolling
+                            shrinkWrap: true,
+                            gridDelegate:
+                                const SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 200,
+                                    childAspectRatio: 0.6,
+                                    crossAxisSpacing: 10,
+                                    mainAxisSpacing: 10),
+                            itemCount: products.length,
+                            itemBuilder: (BuildContext ctx, index) {
+                              var oldPriceExists = true;
+                              if (products.elementAt(index).oldPrice == null) {
+                                products.elementAt(index).oldPrice = "";
                                 oldPriceExists = false;
                               }
-                            }
+                              if (products.elementAt(index).oldPrice == "") {
+                                oldPriceExists = false;
+                              }
+                              if (oldPriceExists) {
+                                if ((double.parse(products
+                                            .elementAt(index)
+                                            .oldPrice!) -
+                                        double.parse(
+                                            products.elementAt(index).price)) <=
+                                    0) {
+                                  oldPriceExists = false;
+                                }
+                              }
 
-                            if (products.elementAt(index).size2 == null) {
-                              products.elementAt(index).size2 = "";
-                            }
+                              if (products.elementAt(index).size2 == null) {
+                                products.elementAt(index).size2 = "";
+                              }
 
-                            Product p = Product(
-                                id: products.elementAt(index).id,
-                                oldPrice:
-                                    products.elementAt(index).oldPrice ?? "",
-                                storeName: products.elementAt(index).storeName,
-                                name: products.elementAt(index).name,
-                                url: products.elementAt(index).url,
-                                category: products.elementAt(index).category,
-                                price: products.elementAt(index).price,
-                                size: products.elementAt(index).size,
-                                imageURL: products.elementAt(index).imageURL,
-                                description:
-                                    products.elementAt(index).description,
-                                size2: products.elementAt(index).size2 ?? "");
-                            return GestureDetector(
-                              onTap: () => AppNavigator.push(
-                                  context: context,
-                                  screen: ProductDetailScreen(
-                                    comparisonId: -1,
-                                    productId: p.id,
-                                    oldPrice: p.oldPrice ?? "",
-                                    storeName: p.storeName,
-                                    productName: p.name,
-                                    imageURL: p.imageURL,
-                                    description: p.description,
-                                    size1: p.size,
-                                    size2: p.size2 ?? "",
-                                    price1: double.tryParse(p.price) ?? 0.0,
-                                    price2:
-                                        double.tryParse(p.price2 ?? "") ?? 0.0,
-                                  )),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    new BoxShadow(
-                                        color: shadowColor,
-                                        blurRadius: 20.0,
-                                        offset: Offset(0, 20)),
-                                  ],
-                                ),
-                                child: Card(
-                                  elevation: 50,
-                                  shadowColor: shadowColor,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        flex: 3,
-                                        child: Column(
-                                          children: [
-                                            45.ph,
-                                            Row(
-                                              children: [
-                                                40.pw,
-                                                Container(
-                                                  width: 60.w,
-                                                  height: 60.h,
-                                                  child: CachedNetworkImage(
-                                                    imageUrl: products
-                                                        .elementAt(index)
-                                                        .imageURL,
-                                                    placeholder: (context,
-                                                            url) =>
-                                                        CircularProgressIndicator(),
-                                                    errorWidget: (context, url,
-                                                            error) =>
-                                                        Icon(Icons
-                                                            .no_photography),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Expanded(
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  15.ph,
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      25.pw,
-                                                      Expanded(
-                                                        child: SizedBox(
-                                                          height: 40.h,
-                                                          width: ScreenUtil()
-                                                                  .screenWidth *
-                                                              0.3,
-                                                          child: Text(
-                                                            products
-                                                                .elementAt(
-                                                                    index)
-                                                                .name,
-                                                            style: TextStylesInter
-                                                                .textViewBold16
-                                                                .copyWith(
-                                                                    color:
-                                                                        black2),
-                                                            maxLines: 2,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            textAlign:
-                                                                TextAlign.start,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  5.ph,
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      25.pw,
-                                                      Text(
-                                                        products
-                                                            .elementAt(index)
-                                                            .size,
-                                                        style: TextStylesInter
-                                                            .textViewMedium12
-                                                            .copyWith(
-                                                                color:
-                                                                    darkGrey),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  30.ph,
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    children: [
-                                                      20.pw,
-                                                      Text(
-                                                        "€" +
-                                                            products
-                                                                .elementAt(
-                                                                    index)
-                                                                .price,
-                                                        style: TextStylesInter
-                                                            .textViewMedium15
-                                                            .copyWith(
-                                                                color: black2),
-                                                        textAlign:
-                                                            TextAlign.left,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  5.ph,
-                                                  oldPriceExists
-                                                      ? Row(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            20.pw,
-                                                            Text(
-                                                              "€" +
-                                                                  products
-                                                                      .elementAt(
-                                                                          index)
-                                                                      .oldPrice!,
-                                                              style: TextStylesInter
-                                                                  .textViewMedium10
-                                                                  .copyWith(
-                                                                      color:
-                                                                          black2,
-                                                                      decoration:
-                                                                          TextDecoration
-                                                                              .lineThrough),
-                                                            ),
-                                                            (double.parse(products
-                                                                            .elementAt(
-                                                                                index)
-                                                                            .oldPrice!) -
-                                                                        double.parse(products
-                                                                            .elementAt(index)
-                                                                            .price)) >
-                                                                    0
-                                                                ? Text(
-                                                                    " €" +
-                                                                        (double.parse(products.elementAt(index).oldPrice!) -
-                                                                                double.parse(products.elementAt(index).price))
-                                                                            .toStringAsFixed(2) +
-                                                                        " less",
-                                                                    style: TextStylesInter
-                                                                        .textViewMedium10
-                                                                        .copyWith(
-                                                                            color:
-                                                                                green),
-                                                                  )
-                                                                : Container()
-                                                          ],
-                                                        )
-                                                      : Container(),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            IconButton(
-                                                onPressed: () {},
-                                                icon: SvgPicture.asset(
-                                                    chatShare)),
-                                            Column(
-                                              children: [
-                                                PlusButton(onTap: () {}),
-                                                20.ph
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ),
+                              Product p = Product(
+                                  id: products.elementAt(index).id,
+                                  oldPrice:
+                                      products.elementAt(index).oldPrice ?? "",
+                                  storeName:
+                                      products.elementAt(index).storeName,
+                                  name: products.elementAt(index).name,
+                                  url: products.elementAt(index).url,
+                                  category: products.elementAt(index).category,
+                                  price: products.elementAt(index).price,
+                                  size: products.elementAt(index).size,
+                                  imageURL: products.elementAt(index).imageURL,
+                                  description:
+                                      products.elementAt(index).description,
+                                  size2: products.elementAt(index).size2 ?? "");
+                              return GestureDetector(
+                                onTap: () => AppNavigator.push(
+                                    context: context,
+                                    screen: ProductDetailScreen(
+                                      comparisonId: -1,
+                                      productId: p.id,
+                                      oldPrice: p.oldPrice ?? "",
+                                      storeName: p.storeName,
+                                      productName: p.name,
+                                      imageURL: p.imageURL,
+                                      description: p.description,
+                                      size1: p.size,
+                                      size2: p.size2 ?? "",
+                                      price1: double.tryParse(p.price) ?? 0.0,
+                                      price2: double.tryParse(p.price2 ?? "") ??
+                                          0.0,
+                                    )),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    boxShadow: [
+                                      new BoxShadow(
+                                          color: shadowColor,
+                                          blurRadius: 20.0,
+                                          offset: Offset(0, 20)),
                                     ],
                                   ),
+                                  child: Card(
+                                    elevation: 50,
+                                    shadowColor: shadowColor,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          flex: 4,
+                                          child: Column(
+                                            children: [
+                                              45.ph,
+                                              Row(
+                                                children: [
+                                                  40.pw,
+                                                  Container(
+                                                    width: 60.w,
+                                                    height: 60.h,
+                                                    child: CachedNetworkImage(
+                                                      imageUrl: products
+                                                          .elementAt(index)
+                                                          .imageURL,
+                                                      placeholder: (context,
+                                                              url) =>
+                                                          CircularProgressIndicator(),
+                                                      errorWidget: (context,
+                                                              url, error) =>
+                                                          Icon(Icons
+                                                              .no_photography),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Expanded(
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    15.ph,
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        25.pw,
+                                                        Expanded(
+                                                          child: SizedBox(
+                                                            height: 40.h,
+                                                            width: ScreenUtil()
+                                                                    .screenWidth *
+                                                                0.3,
+                                                            child: Text(
+                                                              products
+                                                                  .elementAt(
+                                                                      index)
+                                                                  .name,
+                                                              style: TextStylesInter
+                                                                  .textViewBold16
+                                                                  .copyWith(
+                                                                      color:
+                                                                          black2),
+                                                              maxLines: 2,
+                                                              overflow:
+                                                                  TextOverflow
+                                                                      .ellipsis,
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .start,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    5.ph,
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        25.pw,
+                                                        Text(
+                                                          products
+                                                              .elementAt(index)
+                                                              .size,
+                                                          style: TextStylesInter
+                                                              .textViewMedium12
+                                                              .copyWith(
+                                                                  color:
+                                                                      darkGrey),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    30.ph,
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        20.pw,
+                                                        Text(
+                                                          "€" +
+                                                              products
+                                                                  .elementAt(
+                                                                      index)
+                                                                  .price,
+                                                          style: TextStylesInter
+                                                              .textViewMedium15
+                                                              .copyWith(
+                                                                  color:
+                                                                      black2),
+                                                          textAlign:
+                                                              TextAlign.left,
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    5.ph,
+                                                    oldPriceExists
+                                                        ? Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              20.pw,
+                                                              Text(
+                                                                "€" +
+                                                                    products
+                                                                        .elementAt(
+                                                                            index)
+                                                                        .oldPrice!,
+                                                                style: TextStylesInter
+                                                                    .textViewMedium10
+                                                                    .copyWith(
+                                                                        color:
+                                                                            black2,
+                                                                        decoration:
+                                                                            TextDecoration.lineThrough),
+                                                              ),
+                                                              (double.parse(products
+                                                                              .elementAt(
+                                                                                  index)
+                                                                              .oldPrice!) -
+                                                                          double.parse(products
+                                                                              .elementAt(index)
+                                                                              .price)) >
+                                                                      0
+                                                                  ? Text(
+                                                                      " €" +
+                                                                          (double.parse(products.elementAt(index).oldPrice!) - double.parse(products.elementAt(index).price))
+                                                                              .toStringAsFixed(2) +
+                                                                          " less",
+                                                                      style: TextStylesInter
+                                                                          .textViewMedium10
+                                                                          .copyWith(
+                                                                              color: green),
+                                                                    )
+                                                                  : Container()
+                                                            ],
+                                                          )
+                                                        : Container(),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 2,
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              IconButton(
+                                                  onPressed: () {},
+                                                  icon: SvgPicture.asset(
+                                                      chatShare)),
+                                              Column(
+                                                children: [
+                                                  PlusButton(onTap: () {}),
+                                                  20.ph
+                                                ],
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            );
-                          });
-                    },
+                              );
+                            });
+                      },
+                    ),
                   ),
                 ),
-              ),
-              10.ph,
-            ],
+                10.ph,
+              ],
+            ),
           ),
         ),
       ),

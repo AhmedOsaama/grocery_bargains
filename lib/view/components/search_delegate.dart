@@ -1,4 +1,5 @@
 import 'package:bargainb/models/product_category.dart';
+import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/screens/categories_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,6 @@ import 'package:bargainb/view/widgets/search_item.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../models/product.dart';
-import '../../utils/assets_manager.dart';
 
 class MySearchDelegate extends SearchDelegate {
   final SharedPreferences pref;
@@ -145,47 +145,45 @@ class MySearchDelegate extends SearchDelegate {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: categories.map((element) {
-                    return GestureDetector(
-                      onTap: () => AppNavigator.pushReplacement(
-                          context: context,
-                          screen: CategoriesScreen(
-                            category: element.label,
-                          )),
-                      child: SizedBox(
-                        width: 71.w,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            element.store == "albert"
-                                ? Image.asset(
-                                    albert,
-                                    width: 52.w,
-                                    height: 52.h,
-                                  )
-                                : Image.asset(
-                                    jumbo,
-                                    width: 52.w,
-                                    height: 52.h,
-                                  ),
-                            SizedBox(
-                              height: 8.h,
+              child: categories.isEmpty
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: categories.map((element) {
+                        return GestureDetector(
+                          onTap: () => AppNavigator.pushReplacement(
+                              context: context,
+                              screen: CategoriesScreen(
+                                category: element.category,
+                              )),
+                          child: SizedBox(
+                            width: 71.w,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  albert,
+                                  width: 52.w,
+                                  height: 52.h,
+                                ),
+                                SizedBox(
+                                  height: 8.h,
+                                ),
+                                Text(
+                                  element.category,
+                                  style: TextStyles.textViewMedium10
+                                      .copyWith(color: gunmetal),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 3,
+                                )
+                              ],
                             ),
-                            Text(
-                              element.label,
-                              style: TextStyles.textViewMedium10
-                                  .copyWith(color: gunmetal),
-                              textAlign: TextAlign.center,
-                              maxLines: 3,
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList()),
+                          ),
+                        );
+                      }).toList()),
             ),
             SizedBox(
               height: 15.h,

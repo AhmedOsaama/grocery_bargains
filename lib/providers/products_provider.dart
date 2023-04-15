@@ -17,7 +17,7 @@ class ProductsProvider with ChangeNotifier {
   List<BestValueItem> bestValueBargains = [];
 
   List<ProductCategory> categories = [];
-  List<String> subCategories = [];
+
   List<Product> convertToProductListFromJson(decodedProductsList) {
     List<Product> productList = [];
     try {
@@ -135,7 +135,7 @@ class ProductsProvider with ChangeNotifier {
       decodedProductsList = jsonDecode(response.body);
       albertProducts = convertToProductListFromJson(decodedProductsList);
 
-      if (albertProducts.isNotEmpty) {
+      /*    if (albertProducts.isNotEmpty) {
         albertProducts.forEach((element) {
           if (element.category.length > 1) {
             categories.add(ProductCategory(
@@ -150,7 +150,7 @@ class ProductsProvider with ChangeNotifier {
 
         final labelss = subCategories.map((e) => e).toSet();
         subCategories.retainWhere((x) => labelss.remove(x));
-      }
+      } */
     } catch (e) {
       print(e);
     }
@@ -165,7 +165,7 @@ class ProductsProvider with ChangeNotifier {
     decodedProductsList = jsonDecode(response.body);
     jumboProducts = convertToProductListFromJson(decodedProductsList);
 
-    if (jumboProducts.isNotEmpty) {
+    /*    if (jumboProducts.isNotEmpty) {
       jumboProducts.forEach((element) {
         if (element.category.length > 1) {
           categories.add(ProductCategory(
@@ -175,8 +175,17 @@ class ProductsProvider with ChangeNotifier {
 
       //remove duplicates
       final labels = categories.map((e) => e.label).toSet();
-      categories.retainWhere((x) => labels.remove(x.label));
-    }
+      categories.retainWhere((x) => labels.remove(x.label)); 
+    } */
+
+    notifyListeners();
+    return response.statusCode;
+  }
+
+  Future<int> getAllCategories() async {
+    var response = await NetworkServices.getAllAlbertCategories();
+
+    categories = productCategoryFromJson(response.body);
 
     notifyListeners();
     return response.statusCode;
