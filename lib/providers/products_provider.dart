@@ -71,13 +71,14 @@ class ProductsProvider with ChangeNotifier {
   List<ComparisonProduct> convertToComparisonProductListFromJson(decodedProductsList) {
     List<ComparisonProduct> comparisonList = [];
 
-    try {
       for (var product in decodedProductsList) {
+    try {
         var id = product['id'];
         var jumboName = product['jumbo_product_name'];
         var jumboLink = product['jumbo_product_link'];
         if(jumboProducts.indexWhere((product) => product.url == jumboLink) == -1) continue;
         var jumboImageURL = product['jumbo_image_url'];
+        if (jumboImageURL == null) continue;
         var jumboPrice = product['jumbo_price'];
         if (jumboPrice == null) continue;
         var jumboSize = product['jumbo_unit'];
@@ -102,11 +103,11 @@ class ProductsProvider with ChangeNotifier {
             jumboLink: jumboLink,
             jumboName: jumboName,
             jumboPrice: jumboPrice));
-      }
     } catch (e) {
       print("Error in comparisons");
       print(e);
     }
+      }
     print("COMPARISON PRODUCTS LENGTH: " + comparisonList.length.toString());
     return comparisonList;
   }
@@ -162,7 +163,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<List<BestValueItem>> populateBestValueBargains() async {
-    await getAllAlbertProducts(); //stuk: piece, tros: bunch
+    // await getAllAlbertProducts(); //stuk: piece, tros: bunch
     bestValueBargains.clear();
     try {
       for (var product in albertProducts) {

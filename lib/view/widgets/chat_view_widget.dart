@@ -70,8 +70,6 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   void didChangeDependencies() {
-    getAllProductsFuture =
-        Provider.of<ProductsProvider>(context, listen: false).getProducts(0);            //TODO: change this
     super.didChangeDependencies();
   }
 

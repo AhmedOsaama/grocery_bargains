@@ -77,29 +77,6 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // return FutureBuilder(
-    //   future: getAllProductsFuture,
-    //   builder: (context, snapshot) {
-    //     if(snapshot.connectionState == ConnectionState.waiting) return Stack(
-    //       children: [
-    //         Container(
-    //           width: double.infinity,
-    //           height: double.infinity,
-    //           decoration: BoxDecoration(
-    //             image: DecorationImage(
-    //               image: AssetImage(
-    //                 splashImage
-    //               ),
-    //               fit: BoxFit.fill
-    //             ),
-    //           ),
-    //         ),
-    //         Container(
-    //           margin: EdgeInsets.only(top: 250),
-    //           alignment: Alignment.center,
-    //         child: CircularProgressIndicator(),)
-    //       ],
-    //     );
         return Scaffold(
           body: _pages[selectedIndex],
           bottomNavigationBar: Container(

@@ -142,22 +142,21 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     initMixpanel();
-    Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlists();
     getAllProductsFuture = getAllProducts()
         .timeout(Duration(seconds: 6),onTimeout: (){});
     authStateChangesStream = FirebaseAuth.instance.authStateChanges();
+    Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlists();
   }
 
   Future<void> getAllProducts() async {
-    print("1");
     await Provider.of<ProductsProvider>(context,listen: false).getAllAlbertProducts();
-    print("2");
+    print("1");
     await Provider.of<ProductsProvider>(context,listen: false).getAllJumboProducts();
-    print("3");
+    print("2");
     await Provider.of<ProductsProvider>(context,listen: false).getAllPriceComparisons();
-    print("4");
+    print("3");
     await Provider.of<ProductsProvider>(context,listen: false).populateBestValueBargains();
-    print("5");
+    print("4");
   }
 
   Future<void> initMixpanel() async {

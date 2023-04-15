@@ -137,13 +137,13 @@ class _DiscountItemState extends State<DiscountItem> {
                       IconButton(
                           onPressed: () {
                             if(selectedStore == "Albert") {
-                              var product = productsProvider.albertProducts.firstWhere((product) => product.id == widget.comparisonProduct.albertId);
-                              addDiscountItem(context, product.name,
+                              var product = productsProvider.albertProducts.firstWhere((product) => product.url == widget.comparisonProduct.albertLink);
+                              shareDiscountItem(context, product.name,
                                   product.oldPrice, product.price, product.price2, product.imageURL, product.size);
                             }
                             if(selectedStore == "Jumbo") {
                               var product = productsProvider.jumboProducts.firstWhere((product) => product.url == widget.comparisonProduct.jumboLink);
-                              addDiscountItem(context, product.name,
+                              shareDiscountItem(context, product.name,
                                   product.oldPrice, product.price, product.price2, product.imageURL, product.size);
                             }
 
@@ -152,13 +152,13 @@ class _DiscountItemState extends State<DiscountItem> {
                       20.ph,
                       PlusButton(onTap: () {
                         if(selectedStore == "Albert") {
-                          var product = productsProvider.albertProducts.firstWhere((product) => product.id == widget.comparisonProduct.albertId);
-                          shareDiscountItem(context, product.name,
+                          var product = productsProvider.albertProducts.firstWhere((product) => product.url == widget.comparisonProduct.albertLink);
+                          addDiscountItem(context, product.name,
                               product.oldPrice, product.price, product.price2, product.imageURL, product.size);
                         }
                         if(selectedStore == "Jumbo") {
                           var product = productsProvider.jumboProducts.firstWhere((product) => product.url == widget.comparisonProduct.jumboLink);
-                          shareDiscountItem(context, product.name,
+                          addDiscountItem(context, product.name,
                               product.oldPrice, product.price, product.price2, product.imageURL, product.size);
                         }
                       }),

@@ -61,7 +61,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _submitAuthForm(String email, String username,
       String phoneNumber, BuildContext ctx) async {
-    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
+    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
     try {
       if (!isLogin) {
         setState(() {
