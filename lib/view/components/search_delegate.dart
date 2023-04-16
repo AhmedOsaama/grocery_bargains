@@ -1,5 +1,4 @@
 import 'package:bargainb/models/product_category.dart';
-import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/screens/categories_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -140,7 +139,7 @@ class MySearchDelegate extends SearchDelegate {
     return Consumer<ProductsProvider>(builder: (c, provider, _) {
       categories = provider.categories;
       return Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -165,12 +164,9 @@ class MySearchDelegate extends SearchDelegate {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Image.asset(
-                                  albert,
-                                  width: 52.w,
-                                  height: 52.h,
-                                ),
-                                SizedBox(
-                                  height: 8.h,
+                                  element.image,
+                                  width: 65.w,
+                                  height: 65.h,
                                 ),
                                 Text(
                                   element.category,
@@ -186,7 +182,7 @@ class MySearchDelegate extends SearchDelegate {
                       }).toList()),
             ),
             SizedBox(
-              height: 15.h,
+              height: 10.h,
             ),
             Text(
               LocaleKeys.recentSearches.tr(),

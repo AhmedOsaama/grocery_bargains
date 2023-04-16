@@ -14,18 +14,21 @@ String productCategoryToJson(List<ProductCategory> data) =>
 class ProductCategory {
   ProductCategory({
     required this.id,
+    required this.image,
     required this.category,
     required this.subcategories,
   });
 
   int id;
   String category;
+  String image;
   String subcategories;
 
   factory ProductCategory.fromJson(Map<String, dynamic> json) =>
       ProductCategory(
         id: json["id"],
         category: json["category"],
+        image: "assets/images/categories/" + json["category"] + ".png",
         subcategories: json["subcategories"],
       );
 

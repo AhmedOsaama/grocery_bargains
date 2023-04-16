@@ -12,6 +12,7 @@ import '../utils/assets_manager.dart';
 class ProductsProvider with ChangeNotifier {
   List<Product> jumboProducts = [];
   List<Product> albertProducts = [];
+  List<Product> deals = [];
 
   List<ComparisonProduct> comparisonProducts = [];
   List<BestValueItem> bestValueBargains = [];
@@ -135,22 +136,15 @@ class ProductsProvider with ChangeNotifier {
       decodedProductsList = jsonDecode(response.body);
       albertProducts = convertToProductListFromJson(decodedProductsList);
 
-      /*    if (albertProducts.isNotEmpty) {
+      if (albertProducts.isNotEmpty) {
         albertProducts.forEach((element) {
-          if (element.category.length > 1) {
-            categories.add(ProductCategory(
-                label: element.category, imageURL: "", store: "albert"));
-            subCategories.add(element.subCategory!);
+          if (element.oldPrice != null) {
+            if (double.parse(element.oldPrice!) > double.parse(element.price)) {
+              deals.add(element);
+            }
           }
         });
-
-        //remove duplicates
-        final labels = categories.map((e) => e.label).toSet();
-        categories.retainWhere((x) => labels.remove(x.label));
-
-        final labelss = subCategories.map((e) => e).toSet();
-        subCategories.retainWhere((x) => labelss.remove(x));
-      } */
+      }
     } catch (e) {
       print(e);
     }
@@ -165,18 +159,15 @@ class ProductsProvider with ChangeNotifier {
     decodedProductsList = jsonDecode(response.body);
     jumboProducts = convertToProductListFromJson(decodedProductsList);
 
-    /*    if (jumboProducts.isNotEmpty) {
+    if (jumboProducts.isNotEmpty) {
       jumboProducts.forEach((element) {
-        if (element.category.length > 1) {
-          categories.add(ProductCategory(
-              label: element.category, imageURL: "", store: "jumbo"));
+        if (element.oldPrice != null) {
+          if (double.parse(element.oldPrice!) > double.parse(element.price)) {
+            deals.add(element);
+          }
         }
       });
-
-      //remove duplicates
-      final labels = categories.map((e) => e.label).toSet();
-      categories.retainWhere((x) => labels.remove(x.label)); 
-    } */
+    }
 
     notifyListeners();
     return response.statusCode;

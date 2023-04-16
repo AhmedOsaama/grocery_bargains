@@ -214,6 +214,11 @@ abstract class TextStyles {
     fontFamily: fontFamilyPoppins,
     fontWeight: medium,
   );
+  static TextStyle textViewMedium11 = TextStyle(
+    fontSize: 11.sp,
+    fontWeight: medium,
+    fontFamily: fontFamilyPoppins,
+  );
   static TextStyle textViewMedium12 = TextStyle(
     fontSize: 12.sp,
     fontWeight: medium,

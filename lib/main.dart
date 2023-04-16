@@ -147,14 +147,13 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     initMixpanel();
     Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists();
+    Provider.of<ProductsProvider>(context, listen: false).getAllCategories();
     getAllProductsFuture =
         getAllProducts().timeout(Duration(seconds: 6), onTimeout: () {});
     authStateChangesStream = FirebaseAuth.instance.authStateChanges();
   }
 
   Future<void> getAllProducts() async {
-    await Provider.of<ProductsProvider>(context, listen: false)
-        .getAllCategories();
     print("1");
     await Provider.of<ProductsProvider>(context, listen: false)
         .getAllAlbertProducts();

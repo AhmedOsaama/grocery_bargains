@@ -102,6 +102,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/categories/
     - assets/icon/
     - assets/translations/
 
