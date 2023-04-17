@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:bargainb/utils/app_colors.dart';
 
 class GenericButton extends StatelessWidget {
   final BorderRadiusGeometry? borderRadius;
@@ -21,14 +19,16 @@ class GenericButton extends StatelessWidget {
     Key? key,
     required this.onPressed,
     required this.child,
-
     this.borderRadius,
     this.width,
     this.height,
     this.color = Colors.blue,
     this.borderColor = Colors.transparent,
     this.shadowColorButton = Colors.transparent,
-    this.elevationButton = 0.0, this.shadow, this.disabledBackgroundColor, this.padding,
+    this.elevationButton = 0.0,
+    this.shadow,
+    this.disabledBackgroundColor,
+    this.padding,
   }) : super(key: key);
 
   @override
@@ -37,10 +37,7 @@ class GenericButton extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      decoration: BoxDecoration(
-        borderRadius: borderRadius,
-        boxShadow: shadow
-      ),
+      decoration: BoxDecoration(borderRadius: borderRadius, boxShadow: shadow),
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(

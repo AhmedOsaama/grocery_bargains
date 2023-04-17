@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:bargainb/models/comparison_product.dart';
-import 'package:flutter/material.dart';
+import 'package:bargainb/models/product_category.dart';
+import 'package:flutter/foundation.dart';
 import 'package:bargainb/services/network_services.dart';
 
 import '../models/bestValue_item.dart';
@@ -11,8 +12,12 @@ import '../utils/assets_manager.dart';
 class ProductsProvider with ChangeNotifier {
   List<Product> jumboProducts = [];
   List<Product> albertProducts = [];
+  List<Product> deals = [];
+
   List<ComparisonProduct> comparisonProducts = [];
   List<BestValueItem> bestValueBargains = [];
+
+  List<ProductCategory> categories = [];
 
   List<Product> convertToProductListFromJson(decodedProductsList) {
     List<Product> productList = [];
@@ -64,11 +69,12 @@ class ProductsProvider with ChangeNotifier {
     } catch (e) {
       print(e);
     }
-    print("PRODUCTS LENGTH: " + productList.length.toString());
+
     return productList;
   }
 
-  List<ComparisonProduct> convertToComparisonProductListFromJson(decodedProductsList) {
+  List<ComparisonProduct> convertToComparisonProductListFromJson(
+      decodedProductsList) {
     List<ComparisonProduct> comparisonList = [];
 
     try {
@@ -76,22 +82,23 @@ class ProductsProvider with ChangeNotifier {
         var id = product['id'];
         var jumboName = product['jumbo_product_name'];
         var jumboLink = product['jumbo_product_link'];
-        if(jumboProducts.indexWhere((product) => product.url == jumboLink) == -1) continue;
+        if (jumboProducts.indexWhere((product) => product.url == jumboLink) ==
+            -1) continue;
         var jumboImageURL = product['jumbo_image_url'];
         var jumboPrice = product['jumbo_price'];
         if (jumboPrice == null) continue;
         var jumboSize = product['jumbo_unit'];
         var albertName = product['albert_product_name'];
         var albertLink = product['albert_product_link'];
-        if(albertProducts.indexWhere((product) => product.url == albertLink) == -1) continue;
+        if (albertProducts.indexWhere((product) => product.url == albertLink) ==
+            -1) continue;
         var albertId = product['albert_product_id'];
         var albertImageURL = product['albert_image_url'];
         var albertPrice = product['albert_price'];
         var albertSize = product['albert_unit_size'];
-        comparisonList.add(
-        ComparisonProduct(
-          id: id,
-          jumboSize: jumboSize,
+        comparisonList.add(ComparisonProduct(
+            id: id,
+            jumboSize: jumboSize,
             albertId: albertId,
             albertImageURL: albertImageURL,
             albertLink: albertLink,
@@ -107,7 +114,7 @@ class ProductsProvider with ChangeNotifier {
       print("Error in comparisons");
       print(e);
     }
-    print("COMPARISON PRODUCTS LENGTH: " + comparisonList.length.toString());
+
     return comparisonList;
   }
 
@@ -115,8 +122,9 @@ class ProductsProvider with ChangeNotifier {
     var decodedProductsList = [];
     var response = await NetworkServices.getAllPriceComparisons();
     decodedProductsList = jsonDecode(response.body);
-    comparisonProducts = convertToComparisonProductListFromJson(decodedProductsList);
-    print("Total number of comparison products: ${comparisonProducts.length}");
+    comparisonProducts =
+        convertToComparisonProductListFromJson(decodedProductsList);
+
     notifyListeners();
     return response.statusCode;
   }
@@ -127,10 +135,20 @@ class ProductsProvider with ChangeNotifier {
     try {
       decodedProductsList = jsonDecode(response.body);
       albertProducts = convertToProductListFromJson(decodedProductsList);
+
+      if (albertProducts.isNotEmpty) {
+        albertProducts.forEach((element) {
+          if (element.oldPrice != null) {
+            if (double.parse(element.oldPrice!) > double.parse(element.price)) {
+              deals.add(element);
+            }
+          }
+        });
+      }
     } catch (e) {
       print(e);
     }
-    print("Total number of Albert products: ${albertProducts.length}");
+
     notifyListeners();
     return response.statusCode;
   }
@@ -140,9 +158,67 @@ class ProductsProvider with ChangeNotifier {
     var response = await NetworkServices.getAllJumboProducts();
     decodedProductsList = jsonDecode(response.body);
     jumboProducts = convertToProductListFromJson(decodedProductsList);
-    print("Total number of jumbo products: ${jumboProducts.length}");
+
+    if (jumboProducts.isNotEmpty) {
+      jumboProducts.forEach((element) {
+        if (element.oldPrice != null) {
+          if (double.parse(element.oldPrice!) > double.parse(element.price)) {
+            deals.add(element);
+          }
+        }
+      });
+    }
+
     notifyListeners();
     return response.statusCode;
+  }
+
+  Future<int> getAllCategories() async {
+    var response = await NetworkServices.getAllAlbertCategories();
+
+    categories = productCategoryFromJson(response.body);
+
+    notifyListeners();
+    return response.statusCode;
+  }
+
+  List<Product> getProductsByCategory(String category) {
+    List<Product> products = [];
+    albertProducts.forEach((element) {
+      if (element.category != "") {
+        if (element.category.toLowerCase() == category.toLowerCase()) {
+          products.add(element);
+        }
+      }
+    });
+    jumboProducts.forEach((element) {
+      if (element.category != "") {
+        if (element.category.toLowerCase() == category.toLowerCase()) {
+          products.add(element);
+        }
+      }
+    });
+    return products;
+  }
+
+  List<Product> getProductsBySubCategory(String category) {
+    List<Product> products = [];
+    albertProducts.forEach((element) {
+      if (element.subCategory != null && element.subCategory != "") {
+        if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
+          products.add(element);
+        }
+      }
+    });
+    jumboProducts.forEach((element) {
+      if (element.subCategory != null && element.subCategory != "") {
+        if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
+          products.add(element);
+        }
+      }
+    });
+
+    return products;
   }
 
   int getMeasurementConversion(String measurement) {
@@ -250,7 +326,7 @@ class ProductsProvider with ChangeNotifier {
     } catch (e) {
       print(e);
     }
-    print(bestValueBargains.length);
+
     notifyListeners();
 
     return bestValueBargains;

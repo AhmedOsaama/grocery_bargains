@@ -1,3 +1,7 @@
+import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/models/product_category.dart';
+import 'package:bargainb/view/components/search_delegate.dart';
+import 'package:bargainb/view/screens/categories_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,27 +12,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
-import 'package:bargainb/models/list_item.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
-import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/utils/utils.dart';
 import 'package:bargainb/view/components/dotted_container.dart';
 import 'package:bargainb/view/components/generic_field.dart';
-import 'package:bargainb/view/components/generic_menu.dart';
-import 'package:bargainb/view/components/my_scaffold.dart';
-import 'package:bargainb/view/components/plus_button.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
-import 'package:bargainb/view/screens/sub_categories_screen.dart';
-import 'package:bargainb/view/widgets/backbutton.dart';
 
 import '../../providers/products_provider.dart';
-import '../screens/home_screen.dart';
-import '../screens/product_detail_screen.dart';
 import 'discountItem.dart';
 import 'message_bubble.dart';
 
@@ -67,11 +61,10 @@ class _ChatViewState extends State<ChatView> {
     super.initState();
   }
 
-
   @override
   void didChangeDependencies() {
-    getAllProductsFuture =
-        Provider.of<ProductsProvider>(context, listen: false).getProducts(0);            //TODO: change this
+    getAllProductsFuture = Provider.of<ProductsProvider>(context, listen: false)
+        .getProducts(0); //TODO: change this
     super.didChangeDependencies();
   }
 
@@ -79,8 +72,10 @@ class _ChatViewState extends State<ChatView> {
     var total = 0.0;
     for (var item in items) {
       try {
-        total += item['item_price'].runtimeType == String ? double.parse(item['item_price']) : item['item_price'] ?? 99999;
-      }catch(e){
+        total += item['item_price'].runtimeType == String
+            ? double.parse(item['item_price'])
+            : item['item_price'] ?? 99999;
+      } catch (e) {
         total += 0.0;
       }
     }
@@ -115,7 +110,7 @@ class _ChatViewState extends State<ChatView> {
                     );
                   }
                   return ListView.builder(
-                      padding: EdgeInsets.only(bottom: 300,top: 50),
+                      padding: EdgeInsets.only(bottom: 300, top: 50),
                       reverse: true,
                       itemCount: messages.length,
                       itemBuilder: (ctx, index) => Container(
@@ -123,8 +118,10 @@ class _ChatViewState extends State<ChatView> {
                             child: MessageBubble(
                               itemName: messages[index]['item_name'],
                               itemSize: messages[index]['item_description'],
-                              itemPrice: messages[index]['item_price'].toString(),
-                              itemOldPrice: messages[index]['item_oldPrice'] ?? "0.0",
+                              itemPrice:
+                                  messages[index]['item_price'].toString(),
+                              itemOldPrice:
+                                  messages[index]['item_oldPrice'] ?? "0.0",
                               itemImage: messages[index]['item_image'],
                               storeName: messages[index]['store_name'],
                               isMe: messages[index]['userId'] ==
@@ -144,13 +141,12 @@ class _ChatViewState extends State<ChatView> {
                     .collection("/lists/${widget.listId}/items")
                     .orderBy('time', descending: true)
                     .snapshots(),
-                builder: (context, snapshot){
+                builder: (context, snapshot) {
                   final items = snapshot.data?.docs ?? [];
-                  if (snapshot.connectionState ==
-                      ConnectionState.waiting) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
                     return Container();
                   }
-                  if(items.isEmpty){
+                  if (items.isEmpty) {
                     return Container();
                   }
                   return Container(
@@ -165,7 +161,11 @@ class _ChatViewState extends State<ChatView> {
                       children: [
                         Row(
                           children: [
-                            Text(LocaleKeys.chatlist.tr(),style: TextStylesInter.textViewBold12.copyWith(color: black2),),
+                            Text(
+                              LocaleKeys.chatlist.tr(),
+                              style: TextStylesInter.textViewBold12
+                                  .copyWith(color: black2),
+                            ),
                             Spacer(),
                             Text(
                               "${items.length} items",
@@ -184,14 +184,16 @@ class _ChatViewState extends State<ChatView> {
                             SizedBox(
                               width: 10.w,
                             ),
-                            IconButton(onPressed: (){
-                              setState(() {
-                                isExpandingChatlist = !isExpandingChatlist;
-                              });
-                            },icon: SvgPicture.asset(arrowDown)),
+                            IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    isExpandingChatlist = !isExpandingChatlist;
+                                  });
+                                },
+                                icon: SvgPicture.asset(arrowDown)),
                           ],
                         ),
-                        if(isExpandingChatlist)
+                        if (isExpandingChatlist)
                           Expanded(
                             child: ListView.separated(
                                 itemCount: items.length,
@@ -213,7 +215,7 @@ class _ChatViewState extends State<ChatView> {
                                               });
                                               FirebaseFirestore.instance
                                                   .collection(
-                                                  "/lists/${doc.reference.parent.parent?.id}/items")
+                                                      "/lists/${doc.reference.parent.parent?.id}/items")
                                                   .doc(doc.id)
                                                   .update({
                                                 "item_isChecked": isChecked,
@@ -221,8 +223,8 @@ class _ChatViewState extends State<ChatView> {
                                                 print(e);
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(const SnackBar(
-                                                    content: Text(
-                                                        "This operation couldn't be done please try again")));
+                                                        content: Text(
+                                                            "This operation couldn't be done please try again")));
                                               });
                                               // updateList();
                                             },
@@ -243,7 +245,7 @@ class _ChatViewState extends State<ChatView> {
                                   var itemPrice = items[i]['item_price'];
                                   return Row(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.center,
+                                        CrossAxisAlignment.center,
                                     children: [
                                       Expanded(
                                         child: Opacity(
@@ -259,19 +261,18 @@ class _ChatViewState extends State<ChatView> {
                                                   });
                                                   FirebaseFirestore.instance
                                                       .collection(
-                                                      "/lists/${doc.reference.parent.parent?.id}/items")
+                                                          "/lists/${doc.reference.parent.parent?.id}/items")
                                                       .doc(doc.id)
                                                       .update({
-                                                    "item_isChecked":
-                                                    isChecked,
+                                                    "item_isChecked": isChecked,
                                                   }).catchError((e) {
                                                     print(e);
                                                     ScaffoldMessenger.of(
-                                                        context)
+                                                            context)
                                                         .showSnackBar(
-                                                        const SnackBar(
-                                                            content: Text(
-                                                                "This operation couldn't be done please try again")));
+                                                            const SnackBar(
+                                                                content: Text(
+                                                                    "This operation couldn't be done please try again")));
                                                   });
                                                   // updateList();
                                                 },
@@ -288,21 +289,20 @@ class _ChatViewState extends State<ChatView> {
                                                 width: 140.w,
                                                 child: Column(
                                                   crossAxisAlignment:
-                                                  CrossAxisAlignment
-                                                      .start,
+                                                      CrossAxisAlignment.start,
                                                   children: [
                                                     Text(
                                                       itemName,
-                                                      overflow: TextOverflow
-                                                          .ellipsis,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                       style: TextStyles
                                                           .textViewSemiBold14
                                                           .copyWith(
-                                                          color: prussian,
-                                                          decoration: isChecked
-                                                              ? TextDecoration
-                                                              .lineThrough
-                                                              : null),
+                                                              color: prussian,
+                                                              decoration: isChecked
+                                                                  ? TextDecoration
+                                                                      .lineThrough
+                                                                  : null),
                                                     ),
                                                     Container(
                                                       width: 150.w,
@@ -311,12 +311,11 @@ class _ChatViewState extends State<ChatView> {
                                                         style: TextStyles
                                                             .textViewLight12
                                                             .copyWith(
-                                                            color:
-                                                            prussian,
-                                                            decoration: isChecked
-                                                                ? TextDecoration
-                                                                .lineThrough
-                                                                : null),
+                                                                color: prussian,
+                                                                decoration: isChecked
+                                                                    ? TextDecoration
+                                                                        .lineThrough
+                                                                    : null),
                                                       ),
                                                     ),
                                                   ],
@@ -331,7 +330,7 @@ class _ChatViewState extends State<ChatView> {
                                                   color: prussian,
                                                   decoration: isChecked
                                                       ? TextDecoration
-                                                      .lineThrough
+                                                          .lineThrough
                                                       : null,
                                                 ),
                                               ),
@@ -346,7 +345,6 @@ class _ChatViewState extends State<ChatView> {
                       ],
                     ),
                   );
-
                 }),
           ],
         ),
@@ -425,186 +423,104 @@ class _ChatViewState extends State<ChatView> {
       },
       panel: Container(
         padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            20.ph,
-            Opacity(
-              opacity: isCollapsed ? 0 : 1,
-              child: GenericField(
-                isFilled: true,
-                onTap: () async {
-                  SharedPreferences pref =
-                      await SharedPreferences.getInstance();
-                  return showSearch(
-                      context: context, delegate: MySearchDelegate(pref));
-                },
-                prefixIcon: Icon(Icons.search),
-                borderRaduis: 999,
-                hintText: LocaleKeys.whatAreYouLookingFor.tr(),
-                hintStyle:
-                    TextStyles.textViewSemiBold14.copyWith(color: gunmetal),
+        child: SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              20.ph,
+              Opacity(
+                opacity: isCollapsed ? 0 : 1,
+                child: GenericField(
+                  isFilled: true,
+                  onTap: () async {
+                    SharedPreferences pref =
+                        await SharedPreferences.getInstance();
+                    return showSearch(
+                        context: context, delegate: MySearchDelegate(pref));
+                  },
+                  prefixIcon: Icon(Icons.search),
+                  borderRaduis: 999,
+                  hintText: LocaleKeys.whatAreYouLookingFor.tr(),
+                  hintStyle:
+                      TextStyles.textViewSemiBold14.copyWith(color: gunmetal),
+                ),
               ),
-            ),
-            30.ph,
-            Text(
-              LocaleKeys.latestBargains.tr(),
-              style:
-                  TextStylesInter.textViewRegular13.copyWith(color: mainPurple),
-            ),
-            6.ph,
-            Container(
-              height: 220.h,
-              child: Consumer<ProductsProvider>(
-                builder: (ctx,provider,_){
-                  var comparisonProducts = provider.comparisonProducts;
-                  if(comparisonProducts.isEmpty) return Center(child: CircularProgressIndicator(),);
-                  return ListView.builder(
-                    itemCount: comparisonProducts.length,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (ctx, i) {
-                      return DiscountItem(
-                        comparisonProduct: comparisonProducts[i],
+              10.ph,
+              Consumer<ProductsProvider>(builder: (c, provider, _) {
+                List<ProductCategory> categories = [];
+                categories = provider.categories;
+                return SizedBox(
+                  height: ScreenUtil().screenHeight / 7,
+                  child: categories.isEmpty
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: categories.map((element) {
+                            return GestureDetector(
+                              onTap: () => AppNavigator.pushReplacement(
+                                  context: context,
+                                  screen: CategoriesScreen(
+                                    category: element.category,
+                                  )),
+                              child: SizedBox(
+                                width: 71.w,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      element.image,
+                                      width: 70.w,
+                                      height: 70.h,
+                                    ),
+                                    Text(
+                                      element.category,
+                                      style: TextStyles.textViewMedium11
+                                          .copyWith(color: gunmetal),
+                                      textAlign: TextAlign.center,
+                                      maxLines: 3,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          }).toList()),
+                );
+              }),
+              5.ph,
+              Text(
+                LocaleKeys.latestBargains.tr(),
+                style: TextStylesInter.textViewRegular13
+                    .copyWith(color: mainPurple),
+              ),
+              6.ph,
+              Container(
+                height: 220.h,
+                child: Consumer<ProductsProvider>(
+                  builder: (ctx, provider, _) {
+                    var comparisonProducts = provider.comparisonProducts;
+                    if (comparisonProducts.isEmpty)
+                      return Center(
+                        child: CircularProgressIndicator(),
                       );
-                      // return DiscountItem(
-                      //   onAdd: () {
-                      //     panelController.close();
-                      //                       Provider.of<ChatlistsProvider>(context,
-                      //                               listen: false)
-                      //                           .addItemToList(
-                      //                               ListItem(
-                      //                                   oldPrice: oldPrice,
-                      //                                   name: productName,
-                      //                                   price: price1,
-                      //                                   isChecked: false,
-                      //                                   quantity: 1,
-                      //                                   imageURL: imageURL,
-                      //                                   size: size1),
-                      //                               widget.listId);
-                      //   },
-                      //   onShare: () {
-                      //     panelController.close();
-                      //                       Provider.of<ChatlistsProvider>(context,
-                      //                               listen: false)
-                      //                           .shareItemAsMessage(
-                      //                               itemName: productName,
-                      //                               itemSize: size1,
-                      //                               itemImage: imageURL,
-                      //                               itemPrice: price1,
-                      //                               itemOldPrice: oldPrice,
-                      //                               storeName: storeName,
-                      //                               listId: widget.listId);
-                      //   },
-                      //   id: id,
-                      //   name: productName,
-                      //   imageURL: imageURL,
-                      //   // albertPriceAfter: price1 ?? price2,
-                      //   albertPriceAfter: price1,
-                      //   // measurement: size1 ?? size2,
-                      //   measurement: size1,
-                      //   jumboPriceAfter: '0.0',
-                      // );
-                    },
-                  );
-                },
+                    return ListView.builder(
+                      itemCount: comparisonProducts.length,
+                      scrollDirection: Axis.horizontal,
+                      itemBuilder: (ctx, i) {
+                        return DiscountItem(
+                          comparisonProduct: comparisonProducts[i],
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-            6.ph,
-            // Container(
-            //   height: 250.h,
-            //   child: FutureBuilder<int>(
-            //       future: getAllProductsFuture,
-            //       builder: (context, snapshot) {
-            //         if (snapshot.connectionState == ConnectionState.waiting) {
-            //           return const Center(
-            //             child: CircularProgressIndicator(),
-            //           );
-            //         }
-            //         if (snapshot.data != 200) {
-            //           return const Center(
-            //             child: Text(
-            //                 "Something went wrong. Please try again later"),
-            //           );
-            //         }
-            //         allProducts =
-            //             Provider.of<ProductsProvider>(context, listen: false)
-            //                 .allProducts;
-            //         // print("\n RESPONSE: ${allProducts.length}");
-            //         return ListView.builder(
-            //           itemCount: allProducts.length,
-            //           scrollDirection: Axis.horizontal,
-            //           itemBuilder: (ctx, i) {
-            //             var id = allProducts[i]['id'];
-            //             var productName = allProducts[i]['name'];
-            //             var imageURL = allProducts[i]['image_url'];
-            //             var storeName = allProducts[i]['product_brand'];
-            //             var description = allProducts[i]['product_description'];
-            //             var price1 = allProducts[i]['price_1'] ?? "";
-            //             var price2 = allProducts[i]['price_2'];
-            //             var oldPrice = allProducts[i]['befor_offer'];
-            //             var size1 = allProducts[i]['unit_size_1'] ?? "";
-            //             var size2 = allProducts[i]['unit_size_2'];
-            //             return GestureDetector(
-            //               onTap: () => AppNavigator.push(
-            //                   context: context,
-            //                   screen: ProductDetailScreen(
-            //                     productId: id,
-            //                     storeName: storeName,
-            //                     productName: productName,
-            //                     imageURL: imageURL,
-            //                     description: description,
-            //                     price: price1.runtimeType == int
-            //                         ? price1.toDouble()
-            //                         : price1,
-            //                     oldPrice: oldPrice,
-            //                     size1: size1,
-            //                     size2: size2,
-            //                   )
-            //               ),
-            //               child: DiscountItem(
-            //                 name: productName,
-            //                 imageURL: imageURL,
-            //                 albertPriceBefore:
-            //                     oldPrice.toString().isEmpty ? null : oldPrice,
-            //                 albertPriceAfter: price.toString(),
-            //                 measurement: size,
-            //                 onAdd: () {
-            //                   panelController.close();
-            //                   Provider.of<ChatlistsProvider>(context,
-            //                           listen: false)
-            //                       .addItemToList(
-            //                           ListItem(
-            //                               oldPrice: oldPrice,
-            //                               name: productName,
-            //                               price: price,
-            //                               isChecked: false,
-            //                               quantity: 1,
-            //                               imageURL: imageURL,
-            //                               size: size),
-            //                           widget.listId);
-            //                 },
-            //                 onShare: () {
-            //                   panelController.close();
-            //                   Provider.of<ChatlistsProvider>(context,
-            //                           listen: false)
-            //                       .shareItemAsMessage(
-            //                           itemName: productName,
-            //                           itemSize: size,
-            //                           itemImage: imageURL,
-            //                           itemPrice: price,
-            //                           itemOldPrice: oldPrice,
-            //                           storeName: storeName,
-            //                           listId: widget.listId);
-            //                 },
-            //                 sparPriceAfter: '0.0',
-            //                 jumboPriceAfter: '0.0',
-            //               ),
-            //             );
-            //           },
-            //         );
-            //       }),
-            // ),
-          ],
+              6.ph,
+            ],
+          ),
         ),
       ),
       borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),

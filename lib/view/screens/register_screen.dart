@@ -5,15 +5,12 @@ import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -27,7 +24,6 @@ import '../../utils/utils.dart';
 import '../../utils/validator.dart';
 import '../components/button.dart';
 import '../components/generic_field.dart';
-import 'forgot_password_screen.dart';
 import 'main_screen.dart';
 import 'onboarding_screen.dart';
 
@@ -69,17 +65,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
         // userCredential = await _auth.createUserWithEmailAndPassword(
         //     email: email, password: password);
-        var result = await FirebaseFirestore.instance.collection('users').where('phoneNumber',isEqualTo: phoneNumber).get();
-        if(result.docs.isNotEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Theme.of(context).errorColor,content: Text(
-              "Phone number is already registered with another account. Please enter a different phone number")));
+        var result = await FirebaseFirestore.instance
+            .collection('users')
+            .where('phoneNumber', isEqualTo: phoneNumber)
+            .get();
+        if (result.docs.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              content: Text(
+                  "Phone number is already registered with another account. Please enter a different phone number")));
           return;
         }
         var userCredential = await loginWithPhoneNumber(phoneNumber);
-        if(userCredential == null){
+        if (userCredential == null) {
           throw "credential error";
         }
-
 
         this.phoneNumber = userCredential.user!.phoneNumber!;
         await saveUserData(userCredential);
@@ -94,14 +94,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
         // userCredential = await _auth.signInWithEmailAndPassword(
         //     email: email, password: phoneNumber);
         print("Logging in...");
-        var result = await FirebaseFirestore.instance.collection('users').where('phoneNumber',isEqualTo: phoneNumber).get();
-        if(result.docs.isEmpty) {          //phone number doesn't exist
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(backgroundColor: Theme.of(context).errorColor,content: Text(
-              "This phone number doesn't appear to be associated with any account. Please enter a different phone number")));
+        var result = await FirebaseFirestore.instance
+            .collection('users')
+            .where('phoneNumber', isEqualTo: phoneNumber)
+            .get();
+        if (result.docs.isEmpty) {
+          //phone number doesn't exist
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              content: Text(
+                  "This phone number doesn't appear to be associated with any account. Please enter a different phone number")));
           return;
         }
         var userCredential = await loginWithPhoneNumber(phoneNumber);
-        if(userCredential == null){
+        if (userCredential == null) {
           throw "credential error";
         }
         print("logged in");
@@ -118,7 +124,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       print(message);
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
         content: Text(message),
-        backgroundColor: Theme.of(ctx).errorColor,
+        backgroundColor: Theme.of(ctx).colorScheme.error,
       ));
       setState(() {
         _isLoading = false;
@@ -142,8 +148,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(
                   height: 100.h,
                 ),
-                if(isLogin)
-                  Center(child: SvgPicture.asset(bargainbIcon)),
+                if (isLogin) Center(child: SvgPicture.asset(bargainbIcon)),
                 30.ph,
                 Center(
                   child: Text(
@@ -191,11 +196,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 SizedBox(
                   height: 15.h,
                 ),
-                if(!isLogin)...[
+                if (!isLogin) ...[
                   Text(
                     LocaleKeys.email.tr(),
-                    style:
-                    TextStylesDMSans.textViewBold12.copyWith(color: gunmetal),
+                    style: TextStylesDMSans.textViewBold12
+                        .copyWith(color: gunmetal),
                   ),
                   SizedBox(
                     height: 10.h,
@@ -220,19 +225,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   height: 10.h,
                 ),
                 Container(
-                  decoration: BoxDecoration(
-                      boxShadow:
-                            Utils.boxShadow
-                  ),
+                  decoration: BoxDecoration(boxShadow: Utils.boxShadow),
                   child: IntlPhoneField(
                     disableLengthCheck: true,
                     initialCountryCode: "EG",
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.transparent,
-                          ),
-                          borderRadius: BorderRadius.circular(10)),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.transparent,
+                            ),
+                            borderRadius: BorderRadius.circular(10)),
                         enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: Colors.transparent,
@@ -250,7 +252,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             borderRadius: BorderRadius.circular(10)),
                         fillColor: Colors.white,
                         filled: true,
-
                         hintText: "+91 90001 90001",
                         hintStyle: TextStylesInter.textViewRegular16),
                     // inputFormatters: [],
@@ -368,28 +369,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ],
                     )),
                 10.ph,
-                if(Platform.isIOS)
-                GenericButton(
-                    borderRadius: BorderRadius.circular(6),
-                    borderColor: borderColor,
-                    color: Colors.black,
-                    height: 70.h,
-                    width: double.infinity,
-                    onPressed: () async => await loginWithSocial(context, true),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(apple),
-                        SizedBox(
-                          width: 10.w,
-                        ),
-                        Text(
-                          LocaleKeys.signUpWithApple.tr(),
-                          style: TextStyles.textViewSemiBold16
-                              .copyWith(color: Colors.white),
-                        ),
-                      ],
-                    )),
+                if (Platform.isIOS)
+                  GenericButton(
+                      borderRadius: BorderRadius.circular(6),
+                      borderColor: borderColor,
+                      color: Colors.black,
+                      height: 70.h,
+                      width: double.infinity,
+                      onPressed: () async =>
+                          await loginWithSocial(context, true),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(apple),
+                          SizedBox(
+                            width: 10.w,
+                          ),
+                          Text(
+                            LocaleKeys.signUpWithApple.tr(),
+                            style: TextStyles.textViewSemiBold16
+                                .copyWith(color: Colors.white),
+                          ),
+                        ],
+                      )),
                 SizedBox(
                   height: 10.h,
                 ),
@@ -533,7 +535,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           print("Signed In...");
           print(userCredential);
           completer.complete(userCredential);
-          },
+        },
         timeout: const Duration(seconds: 60),
         codeAutoRetrievalTimeout: (message) {
           print("Code auto retrieval failed");
@@ -579,7 +581,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           photoURL = userCredential.user!.photoURL ?? "";
           print(photoURL);
           phoneNumber = "";
-        }catch(e){
+        } catch (e) {
           print(e);
         }
         await saveUserData(userCredential);
@@ -594,7 +596,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         AppNavigator.pushReplacement(
             context: context, screen: OnBoardingScreen());
       } else {
-
         AppNavigator.pushReplacement(context: context, screen: MainScreen());
       }
     }
@@ -614,7 +615,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       "email": email,
       "username": username,
       'imageURL': photoURL,
-      'phoneNumber':phoneNumber,
+      'phoneNumber': phoneNumber,
     });
     // await FirebaseFirestore.instance
     //     .collection('users')

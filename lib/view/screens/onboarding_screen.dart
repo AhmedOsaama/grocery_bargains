@@ -12,7 +12,6 @@ import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/button.dart';
-import 'package:bargainb/view/screens/home_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 
 class OnBoardingScreen extends StatefulWidget {
@@ -50,7 +49,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
-                  onPressed: () => AppNavigator.pushReplacement(context: context, screen: MainScreen()),
+                  onPressed: () => AppNavigator.pushReplacement(
+                      context: context, screen: MainScreen()),
                   child: Text(
                     LocaleKeys.skip.tr(),
                     style: TextStyles.textViewRegular14
@@ -73,7 +73,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 ),
                 GenericButton(
                   onPressed: () {
-                    if(pageNumber == 2) AppNavigator.pushReplacement(context: context, screen: MainScreen());
+                    if (pageNumber == 2)
+                      AppNavigator.pushReplacement(
+                          context: context, screen: MainScreen());
                     setState(() {
                       if (pageNumber < 2) {
                         _pageController.animateToPage(pageNumber.toInt() + 1,
@@ -128,7 +130,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   var slide2 = Column(
     children: [
-      SizedBox(height: 80.h,),
+      SizedBox(
+        height: 80.h,
+      ),
       SvgPicture.asset(bargainbIcon),
       30.ph,
       Text(
@@ -152,7 +156,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   );
   var slide3 = Column(
     children: [
-      SizedBox(height: 70.h,),
+      SizedBox(
+        height: 70.h,
+      ),
       SvgPicture.asset(bargainbIcon),
       30.ph,
       Text(

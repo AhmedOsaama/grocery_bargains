@@ -9,7 +9,6 @@ import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
 import '../components/button.dart';
-import '../components/generic_field.dart';
 
 class CheckEmailScreen extends StatelessWidget {
   const CheckEmailScreen({Key? key}) : super(key: key);
@@ -22,21 +21,32 @@ class CheckEmailScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 105.h,),
-              Text(LocaleKeys.checkEmail.tr(), style:
-              TextStyles.textViewSemiBold30.copyWith(color: prussian),),
-              SizedBox(height: 12.h,),
+              SizedBox(
+                height: 105.h,
+              ),
+              Text(
+                LocaleKeys.checkEmail.tr(),
+                style: TextStyles.textViewSemiBold30.copyWith(color: prussian),
+              ),
+              SizedBox(
+                height: 12.h,
+              ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 35.w),
-                child: Text(LocaleKeys.weHaveSentResetPassword.tr() + " brandonlouis@gmail.com",
-                  style:   TextStyles.textViewRegular14.copyWith(color: gunmetal),
-                  textAlign: TextAlign.center,),
+                child: Text(
+                  LocaleKeys.weHaveSentResetPassword.tr() +
+                      " brandonlouis@gmail.com",
+                  style: TextStyles.textViewRegular14.copyWith(color: gunmetal),
+                  textAlign: TextAlign.center,
+                ),
               ),
               SizedBox(
                 height: 58.h,
               ),
               SvgPicture.asset(verifyEmail),
-              SizedBox(height: 100.h,),
+              SizedBox(
+                height: 100.h,
+              ),
               GenericButton(
                   shadow: [
                     BoxShadow(
@@ -53,13 +63,16 @@ class CheckEmailScreen extends StatelessWidget {
                     LocaleKeys.openEmail.tr(),
                     style: TextStyles.textViewSemiBold16,
                   )),
-              SizedBox(height: 10.h,),
+              SizedBox(
+                height: 10.h,
+              ),
               GenericButton(
                   shadow: [
                     BoxShadow(
                         blurRadius: 9,
                         offset: Offset(0, 10),
-                        color: Color.fromRGBO(134, 141, 195, 0.53).withOpacity(0.25))
+                        color: Color.fromRGBO(134, 141, 195, 0.53)
+                            .withOpacity(0.25))
                   ],
                   height: 70.h,
                   color: Color.fromRGBO(134, 141, 195, 0.53),
@@ -70,11 +83,12 @@ class CheckEmailScreen extends StatelessWidget {
                     LocaleKeys.backToLogin.tr(),
                     style: TextStyles.textViewSemiBold16,
                   )),
-              SizedBox(height: 15.h,),
+              SizedBox(
+                height: 15.h,
+              ),
               Center(
                 child: GestureDetector(
-                  onTap: () {
-                  },
+                  onTap: () {},
                   child: Text.rich(
                     TextSpan(
                         text: LocaleKeys.youHaveNotReceivedEmail.tr(),
@@ -91,7 +105,9 @@ class CheckEmailScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 15.h,),
+              SizedBox(
+                height: 15.h,
+              ),
             ],
           ),
         ),

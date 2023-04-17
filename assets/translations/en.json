@@ -65,6 +65,7 @@
   "dozen"                     : "dozen",
   "addToCart"                     : "Add to cart",
   "latestBargains"                     : "Latest Bargains",
+  "latestDeals"                     : "LATEST DEALS",
 
   "addToList"                           : "Add to list",
   "share"                           : "Share",
@@ -130,5 +131,6 @@
   "owner"                  : "owner",
   "inputEmail"                  : "Input email...",
   "addToListFirstItem"                  : "Add To List first item",
-  "you"                  : "You"
+  "you"                  : "You",
+  "subcategories"                  : "Subcategories"
 }
