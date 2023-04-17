@@ -111,11 +111,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         //     '${'Hello, ' + (googleProvider.user.displayName ?? "Google user")}!',
                         //   );
                         // }
-                        return Text(
-                          style: TextStylesInter.textViewSemiBold24
-                              .copyWith(color: mainPurple),
-                          '${'Hello, ' + snapshot.data!['username']}!',
-                        );
+                        else {
+                          return Text(
+                            style: TextStylesInter.textViewSemiBold24
+                                .copyWith(color: mainPurple),
+                            '${'Hello, ' + snapshot.data!['username']}!',
+                          );
+                        }
                       }),
                   FutureBuilder(
                       future: getUserDataFuture,

@@ -1,8 +1,12 @@
+import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/view/screens/language_screen.dart';
+import 'package:bargainb/view/screens/preferences_screen.dart';
+import 'package:bargainb/view/screens/privacy_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/components/button.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/profile_dialog.dart';
@@ -10,8 +14,6 @@ import 'package:bargainb/view/widgets/profile_dialog.dart';
 import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
-
-enum Language { english, dutch }
 
 class SettingsScreen extends StatefulWidget {
   SettingsScreen({Key? key}) : super(key: key);
@@ -21,7 +23,19 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  var selectedLanguage = Language.english;
+  Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
+  @override
+  void initState() {
+    updateUserDataFuture();
+    super.initState();
+  }
+
+  void updateUserDataFuture() {
+    getUserDataFuture = FirebaseFirestore.instance
+        .collection('/users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,142 +56,114 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            24.ph,
-            Text(
-              LocaleKeys.subscription.tr(),
-              style: TextStyles.textViewSemiBold30.copyWith(color: black2),
-            ),
-            18.ph,
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 35.h),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Color.fromRGBO(238, 238, 238, 1)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            32.ph,
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                AppNavigator.push(context: context, screen: PrivacyScreen());
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: purple30),
-                        child: SvgPicture.asset(beeBlack),
-                      ),
-                      16.pw,
-                      Text(
-                        LocaleKeys.freePlan.tr(),
-                        style: TextStyles.textViewSemiBold24
-                            .copyWith(color: black2),
-                      ),
-                    ],
+                  Text(
+                    "Privacy",
+                    style: TextStyles.textViewMedium16.copyWith(color: black2),
                   ),
-                  24.ph,
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.star,
-                        color: yellow,
-                      ),
-                      5.pw,
-                      Text(
-                        '3 lists',
-                        style: TextStyles.textViewRegular16
-                            .copyWith(color: black1),
-                      )
-                    ],
-                  ),
-                  10.ph,
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.star,
-                        color: yellow,
-                      ),
-                      5.pw,
-                      Text(
-                        '5 Shared chats',
-                        style: TextStyles.textViewRegular16
-                            .copyWith(color: black1),
-                      )
-                    ],
-                  ),
-                  10.ph,
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.star,
-                        color: yellow,
-                      ),
-                      5.pw,
-                      Text(
-                        '50 per month searches',
-                        style: TextStyles.textViewRegular16
-                            .copyWith(color: black1),
-                      )
-                    ],
-                  ),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: mainPurple,
+                  )
                 ],
               ),
             ),
-            40.ph,
-            Text(
-              LocaleKeys.language.tr(),
-              style: TextStyles.textViewSemiBold18.copyWith(color: black2),
-            ),
-            10.ph,
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Color.fromRGBO(238, 238, 238, 1)),
-              ),
-              child: Column(
+            23.ph,
+            Divider(),
+            23.ph,
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                AppNavigator.push(
+                    context: context, screen: PreferencesScreen());
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        LocaleKeys.english.tr(),
-                        style:
-                            TextStyles.textViewMedium14.copyWith(color: black1),
-                      ),
-                      Radio(
-                          value: Language.english,
-                          groupValue: selectedLanguage,
-                          onChanged: (_) {
-                            setState(() {
-                              selectedLanguage = Language.english;
-                            });
-                          })
-                    ],
+                  Text(
+                    "Preferences",
+                    style: TextStyles.textViewMedium16.copyWith(color: black2),
                   ),
-                  5.ph,
-                  Divider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        LocaleKeys.dutch.tr(),
-                        style:
-                            TextStyles.textViewMedium14.copyWith(color: black1),
-                      ),
-                      Radio(
-                          value: Language.dutch,
-                          groupValue: selectedLanguage,
-                          onChanged: (_) {
-                            setState(() {
-                              selectedLanguage = Language.dutch;
-                            });
-                          })
-                    ],
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: mainPurple,
+                  )
+                ],
+              ),
+            ),
+            23.ph,
+            Divider(),
+            23.ph,
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () {
+                AppNavigator.pushReplacement(
+                    context: context, screen: LanguageScreen());
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    LocaleKeys.language.tr(),
+                    style: TextStyles.textViewMedium16.copyWith(color: black2),
                   ),
+                  FutureBuilder(
+                      future: getUserDataFuture,
+                      builder: (context, snap) {
+                        if (snap.connectionState == ConnectionState.waiting) {
+                          return Icon(
+                            Icons.arrow_forward_ios,
+                            color: mainPurple,
+                          );
+                        }
+                        return Row(
+                          children: [
+                            Text(
+                              snap.data!["language"] == "en"
+                                  ? "English"
+                                  : "Dutch",
+                              style: TextStyles.textViewMedium17
+                                  .copyWith(color: Colors.grey),
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: mainPurple,
+                            ),
+                          ],
+                        );
+                      })
                 ],
               ),
             ),
             Spacer(),
+            GenericButton(
+              onPressed: () => showDialog(
+                  context: context,
+                  builder: (ctx) => ProfileDialog(
+                        title: LocaleKeys.signout.tr(),
+                        body: LocaleKeys.logoutFromAccount.tr(),
+                        buttonText: LocaleKeys.signout.tr(),
+                        isSigningOut: true,
+                      )),
+              width: double.infinity,
+              height: 60.h,
+              borderRadius: BorderRadius.circular(6),
+              borderColor: Color.fromRGBO(137, 137, 137, 1),
+              child: Text(
+                LocaleKeys.signout.tr().toUpperCase(),
+                style: TextStylesDMSans.textViewBold14.copyWith(color: black2),
+              ),
+              color: Colors.white,
+            ),
+            10.ph,
             GenericButton(
               onPressed: () => showDialog(
                   context: context,

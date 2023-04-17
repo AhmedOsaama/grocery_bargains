@@ -1,6 +1,7 @@
 const String imgPath = 'assets/images';
 
 const String splashImage = '$imgPath/splash.png';
+const String circularBee = '$imgPath/circularBee.png';
 const String splashBackground = '$imgPath/splash_background.svg';
 const String registerArt = '$imgPath/register_art.svg';
 const String forgotPassword = '$imgPath/forgot_password.svg';

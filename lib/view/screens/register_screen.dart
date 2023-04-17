@@ -616,6 +616,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
       "username": username,
       'imageURL': photoURL,
       'phoneNumber': phoneNumber,
+      'language': 'en',
+      'status': "Hello! I'm using BargainB. Join the app",
+      'privacy': {
+        'connectContacts': true,
+        'locationServices': false,
+      },
+      'preferences': {
+        'emailMarketing': true,
+        'weekly': true,
+        'daily': false,
+      },
     });
     // await FirebaseFirestore.instance
     //     .collection('users')
