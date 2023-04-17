@@ -18,7 +18,8 @@ abstract class TextStyles {
     fontSize: 5.sp,
     fontFamily: fontFamilyPoppins,
     fontWeight: FontWeight.bold,
-  ); static TextStyle textViewBold7 = TextStyle(
+  );
+  static TextStyle textViewBold7 = TextStyle(
     fontSize: 7.sp,
     fontFamily: fontFamilyPoppins,
     fontWeight: FontWeight.bold,
@@ -213,6 +214,11 @@ abstract class TextStyles {
     fontFamily: fontFamilyPoppins,
     fontWeight: medium,
   );
+  static TextStyle textViewMedium11 = TextStyle(
+    fontSize: 11.sp,
+    fontWeight: medium,
+    fontFamily: fontFamilyPoppins,
+  );
   static TextStyle textViewMedium12 = TextStyle(
     fontSize: 12.sp,
     fontWeight: medium,
@@ -286,9 +292,8 @@ abstract class TextStyles {
   );
 
   //////////////////////////////////////////////////////////////////
-
-
 }
+
 abstract class TextStylesDMSans {
   static TextStyle textViewBold10 = TextStyle(
     fontSize: 10.sp,
@@ -299,7 +304,8 @@ abstract class TextStylesDMSans {
     fontSize: 5.sp,
     fontFamily: fontFamilyDMSans,
     fontWeight: FontWeight.bold,
-  ); static TextStyle textViewBold7 = TextStyle(
+  );
+  static TextStyle textViewBold7 = TextStyle(
     fontSize: 7.sp,
     fontFamily: fontFamilyDMSans,
     fontWeight: FontWeight.bold,
@@ -538,8 +544,8 @@ abstract class TextStylesDMSans {
     fontWeight: light,
     fontFamily: fontFamilyDMSans,
   );
-
 }
+
 abstract class TextStylesInter {
   static TextStyle textViewBold10 = TextStyle(
     fontSize: 10.sp,
@@ -550,7 +556,8 @@ abstract class TextStylesInter {
     fontSize: 5.sp,
     fontFamily: fontFamilyInter,
     fontWeight: FontWeight.bold,
-  ); static TextStyle textViewBold7 = TextStyle(
+  );
+  static TextStyle textViewBold7 = TextStyle(
     fontSize: 7.sp,
     fontFamily: fontFamilyInter,
     fontWeight: FontWeight.bold,
@@ -740,9 +747,15 @@ abstract class TextStylesInter {
     fontWeight: medium,
     fontFamily: fontFamilyInter,
   );
+
   static TextStyle textViewMedium23 = TextStyle(
     fontSize: 23.sp,
     fontWeight: medium,
+    fontFamily: fontFamilyInter,
+  );
+  static TextStyle textViewSmall11 = TextStyle(
+    fontSize: 11.sp,
+    fontWeight: FontWeight.w400,
     fontFamily: fontFamilyInter,
   );
 
@@ -762,8 +775,18 @@ abstract class TextStylesInter {
     fontFamily: fontFamilyInter,
   );
 
+  static TextStyle textViewSemiBold15 = TextStyle(
+    fontSize: 15.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: fontFamilyInter,
+  );
   static TextStyle textViewSemiBold16 = TextStyle(
     fontSize: 16.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: fontFamilyInter,
+  );
+  static TextStyle textViewSemiBold17 = TextStyle(
+    fontSize: 17.sp,
     fontWeight: FontWeight.w600,
     fontFamily: fontFamilyInter,
   );
@@ -794,5 +817,4 @@ abstract class TextStylesInter {
     fontWeight: light,
     fontFamily: fontFamilyInter,
   );
-
 }

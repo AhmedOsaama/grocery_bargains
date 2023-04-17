@@ -66,8 +66,9 @@ dependencies:
   flutter_contacts: ^1.1.6
   intl_phone_field: ^3.1.0
   firebase_app_check: ^0.1.1+14
-  pinput: ^2.2.21
+  pinput: ^2.2.31
   mixpanel_flutter: ^2.1.1
+  cached_network_image: ^3.2.3
 
 
 dev_dependencies:
@@ -101,6 +102,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/images/categories/
     - assets/icon/
     - assets/translations/
 
@@ -140,15 +142,4 @@ flutter:
           weight: 400
         - asset: assets/fonts/Poppins-Light.ttf
           weight: 300
-    - family: MonsalGothic
-      fonts:
-        - asset: assets/fonts/MonsalGothic-ExtraBold.ttf
-          weight: 800
-        - asset: assets/fonts/MonsalGothic-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/MonsalGothic-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/MonsalGothic-Regular.ttf
-          weight: 400
-        - asset: assets/fonts/MonsalGothic-Light.ttf
-          weight: 300
+

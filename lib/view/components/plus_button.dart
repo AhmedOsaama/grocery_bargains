@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../config/routes/app_navigator.dart';
 import '../../utils/app_colors.dart';
-import '../screens/invite_screen.dart';
 
 class PlusButton extends StatelessWidget {
   final Function() onTap;
@@ -14,14 +12,19 @@ class PlusButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 24,
-        height: 24,
+        width: 36.w,
+        height: 36.h,
         decoration: BoxDecoration(
-          color: yellow,
-            borderRadius: BorderRadius.circular(7)
+          color: white,
+          border: Border.all(color: purple30),
+          borderRadius: BorderRadius.circular(12.r),
         ),
         child: Center(
-          child: Icon(Icons.add,color: Colors.black,size: 20,),
+          child: Icon(
+            Icons.add,
+            color: mainPurple,
+            size: 30.sp,
+          ),
         ),
       ),
     );

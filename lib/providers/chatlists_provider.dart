@@ -68,12 +68,12 @@ class ChatlistsProvider with ChangeNotifier {
       var userIds = list['userIds'] as List;
       allUserIds.addAll([...userIds]);
     });
-    print(allUserIds);
+
     //removing duplicates
     allUserIds = allUserIds.toSet().toList();
     //removing my self
     allUserIds.remove(myId);
-    print(allUserIds);
+
     //for every user we get their name,image and lists in common
     for (var userId in allUserIds) {
       var userSnapshot = await FirebaseFirestore.instance
@@ -81,7 +81,7 @@ class ChatlistsProvider with ChangeNotifier {
           .doc(userId)
           .get();
       var userName = userSnapshot.data()!['username'];
-      print(userName);
+
       var userImage = userSnapshot.data()!['imageURL'];
       var userEmail = userSnapshot.data()!['email'];
 
@@ -164,7 +164,8 @@ class ChatlistsProvider with ChangeNotifier {
     });
   }
 
-  Future<void> deleteItemFromChatlist(String listId, String itemId, String itemPrice) async {
+  Future<void> deleteItemFromChatlist(
+      String listId, String itemId, String itemPrice) async {
     print("ENTERED");
     try {
       var chatlist = chatlists.firstWhere((chatlist) => chatlist.id == listId);
@@ -172,17 +173,15 @@ class ChatlistsProvider with ChangeNotifier {
           .collection('/lists/${listId}/items')
           .doc(itemId)
           .delete();
-      await FirebaseFirestore.instance.collection('lists')
-          .doc(listId)
-          .update({
+      await FirebaseFirestore.instance.collection('lists').doc(listId).update({
         "size": FieldValue.increment(-1),
-        "total_price": FieldValue.increment(
-            (double.tryParse(itemPrice) ?? 0) * -1),
+        "total_price":
+            FieldValue.increment((double.tryParse(itemPrice) ?? 0) * -1),
       });
       chatlist.itemLength -= 1;
       chatlist.totalPrice -= double.tryParse(itemPrice) ?? 0;
       notifyListeners();
-    }catch(e){
+    } catch (e) {
       print(e);
     }
     // chatlist.lastMessage = "Added $lastMessage";
@@ -288,14 +287,12 @@ class ChatlistsProvider with ChangeNotifier {
     updateChatList(listId, 'Shared $itemName', userData);
   }
 
-
-
-  Future<void> addMessageToList(
-      {required DocumentReference messageDocPath,
-      required String message,
-      required String userName,
-      required String userId,
-      }) async {
+  Future<void> addMessageToList({
+    required DocumentReference messageDocPath,
+    required String message,
+    required String userName,
+    required String userId,
+  }) async {
     await FirebaseFirestore.instance
         .collection('${messageDocPath.parent.parent?.path}/items')
         .add({
@@ -305,19 +302,25 @@ class ChatlistsProvider with ChangeNotifier {
       "owner": userName,
       "time": Timestamp.now(),
     });
-    await updateListInfo(itemName: "",itemPrice: "",messageDocPath: messageDocPath,userName: userName,userId: userId, message: message);
+    await updateListInfo(
+        itemName: "",
+        itemPrice: "",
+        messageDocPath: messageDocPath,
+        userName: userName,
+        userId: userId,
+        message: message);
     markItemAsAdded(messageDocPath);
   }
 
-  Future<void> addItemMessageToList(
-      {required String itemName,
-      required String itemSize,
-      required String itemPrice,
-      required String itemImage,
-      required DocumentReference messageDocPath,
-      required String userName,
-      required String userId,
-      }) async {
+  Future<void> addItemMessageToList({
+    required String itemName,
+    required String itemSize,
+    required String itemPrice,
+    required String itemImage,
+    required DocumentReference messageDocPath,
+    required String userName,
+    required String userId,
+  }) async {
     await FirebaseFirestore.instance
         .collection('${messageDocPath.parent.parent?.path}/items')
         .add({
@@ -331,7 +334,13 @@ class ChatlistsProvider with ChangeNotifier {
       "owner": userName,
       "time": Timestamp.now(),
     });
-    await updateListInfo(itemName: itemName,itemPrice: itemPrice, messageDocPath: messageDocPath,userName: userName,userId: userId, message: "");
+    await updateListInfo(
+        itemName: itemName,
+        itemPrice: itemPrice,
+        messageDocPath: messageDocPath,
+        userName: userName,
+        userId: userId,
+        message: "");
     markItemAsAdded(messageDocPath);
   }
 
@@ -371,7 +380,8 @@ class ChatlistsProvider with ChangeNotifier {
     });
   }
 
-  void updateChatList(String listId, String message, DocumentSnapshot<Map<String, dynamic>> userData) {
+  void updateChatList(String listId, String message,
+      DocumentSnapshot<Map<String, dynamic>> userData) {
     var chatlist = chatlists.firstWhere((chatlist) => chatlist.id == listId);
     chatlist.lastMessage = message;
     chatlist.lastMessageDate = Timestamp.now();

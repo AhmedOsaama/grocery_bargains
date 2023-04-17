@@ -5,7 +5,6 @@ import 'package:bargainb/view/screens/main_screen.dart';
 
 import '../view/screens/chatlist_view_screen.dart';
 
-
 class DynamicLinkService {
   Future handleDynamicLinks() async {
     final data = await FirebaseDynamicLinks.instance.getInitialLink();
@@ -20,8 +19,7 @@ class DynamicLinkService {
   void listenToDynamicLinks(BuildContext context) {
     FirebaseDynamicLinks.instance.onLink.listen((PendingDynamicLinkData? data) {
       handleDeepLink(data!, context);
-    }
-    ).onError((error) {
+    }).onError((error) {
       print("Dynamic link failed: $error");
     });
   }
@@ -29,32 +27,32 @@ class DynamicLinkService {
   void handleDeepLink(PendingDynamicLinkData? data, BuildContext context) {
     final Uri? deepLink = data?.link;
     if (deepLink != null) {
-      print("deeplink: ${deepLink.path}");
       var parsedPath = deepLink.path.split('/');
-      print("PARSED PATH: $parsedPath");
+
       var functionName = parsedPath[1];
       var listName = parsedPath[2];
       var listId = parsedPath[3];
       if (functionName == "add_user") {
-        AppNavigator.push(context: context, screen: ChatListViewScreen(listId: listId, isUsingDynamicLink: true));
+        AppNavigator.push(
+            context: context,
+            screen:
+                ChatListViewScreen(listId: listId, isUsingDynamicLink: true));
       }
-
     }
   }
 
   Widget getStartPage(String dynamicLinkPath) {
     if (dynamicLinkPath != "nothing") {
       var parsedPath = dynamicLinkPath.split('/');
-      print("PARSED PATH: $parsedPath");
+
       var functionName = parsedPath[1];
       var listName = parsedPath[2];
       var listId = parsedPath[3];
       if (functionName == "add_user") {
         return ChatListViewScreen(listId: listId, isUsingDynamicLink: true);
       }
-      return const MainScreen();                                //in case functionName wasn't add_user
+      return const MainScreen(); //in case functionName wasn't add_user
     }
     return const MainScreen();
   }
 }
-

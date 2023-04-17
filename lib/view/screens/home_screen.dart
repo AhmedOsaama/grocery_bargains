@@ -1,46 +1,30 @@
-import 'dart:convert';
-
 import 'package:bargainb/models/bestValue_item.dart';
+import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/providers/products_provider.dart';
-import 'package:bargainb/services/network_services.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/utils/utils.dart';
 import 'package:bargainb/view/components/generic_field.dart';
-import 'package:bargainb/view/screens/choose_store_screen.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
-import 'package:bargainb/view/widgets/chat_view_widget.dart';
 import 'package:bargainb/view/screens/product_detail_screen.dart';
-import 'package:bargainb/view/screens/register_screen.dart';
-import 'package:bargainb/view/widgets/category_widget.dart';
 import 'package:bargainb/view/widgets/discountItem.dart';
-import 'package:bargainb/view/widgets/product_item.dart';
-import 'package:bargainb/view/widgets/search_item.dart';
 
 import '../../config/routes/app_navigator.dart';
-import '../../main.dart';
-import '../../models/list_item.dart';
-import '../../models/product.dart';
-import '../../providers/google_sign_in_provider.dart';
 import '../../services/dynamic_link_service.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/icons_manager.dart';
-import '../components/button.dart';
 import '../widgets/store_list_widget.dart';
-import 'chatlist_view_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -77,7 +61,6 @@ class _HomeScreenState extends State<HomeScreen> {
     DynamicLinkService().listenToDynamicLinks(
         context); //case 2 the app is open but in background and opened again via deep link
     // WidgetsBinding.instance.addObserver(this);
-
   }
 
   // @override
@@ -405,9 +388,12 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 height: 220.h,
                 child: Consumer<ProductsProvider>(
-                  builder: (ctx,provider,_){
+                  builder: (ctx, provider, _) {
                     var comparisonProducts = provider.comparisonProducts;
-                    if(comparisonProducts.isEmpty) return Center(child: CircularProgressIndicator(),);
+                    if (comparisonProducts.isEmpty)
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
                     return ListView.builder(
                       itemCount: comparisonProducts.length,
                       scrollDirection: Axis.horizontal,
@@ -493,92 +479,89 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               Container(
                 height: 150.h,
-                child: Consumer<ProductsProvider>(
-                    builder: (context, provider,_) {
-                      bestValueBargains = provider.bestValueBargains;
-                      print(bestValueBargains.length);
-                      // print(bestValueBargains.length);
-                      return ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: bestValueBargains.map((bargain) {
-                            return GestureDetector(
-                              onTap: () {
-                                AppNavigator.push(
-                                    context: context,
-                                    screen: ProductDetailScreen(
-                                      comparisonId: -1,
-                                      productId: bargain.itemId,
-                                      storeName: bargain.store,
-                                      productName: bargain.itemName,
-                                      imageURL: bargain.itemImage,
-                                      description: bargain.description,
-                                      price1:
-                                          double.tryParse(bargain.price1) ?? 0,
-                                      price2:
-                                          double.tryParse(bargain.price2) ?? 0,
-                                      oldPrice: bargain.oldPrice,
-                                      size1: bargain.size1,
-                                      size2: bargain.size2,
-                                    ));
-                              },
-                              child: Container(
-                                padding: EdgeInsets.all(10),
-                                margin: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  boxShadow: Utils.boxShadow,
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
+                child:
+                    Consumer<ProductsProvider>(builder: (context, provider, _) {
+                  bestValueBargains = provider.bestValueBargains;
+                  print(bestValueBargains.length);
+                  // print(bestValueBargains.length);
+                  return ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: bestValueBargains.map((bargain) {
+                        return GestureDetector(
+                          onTap: () {
+                            AppNavigator.push(
+                                context: context,
+                                screen: ProductDetailScreen(
+                                  comparisonId: -1,
+                                  productId: bargain.itemId,
+                                  storeName: bargain.store,
+                                  productName: bargain.itemName,
+                                  imageURL: bargain.itemImage,
+                                  description: bargain.description,
+                                  price1: double.tryParse(bargain.price1) ?? 0,
+                                  price2: double.tryParse(bargain.price2) ?? 0,
+                                  oldPrice: bargain.oldPrice,
+                                  size1: bargain.size1,
+                                  size2: bargain.size2,
+                                ));
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(10),
+                            margin: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              boxShadow: Utils.boxShadow,
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              children: [
+                                Image.network(
+                                  bargain.itemImage,
+                                  width: 50,
+                                  height: 50,
                                 ),
-                                child: Row(
+                                SizedBox(
+                                  width: 15.w,
+                                ),
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Image.network(
-                                      bargain.itemImage,
-                                      width: 50,
-                                      height: 50,
+                                    Text(
+                                      bargain.bestValueSize,
+                                      style: TextStyles.textViewSemiBold16,
                                     ),
                                     SizedBox(
-                                      width: 15.w,
+                                      height: 10.h,
                                     ),
-                                    Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          bargain.bestValueSize,
-                                          style: TextStyles.textViewSemiBold16,
-                                        ),
-                                        SizedBox(
-                                          height: 10.h,
-                                        ),
-                                        Text(
-                                          "\€" +
-                                              (bargain.bestValueSize ==
-                                                      bargain.size1
-                                                  ? bargain.price1
-                                                  : bargain
-                                                      .price2), //should be the best price
-                                          style: TextStyles.textViewMedium12
-                                              .copyWith(
-                                                  color: const Color.fromRGBO(
-                                                      108, 197, 29, 1)),
-                                        ),
-                                        SizedBox(
-                                          height: 5.w,
-                                        ),
-                                        Text(
-                                          bargain.subCategory,
-                                          style: TextStyles.textViewRegular12
-                                              .copyWith(color: Colors.grey),
-                                        ),
-                                      ],
-                                    )
+                                    Text(
+                                      "\€" +
+                                          (bargain.bestValueSize ==
+                                                  bargain.size1
+                                              ? bargain.price1
+                                              : bargain
+                                                  .price2), //should be the best price
+                                      style: TextStyles.textViewMedium12
+                                          .copyWith(
+                                              color: const Color.fromRGBO(
+                                                  108, 197, 29, 1)),
+                                    ),
+                                    SizedBox(
+                                      height: 5.w,
+                                    ),
+                                    Text(
+                                      bargain.subCategory,
+                                      style: TextStyles.textViewRegular12
+                                          .copyWith(color: Colors.grey),
+                                    ),
                                   ],
-                                ),
-                              ),
-                            );
-                          }).toList());
-                    }),
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList());
+                }),
               ),
               10.ph,
             ],
@@ -588,197 +571,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
   Future fetch(int startingIndex) {
     return Provider.of<ProductsProvider>(context, listen: false)
         .getProducts(startingIndex);
   }
 }
-
-class MySearchDelegate extends SearchDelegate {
-  final SharedPreferences pref;
-
-  MySearchDelegate(this.pref);
-
-  @override
-  List<Widget>? buildActions(BuildContext context) {
-    return [
-      GestureDetector(
-        onTap: () {
-          query = '';
-        },
-        child: Container(
-            margin: EdgeInsets.only(right: 10.w),
-            padding: EdgeInsets.all(5),
-            decoration: BoxDecoration(
-                shape: BoxShape.circle, border: Border.all(color: grey)),
-            child: Icon(
-              Icons.close,
-              color: Colors.black,
-            )),
-      ),
-    ];
-  }
-
-  @override
-  Widget? buildLeading(BuildContext context) {
-    return IconButton(
-        onPressed: () {
-          FocusScope.of(context).unfocus();
-          close(context, null);
-        },
-        icon: Icon(Icons.arrow_back));
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    if (query.isNotEmpty) saveRecentSearches();
-    // List allProducts =
-    //     Provider.of<ProductsProvider>(context, listen: false).allProducts;
-    // var searchResults = allProducts
-    //     .where((product) => product['Name'].toString().contains(query))
-    //     .toList();
-    return FutureBuilder<List<Product>>(
-        future: Provider.of<ProductsProvider>(context,listen: false).searchProducts(query),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting)
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          if (!snapshot.hasData || snapshot.hasError)
-            return const Center(
-              child: Text("Something went wrong please try again"),
-            );
-          var searchResults = snapshot.data ?? [];
-          if (searchResults.isEmpty)
-            return const Center(
-              child: Text("No matches found :("),
-            );
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: ListView.builder(
-              itemCount: searchResults.length,
-              itemBuilder: (ctx, i) {
-                var id = searchResults[i].id;
-                var productName = searchResults[i].name;
-                var imageURL = searchResults[i].imageURL;
-                var storeName = searchResults[i].storeName;
-                var description = searchResults[i].description;
-                var price1 = searchResults[i].price;
-                var price2 = searchResults[i].price2 ?? '';
-                var oldPrice = searchResults[i].oldPrice;
-                var size1 = searchResults[i].size ?? "";
-                var size2 = searchResults[i].size2 ?? "";
-                return GestureDetector(
-                  onTap: () => AppNavigator.push(
-                      context: context,
-                      screen: ProductDetailScreen(
-                        comparisonId: -1,
-                        productId: id,
-                        oldPrice: oldPrice,
-                        storeName: storeName,
-                        productName: productName,
-                        imageURL: imageURL,
-                        description: description,
-                        size1: size1,
-                        size2: size2,
-                        price1: double.tryParse(price1) ?? 0.0,
-                        price2: double.tryParse(price2) ?? 0.0,
-                      )),
-                  child: SearchItem(
-                    name: productName,
-                    imageURL: imageURL,
-                    currentPrice: price1,
-                    size: size1,
-                    store: storeName,
-                  ),
-                );
-              },
-            ),
-          );
-        });
-  }
-
-  void saveRecentSearches() {
-    var recentSearches = pref.getStringList('recentSearches') ?? [];
-    if (recentSearches.contains(query)) return;
-    recentSearches.add(query);
-    pref.setStringList('recentSearches', recentSearches);
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    List<String> searchResults = pref.getStringList('recentSearches') ?? [];
-
-    List<String> suggestions = searchResults.where((searchResult) {
-      final result = searchResult.toLowerCase();
-      final input = query.toLowerCase();
-      return result.contains(input);
-    }).toList();
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            LocaleKeys.recentSearches.tr(),
-            style: TextStyles.textViewMedium20.copyWith(color: gunmetal),
-          ),
-          SizedBox(
-            height: 15.h,
-          ),
-          Expanded(
-            child: ListView.separated(
-                separatorBuilder: (ctx, i) => const Divider(),
-                itemCount: suggestions.length,
-                itemBuilder: (ctx, i) {
-                  final suggestion = suggestions[i];
-                  return ListTile(
-                    title: Text(suggestion),
-                    leading: Icon(Icons.search),
-                    onTap: () {
-                      query = suggestion;
-                      showResults(context);
-                    },
-                  );
-                }),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// Container(
-//   height: 100.h,
-//   child: ListView(
-//     scrollDirection: Axis.horizontal,
-//     children: [
-//       CategoryWidget(
-//         categoryImagePath: vegetables,
-//         categoryName: LocaleKeys.vegetables.tr(),
-//         color: Colors.green,
-//       ),
-//       CategoryWidget(
-//         categoryImagePath: fruits,
-//         categoryName: LocaleKeys.fruits.tr(),
-//         color: Colors.red,
-//       ),
-//       CategoryWidget(
-//         categoryImagePath: beverages,
-//         categoryName: LocaleKeys.beverages.tr(),
-//         color: Colors.yellow,
-//       ),
-//       CategoryWidget(
-//         categoryImagePath: grocery,
-//         categoryName: LocaleKeys.grocery.tr(),
-//         color: Colors.deepPurpleAccent,
-//       ),
-//       CategoryWidget(
-//         categoryImagePath: edibleOil,
-//         categoryName: LocaleKeys.edibleOil.tr(),
-//         color: Colors.cyan,
-//       ),
-//     ],
-//   ),
-// ),

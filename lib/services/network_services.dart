@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class NetworkServices {
- static Future<http.Response> getAllAlbertProducts() async {
+  static Future<http.Response> getAllAlbertProducts() async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/function-1');
     var response = await http.get(
@@ -13,18 +13,27 @@ class NetworkServices {
   static Future<http.Response> getAllJumboProducts() async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/get_all_products_JUMBO');
-    var response = await http.get(
-        url, headers: {'Content-Type': 'application/json'});
+    var response =
+        await http.get(url, headers: {'Content-Type': 'application/json'});
     return response;
   }
 
- static Future<http.Response> getAllPriceComparisons() async {
-   final url = Uri.parse(
-       'https://europe-west1-discountly.cloudfunctions.net/get_all_price_comparisons');
-   var response = await http.get(
-       url, headers: {'Content-Type': 'application/json'});
-   return response;
- }
+  static Future<http.Response> getAllAlbertCategories() async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/get_all_albert_categories');
+    var response =
+        await http.get(url, headers: {'Content-Type': 'application/json'});
+
+    return response;
+  }
+
+  static Future<http.Response> getAllPriceComparisons() async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/get_all_price_comparisons');
+    var response =
+        await http.get(url, headers: {'Content-Type': 'application/json'});
+    return response;
+  }
 
 
 

@@ -1,7 +1,6 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 
-import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
 
@@ -21,8 +20,7 @@ class DottedContainer extends StatelessWidget {
       color: purple50,
       child: Text(
         text,
-        style: TextStylesInter.textViewMedium25
-            .copyWith(color: purple50),
+        style: TextStylesInter.textViewMedium25.copyWith(color: purple50),
       ),
     );
   }

@@ -1,22 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/utils/app_colors.dart';
-import 'dart:io';
 
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
-import 'package:bargainb/view/components/plus_button.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
-import 'package:bargainb/view/screens/thread_screen.dart';
 import 'package:bargainb/view/widgets/product_item.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/chatlists_provider.dart';
-import '../components/button.dart';
 
 class MessageBubble extends StatefulWidget {
   // final String message;
@@ -119,7 +113,8 @@ class _MessageBubbleState extends State<MessageBubble> {
                                   await chatlistProvider.addMessageToList(
                                     messageDocPath: widget.messageDocPath,
                                     userName: widget.userName,
-                                    userId: widget.userId, message: widget.message,
+                                    userId: widget.userId,
+                                    message: widget.message,
                                   );
                                 },
                           child: widget.isAddedToList
@@ -166,7 +161,8 @@ class _MessageBubbleState extends State<MessageBubble> {
                                   await chatlistProvider.addMessageToList(
                                     messageDocPath: widget.messageDocPath,
                                     userName: widget.userName,
-                                    userId: widget.userId, message: widget.message,
+                                    userId: widget.userId,
+                                    message: widget.message,
                                   );
                                 },
                           child: widget.isAddedToList
@@ -294,5 +290,4 @@ class _MessageBubbleState extends State<MessageBubble> {
   //         'isAddedToList': true,
   //       });
   // }
-
 }
