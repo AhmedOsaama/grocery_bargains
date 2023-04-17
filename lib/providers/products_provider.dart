@@ -166,7 +166,7 @@ class ProductsProvider with ChangeNotifier {
         }
       });
     }
-
+    print("jumbo products length: ${jumboProducts.length}");
     notifyListeners();
     return response.statusCode;
   }
@@ -176,6 +176,7 @@ class ProductsProvider with ChangeNotifier {
 
     categories = productCategoryFromJson(response.body);
 
+    print("categories length: ${categories.length}");
     notifyListeners();
     return response.statusCode;
   }
@@ -324,9 +325,8 @@ class ProductsProvider with ChangeNotifier {
     } catch (e) {
       print(e);
     }
-    print(bestValueBargains.length);
+    print( "Best value bargains length: " + bestValueBargains.length.toString());
     notifyListeners();
-
     return bestValueBargains;
   }
 
