@@ -144,7 +144,7 @@ class MySearchDelegate extends SearchDelegate {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              flex: 3,
+              flex: 2,
               child: categories.isEmpty
                   ? const Center(
                       child: CircularProgressIndicator(),
@@ -182,11 +182,9 @@ class MySearchDelegate extends SearchDelegate {
                         );
                       }).toList()),
             ),
-            Expanded(
-              child: Text(
-                LocaleKeys.recentSearches.tr(),
-                style: TextStyles.textViewMedium20.copyWith(color: gunmetal),
-              ),
+            Text(
+              LocaleKeys.recentSearches.tr(),
+              style: TextStyles.textViewMedium20.copyWith(color: gunmetal),
             ),
             Expanded(
               flex: 9,
