@@ -93,6 +93,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                             .update({
                           'language': "en",
                         });
+                        context.setLocale(Locale('en'));
                         setState(() {
                           updateUserDataFuture();
                         });
@@ -128,6 +129,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                             .update({
                           'language': "nl",
                         });
+                        context.setLocale(Locale('nl'));
                         setState(() {
                           updateUserDataFuture();
                         });

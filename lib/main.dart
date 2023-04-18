@@ -83,7 +83,7 @@ Future<void> main() async {
       options.tracesSampleRate = 1.0;
     },
     appRunner: () => runApp(EasyLocalization(
-        supportedLocales: const [Locale('ar'), Locale('en')],
+        supportedLocales: const [Locale('ar'), Locale('en'), Locale('nl')],
         path: 'assets/translations',
         fallbackLocale: const Locale('en'),
         child: MultiProvider(
