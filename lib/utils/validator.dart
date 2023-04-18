@@ -10,7 +10,7 @@ class Validator {
   }
 
   static String? phoneValidator(String? value) {
-    if (value != null && (value.trim().isEmpty || value.trim().length != 10)) {
+    if (value != null && (value.trim().isEmpty || value.trim().length < 6)) {
       // return tr("error_field_required");
       return "Invalid phone number";
     }
@@ -45,7 +45,6 @@ class Validator {
   //   }
   //   return null;
   // }
-
 
   static String? defaultEmptyValidator(String? value) {
     return null;
@@ -92,6 +91,4 @@ class Validator {
     }
     return null;
   }
-
-
 }
