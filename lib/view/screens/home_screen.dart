@@ -1,4 +1,5 @@
 import 'package:bargainb/models/bestValue_item.dart';
+import 'package:bargainb/models/product.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -6,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
@@ -18,7 +20,6 @@ import 'package:bargainb/view/components/generic_field.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/screens/product_detail_screen.dart';
-import 'package:bargainb/view/widgets/discountItem.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../services/dynamic_link_service.dart';
@@ -34,6 +35,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final PagingController<int, Product> _pagingController =
+      PagingController(firstPageKey: 0);
+  static const _pageSize = 50;
+
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
   // late Future<int> getAllProductsFuture;
   late Future<QuerySnapshot> getAllListsFuture;
@@ -45,9 +50,13 @@ class _HomeScreenState extends State<HomeScreen> {
       TextStylesInter.textViewRegular16.copyWith(color: mainPurple);
 
   List<BestValueItem> bestValueBargains = [];
+  int startingIndex = 0;
 
   @override
   void initState() {
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
     super.initState();
     getAllListsFuture = Provider.of<ChatlistsProvider>(context, listen: false)
         .getAllChatlistsFuture();
@@ -61,6 +70,26 @@ class _HomeScreenState extends State<HomeScreen> {
     DynamicLinkService().listenToDynamicLinks(
         context); //case 2 the app is open but in background and opened again via deep link
     // WidgetsBinding.instance.addObserver(this);
+  }
+
+  Future<void> _fetchPage(int pageKey) async {
+    try {
+      await Provider.of<ProductsProvider>(context, listen: false)
+          .getProducts(startingIndex);
+      final newProducts =
+          Provider.of<ProductsProvider>(context, listen: false).albertProducts;
+
+      final isLastPage = newProducts.length < _pageSize;
+      if (isLastPage) {
+        _pagingController.appendLastPage(newProducts);
+      } else {
+        int nextPageKey = pageKey + newProducts.length;
+        _pagingController.appendPage(newProducts, nextPageKey);
+      }
+      startingIndex++;
+    } catch (error) {
+      _pagingController.error = "Something wrong ! Please try again";
+    }
   }
 
   // @override
@@ -391,12 +420,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 220.h,
                 child: Consumer<ProductsProvider>(
                   builder: (ctx, provider, _) {
-                    var comparisonProducts = provider.comparisonProducts;
-                    if (comparisonProducts.isEmpty)
+                    var products = provider.albertProducts;
+                    if (products.isEmpty) {
                       return Center(
                         child: CircularProgressIndicator(),
                       );
-                    return ListView.builder(
+                    } else {
+                      return PagedListView<int, Product>(
+                        scrollDirection: Axis.horizontal,
+                        pagingController: _pagingController,
+                        builderDelegate: PagedChildBuilderDelegate<Product>(
+                            itemBuilder: (context, item, index) => Row(
+                                  children: [Text(item.name), 10.pw],
+                                )),
+                      );
+                    }
+
+                    /*    return ListView.builder(
                       itemCount: comparisonProducts.length,
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (ctx, i) {
@@ -459,7 +499,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           comparisonProduct: comparisonProducts[i],
                         );
                       },
-                    );
+                    ); */
                   },
                 ),
               ),
@@ -571,6 +611,12 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _pagingController.dispose();
+    super.dispose();
   }
 
   Future fetch(int startingIndex) {
