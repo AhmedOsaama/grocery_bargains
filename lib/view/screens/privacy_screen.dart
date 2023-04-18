@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';
@@ -136,11 +139,21 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                   ),
                   Spacer(),
                   Center(
-                    child: Text(
-                      "Privacy Policy  |  Terms of Service",
-                      style: TextStyles.textViewMedium10
-                          .copyWith(color: Colors.grey),
-                    ),
+                    child: TextButton(
+                        onPressed: () async {
+                          final url = Uri.parse(
+                              'https://thebargainb.com/privacy-policy');
+                          try {
+                            await launchUrl(url);
+                          } catch (e) {
+                            log(e.toString());
+                          }
+                        },
+                        child: Text(
+                          "Privacy Policy  |  Terms of Service",
+                          style: TextStyles.textViewMedium10
+                              .copyWith(color: Colors.grey),
+                        )),
                   ),
                   100.ph
                 ],

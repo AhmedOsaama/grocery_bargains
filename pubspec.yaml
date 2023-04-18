@@ -69,6 +69,7 @@ dependencies:
   pinput: ^2.2.31
   mixpanel_flutter: ^2.1.1
   cached_network_image: ^3.2.3
+  url_launcher: ^6.1.10
 
 
 dev_dependencies:
