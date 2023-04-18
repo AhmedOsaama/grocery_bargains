@@ -25,6 +25,7 @@ import '../../services/dynamic_link_service.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/icons_manager.dart';
 import '../widgets/store_list_widget.dart';
+import 'latest_bargains_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -212,7 +213,6 @@ class _HomeScreenState extends State<HomeScreen> {
               //         ).toList()),
               //   );
               // }),
-
               FutureBuilder(
                   future: getAllListsFuture,
                   builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -266,12 +266,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStylesDMSans.textViewBold16
                         .copyWith(color: prussian),
                   ),
-                  // TextButton(
-                  //     onPressed: () {},
-                  //     child: Text(
-                  //       'See all',
-                  //       style: textButtonStyle,
-                  //     ))
+                  TextButton(
+                      onPressed: () => AppNavigator.push(context: context, screen: LatestBargainsScreen()),
+                      child: Text(
+                        'See all',
+                        style: textButtonStyle,
+                      ))
                 ],
               ),
               // Container(

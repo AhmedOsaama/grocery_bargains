@@ -16,6 +16,7 @@ const String albert = '$imgPath/albert.png';
 const String jumbo = '$imgPath/jumbo.png';
 const String newChatList = '$imgPath/new_chatlist.png';
 const String storePlaceholder = "$imgPath/store_placeholder.png";
+const String chatlistBackground = "$imgPath/chatlist_background.png";
 const String personImage = "$imgPath/personImage.jpeg";
 const String onboarding1 = "$imgPath/onboarding1.png";
 const String onboarding2 = "$imgPath/onboarding2.png";

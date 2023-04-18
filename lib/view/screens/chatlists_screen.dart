@@ -1,3 +1,4 @@
+import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/screens/friend_chatlists_screen.dart';
 import 'package:bargainb/view/widgets/chat_card.dart';
@@ -50,12 +51,12 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
         foregroundColor: Colors.black,
         elevation: 0.2,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: Column(
-          // crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      body: Column(
+        // crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Row(
               children: [
                 Text(
                   LocaleKeys.myChatlists.tr(),
@@ -92,10 +93,13 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                 )
               ],
             ),
-            SizedBox(
-              height: 20.h,
-            ),
-            GenericField(
+          ),
+          SizedBox(
+            height: 20.h,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: GenericField(
               isFilled: true,
               onTap: () async {
                 SharedPreferences pref = await SharedPreferences.getInstance();
@@ -108,28 +112,37 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
               hintStyle:
                   TextStyles.textViewSemiBold14.copyWith(color: gunmetal),
             ),
-            SizedBox(
-              height: 20.h,
-            ),
-            Expanded(
-              child:
-                  Consumer<ChatlistsProvider>(builder: (context, provider, _) {
-                var allLists = provider.chatlists;
-                // var allLists = [];
-                if (allLists.isEmpty) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      50.ph,
-                      DottedContainer(text: LocaleKeys.startAChatlist.tr()),
-                      SizedBox(
-                        height: 45.h,
-                      ),
-                    ],
-                  );
-                }
-                if (chatlistsView == ChatlistsView.LISTVIEW) {
-                  return SingleChildScrollView(
+          ),
+          SizedBox(
+            height: 20.h,
+          ),
+          Expanded(
+            child:
+                Consumer<ChatlistsProvider>(builder: (context, provider, _) {
+              var allLists = provider.chatlists;
+              // var allLists = [];
+              if (allLists.isEmpty) {
+                return Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Image.asset(chatlistBackground,width: double.infinity,height: double.infinity,fit: BoxFit.fitWidth,),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        50.ph,
+                        DottedContainer(text: LocaleKeys.startAChatlist.tr()),
+                        SizedBox(
+                          height: 45.h,
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              }
+              if (chatlistsView == ChatlistsView.LISTVIEW) {
+                return SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: StaggeredGrid.count(
                         crossAxisCount: 2,
                         mainAxisSpacing: 24.h,
@@ -151,85 +164,87 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                                     listName: chatlist.name));
                           },
                         ).toList()),
-                  );
-                }
-                if (chatlistsView == ChatlistsView.CHATVIEW)
-                  return ListView.separated(
-                      separatorBuilder: (ctx, i) => Divider(),
-                      itemCount: allLists.length,
-                      itemBuilder: (ctx, i) {
-                        return ChatCard(allLists, i);
-                      });
-                //PERSONVIEW case
-                return FutureBuilder(
-                  future: chatlistsProvider.getAllFriends(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting)
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    List<FriendChatLists> friendsList =
-                        (snapshot.data ?? []) as List<FriendChatLists>;
-                    return ListView.separated(
-                        itemCount: friendsList.length,
-                        separatorBuilder: (ctx, i) => Divider(),
-                        itemBuilder: (ctx, i) {
-                          return InkWell(
-                            onTap: () {
-                              //TODO: go to the person's profile page and display mutual lists.
-                              AppNavigator.push(
-                                  context: context,
-                                  screen: FriendChatlistsScreen(
-                                      friendName: friendsList[i].name,
-                                      friendEmail: friendsList[i].email,
-                                      friendImageURL: friendsList[i].imageURL,
-                                      friendChatlists:
-                                          friendsList[i].chatlists));
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 10),
-                              child: Row(
-                                children: [
-                                  CircleAvatar(
-                                    backgroundImage:
-                                        NetworkImage(friendsList[i].imageURL),
-                                    radius: 20,
-                                  ),
-                                  15.pw,
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        friendsList[i].name,
-                                        style: TextStylesInter
-                                            .textViewSemiBold16
-                                            .copyWith(color: black2),
-                                      ),
-                                      5.ph,
-                                      Text(
-                                        "On " +
-                                            friendsList[i]
-                                                .chatlists
-                                                .length
-                                                .toString() +
-                                            " lists",
-                                        style: TextStylesInter.textViewMedium10
-                                            .copyWith(color: purple50),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
-                        });
-                  },
+                  ),
                 );
-              }),
-            ),
-          ],
-        ),
+              }
+              if (chatlistsView == ChatlistsView.CHATVIEW)
+                return ListView.separated(
+                    separatorBuilder: (ctx, i) => Divider(),
+                    itemCount: allLists.length,
+                    padding:  const EdgeInsets.symmetric(horizontal: 15),
+                    itemBuilder: (ctx, i) {
+                      return ChatCard(allLists, i);
+                    });
+              //PERSONVIEW case
+              return FutureBuilder(
+                future: chatlistsProvider.getAllFriends(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting)
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  List<FriendChatLists> friendsList =
+                      (snapshot.data ?? []) as List<FriendChatLists>;
+                  return ListView.separated(
+                      itemCount: friendsList.length,
+                      separatorBuilder: (ctx, i) => Divider(),
+                      padding:  const EdgeInsets.symmetric(horizontal: 15),
+                      itemBuilder: (ctx, i) {
+                        return InkWell(
+                          onTap: () {
+                            //TODO: go to the person's profile page and display mutual lists.
+                            AppNavigator.push(
+                                context: context,
+                                screen: FriendChatlistsScreen(
+                                    friendName: friendsList[i].name,
+                                    friendEmail: friendsList[i].email,
+                                    friendImageURL: friendsList[i].imageURL,
+                                    friendChatlists:
+                                        friendsList[i].chatlists));
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(friendsList[i].imageURL),
+                                  radius: 20,
+                                ),
+                                15.pw,
+                                Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      friendsList[i].name,
+                                      style: TextStylesInter
+                                          .textViewSemiBold16
+                                          .copyWith(color: black2),
+                                    ),
+                                    5.ph,
+                                    Text(
+                                      "On " +
+                                          friendsList[i]
+                                              .chatlists
+                                              .length
+                                              .toString() +
+                                          " lists",
+                                      style: TextStylesInter.textViewMedium10
+                                          .copyWith(color: purple50),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          ),
+                        );
+                      });
+                },
+              );
+            }),
+          ),
+        ],
       ),
     );
   }

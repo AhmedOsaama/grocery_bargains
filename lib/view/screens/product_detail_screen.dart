@@ -86,25 +86,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     ComparisonProduct productComparison;
 
     try {
-      productComparison = Provider //get the opposite store product
+      productComparison = Provider
               .of<ProductsProvider>(context, listen: false)
           .comparisonProducts
           .firstWhere((comparisonProduct) =>
               comparisonProduct.id == widget.comparisonId);
-      if (widget.storeName == "Albert") {
         comparisonItems.add(PriceComparisonItem(
             price: productComparison.jumboPrice,
             size: productComparison.jumboSize ?? "N/A",
             storeImagePath: jumbo));
-      }
-      if (widget.storeName == "Jumbo") {
         comparisonItems.add(PriceComparisonItem(
             price: productComparison.albertPrice,
             size: productComparison.albertPrice,
             storeImagePath: albert));
-      }
     } catch (e) {
-      print("Failed to get price comparisons");
+      print("Failed to get price comparisons in product detail");
     }
 
     super.didChangeDependencies();
@@ -237,7 +233,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ],
                     ),
                   ),
-                  priceAlertButton,
+                  // priceAlertButton,
                 ],
               ),
               SizedBox(

@@ -159,10 +159,14 @@ class ProductsProvider with ChangeNotifier {
 
     if (jumboProducts.isNotEmpty) {
       jumboProducts.forEach((element) {
-        if (element.oldPrice != null) {
-          if (double.parse(element.oldPrice!) > double.parse(element.price)) {
-            deals.add(element);
+        try {
+          if (element.oldPrice != null) {
+            if (double.parse(element.oldPrice!) > double.parse(element.price)) {
+              deals.add(element);
+            }
           }
+        }catch(e){
+          print(e);
         }
       });
     }
@@ -357,6 +361,7 @@ class ProductsProvider with ChangeNotifier {
 
   String getImage(String storeName) {
     if (storeName == 'AH') return albert;
+    if (storeName == 'Albert') return albert;
     if (storeName == 'Jumbo') return jumbo;
     return albert;
   }
