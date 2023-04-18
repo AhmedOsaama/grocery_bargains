@@ -1,24 +1,36 @@
 import 'dart:io';
 
 import 'package:bargainb/models/chatlist.dart';
-import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
+import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
+import 'package:bargainb/utils/assets_manager.dart';
+import 'package:bargainb/utils/fonts_utils.dart';
+import 'package:bargainb/view/components/generic_appbar.dart';
+import 'package:bargainb/view/components/generic_field.dart';
+import 'package:bargainb/view/components/my_scaffold.dart';
+import 'package:bargainb/view/components/plus_button.dart';
+import 'package:bargainb/view/screens/category_items_screen.dart';
+import 'package:bargainb/view/screens/chat_view_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/chat_view_widget.dart';
-import 'package:provider/provider.dart';
 
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
+import '../components/button.dart';
 import '../components/dotted_container.dart';
 
 class ChatListViewScreen extends StatefulWidget {
@@ -110,7 +122,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       //       .where((userId) => !allUserIds.contains(userId))
       //   );
       // });
-
+      print(allUserIds);
       final list = await FirebaseFirestore.instance
           .collection('/lists')
           .doc(widget.listId)
@@ -159,40 +171,36 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       if (isPermissionGranted) {
         List<Contact> contacts =
             await FlutterContacts.getContacts(withProperties: true);
+        print("Contacts size: " + contacts.length.toString());
 
-        for (var contact in contacts) {
-          try {
-            var users = await FirebaseFirestore.instance
-                .collection('users')
-                .where('phoneNumber',
-                    isEqualTo: contact.phones.first.normalizedNumber)
-                .get();
-            if (users.docs.isNotEmpty) {
-              var userInfo = users.docs.first;
-              var name = userInfo.data()['username'];
-              // print(name);
-              var email = userInfo.get('email');
-              var phoneNumber = userInfo.get('phoneNumber');
-              var imageURL = userInfo.get('imageURL');
-              var existingContact = listUsers.firstWhere((userInfo) {
-                // print("UserInfo phoneNumber" + userInfo.phoneNumber);
-                // print("phoneNumber" + phoneNumber);
-                return userInfo.phoneNumber == phoneNumber;
-              },
-                  orElse: () => UserInfo(
-                      phoneNumber: "", imageURL: "", name: "", email: ""));
-
-              print("EXISTING CONTACT: " + existingContact.phoneNumber);
-              if (existingContact.phoneNumber !=
-                  phoneNumber) //making sure no duplicates are added to the contacts list
+        var users = await FirebaseFirestore
+            .instance //getting all users that signed in with phone
+            .collection('users')
+            .where('phoneNumber', isNotEqualTo: '')
+            .get();
+        if (users.docs.isNotEmpty) {
+          for (var user in users.docs) {
+            var phoneNumber = user.get('phoneNumber');
+            var contactIndex = contacts.indexWhere((contact) =>
+                contact.phones.first.normalizedNumber == phoneNumber);
+            if (contactIndex != -1) {
+              //match found
+              var contact = contacts.elementAt(contactIndex);
+              var participantIndex = listUsers.indexWhere((participant) =>
+                  participant.phoneNumber ==
+                  contact.phones.first.normalizedNumber);
+              if (participantIndex == -1) {
+                //contact not found in participants
+                var name = user.get('username');
+                var email = user.get('email');
+                var imageURL = user.get('imageURL');
                 contactsList.add(UserInfo(
                     phoneNumber: phoneNumber,
-                    email: email,
+                    imageURL: imageURL,
                     name: name,
-                    imageURL: imageURL));
+                    email: email));
+              }
             }
-          } catch (e) {
-            print("ERROR IN CONTACTS: $e");
           }
         }
       }
@@ -350,8 +358,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                               ),
                               Spacer(),
                               TextButton(
-                                  onPressed: () =>
-                                      addContactToChatlist(userInfo, context),
+                                  onPressed: () => addContactToChatlist(userInfo,context),
                                   child: Text("Add")),
                             ],
                           );
@@ -695,10 +702,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                         );
                       }),
                 )
-              : Expanded(
-                  child: ChatView(
-                  listId: widget.listId,
-                ))
+              : Expanded(child: ChatView(listId: widget.listId,))
         ],
       ),
     );
@@ -706,29 +710,29 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
   Future<void> addContactToChatlist(
       UserInfo userInfo, BuildContext context) async {
-    try {
-      var userData = await FirebaseFirestore.instance
-          .collection('/users')
-          .where('phoneNumber', isEqualTo: userInfo.phoneNumber)
-          .get();
-      var userId = userData.docs.first.id;
-      await FirebaseFirestore.instance
-          .collection('/lists')
-          .doc(widget.listId)
-          .update({
-        "userIds": FieldValue.arrayUnion([userId])
-      });
-      setState(() {
-        isInvitingFriends = false;
-      });
-    } catch (e) {
-      print("ERROR: $e");
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(
-          "Couldn't find a user with that email",
-        ),
-      ));
-    }
+      try {
+        var userData = await FirebaseFirestore.instance
+            .collection('/users')
+            .where('phoneNumber', isEqualTo: userInfo.phoneNumber)
+            .get();
+        var userId = userData.docs.first.id;
+        await FirebaseFirestore.instance
+            .collection('/lists')
+            .doc(widget.listId)
+            .update({
+          "userIds": FieldValue.arrayUnion([userId])
+        });
+        setState(() {
+          isInvitingFriends = false;
+        });
+      } catch (e) {
+        print("ERROR: $e");
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            "Couldn't find a user with that email",
+          ),
+        ));
+      }
   }
 
   Future<void> deleteItemFromList(List<QueryDocumentSnapshot<Object?>> items,
@@ -736,8 +740,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     try {
       await Provider.of<ChatlistsProvider>(context, listen: false)
           .deleteItemFromChatlist(
-              widget.listId, doc.id, items[i]['item_price']);
-    } catch (e) {
+          widget.listId, doc.id, items[i]['item_price']);
+    }catch(e){
       print(e);
     }
     setState(() {

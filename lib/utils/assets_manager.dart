@@ -1,6 +1,7 @@
 const String imgPath = 'assets/images';
 
 const String splashImage = '$imgPath/splash.png';
+const String circularBee = '$imgPath/circularBee.png';
 const String splashBackground = '$imgPath/splash_background.svg';
 const String registerArt = '$imgPath/register_art.svg';
 const String forgotPassword = '$imgPath/forgot_password.svg';
@@ -14,8 +15,10 @@ const String milk = '$imgPath/milk.png';
 const String spar = '$imgPath/brand.png';
 const String albert = '$imgPath/albert.png';
 const String jumbo = '$imgPath/jumbo.png';
+const String hoogLogo = '$imgPath/hoogvliet_logo.png';
 const String newChatList = '$imgPath/new_chatlist.png';
 const String storePlaceholder = "$imgPath/store_placeholder.png";
+const String chatlistBackground = "$imgPath/chatlist_background.png";
 const String personImage = "$imgPath/personImage.jpeg";
 const String onboarding1 = "$imgPath/onboarding1.png";
 const String onboarding2 = "$imgPath/onboarding2.png";

@@ -1,7 +1,6 @@
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/components/plus_button.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
-import 'package:bargainb/view/screens/home_screen.dart';
 import 'package:bargainb/view/screens/subcategories_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -60,8 +59,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         leading: IconButton(
             onPressed: () {
               FocusScope.of(context).unfocus();
-              AppNavigator.pushReplacement(
-                  context: context, screen: HomeScreen());
+
+              AppNavigator.popToFrist(context: context);
             },
             icon: Icon(
               Icons.arrow_back,
@@ -71,7 +70,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       body: WillPopScope(
         onWillPop: () {
           FocusScope.of(context).unfocus();
-          AppNavigator.pushReplacement(context: context, screen: HomeScreen());
+          AppNavigator.popToFrist(context: context);
           return Future.value(true);
         },
         child: SingleChildScrollView(

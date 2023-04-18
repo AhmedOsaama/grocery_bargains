@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/icons_manager.dart';
+import 'package:bargainb/utils/utils.dart';
 import 'package:bargainb/view/components/plus_button.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:provider/provider.dart';
@@ -11,61 +14,173 @@ import 'package:provider/provider.dart';
 import '../../config/routes/app_navigator.dart';
 import '../../models/comparison_product.dart';
 import '../../models/list_item.dart';
+import '../../models/product.dart';
 import '../../providers/chatlists_provider.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/style_utils.dart';
 import '../screens/product_detail_screen.dart';
 
-class DiscountItem extends StatefulWidget {
-  final ComparisonProduct comparisonProduct;
+class DiscountItem extends StatelessWidget {
+ final ComparisonProduct comparisonProduct;
 
-  DiscountItem({Key? key, required this.comparisonProduct}) : super(key: key);
+  DiscountItem(
+      {
+        Key? key,
+        required this.comparisonProduct
+      })
+      : super(key: key);
 
-  @override
-  State<DiscountItem> createState() => _DiscountItemState();
-}
+  var selectedStore = (['Albert',"Jumbo", "Hoogvliet"]..shuffle()).first;
 
-class _DiscountItemState extends State<DiscountItem> {
-  var selectedStore = 'Albert';
+  String getPrice(ProductsProvider productsProvider){
+    if(selectedStore == "Albert") {
+      var product = productsProvider.albertProducts.firstWhere((product) {
+        return product.url == comparisonProduct.albertLink;
+      });
+      return product.oldPrice ?? product.price;
+    }
+    if(selectedStore == "Jumbo") {
+      var product = productsProvider.jumboProducts.firstWhere((product) {
+        return product.url == comparisonProduct.jumboLink;
+      });
+      return product.oldPrice ?? product.price;
+      // return product.oldPrice ?? ;
+    }
+    if(selectedStore == "Hoogvliet") {
+      var product = productsProvider.jumboProducts.firstWhere((product) {
+        return product.url == comparisonProduct.jumboLink;
+      });
+      return product.oldPrice ?? product.price;
+      // return product.oldPrice ?? ;
+    }
+    return "0.00";
+  }
+
+  String getProductImage() {
+    if(selectedStore == "Albert"){
+      return comparisonProduct.albertImageURL;
+    }
+    if(selectedStore == "Jumbo"){
+      return comparisonProduct.jumboImageURL;
+    }
+    if(selectedStore == "Hoogvliet"){
+      return comparisonProduct.hoogvlietImageURL;
+    }
+    return "";
+  }
+
+  String getProductSize() {
+    if(selectedStore == "Albert"){
+      return comparisonProduct.albertSize;
+    }
+    if(selectedStore == "Jumbo"){
+      return comparisonProduct.jumboSize ?? "N/A";
+    }
+    if(selectedStore == "Hoogvliet"){
+      return comparisonProduct.hoogvlietSize;
+    }
+    return "";
+  }
+
+  String getProductName() {
+    if(selectedStore == "Albert"){
+      return comparisonProduct.albertName;
+    }
+    if(selectedStore == "Jumbo"){
+      return comparisonProduct.jumboName;
+    }
+    if(selectedStore == "Hoogvliet"){
+      return comparisonProduct.hoogvlietName;
+    }
+    return "";
+  }
+
+  String? getDiscountValue(ProductsProvider productsProvider){
+    Product? product;
+    if(selectedStore == "Albert") {
+      product = productsProvider.albertProducts.firstWhere((product) {
+        return product.url == comparisonProduct.albertLink;
+      });
+    }
+    if(selectedStore == "Jumbo") {
+      product = productsProvider.jumboProducts.firstWhere((product) {
+        return product.url == comparisonProduct.jumboLink;
+      });
+    }
+    //TODO: do the same for Hoogvliet
+    try {
+      if (product?.oldPrice == null) return null;
+      var oldPrice = double.tryParse(product?.oldPrice ?? "") ?? 0;
+      var currentPrice = double.parse(product!.price);
+      var price2 = double.tryParse(product.price2 ?? "") ?? 0;
+      print("oldPrice: " + oldPrice.toString());
+      print("currentPrice: " + currentPrice.toString());
+      print("currentPrice: " + price2.toString());
+      if(oldPrice > currentPrice)
+      return (oldPrice - currentPrice).toStringAsFixed(2);
+      if(oldPrice > price2) return (oldPrice - price2).toStringAsFixed(2);
+    }catch(e){
+      print("Error in latest bargains: $e");
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
-    var productsProvider =
-        Provider.of<ProductsProvider>(context, listen: false);
+    var productsProvider = Provider.of<ProductsProvider>(context,listen: false);
     return GestureDetector(
       onTap: () {
-        if (selectedStore == "Albert") {
+        if(selectedStore == "Albert") {
           var product = productsProvider.albertProducts.firstWhere((product) {
-            return product.url == widget.comparisonProduct.albertLink;
+            return product.url == comparisonProduct.albertLink;
           });
           AppNavigator.push(
               context: context,
               screen: ProductDetailScreen(
-                comparisonId: widget.comparisonProduct.id,
+                comparisonId: comparisonProduct.id,
                 productId: product.id,
                 storeName: selectedStore,
                 productName: product.name,
                 imageURL: product.imageURL,
                 description: product.description,
-                price1: double.tryParse(product.price) ?? 0.0,
+                price1:
+                double.tryParse(product.price) ?? 0.0,
                 price2: double.tryParse(product.price2 ?? "") ?? 0.0,
                 size1: product.size,
                 size2: product.size2 ?? "",
               ));
         }
-        if (selectedStore == "Jumbo") {
-          var product = productsProvider.jumboProducts.firstWhere(
-              (product) => product.url == widget.comparisonProduct.jumboLink);
+        if(selectedStore == "Jumbo") {
+          var product = productsProvider.jumboProducts.firstWhere((product) => product.url == comparisonProduct.jumboLink);
           AppNavigator.push(
               context: context,
               screen: ProductDetailScreen(
-                comparisonId: widget.comparisonProduct.id,
+                comparisonId: comparisonProduct.id,
                 productId: product.id,
                 storeName: selectedStore,
                 productName: product.name,
                 imageURL: product.imageURL,
                 description: product.description,
-                price1: double.tryParse(product.price) ?? 0.0,
+                price1:
+                double.tryParse(product.price) ?? 0.0,
+                price2: null,
+                size1: product.size,
+                size2: product.size2 ?? "",
+              ));
+        }
+        if(selectedStore == "Hoogvliet") {
+          var product = productsProvider.hoogvlietProducts.firstWhere((product) => product.url == comparisonProduct.hoogvlietLink);
+          AppNavigator.push(
+              context: context,
+              screen: ProductDetailScreen(
+                comparisonId: comparisonProduct.id,
+                productId: product.id,
+                storeName: selectedStore,
+                productName: product.name,
+                imageURL: product.imageURL,
+                description: product.description,
+                price1:
+                double.tryParse(product.price) ?? 0.0,
                 price2: null,
                 size1: product.size,
                 size2: product.size2 ?? "",
@@ -85,181 +200,134 @@ class _DiscountItemState extends State<DiscountItem> {
           children: [
             Row(
               children: [
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 10.h),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Image.network(
-                    selectedStore == "Albert"
-                        ? widget.comparisonProduct.albertImageURL
-                        : widget.comparisonProduct.jumboImageURL,
-                    height: 50.h,
-                  ),
-                ),
-                20.pw,
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      width: 130.w,
-                      child: Text(
-                        selectedStore == "Albert"
-                            ? widget.comparisonProduct.albertName
-                            : widget.comparisonProduct.jumboName,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyles.textViewSemiBold14,
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 10.h),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Image.network(
+                        getProductImage(),
+                        errorBuilder: (context,_,s){
+                          return Icon(Icons.image_not_supported);
+                        },
+                        height: 50.h,
                       ),
                     ),
-                    Text(
-                      selectedStore == "Albert"
-                          ? widget.comparisonProduct.albertSize
-                          : widget.comparisonProduct.jumboSize ?? "N/A",
-                      style: TextStyles.textViewMedium12
-                          .copyWith(color: Color.fromRGBO(204, 204, 204, 1)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 105.w,
+                          child: Text(
+                            getProductName(),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyles.textViewSemiBold14,
+                          ),
+                        ),
+                        Text(
+                          getProductSize(),
+                          style: TextStyles.textViewMedium12
+                              .copyWith(color: Color.fromRGBO(204, 204, 204, 1)),
+                        ),
+                        Text("€${getPrice(productsProvider)}",style: TextStylesInter.textViewBold18,),
+                        5.ph,
+                        if(getDiscountValue(productsProvider) != null)
+                        Text("Save €${getDiscountValue(productsProvider)}",style: TextStylesInter.textViewMedium10.copyWith(color: Color.fromRGBO(24, 195, 54, 1)),),
+                      ],
                     ),
-                    GestureDetector(
-                        onTap: () {},
-                        child: Row(
-                          children: [
-                            Text(
-                              'View More ',
-                              style: TextStylesInter.textViewSemiBold14
-                                  .copyWith(color: mainPurple),
-                            ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: mainPurple,
-                            )
-                          ],
-                        )),
                   ],
                 ),
+                // 10.pw,
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                          onPressed: () {
-                            if (selectedStore == "Albert") {
-                              var product = productsProvider.albertProducts
-                                  .firstWhere((product) =>
-                                      product.id ==
-                                      widget.comparisonProduct.albertId);
-                              addDiscountItem(
-                                  context,
-                                  product.name,
-                                  product.oldPrice,
-                                  product.price,
-                                  product.price2,
-                                  product.imageURL,
-                                  product.size);
-                            }
-                            if (selectedStore == "Jumbo") {
-                              var product = productsProvider.jumboProducts
-                                  .firstWhere((product) =>
-                                      product.url ==
-                                      widget.comparisonProduct.jumboLink);
-                              addDiscountItem(
-                                  context,
-                                  product.name,
-                                  product.oldPrice,
-                                  product.price,
-                                  product.price2,
-                                  product.imageURL,
-                                  product.size);
-                            }
-                          },
-                          icon: SvgPicture.asset(chatShare)),
-                      20.ph,
-                      PlusButton(onTap: () {
-                        if (selectedStore == "Albert") {
-                          var product = productsProvider.albertProducts
-                              .firstWhere((product) =>
-                                  product.id ==
-                                  widget.comparisonProduct.albertId);
-                          shareDiscountItem(
-                              context,
-                              product.name,
-                              product.oldPrice,
-                              product.price,
-                              product.price2,
-                              product.imageURL,
-                              product.size);
-                        }
-                        if (selectedStore == "Jumbo") {
-                          var product = productsProvider.jumboProducts
-                              .firstWhere((product) =>
-                                  product.url ==
-                                  widget.comparisonProduct.jumboLink);
-                          shareDiscountItem(
-                              context,
-                              product.name,
-                              product.oldPrice,
-                              product.price,
-                              product.price2,
-                              product.imageURL,
-                              product.size);
-                        }
-                      }),
+                      Image.asset(productsProvider.getImage(selectedStore),width: 22,height: 21,),
+                      100.ph,
+                      Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: borderColor),
+                        ),
+                        child: Icon(Icons.arrow_forward_ios,color: mainPurple,),
+                      )
+                      // IconButton(
+                      //     onPressed: () {
+                      //       if(selectedStore == "Albert") {
+                      //         var product = productsProvider.albertProducts.firstWhere((product) => product.url == comparisonProduct.albertLink);
+                      //         shareDiscountItem(context, product.name,
+                      //             product.oldPrice, product.price, product.price2, product.imageURL, product.size);
+                      //       }
+                      //       if(selectedStore == "Jumbo") {
+                      //         var product = productsProvider.jumboProducts.firstWhere((product) => product.url == comparisonProduct.jumboLink);
+                      //         shareDiscountItem(context, product.name,
+                      //             product.oldPrice, product.price, product.price2, product.imageURL, product.size);
+                      //       }
+                      //
+                      //     },
+                      //     icon: SvgPicture.asset(chatShare)),
+                      // 20.ph,
+                      // PlusButton(onTap: () {
+                      //   if(selectedStore == "Albert") {
+                      //     var product = productsProvider.albertProducts.firstWhere((product) => product.url == comparisonProduct.albertLink);
+                      //     addDiscountItem(context, product.name,
+                      //         product.oldPrice, product.price, product.price2, product.imageURL, product.size);
+                      //   }
+                      //   if(selectedStore == "Jumbo") {
+                      //     var product = productsProvider.jumboProducts.firstWhere((product) => product.url == comparisonProduct.jumboLink);
+                      //     addDiscountItem(context, product.name,
+                      //         product.oldPrice, product.price, product.price2, product.imageURL, product.size);
+                      //   }
+                      // }),
                     ],
                   ),
                 ),
               ],
             ),
-            20.pw,
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedStore = "Albert";
-                    });
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(5),
-                    decoration: selectedStore == "Albert"
-                        ? BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: mainPurple))
-                        : null,
-                    child: StorePrice(
-                      currentPrice: widget.comparisonProduct.albertPrice,
-                      // oldPrice: widget.albertPriceBefore,
-                      storeImagePath: albert,
-                    ),
-                  ),
-                ),
-                30.pw,
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedStore = "Jumbo";
-                    });
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(5),
-                    decoration: selectedStore == "Jumbo"
-                        ? BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: mainPurple))
-                        : null,
-                    child: StorePrice(
-                      currentPrice: widget.comparisonProduct.jumboPrice,
-                      // oldPrice: widget.jumboPriceBefore,
-                      storeImagePath: jumbo,
-                    ),
-                  ),
-                ),
-              ],
-            )
+            // Row(
+            //   children: [
+            //     Container(
+            //       padding: EdgeInsets.all(5),
+            //       decoration: selectedStore == "Albert" ? BoxDecoration(
+            //           borderRadius: BorderRadius.circular(10),
+            //           border: Border.all(color: mainPurple)
+            //       ) : null,
+            //       child: StorePrice(
+            //         currentPrice: comparisonProduct.albertPrice,
+            //         // oldPrice: widget.albertPriceBefore,
+            //         storeImagePath: albert,
+            //       ),
+            //     ),
+            //     30.pw,
+            //     Container(
+            //       padding: EdgeInsets.all(5),
+            //       decoration: selectedStore == "Jumbo" ? BoxDecoration(
+            //           borderRadius: BorderRadius.circular(10),
+            //           border: Border.all(color: mainPurple)
+            //       ) : null,
+            //       child: StorePrice(
+            //         currentPrice: comparisonProduct.jumboPrice,
+            //         // oldPrice: widget.jumboPriceBefore,
+            //         storeImagePath: jumbo,
+            //       ),
+            //     ),
+            //   ],
+            // )
           ],
         ),
       ),
     );
   }
+
+
+
+
 
   Future<void> shareDiscountItem(BuildContext context, productName, oldPrice,
       price1, price2, imageURL, size1) {
@@ -307,8 +375,8 @@ class StorePrice extends StatelessWidget {
       required this.storeImagePath})
       : super(key: key);
 
-  static var doubleOldPrice = 0.0;
-  static var doubleCurrentPrice = 0.0;
+  var doubleOldPrice = 0.0;
+  var doubleCurrentPrice = 0.0;
   @override
   Widget build(BuildContext context) {
     if (oldPrice != null) {
@@ -347,12 +415,14 @@ class StorePrice extends StatelessWidget {
         //     ],
         //   ),
         // if (oldPrice == null)
-        Text(
-          '€$currentPrice',
-          style: TextStylesInter.textViewMedium12
-              .copyWith(color: Color.fromRGBO(134, 136, 137, 1)),
-        )
+          Text(
+            '€$currentPrice',
+            style: TextStylesInter.textViewMedium12
+                .copyWith(color: Color.fromRGBO(134, 136, 137, 1)),
+          )
       ],
     );
   }
+
+
 }

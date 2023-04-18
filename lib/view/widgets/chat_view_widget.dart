@@ -1,5 +1,6 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/product_category.dart';
+import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/screens/categories_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -61,12 +62,6 @@ class _ChatViewState extends State<ChatView> {
     super.initState();
   }
 
-  @override
-  void didChangeDependencies() {
-    getAllProductsFuture = Provider.of<ProductsProvider>(context, listen: false)
-        .getProducts(0); //TODO: change this
-    super.didChangeDependencies();
-  }
 
   String getTotalListPrice(List items) {
     var total = 0.0;
@@ -86,7 +81,12 @@ class _ChatViewState extends State<ChatView> {
   Widget build(BuildContext context) {
     return SlidingUpPanel(
       controller: panelController,
-      body: Padding(
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage(chatlistBackground)
+          )
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Stack(
           children: [

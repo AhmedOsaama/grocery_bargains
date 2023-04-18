@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:bargainb/models/list_item.dart';
+import 'package:provider/provider.dart';
 
 import '../config/routes/app_navigator.dart';
 import '../utils/assets_manager.dart';
@@ -104,18 +105,17 @@ class ChatlistsProvider with ChangeNotifier {
       {required BuildContext context,
       required bool isSharing,
       required ListItem listItem}) async {
-    var allLists = []; //TODO: use the provider's chatlist instead of allLists
-    var allListsSnapshot = await chatlistsFuture;
-    for (var list in allListsSnapshot.docs) {
-      allLists.add({
-        "list_name": list['list_name'],
-        'list_id': list.id,
-      });
-    }
+    // var allLists = []; //TODO: use the provider's chatlist instead of allLists
+    // var chatlists = Provider.of<ChatlistsProvider>(context,listen: false).chatlists;
+    // for (var chatlist in chatlists) {
+    //   allLists.add({
+    //     "list_name": chatlist.name,
+    //     'list_id': chatlist.id,
+    //   });
+    // }
     showDialog(
         context: context,
-        builder: (ctx) => ChooseListDialog(
-            allLists: allLists, isSharing: isSharing, item: listItem));
+        builder: (ctx) => ChooseListDialog(isSharing: isSharing, item: listItem));
   }
 
   Future<String> createChatList() async {

@@ -1,38 +1,28 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
-import 'package:bargainb/view/widgets/profile_dialog.dart';
 
-import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
 
 class SettingRow extends StatelessWidget {
   final Widget icon;
-  final Widget? route;
+
+  final VoidCallback onTap;
   final String settingText;
-  const SettingRow({
-    Key? key,
-    required this.icon,
-    required this.settingText,
-    this.route,
-  }) : super(key: key);
+  final String? value;
+  const SettingRow(
+      {Key? key,
+      required this.icon,
+      required this.settingText,
+      this.value,
+      required this.onTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () => route != null
-          ? AppNavigator.push(context: context, screen: route!)
-          : showDialog(
-              context: context,
-              builder: (ctx) => ProfileDialog(
-                    title: LocaleKeys.signout.tr(),
-                    body: LocaleKeys.logoutFromAccount.tr(),
-                    buttonText: LocaleKeys.signout.tr(),
-                    isSigningOut: true,
-                  )),
+      onTap: onTap,
       child: Row(
         children: [
           Container(
@@ -42,14 +32,27 @@ class SettingRow extends StatelessWidget {
             child: icon,
           ),
           12.pw,
-          Text(
-            settingText,
-            style: TextStyles.textViewMedium14.copyWith(color: black1),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                settingText,
+                style: TextStyles.textViewMedium14.copyWith(color: Colors.grey),
+              ),
+              value != null && value!.isNotEmpty
+                  ? Text(
+                      value!,
+                      style:
+                          TextStyles.textViewMedium12.copyWith(color: black1),
+                    )
+                  : Container(),
+            ],
           ),
           Spacer(),
           const Icon(
             Icons.arrow_forward_ios,
             size: 18,
+            color: mainPurple,
           ),
         ],
       ),

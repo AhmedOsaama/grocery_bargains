@@ -21,66 +21,91 @@ class ProfileDialog extends StatelessWidget {
   final String body;
   final String buttonText;
   final bool isSigningOut;
-  const ProfileDialog({Key? key, required this.title, required this.body, required this.buttonText, required this.isSigningOut}) : super(key: key);
+  const ProfileDialog(
+      {Key? key,
+      required this.title,
+      required this.body,
+      required this.buttonText,
+      required this.isSigningOut})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+      alignment: Alignment.bottomCenter,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      child: Padding(
+        padding:
+            const EdgeInsets.only(left: 16, top: 16, right: 14, bottom: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '$title?',
+              style: TextStyles.textViewSemiBold28.copyWith(color: black2),
+            ),
+            10.ph,
+            Text(
+              body,
+              style: TextStyles.textViewRegular16
+                  .copyWith(color: Color.fromRGBO(72, 72, 72, 1)),
+            ),
+            10.ph,
+            Row(
               children: [
-                Text('$title ?', style: TextStyles.textViewSemiBold28.copyWith(color: black2),),
-                10.ph,
-                Text(body, style: TextStyles.textViewRegular16.copyWith(color: Color.fromRGBO(72, 72, 72, 1)),),
-                10.ph,
-                Row(
-                  children: [
-                    Expanded(child: GenericButton(
+                Expanded(
+                    child: GenericButton(
                         color: Colors.white,
                         height: 60.h,
                         borderColor: Color.fromRGBO(237, 237, 237, 1),
                         borderRadius: BorderRadius.circular(6),
-                        onPressed: () => AppNavigator.pop(context: context), child: Text(LocaleKeys.cancel.tr(),style: TextStyles.textViewSemiBold16.copyWith(color: black2),))),
-                    10.pw,
-                    Expanded(child: GenericButton(
+                        onPressed: () => AppNavigator.pop(context: context),
+                        child: Text(
+                          LocaleKeys.cancel.tr(),
+                          style: TextStyles.textViewSemiBold16
+                              .copyWith(color: black2),
+                        ))),
+                10.pw,
+                Expanded(
+                    child: GenericButton(
                         color: yellow,
                         height: 60.h,
                         borderRadius: BorderRadius.circular(6),
                         onPressed: () async {
-                          if(isSigningOut) {
+                          if (isSigningOut) {
                             var pref = await SharedPreferences.getInstance();
                             pref.setBool("rememberMe", false);
                             var isGoogleSignedIn =
-                            await Provider
-                                .of<GoogleSignInProvider>(context,
-                                listen: false)
-                                .googleSignIn
-                                .isSignedIn();
+                                await Provider.of<GoogleSignInProvider>(context,
+                                        listen: false)
+                                    .googleSignIn
+                                    .isSignedIn();
                             if (isGoogleSignedIn) {
                               await Provider.of<GoogleSignInProvider>(context,
-                                  listen: false)
+                                      listen: false)
                                   .logout();
                             } else {
                               FirebaseAuth.instance.signOut();
                             }
                             print("SIGNED OUT...................");
-                          }else{
+                          } else {
                             await FirebaseAuth.instance.currentUser?.reload();
                             await FirebaseAuth.instance.currentUser?.delete();
-                            // AppNavigator.pushReplacement(context: context, screen: )
                           }
                           AppNavigator.pushReplacement(
                               context: context, screen: RegisterScreen());
-                        }, child: Text(buttonText,style: TextStyles.textViewSemiBold16.copyWith(color: black2),))),
-                  ],
-                )
+                        },
+                        child: Text(
+                          buttonText,
+                          style: TextStyles.textViewSemiBold16
+                              .copyWith(color: black2),
+                        ))),
               ],
-            ),
-          ),
-        );
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

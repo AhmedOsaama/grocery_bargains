@@ -1,3 +1,4 @@
+import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,12 +15,10 @@ import '../../utils/style_utils.dart';
 import '../components/button.dart';
 
 class ChooseListDialog extends StatefulWidget {
-  final List allLists;
   final bool isSharing;
   final ListItem item;
   const ChooseListDialog(
       {Key? key,
-      required this.allLists,
       required this.item,
       required this.isSharing})
       : super(key: key);
@@ -63,6 +62,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
 
   @override
   Widget build(BuildContext context) {
+    var chatlistsProvider = Provider.of<ChatlistsProvider>(context);
     return Dialog(
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -81,15 +81,19 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
             SizedBox(
               height: 25.h,
             ),
+            Image.network(widget.item.imageURL,width: 192,height: 192,),
+            SizedBox(
+              height: 25.h,
+            ),
             DropdownButton(
                 isExpanded: true,
                 underline: Container(),
                 value: selectedListId,
-                items: widget.allLists
-                    .map((list) => DropdownMenuItem<String>(
-                        value: list['list_id'],
+                items: chatlistsProvider.chatlists
+                    .map((chatlist) => DropdownMenuItem<String>(
+                        value: chatlist.id,
                         child: Text(
-                          list['list_name'],
+                          chatlist.name,
                           style: TextStyles.textViewRegular14
                               .copyWith(color: Colors.grey),
                         )))
@@ -147,19 +151,21 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                         style: TextStylesInter.textViewSemiBold16
                             .copyWith(color: black2),
                       )),
-            // GenericButton(                           //TODO: create and share or add an item button(Check the figma flow)
-            //     onPressed: () {
-            //         Provider.of<ChatlistsProvider>(context,listen: false).createChatList()
-            //       },
-            //     height: 60.h,
-            //     width: double.infinity,
-            //     color: yellow,
-            //     borderRadius: BorderRadius.circular(6),
-            //     child: Text(
-            //       LocaleKeys.createNewList.tr(),
-            //       style: TextStylesInter.textViewSemiBold16
-            //           .copyWith(color: black2),
-            //     )),
+            15.ph,
+            GenericButton(                           //TODO: create and share or add an item button(Check the figma flow)
+                onPressed: () {
+                    Provider.of<ChatlistsProvider>(context,listen: false).createChatList();
+                  },
+                height: 60.h,
+                width: double.infinity,
+                borderColor: Colors.grey,
+                color: white,
+                borderRadius: BorderRadius.circular(6),
+                child: Text(
+                  LocaleKeys.createNewList.tr(),
+                  style: TextStylesInter.textViewSemiBold16
+                      .copyWith(color: Color.fromRGBO(128, 128, 128, 1)),
+                )),
             SizedBox(
               height: 30.h,
             ),

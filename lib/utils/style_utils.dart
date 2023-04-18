@@ -188,6 +188,11 @@ abstract class TextStyles {
     fontWeight: medium,
     fontFamily: fontFamilyPoppins,
   );
+  static TextStyle textViewMedium17 = TextStyle(
+    fontSize: 17.sp,
+    fontWeight: medium,
+    fontFamily: fontFamilyPoppins,
+  );
   static TextStyle textViewMedium20 = TextStyle(
     fontSize: 20.sp,
     fontWeight: medium,
@@ -195,6 +200,11 @@ abstract class TextStyles {
   );
   static TextStyle textViewSemiBold24 = TextStyle(
     fontSize: 24.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: fontFamilyPoppins,
+  );
+  static TextStyle textViewSemiBold26 = TextStyle(
+    fontSize: 26.sp,
     fontWeight: FontWeight.w600,
     fontFamily: fontFamilyPoppins,
   );
@@ -771,6 +781,12 @@ abstract class TextStylesInter {
   );
   static TextStyle textViewBold14 = TextStyle(
     fontSize: 14.sp,
+    fontWeight: FontWeight.w700,
+    fontFamily: fontFamilyInter,
+  );
+
+  static TextStyle textViewBold44 = TextStyle(
+    fontSize: 44.sp,
     fontWeight: FontWeight.w700,
     fontFamily: fontFamilyInter,
   );
