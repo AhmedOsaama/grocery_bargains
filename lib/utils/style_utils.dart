@@ -785,6 +785,12 @@ abstract class TextStylesInter {
     fontFamily: fontFamilyInter,
   );
 
+  static TextStyle textViewBold44 = TextStyle(
+    fontSize: 44.sp,
+    fontWeight: FontWeight.w700,
+    fontFamily: fontFamilyInter,
+  );
+
   static TextStyle textViewSemiBold15 = TextStyle(
     fontSize: 15.sp,
     fontWeight: FontWeight.w600,

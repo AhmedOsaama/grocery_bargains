@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:bargainb/view/widgets/otp_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -50,6 +51,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   var photoURL = "";
 
+  var resendToken = null;
+
   Future<void> saveRememberMePref() async {
     var pref = await SharedPreferences.getInstance();
     pref.setBool("rememberMe", rememberMe);
@@ -57,7 +60,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _submitAuthForm(String email, String username,
       String phoneNumber, BuildContext ctx) async {
-    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
+    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
     try {
       if (!isLogin) {
         setState(() {
@@ -438,11 +441,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (isValid!) {
       _formKey.currentState?.save();
       await _submitAuthForm(email, username, phoneNumber, context)
-          .timeout(Duration(seconds: 180), onTimeout: () {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text(
-                "Failed to login or signup, Please check your internet and try again later")));
-      });
+          .timeout(Duration(seconds: 180),
+          // onTimeout: () {
+        // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        //     content: Text(
+        //         "Failed to login or signup, Please check your internet and try again later")));
+      // }
+      );
     }
   }
 
@@ -464,67 +469,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
           print(e.plugin);
           print(e.message);
           print(e.code);
-          print(e.stackTrace);
           if (e.code == 'invalid-phone-number') {
             print('The provided phone number is not valid.');
           }
           completer.complete(userCredential);
         },
+        forceResendingToken: resendToken,
         codeSent: (String verificationId, int? resendToken) async {
           // Update the UI - wait for the user to enter the SMS code
-          var otp = await showDialog(
-              context: context,
-              builder: (ctx) => Dialog(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            "Please enter your OTP",
-                            style: TextStylesInter.textViewSemiBold14,
-                          ),
-                          Pinput(
-                              // defaultPinTheme: defaultPinTheme,
-                              // focusedPinTheme: focusedPinTheme,
-                              // submittedPinTheme: submittedPinTheme,
-                              validator: (s) {
-                                return null;
+          this.resendToken = resendToken;
 
-                                // var otp =
-                                //     widget.otp.substring(widget.otp.length - 4);
-                                // print(otp);
-                                // return s == otp ? null : 'Pin is incorrect';
-                              },
-                              length: 6,
-                              pinputAutovalidateMode:
-                                  PinputAutovalidateMode.onSubmit,
-                              showCursor: true,
-                              onCompleted: (pin) async {
-                                // print('=============>WidgetOTP${widget.otp}');
-                                print('=============>PIN$pin');
-                                await AppNavigator.pop(
-                                    context: context, object: pin);
-                                // otp = pin;
-                                // otpProvider.otpVendor(context: context, otp: pin);
-                                // if (pin == widget.otp) {
-                                //   Provider.of<AppStateProvider>(context,
-                                //           listen: false)
-                                //       .verified();
-                                //   await AppNavigator.pushReplacement(
-                                //       context: context,
-                                //       screen: const StoreSetupScreen());
-                                // } else {
-                                //   customToast(
-                                //       backgroundColor: Colors.red.shade300,
-                                //       textColor: white,
-                                //       content: widget.otp);
-                                // }
-                              }),
-                        ],
-                      ),
-                    ),
-                  ));
+          var otp = await showOtpDialog();
 
           String smsCode = otp;
 
@@ -536,12 +491,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
           print(userCredential);
           completer.complete(userCredential);
         },
-        timeout: const Duration(seconds: 60),
+        timeout: const Duration(seconds: 30),
         codeAutoRetrievalTimeout: (message) {
           print("Code auto retrieval failed");
           completer.complete(userCredential);
         });
     return completer.future;
+  }
+
+  Future showOtpDialog() async {
+    return await showDialog(
+            context: context,
+            builder: (ctx) => OtpDialog(phoneNumber: phoneNumber, resendOtp: () => _submitAuthForm(email, username, phoneNumber, context)));
   }
 
   Future<void> loginWithSocial(BuildContext context, bool isApple) async {
