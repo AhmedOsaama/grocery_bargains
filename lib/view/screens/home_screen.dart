@@ -1,4 +1,5 @@
 import 'package:bargainb/models/bestValue_item.dart';
+import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/models/product.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,6 +26,7 @@ import '../../config/routes/app_navigator.dart';
 import '../../services/dynamic_link_service.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/icons_manager.dart';
+import '../widgets/discountItem.dart';
 import '../widgets/store_list_widget.dart';
 import 'latest_bargains_screen.dart';
 
@@ -36,7 +38,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final PagingController<int, Product> _pagingController =
+  final PagingController<int, ComparisonProduct> _pagingController =
       PagingController(firstPageKey: 0);
   static const _pageSize = 50;
 
@@ -75,10 +77,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _fetchPage(int pageKey) async {
     try {
+      print("PAGE KEY: " + pageKey.toString());
       await Provider.of<ProductsProvider>(context, listen: false)
-          .getProducts(startingIndex);
+          .getLimitedPriceComparisons(pageKey);
       final newProducts =
-          Provider.of<ProductsProvider>(context, listen: false).albertProducts;
+          Provider.of<ProductsProvider>(context, listen: false).comparisonProducts;
 
       final isLastPage = newProducts.length < _pageSize;
       if (isLastPage) {
@@ -420,18 +423,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 220.h,
                 child: Consumer<ProductsProvider>(
                   builder: (ctx, provider, _) {
-                    var products = provider.albertProducts;
-                    if (products.isEmpty) {
+                    var comparisonProducts = provider.comparisonProducts;
+                    if (comparisonProducts.isEmpty) {
                       return Center(
                         child: CircularProgressIndicator(),
                       );
                     } else {
-                      return PagedListView<int, Product>(
+                      return PagedListView<int, ComparisonProduct>(
                         scrollDirection: Axis.horizontal,
                         pagingController: _pagingController,
-                        builderDelegate: PagedChildBuilderDelegate<Product>(
+                        builderDelegate: PagedChildBuilderDelegate<ComparisonProduct>(
                             itemBuilder: (context, item, index) => Row(
-                                  children: [Text(item.name), 10.pw],
+                                  children: [DiscountItem(
+                              comparisonProduct: item,
+                            ), 10.pw],
                                 )),
                       );
                     }

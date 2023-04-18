@@ -99,6 +99,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             price: productComparison.albertPrice,
             size: productComparison.albertPrice,
             storeImagePath: albert));
+        comparisonItems.add(PriceComparisonItem(
+            price: productComparison.hoogvlietPrice,
+            size: productComparison.hoogvlietSize,
+            storeImagePath: hoogLogo));
     } catch (e) {
       print("Failed to get price comparisons in product detail");
     }

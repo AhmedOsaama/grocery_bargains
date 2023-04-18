@@ -11,6 +11,12 @@ class ComparisonProduct {
   String albertImageURL;
   String albertPrice;
   String albertSize;
+  String hoogvlietName;
+  String hoogvlietLink;
+  String hoogvlietOldPrice;
+  String hoogvlietImageURL;
+  String hoogvlietPrice;
+  String hoogvlietSize;
 
   ComparisonProduct(
       {required this.id,
@@ -20,6 +26,12 @@ class ComparisonProduct {
       required this.albertName,
       required this.albertPrice,
       required this.albertSize,
+        required this.hoogvlietImageURL,
+        required this.hoogvlietLink,
+        required this.hoogvlietOldPrice,
+        required this.hoogvlietName,
+        required this.hoogvlietPrice,
+        required this.hoogvlietSize,
       required this.jumboImageURL,
       required this.jumboLink,
       required this.jumboName,

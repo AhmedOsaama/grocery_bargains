@@ -30,7 +30,7 @@ class DiscountItem extends StatelessWidget {
       })
       : super(key: key);
 
-  var selectedStore = (['Albert',"Jumbo"]..shuffle()).first;
+  var selectedStore = (['Albert',"Jumbo", "Hoogvliet"]..shuffle()).first;
 
   String getPrice(ProductsProvider productsProvider){
     if(selectedStore == "Albert") {
@@ -46,7 +46,53 @@ class DiscountItem extends StatelessWidget {
       return product.oldPrice ?? product.price;
       // return product.oldPrice ?? ;
     }
+    if(selectedStore == "Hoogvliet") {
+      var product = productsProvider.jumboProducts.firstWhere((product) {
+        return product.url == comparisonProduct.jumboLink;
+      });
+      return product.oldPrice ?? product.price;
+      // return product.oldPrice ?? ;
+    }
     return "0.00";
+  }
+
+  String getProductImage() {
+    if(selectedStore == "Albert"){
+      return comparisonProduct.albertImageURL;
+    }
+    if(selectedStore == "Jumbo"){
+      return comparisonProduct.jumboImageURL;
+    }
+    if(selectedStore == "Hoogvliet"){
+      return comparisonProduct.hoogvlietImageURL;
+    }
+    return "";
+  }
+
+  String getProductSize() {
+    if(selectedStore == "Albert"){
+      return comparisonProduct.albertSize;
+    }
+    if(selectedStore == "Jumbo"){
+      return comparisonProduct.jumboSize ?? "N/A";
+    }
+    if(selectedStore == "Hoogvliet"){
+      return comparisonProduct.hoogvlietSize;
+    }
+    return "";
+  }
+
+  String getProductName() {
+    if(selectedStore == "Albert"){
+      return comparisonProduct.albertName;
+    }
+    if(selectedStore == "Jumbo"){
+      return comparisonProduct.jumboName;
+    }
+    if(selectedStore == "Hoogvliet"){
+      return comparisonProduct.hoogvlietName;
+    }
+    return "";
   }
 
   String? getDiscountValue(ProductsProvider productsProvider){
@@ -61,6 +107,7 @@ class DiscountItem extends StatelessWidget {
         return product.url == comparisonProduct.jumboLink;
       });
     }
+    //TODO: do the same for Hoogvliet
     try {
       if (product?.oldPrice == null) return null;
       var oldPrice = double.tryParse(product?.oldPrice ?? "") ?? 0;
@@ -121,6 +168,24 @@ class DiscountItem extends StatelessWidget {
                 size2: product.size2 ?? "",
               ));
         }
+        if(selectedStore == "Hoogvliet") {
+          var product = productsProvider.hoogvlietProducts.firstWhere((product) => product.url == comparisonProduct.hoogvlietLink);
+          AppNavigator.push(
+              context: context,
+              screen: ProductDetailScreen(
+                comparisonId: comparisonProduct.id,
+                productId: product.id,
+                storeName: selectedStore,
+                productName: product.name,
+                imageURL: product.imageURL,
+                description: product.description,
+                price1:
+                double.tryParse(product.price) ?? 0.0,
+                price2: null,
+                size1: product.size,
+                size2: product.size2 ?? "",
+              ));
+        }
       },
       child: Container(
         decoration: const BoxDecoration(color: Colors.white, boxShadow: [
@@ -144,7 +209,7 @@ class DiscountItem extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Image.network(
-                        selectedStore == "Albert" ? comparisonProduct.albertImageURL : comparisonProduct.jumboImageURL,
+                        getProductImage(),
                         errorBuilder: (context,_,s){
                           return Icon(Icons.image_not_supported);
                         },
@@ -157,14 +222,14 @@ class DiscountItem extends StatelessWidget {
                         SizedBox(
                           width: 105.w,
                           child: Text(
-                            selectedStore == "Albert" ? comparisonProduct.albertName : comparisonProduct.jumboName,
+                            getProductName(),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyles.textViewSemiBold14,
                           ),
                         ),
                         Text(
-                          selectedStore == "Albert" ? comparisonProduct.albertSize : comparisonProduct.jumboSize ?? "N/A",
+                          getProductSize(),
                           style: TextStyles.textViewMedium12
                               .copyWith(color: Color.fromRGBO(204, 204, 204, 1)),
                         ),
@@ -259,6 +324,10 @@ class DiscountItem extends StatelessWidget {
       ),
     );
   }
+
+
+
+
 
   Future<void> shareDiscountItem(BuildContext context, productName, oldPrice,
       price1, price2, imageURL, size1) {

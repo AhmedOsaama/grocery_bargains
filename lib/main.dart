@@ -153,10 +153,12 @@ class _MyAppState extends State<MyApp> {
     print("1");
     await Provider.of<ProductsProvider>(context,listen: false).getAllJumboProducts();
     print("2");
-    await Provider.of<ProductsProvider>(context,listen: false).getAllPriceComparisons();
+    await Provider.of<ProductsProvider>(context,listen: false).getAllHoogvlietProducts();
     print("3");
-    await Provider.of<ProductsProvider>(context,listen: false).populateBestValueBargains();
+    await Provider.of<ProductsProvider>(context,listen: false).getLimitedPriceComparisons(0);
     print("4");
+    await Provider.of<ProductsProvider>(context,listen: false).populateBestValueBargains();
+    print("5");
   }
 
   Future<void> initMixpanel() async {

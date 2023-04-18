@@ -15,6 +15,7 @@ const String milk = '$imgPath/milk.png';
 const String spar = '$imgPath/brand.png';
 const String albert = '$imgPath/albert.png';
 const String jumbo = '$imgPath/jumbo.png';
+const String hoogLogo = '$imgPath/hoogvliet_logo.png';
 const String newChatList = '$imgPath/new_chatlist.png';
 const String storePlaceholder = "$imgPath/store_placeholder.png";
 const String chatlistBackground = "$imgPath/chatlist_background.png";
