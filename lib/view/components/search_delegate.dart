@@ -144,7 +144,7 @@ class MySearchDelegate extends SearchDelegate {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              flex: 2,
+              flex: 3,
               child: categories.isEmpty
                   ? const Center(
                       child: CircularProgressIndicator(),
