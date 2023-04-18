@@ -60,7 +60,7 @@ class SupportScreen extends StatelessWidget {
             ),
             20.ph,
             Text(
-              LocaleKeys.yourName.tr(),
+              LocaleKeys.yourMessage.tr(),
               style: TextStylesDMSans.textViewBold12.copyWith(color: black1),
             ),
             10.ph,

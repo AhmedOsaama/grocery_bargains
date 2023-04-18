@@ -139,11 +139,12 @@ class MySearchDelegate extends SearchDelegate {
     return Consumer<ProductsProvider>(builder: (c, provider, _) {
       categories = provider.categories;
       return Padding(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
+              flex: 3,
               child: categories.isEmpty
                   ? const Center(
                       child: CircularProgressIndicator(),
@@ -181,18 +182,12 @@ class MySearchDelegate extends SearchDelegate {
                         );
                       }).toList()),
             ),
-            SizedBox(
-              height: 10.h,
-            ),
             Text(
               LocaleKeys.recentSearches.tr(),
               style: TextStyles.textViewMedium20.copyWith(color: gunmetal),
             ),
-            SizedBox(
-              height: 15.h,
-            ),
             Expanded(
-              flex: 3,
+              flex: 9,
               child: ListView.separated(
                   separatorBuilder: (ctx, i) => const Divider(),
                   itemCount: suggestions.length,

@@ -339,9 +339,10 @@ class ProductsProvider with ChangeNotifier {
     if (startingIndex == 0) albertProducts.clear();
     var response = await NetworkServices.getProducts(startingIndex);
     decodedProductsList = jsonDecode(response.body);
-    albertProducts
-        .addAll(convertToProductListFromJson(decodedProductsList as List<Map>));
-    albertProducts.removeAt(0);
+
+    albertProducts.addAll(convertToProductListFromJson(decodedProductsList));
+    // albertProducts.removeAt(0);
+
     print(
         "Total number of products from Index $startingIndex: ${albertProducts.length}");
     notifyListeners();
