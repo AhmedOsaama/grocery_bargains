@@ -38,29 +38,25 @@ class ChatCard extends StatelessWidget {
           ),
           18.pw,
           Column(
-            crossAxisAlignment:
-            CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 allLists[i].name,
-                style: TextStylesInter
-                    .textViewSemiBold16
-                    .copyWith(color: black2),
+                style:
+                    TextStylesInter.textViewSemiBold16.copyWith(color: black2),
               ),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     "${allLists[i].itemLength} items",
-                    style: TextStylesInter
-                        .textViewMedium10
+                    style: TextStylesInter.textViewMedium10
                         .copyWith(color: purple50),
                   ),
                   5.pw,
                   Text(
                     "€${allLists[i].totalPrice.toStringAsFixed(2)}",
-                    style: TextStylesInter
-                        .textViewMedium10
+                    style: TextStylesInter.textViewMedium10
                         .copyWith(color: black2),
                   ),
                 ],
@@ -69,11 +65,8 @@ class ChatCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    '${allLists[i].lastMessageUserId ==
-                        FirebaseAuth.instance.currentUser?.uid ?
-                    LocaleKeys.you.tr() : allLists[i].lastMessageUserName}: ',
-                    style: TextStylesInter
-                        .textViewRegular14
+                    '${allLists[i].lastMessageUserId == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : allLists[i].lastMessageUserName}: ',
+                    style: TextStylesInter.textViewRegular14
                         .copyWith(color: black2),
                   ),
                   Container(
@@ -81,8 +74,7 @@ class ChatCard extends StatelessWidget {
                     child: Text(
                       allLists[i].lastMessage,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStylesInter
-                          .textViewRegular14
+                      style: TextStylesInter.textViewRegular14
                           .copyWith(color: black2),
                     ),
                   ),
@@ -92,34 +84,24 @@ class ChatCard extends StatelessWidget {
           ),
           Spacer(),
           Column(
-            mainAxisAlignment:
-            MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                (allLists[i].lastMessageDate
-                    .toDate())
-                    .toString()
-                    .split(' ')[0],
+                (allLists[i].lastMessageDate.toDate()).toString().split(' ')[0],
                 style: TextStylesInter.textViewRegular14
-                    .copyWith(
-                    color: Color.fromRGBO(
-                        72, 72, 74, 1)),
+                    .copyWith(color: Color.fromRGBO(72, 72, 74, 1)),
                 overflow: TextOverflow.ellipsis,
               ),
               FutureBuilder(
                   future: getUserImages(allLists[i].id),
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState ==
-                        ConnectionState.waiting) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
-                          child:
-                          CircularProgressIndicator(
-                            color: verdigris,
-                          ));
+                          child: CircularProgressIndicator(
+                        color: verdigris,
+                      ));
                     }
-                    return snapshot.data ??
-                        const Text(
-                            "Something went wrong");
+                    return snapshot.data ?? SvgPicture.asset(peopleIcon);
                   }),
             ],
           )
@@ -127,6 +109,7 @@ class ChatCard extends StatelessWidget {
       ),
     );
   }
+
   Future<Widget> getUserImages(String docId) async {
     List<Widget> imageWidgets = [];
     imageWidgets.clear();
@@ -142,6 +125,7 @@ class ChatCard extends StatelessWidget {
       print(e);
       return SvgPicture.asset(peopleIcon);
     }
+
     if (userIds.isEmpty) return SvgPicture.asset(peopleIcon);
     String imageUrl = "";
     for (var userId in userIds) {
@@ -150,12 +134,16 @@ class ChatCard extends StatelessWidget {
           .doc(userId)
           .get();
       imageUrl = userSnapshot.data()!['imageURL'];
-      imageWidgets.add(CircleAvatar(
-        backgroundImage: NetworkImage(
-          imageUrl,
-        ),
-        radius: 12,
-      ));
+      if (imageUrl.isEmpty) {
+        imageWidgets.add(SvgPicture.asset(peopleIcon));
+      } else {
+        imageWidgets.add(CircleAvatar(
+          backgroundImage: NetworkImage(
+            imageUrl,
+          ),
+          radius: 12,
+        ));
+      }
     }
 
     return GestureDetector(
@@ -168,5 +156,4 @@ class ChatCard extends StatelessWidget {
       ),
     );
   }
-
 }

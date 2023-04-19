@@ -11,13 +11,15 @@ import '../../utils/style_utils.dart';
 class OtpDialog extends StatelessWidget {
   final String phoneNumber;
   final Function resendOtp;
-  OtpDialog({Key? key, required this.phoneNumber, required this.resendOtp}) : super(key: key);
+  OtpDialog({Key? key, required this.phoneNumber, required this.resendOtp})
+      : super(key: key);
 
   var pin = '';
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      alignment: Alignment.bottomCenter,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding: const EdgeInsets.all(10),
@@ -56,10 +58,10 @@ class OtpDialog extends StatelessWidget {
             ElevatedButton(
                 onPressed: () async {
                   print(pin);
-                  await AppNavigator.pop(context: context,object: pin);
+                  await AppNavigator.pop(context: context, object: pin);
                 },
                 style: ElevatedButton.styleFrom(
-                  fixedSize: Size(130, 60),
+                    fixedSize: Size(130, 60),
                     backgroundColor: yellow,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(6)),
@@ -82,8 +84,9 @@ class OtpDialog extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: "Resend",
-                        style: TextStylesInter.textViewRegular18
-                            .copyWith(decoration: TextDecoration.underline,color: mainPurple),
+                        style: TextStylesInter.textViewRegular18.copyWith(
+                            decoration: TextDecoration.underline,
+                            color: mainPurple),
                       )
                     ]),
               ),

@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -60,7 +59,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _submitAuthForm(String email, String username,
       String phoneNumber, BuildContext ctx) async {
-    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
+    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
     try {
       if (!isLogin) {
         setState(() {
@@ -231,7 +230,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: BoxDecoration(boxShadow: Utils.boxShadow),
                   child: IntlPhoneField(
                     disableLengthCheck: true,
-                    initialCountryCode: "EG",
+                    initialCountryCode: "NL",
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderSide: BorderSide(
@@ -440,13 +439,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     FocusScope.of(context).unfocus();
     if (isValid!) {
       _formKey.currentState?.save();
-      await _submitAuthForm(email, username, phoneNumber, context)
-          .timeout(Duration(seconds: 180),
-          // onTimeout: () {
+      await _submitAuthForm(email, username, phoneNumber, context).timeout(
+        Duration(seconds: 180),
+        // onTimeout: () {
         // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         //     content: Text(
         //         "Failed to login or signup, Please check your internet and try again later")));
-      // }
+        // }
       );
     }
   }
@@ -501,8 +500,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future showOtpDialog() async {
     return await showDialog(
-            context: context,
-            builder: (ctx) => OtpDialog(phoneNumber: phoneNumber, resendOtp: () => _submitAuthForm(email, username, phoneNumber, context)));
+        context: context,
+        builder: (ctx) => OtpDialog(
+            phoneNumber: phoneNumber,
+            resendOtp: () =>
+                _submitAuthForm(email, username, phoneNumber, context)));
   }
 
   Future<void> loginWithSocial(BuildContext context, bool isApple) async {

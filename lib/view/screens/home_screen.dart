@@ -1,6 +1,5 @@
 import 'package:bargainb/models/bestValue_item.dart';
 import 'package:bargainb/models/comparison_product.dart';
-import 'package:bargainb/models/product.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -80,8 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
       print("PAGE KEY: " + pageKey.toString());
       await Provider.of<ProductsProvider>(context, listen: false)
           .getLimitedPriceComparisons(pageKey);
-      final newProducts =
-          Provider.of<ProductsProvider>(context, listen: false).comparisonProducts;
+      final newProducts = Provider.of<ProductsProvider>(context, listen: false)
+          .comparisonProducts;
 
       final isLastPage = newProducts.length < _pageSize;
       if (isLastPage) {
@@ -144,7 +143,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         //     '${'Hello, ' + (googleProvider.user.displayName ?? "Google user")}!',
                         //   );
                         // }
+
                         else {
+                          if (!snapshot.data!.data()!.containsKey("privacy")) {
+                            FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(FirebaseAuth.instance.currentUser!.uid)
+                                .update({
+                              'language': 'en',
+                              'status':
+                                  "Hello! I'm using BargainB. Join the app",
+                              'privacy': {
+                                'connectContacts': true,
+                                'locationServices': false,
+                              },
+                              'preferences': {
+                                'emailMarketing': true,
+                                'weekly': true,
+                                'daily': false,
+                              },
+                            });
+                          }
                           return Text(
                             style: TextStylesInter.textViewSemiBold24
                                 .copyWith(color: mainPurple),
@@ -301,7 +320,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         .copyWith(color: prussian),
                   ),
                   TextButton(
-                      onPressed: () => AppNavigator.push(context: context, screen: LatestBargainsScreen()),
+                      onPressed: () => AppNavigator.push(
+                          context: context, screen: LatestBargainsScreen()),
                       child: Text(
                         'See all',
                         style: textButtonStyle,
@@ -432,12 +452,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       return PagedListView<int, ComparisonProduct>(
                         scrollDirection: Axis.horizontal,
                         pagingController: _pagingController,
-                        builderDelegate: PagedChildBuilderDelegate<ComparisonProduct>(
-                            itemBuilder: (context, item, index) => Row(
-                                  children: [DiscountItem(
-                              comparisonProduct: item,
-                            ), 10.pw],
-                                )),
+                        builderDelegate:
+                            PagedChildBuilderDelegate<ComparisonProduct>(
+                                itemBuilder: (context, item, index) => Row(
+                                      children: [
+                                        DiscountItem(
+                                          comparisonProduct: item,
+                                        ),
+                                        10.pw
+                                      ],
+                                    )),
                       );
                     }
 

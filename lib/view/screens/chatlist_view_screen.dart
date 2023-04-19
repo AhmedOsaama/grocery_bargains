@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bargainb/models/chatlist.dart';
@@ -5,32 +6,20 @@ import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
-import 'package:bargainb/utils/assets_manager.dart';
-import 'package:bargainb/utils/fonts_utils.dart';
-import 'package:bargainb/view/components/generic_appbar.dart';
-import 'package:bargainb/view/components/generic_field.dart';
-import 'package:bargainb/view/components/my_scaffold.dart';
-import 'package:bargainb/view/components/plus_button.dart';
-import 'package:bargainb/view/screens/category_items_screen.dart';
-import 'package:bargainb/view/screens/chat_view_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/chat_view_widget.dart';
 
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
-import '../components/button.dart';
 import '../components/dotted_container.dart';
 
 class ChatListViewScreen extends StatefulWidget {
@@ -129,9 +118,14 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
           .get()
           .timeout(Duration(seconds: 10));
       userIds = list['userIds'];
+      log(userIds.length.toString());
     } catch (e) {
       print(e);
-      return SvgPicture.asset(peopleIcon);
+      return SvgPicture.asset(
+        peopleIcon,
+        width: 35.w,
+        height: 35.h,
+      );
     }
     if (userIds.isEmpty) return SvgPicture.asset(peopleIcon);
     String imageUrl = "";
@@ -139,6 +133,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     String email = "";
     String phoneNumber = "";
     for (var userId in userIds) {
+      log(userId);
       //for every userId in the chatlist
       final userSnapshot = await FirebaseFirestore.instance
           .collection('/users')
@@ -153,19 +148,31 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
           imageURL: imageUrl,
           name: userName,
           email: email));
-      imageWidgets.add(CircleAvatar(
-        backgroundImage: NetworkImage(
-          imageUrl,
-        ),
-        radius: 20,
-      ));
+      log("img $imageUrl");
+      if (imageUrl.isEmpty) {
+        imageWidgets.add(
+          SvgPicture.asset(
+            peopleIcon,
+            width: 40.w,
+            height: 40.h,
+          ),
+        );
+      } else {
+        imageWidgets.add(CircleAvatar(
+          backgroundImage: NetworkImage(
+            imageUrl,
+          ),
+          radius: 20,
+        ));
+      }
     }
     var userInfo = await FirebaseFirestore.instance
         .collection('/users')
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .get();
 
-    if (userInfo.get('phoneNumber').isNotEmpty) {
+    if (userInfo.get('phoneNumber').isNotEmpty &&
+        userInfo.data()!["privacy"]["connectContacts"]) {
       var isPermissionGranted = await FlutterContacts.requestPermission();
       isContactsPermissionGranted = isPermissionGranted;
       if (isPermissionGranted) {
@@ -180,26 +187,35 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
             .get();
         if (users.docs.isNotEmpty) {
           for (var user in users.docs) {
-            var phoneNumber = user.get('phoneNumber');
-            var contactIndex = contacts.indexWhere((contact) =>
-                contact.phones.first.normalizedNumber == phoneNumber);
-            if (contactIndex != -1) {
-              //match found
-              var contact = contacts.elementAt(contactIndex);
-              var participantIndex = listUsers.indexWhere((participant) =>
-                  participant.phoneNumber ==
-                  contact.phones.first.normalizedNumber);
-              if (participantIndex == -1) {
-                //contact not found in participants
-                var name = user.get('username');
-                var email = user.get('email');
-                var imageURL = user.get('imageURL');
-                contactsList.add(UserInfo(
-                    phoneNumber: phoneNumber,
-                    imageURL: imageURL,
-                    name: name,
-                    email: email));
+            try {
+              var phoneNumber = user.get('phoneNumber');
+
+              var contactIndex = contacts.indexWhere((contact) {
+                log(contact.phones.toString());
+
+                return (contact.phones.first.normalizedNumber == phoneNumber);
+              });
+              //   log("i:" + contactIndex.toString());
+              if (contactIndex != -1) {
+                //match found
+                var contact = contacts.elementAt(contactIndex);
+                var participantIndex = listUsers.indexWhere((participant) =>
+                    participant.phoneNumber ==
+                    contact.phones.first.normalizedNumber);
+                if (participantIndex == -1) {
+                  //contact not found in participants
+                  var name = user.get('username');
+                  var email = user.get('email');
+                  var imageURL = user.get('imageURL');
+                  contactsList.add(UserInfo(
+                      phoneNumber: phoneNumber,
+                      imageURL: imageURL,
+                      name: name,
+                      email: email));
+                }
               }
+            } catch (e) {
+              log(e.toString());
             }
           }
         }
@@ -210,7 +226,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       // padding: EdgeInsets.symmetric(horizontal: 15),
       // color: Colors.red,
       // width: 50.w,
-      height: 50.h,
+      //height: 100.h,
       child: Stack(
           children: imageWidgets
               .map((image) => Positioned(
@@ -252,347 +268,369 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
               )
             : null,
         actions: [
-          Container(
-            width: 150.w,
-            child: InkWell(
-              onTap: () async {
-                setState(() {
-                  isInvitingFriends = !isInvitingFriends;
-                });
-              },
-              child: Row(
-                children: [
-                  Expanded(
-                    child: FutureBuilder(
-                        future: getUserImagesFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator(
-                              color: verdigris,
-                            ));
-                          }
-                          return snapshot.data ??
-                              const Text("Something went wrong");
-                        }),
-                  ),
-                  // 5.pw,
-                  Icon(Icons.arrow_drop_down),
-                  10.pw,
-                ],
-              ),
+          InkWell(
+            onTap: () async {
+              setState(() {
+                isInvitingFriends = !isInvitingFriends;
+              });
+            },
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  width: ScreenUtil().screenHeight / 4,
+                  // height: 50,
+                  child: FutureBuilder(
+                      future: getUserImagesFuture,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator(
+                            color: verdigris,
+                          ));
+                        }
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 10.0),
+                          child: snapshot.data ?? SvgPicture.asset(peopleIcon),
+                        );
+                      }),
+                ),
+                // 5.pw,
+                Icon(
+                  isInvitingFriends
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                  color: mainPurple,
+                  size: 35.sp,
+                ),
+              ],
             ),
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              30.pw,
-              SizedBox(
-                width: 10.w,
-              ),
-            ],
-          ),
-          if (isInvitingFriends)
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (listUsers.isNotEmpty) ...[
-                    Text(
-                      'Participants',
-                      style: TextStylesInter.textViewRegular12
-                          .copyWith(color: mainPurple),
-                    ),
-                    10.ph,
-                    ListView(
-                        shrinkWrap: true,
-                        children: listUsers.map((userInfo) {
-                          return Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                  userInfo.imageURL,
-                                ),
-                                radius: 20,
-                              ),
-                              20.pw,
-                              Text(
-                                userInfo.name,
-                                style: TextStylesInter.textViewRegular16
-                                    .copyWith(color: black2),
-                              )
-                            ],
-                          );
-                        }).toList()),
-                  ],
-                  10.ph,
-                  if (contactsList.isNotEmpty) ...[
-                    Text(
-                      'Your Contacts',
-                      style: TextStylesInter.textViewRegular12
-                          .copyWith(color: mainPurple),
-                    ),
-                    10.ph,
-                    ListView(
-                        shrinkWrap: true,
-                        children: contactsList.map((userInfo) {
-                          return Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                  userInfo.imageURL,
-                                ),
-                                radius: 20,
-                              ),
-                              20.pw,
-                              Text(
-                                userInfo.name,
-                                style: TextStylesInter.textViewRegular16
-                                    .copyWith(color: black2),
-                              ),
-                              Spacer(),
-                              TextButton(
-                                  onPressed: () => addContactToChatlist(userInfo,context),
-                                  child: Text("Add")),
-                            ],
-                          );
-                        }).toList()),
-                  ],
-                  if (contactsList.isEmpty && !isContactsPermissionGranted)
-                    Text(
-                        "Please add your number to see your friends on BargainB"),
-                  if (contactsList.isEmpty && isContactsPermissionGranted)
-                    Text("No contacts found on BargainB"),
-                  TextButton(
-                      onPressed: () {
-                        //TODO: share via link
-                        // shareListViaDeepLink();
-                      },
-                      child: Text(
-                        "Invite via link",
-                        style: TextStylesInter.textViewRegular15
-                            .copyWith(color: mainPurple),
-                      )),
-                  // GenericField(
-                  //   controller: inviteFriendController,
-                  //   prefixIcon: Icon(Icons.person_add_alt),
-                  //   hintText: LocaleKeys.inputEmail.tr(),
-                  //   hintStyle:
-                  //       TextStylesDMSans.textViewBold14.copyWith(color: black2),
-                  //   onSubmitted: (email) async {
-                  //     try {
-                  //       var userData = await FirebaseFirestore.instance
-                  //           .collection('/users')
-                  //           .where('email', isEqualTo: email.trim())
-                  //           .get();
-                  //       var userId = userData.docs.first.id;
-                  //       FirebaseFirestore.instance
-                  //           .collection('/lists')
-                  //           .doc(widget.listId)
-                  //           .update({
-                  //         "userIds": FieldValue.arrayUnion([userId])
-                  //       });
-                  //     } catch (e) {
-                  //       print("ERROR: $e");
-                  //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  //         content: Text(
-                  //           "Couldn't find a user with that email",
-                  //         ),
-                  //       ));
-                  //     }
-                  //     inviteFriendController.clear();
-                  //   },
-                  // )
-                ],
-              ),
-            ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
+      body: Container(
+        decoration: BoxDecoration(
+            color: isInvitingFriends ? Color.fromRGBO(245, 247, 254, 0) : white,
+            boxShadow: [
+              BoxShadow(
+                  blurRadius: 50,
+                  offset: Offset(0, 20),
+                  color: Color.fromRGBO(52, 99, 237, 0.15)),
+            ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                isEditingName
-                    ? Container(
-                        width: 210.w,
-                        child: TextFormField(
-                          initialValue: chatList.name,
-                          style: TextStyles.textViewSemiBold24
-                              .copyWith(color: prussian),
-                          onFieldSubmitted: (value) async {
-                            await updateListName(value);
-                          },
-                        ),
-                      )
-                    : Container(
-                        width: 210.w,
-                        child: Text(
-                          chatList.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyles.textViewSemiBold24
-                              .copyWith(color: prussian),
-                        ),
-                      ),
-                Spacer(),
-                DropdownButton(
-                  underline: Container(),
-                  icon: Icon(
-                    Icons.more_vert,
-                    color: Colors.black,
-                  ),
-                  items: const [
-                    DropdownMenuItem(value: 'rename', child: Text("Rename")),
-                    DropdownMenuItem(value: 'remove', child: Text("Remove")),
-                    DropdownMenuItem(
-                      value: 'copy',
-                      enabled: false,
-                      child: Text("Copy"),
-                    ),
-                  ],
-                  onChanged: (option) {
-                    if (option == 'rename') {
-                      // Share.share("text");
-
-                      setState(() {
-                        isEditingName = true;
-                      });
-                    } else if (option == 'remove') {
-                      deleteList(context);
-                    }
-                  },
+                30.pw,
+                SizedBox(
+                  width: 10.w,
                 ),
-                IconButton(
-                    onPressed: () {
-                      setState(() {
-                        widget.isListView = !widget.isListView;
-                        // getListItemsFuture = FirebaseFirestore.instance
-                        //     .collection('/lists/${widget.listId}/items').orderBy('time')
-                        //     .get();
-                      });
-                    },
-                    icon: widget.isListView
-                        ? Icon(Icons.chat_outlined)
-                        : SvgPicture.asset(listViewIcon)),
               ],
             ),
-          ),
-          Divider(
-            height: 20.h,
-          ),
-          widget.isListView
-              ? Expanded(
-                  child: FutureBuilder<QuerySnapshot>(
-                      future: FirebaseFirestore.instance
-                          .collection('/lists/${widget.listId}/items')
-                          .orderBy('time')
-                          .get(),
-                      builder: (context, snapshot) {
-                        final items = snapshot.data?.docs ?? [];
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Container();
-                        }
-                        if (items.isEmpty || !snapshot.hasData) {
-                          return Container(
-                            margin: EdgeInsets.only(top: 100.h),
-                            alignment: Alignment.topCenter,
-                            child: DottedContainer(
-                              text: LocaleKeys.addToListFirstItem.tr(),
-                            ),
-                          );
-                        }
-                        return Column(
-                          children: [
-                            Row(
-                              children: [
-                                // IconButton(
-                                //     onPressed: () => shareListViaDeepLink(), icon: Icon(Icons.share_outlined)),
-                                // IconButton(
-                                //     onPressed: () {
-                                //       setState(() {
-                                //         widget.isListView = !widget.isListView;
-                                //       });
-                                //     },
-                                //     icon: Icon(Icons.message_outlined)),
-                                Spacer(),
-                                Text(
-                                  "${items.length} items",
-                                  style: TextStyles.textViewMedium10.copyWith(
-                                      color: Color.fromRGBO(204, 204, 203, 1)),
-                                ),
-                                SizedBox(
-                                  width: 10.w,
-                                ),
-                                Text(
-                                  LocaleKeys.total.tr(),
-                                  style: TextStyles.textViewMedium15
-                                      .copyWith(color: prussian),
-                                ),
-                                SizedBox(
-                                  width: 10.w,
-                                ),
-                              ],
-                            ),
-                            Expanded(
-                              child: ListView.separated(
-                                  itemCount: items.length,
-                                  separatorBuilder: (ctx, _) => const Divider(),
-                                  itemBuilder: (ctx, i) {
-                                    var doc = items[i];
-                                    var isChecked = items[i]['item_isChecked'];
-                                    if (items[i]['text'] != '') {
-                                      return Opacity(
-                                        opacity: isChecked ? 0.6 : 1,
-                                        child: Row(
-                                          children: [
-                                            30.pw,
-                                            Checkbox(
-                                              value: isChecked,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  isChecked = !isChecked;
-                                                });
-                                                FirebaseFirestore.instance
-                                                    .collection(
-                                                        "/lists/${doc.reference.parent.parent?.id}/items")
-                                                    .doc(doc.id)
-                                                    .update({
-                                                  "item_isChecked": isChecked,
-                                                }).catchError((e) {
-                                                  print(e);
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(const SnackBar(
-                                                          content: Text(
-                                                              "This operation couldn't be done please try again")));
-                                                });
-                                                // updateList();
-                                              },
-                                            ),
-                                            Text(
-                                              items[i]['text'],
-                                              style: TextStylesInter
-                                                  .textViewRegular16
-                                                  .copyWith(color: black2),
-                                            )
-                                          ],
+            if (isInvitingFriends)
+              Container(
+                decoration: BoxDecoration(color: white, boxShadow: [
+                  BoxShadow(
+                      blurRadius: 20,
+                      offset: Offset(0, 20),
+                      color: Color.fromRGBO(52, 99, 237, 0.15)),
+                ]),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (listUsers.isNotEmpty) ...[
+                        Text(
+                          'Members',
+                          style: TextStylesInter.textViewSemiBold26
+                              .copyWith(color: black),
+                        ),
+                        10.ph,
+                        ListView(
+                            shrinkWrap: true,
+                            children: listUsers.map((userInfo) {
+                              return Row(
+                                children: [
+                                  userInfo.imageURL.isEmpty
+                                      ? SvgPicture.asset(
+                                          peopleIcon,
+                                          width: 35.w,
+                                          height: 35.h,
+                                        )
+                                      : CircleAvatar(
+                                          backgroundImage: NetworkImage(
+                                            userInfo.imageURL,
+                                          ),
+                                          radius: 20,
                                         ),
-                                      );
-                                    }
-                                    var itemName = items[i]['item_name'];
-                                    var itemImage = items[i]['item_image'];
-                                    var itemDescription = items[i]['item_size'];
-                                    var itemPrice = items[i]['item_price'];
-                                    return Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Expanded(
-                                          child: Opacity(
+                                  20.pw,
+                                  Text(
+                                    userInfo.name,
+                                    style: TextStylesInter.textViewRegular16
+                                        .copyWith(color: black2),
+                                  )
+                                ],
+                              );
+                            }).toList()),
+                      ],
+                      50.ph,
+                      if (contactsList.isNotEmpty) ...[
+                        Text(
+                          'Add to list',
+                          style: TextStylesInter.textViewSemiBold26
+                              .copyWith(color: black),
+                        ),
+                        15.ph,
+                        Text(
+                          'CONTACTS ON BARGAINB',
+                          style: TextStylesInter.textViewRegular12
+                              .copyWith(color: mainPurple),
+                        ),
+                        10.ph,
+                        ListView(
+                            shrinkWrap: true,
+                            children: contactsList.map((userInfo) {
+                              return Padding(
+                                padding: EdgeInsets.only(top: 10),
+                                child: Row(
+                                  children: [
+                                    userInfo.imageURL.isEmpty
+                                        ? SvgPicture.asset(
+                                            peopleIcon,
+                                            width: 35.w,
+                                            height: 35.h,
+                                          )
+                                        : CircleAvatar(
+                                            backgroundImage: NetworkImage(
+                                              userInfo.imageURL,
+                                            ),
+                                            radius: 20,
+                                          ),
+                                    20.pw,
+                                    Text(
+                                      userInfo.name,
+                                      style: TextStylesInter.textViewRegular16
+                                          .copyWith(color: black2),
+                                    ),
+                                    Spacer(),
+                                    InkWell(
+                                      onTap: () => addContactToChatlist(
+                                          userInfo, context),
+                                      child: Row(children: [
+                                        Text(
+                                          "Add",
+                                          style: TextStylesInter
+                                              .textViewSemiBold14
+                                              .copyWith(color: mainPurple),
+                                        ),
+                                        10.pw,
+                                        CircleAvatar(
+                                          child: Icon(
+                                            Icons.person_add_alt,
+                                            color: white,
+                                          ),
+                                          backgroundColor: mainPurple,
+                                        )
+                                      ]),
+                                    )
+                                  ],
+                                ),
+                              );
+                            }).toList()),
+                      ],
+                      if (contactsList.isEmpty && !isContactsPermissionGranted)
+                        Text(
+                          "Please add your number to see your friends on BargainB",
+                          style: TextStylesInter.textViewRegular15
+                              .copyWith(color: black),
+                        ),
+                      if (contactsList.isEmpty && isContactsPermissionGranted)
+                        Text(
+                          "No contacts found on BargainB",
+                          style: TextStylesInter.textViewRegular15
+                              .copyWith(color: black),
+                        ),
+
+                      // GenericField(
+                      //   controller: inviteFriendController,
+                      //   prefixIcon: Icon(Icons.person_add_alt),
+                      //   hintText: LocaleKeys.inputEmail.tr(),
+                      //   hintStyle:
+                      //       TextStylesDMSans.textViewBold14.copyWith(color: black2),
+                      //   onSubmitted: (email) async {
+                      //     try {
+                      //       var userData = await FirebaseFirestore.instance
+                      //           .collection('/users')
+                      //           .where('email', isEqualTo: email.trim())
+                      //           .get();
+                      //       var userId = userData.docs.first.id;
+                      //       FirebaseFirestore.instance
+                      //           .collection('/lists')
+                      //           .doc(widget.listId)
+                      //           .update({
+                      //         "userIds": FieldValue.arrayUnion([userId])
+                      //       });
+                      //     } catch (e) {
+                      //       print("ERROR: $e");
+                      //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      //         content: Text(
+                      //           "Couldn't find a user with that email",
+                      //         ),
+                      //       ));
+                      //     }
+                      //     inviteFriendController.clear();
+                      //   },
+                      // )
+                    ],
+                  ),
+                ),
+              ),
+            if (!isInvitingFriends) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Row(
+                  children: [
+                    isEditingName
+                        ? Container(
+                            width: 210.w,
+                            child: TextFormField(
+                              initialValue: chatList.name,
+                              style: TextStyles.textViewSemiBold24
+                                  .copyWith(color: prussian),
+                              onFieldSubmitted: (value) async {
+                                await updateListName(value);
+                              },
+                            ),
+                          )
+                        : Container(
+                            width: 210.w,
+                            child: Text(
+                              chatList.name,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyles.textViewSemiBold24
+                                  .copyWith(color: prussian),
+                            ),
+                          ),
+                    Spacer(),
+                    DropdownButton(
+                      underline: Container(),
+                      icon: Icon(
+                        Icons.more_vert,
+                        color: Colors.black,
+                      ),
+                      items: const [
+                        DropdownMenuItem(
+                            value: 'rename', child: Text("Rename")),
+                        DropdownMenuItem(
+                            value: 'remove', child: Text("Remove")),
+                        DropdownMenuItem(
+                          value: 'copy',
+                          enabled: false,
+                          child: Text("Copy"),
+                        ),
+                      ],
+                      onChanged: (option) {
+                        if (option == 'rename') {
+                          // Share.share("text");
+
+                          setState(() {
+                            isEditingName = true;
+                          });
+                        } else if (option == 'remove') {
+                          deleteList(context);
+                        }
+                      },
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          setState(() {
+                            widget.isListView = !widget.isListView;
+                            // getListItemsFuture = FirebaseFirestore.instance
+                            //     .collection('/lists/${widget.listId}/items').orderBy('time')
+                            //     .get();
+                          });
+                        },
+                        icon: widget.isListView
+                            ? Icon(Icons.chat_outlined)
+                            : SvgPicture.asset(listViewIcon)),
+                  ],
+                ),
+              ),
+              Divider(
+                height: 20.h,
+              ),
+              widget.isListView
+                  ? Expanded(
+                      child: FutureBuilder<QuerySnapshot>(
+                          future: FirebaseFirestore.instance
+                              .collection('/lists/${widget.listId}/items')
+                              .orderBy('time')
+                              .get(),
+                          builder: (context, snapshot) {
+                            final items = snapshot.data?.docs ?? [];
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Container();
+                            }
+                            if (items.isEmpty || !snapshot.hasData) {
+                              return Container(
+                                margin: EdgeInsets.only(top: 100.h),
+                                alignment: Alignment.topCenter,
+                                child: DottedContainer(
+                                  text: LocaleKeys.addToListFirstItem.tr(),
+                                ),
+                              );
+                            }
+                            return Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    // IconButton(
+                                    //     onPressed: () => shareListViaDeepLink(), icon: Icon(Icons.share_outlined)),
+                                    // IconButton(
+                                    //     onPressed: () {
+                                    //       setState(() {
+                                    //         widget.isListView = !widget.isListView;
+                                    //       });
+                                    //     },
+                                    //     icon: Icon(Icons.message_outlined)),
+                                    Spacer(),
+                                    Text(
+                                      "${items.length} items",
+                                      style: TextStyles.textViewMedium10
+                                          .copyWith(
+                                              color: Color.fromRGBO(
+                                                  204, 204, 203, 1)),
+                                    ),
+                                    SizedBox(
+                                      width: 10.w,
+                                    ),
+                                    Text(
+                                      LocaleKeys.total.tr(),
+                                      style: TextStyles.textViewMedium15
+                                          .copyWith(color: prussian),
+                                    ),
+                                    SizedBox(
+                                      width: 10.w,
+                                    ),
+                                  ],
+                                ),
+                                Expanded(
+                                  child: ListView.separated(
+                                      itemCount: items.length,
+                                      separatorBuilder: (ctx, _) =>
+                                          const Divider(),
+                                      itemBuilder: (ctx, i) {
+                                        var doc = items[i];
+                                        var isChecked =
+                                            items[i]['item_isChecked'];
+                                        if (items[i]['text'] != '') {
+                                          return Opacity(
                                             opacity: isChecked ? 0.6 : 1,
                                             child: Row(
                                               children: [
@@ -622,117 +660,179 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                                     // updateList();
                                                   },
                                                 ),
-                                                Image.network(
-                                                  itemImage,
-                                                  width: 55,
-                                                  height: 55,
-                                                ),
-                                                SizedBox(
-                                                  width: 12.w,
-                                                ),
-                                                Container(
-                                                  width: 140.w,
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        itemName,
-                                                        overflow: TextOverflow
-                                                            .ellipsis,
-                                                        style: TextStyles
-                                                            .textViewSemiBold14
-                                                            .copyWith(
-                                                                color: prussian,
-                                                                decoration: isChecked
-                                                                    ? TextDecoration
-                                                                        .lineThrough
-                                                                    : null),
-                                                      ),
-                                                      Container(
-                                                        width: 150.w,
-                                                        child: Text(
-                                                          "$itemDescription",
-                                                          style: TextStyles
-                                                              .textViewLight12
-                                                              .copyWith(
-                                                                  color:
-                                                                      prussian,
-                                                                  decoration: isChecked
-                                                                      ? TextDecoration
-                                                                          .lineThrough
-                                                                      : null),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Spacer(),
                                                 Text(
-                                                  "€ $itemPrice",
-                                                  style: TextStyles
-                                                      .textViewMedium13
-                                                      .copyWith(
-                                                    color: prussian,
-                                                    decoration: isChecked
-                                                        ? TextDecoration
-                                                            .lineThrough
-                                                        : null,
-                                                  ),
-                                                ),
+                                                  items[i]['text'],
+                                                  style: TextStylesInter
+                                                      .textViewRegular16
+                                                      .copyWith(color: black2),
+                                                )
                                               ],
                                             ),
-                                          ),
-                                        ),
-                                        IconButton(
-                                            onPressed: () async {
-                                              await deleteItemFromList(
-                                                  items, i, doc);
-                                            },
-                                            icon: const Icon(
-                                              Icons.delete,
-                                              color: Colors.red,
-                                            )),
-                                      ],
-                                    );
-                                  }),
-                            ),
-                          ],
-                        );
-                      }),
-                )
-              : Expanded(child: ChatView(listId: widget.listId,))
-        ],
+                                          );
+                                        }
+                                        var itemName = items[i]['item_name'];
+                                        var itemImage = items[i]['item_image'];
+                                        var itemDescription =
+                                            items[i]['item_size'];
+                                        var itemPrice = items[i]['item_price'];
+                                        return Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            Expanded(
+                                              child: Opacity(
+                                                opacity: isChecked ? 0.6 : 1,
+                                                child: Row(
+                                                  children: [
+                                                    30.pw,
+                                                    Checkbox(
+                                                      value: isChecked,
+                                                      onChanged: (value) {
+                                                        setState(() {
+                                                          isChecked =
+                                                              !isChecked;
+                                                        });
+                                                        FirebaseFirestore
+                                                            .instance
+                                                            .collection(
+                                                                "/lists/${doc.reference.parent.parent?.id}/items")
+                                                            .doc(doc.id)
+                                                            .update({
+                                                          "item_isChecked":
+                                                              isChecked,
+                                                        }).catchError((e) {
+                                                          print(e);
+                                                          ScaffoldMessenger.of(
+                                                                  context)
+                                                              .showSnackBar(
+                                                                  const SnackBar(
+                                                                      content: Text(
+                                                                          "This operation couldn't be done please try again")));
+                                                        });
+                                                        // updateList();
+                                                      },
+                                                    ),
+                                                    Image.network(
+                                                      itemImage,
+                                                      width: 55,
+                                                      height: 55,
+                                                    ),
+                                                    SizedBox(
+                                                      width: 12.w,
+                                                    ),
+                                                    Container(
+                                                      width: 140.w,
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Text(
+                                                            itemName,
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style: TextStyles
+                                                                .textViewSemiBold14
+                                                                .copyWith(
+                                                                    color:
+                                                                        prussian,
+                                                                    decoration: isChecked
+                                                                        ? TextDecoration
+                                                                            .lineThrough
+                                                                        : null),
+                                                          ),
+                                                          Container(
+                                                            width: 150.w,
+                                                            child: Text(
+                                                              "$itemDescription",
+                                                              style: TextStyles
+                                                                  .textViewLight12
+                                                                  .copyWith(
+                                                                      color:
+                                                                          prussian,
+                                                                      decoration: isChecked
+                                                                          ? TextDecoration
+                                                                              .lineThrough
+                                                                          : null),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    Spacer(),
+                                                    Text(
+                                                      "€ $itemPrice",
+                                                      style: TextStyles
+                                                          .textViewMedium13
+                                                          .copyWith(
+                                                        color: prussian,
+                                                        decoration: isChecked
+                                                            ? TextDecoration
+                                                                .lineThrough
+                                                            : null,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            IconButton(
+                                                onPressed: () async {
+                                                  await deleteItemFromList(
+                                                      items, i, doc);
+                                                },
+                                                icon: const Icon(
+                                                  Icons.delete,
+                                                  color: Colors.red,
+                                                )),
+                                          ],
+                                        );
+                                      }),
+                                ),
+                              ],
+                            );
+                          }),
+                    )
+                  : Expanded(
+                      child: ChatView(
+                      listId: widget.listId,
+                    ))
+            ],
+          ],
+        ),
       ),
     );
   }
 
   Future<void> addContactToChatlist(
       UserInfo userInfo, BuildContext context) async {
-      try {
-        var userData = await FirebaseFirestore.instance
-            .collection('/users')
-            .where('phoneNumber', isEqualTo: userInfo.phoneNumber)
-            .get();
-        var userId = userData.docs.first.id;
-        await FirebaseFirestore.instance
-            .collection('/lists')
-            .doc(widget.listId)
-            .update({
-          "userIds": FieldValue.arrayUnion([userId])
-        });
-        setState(() {
-          isInvitingFriends = false;
-        });
-      } catch (e) {
-        print("ERROR: $e");
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            "Couldn't find a user with that email",
-          ),
-        ));
-      }
+    try {
+      var userData = await FirebaseFirestore.instance
+          .collection('/users')
+          .where('phoneNumber', isEqualTo: userInfo.phoneNumber)
+          .get();
+      var userId = userData.docs.first.id;
+      await FirebaseFirestore.instance
+          .collection('/lists')
+          .doc(widget.listId)
+          .update({
+        "userIds": FieldValue.arrayUnion([userId])
+      });
+      setState(() {
+        listUsers.clear();
+        contactsList.clear();
+        getUserImagesFuture = getUserImages();
+        isInvitingFriends = false;
+      });
+    } catch (e) {
+      print("ERROR: $e");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          "Couldn't find a user with that email",
+        ),
+      ));
+    }
   }
 
   Future<void> deleteItemFromList(List<QueryDocumentSnapshot<Object?>> items,
@@ -740,8 +840,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     try {
       await Provider.of<ChatlistsProvider>(context, listen: false)
           .deleteItemFromChatlist(
-          widget.listId, doc.id, items[i]['item_price']);
-    }catch(e){
+              widget.listId, doc.id, items[i]['item_price']);
+    } catch (e) {
       print(e);
     }
     setState(() {

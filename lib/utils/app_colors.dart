@@ -12,6 +12,7 @@ const Color darkGrey = Color.fromRGBO(204, 204, 203, 1);
 const Color green = Color.fromRGBO(64, 161, 138, 1);
 const Color lightGreen = Color.fromRGBO(103, 196, 172, 1);
 const Color lightGrey = Color(0xffD9D9D9);
+const Color liteGrey = Color(0xffA3A3A3);
 
 const Color black = Color(0xff000000);
 const Color hintbuttonSocial = Color(0xff03034d);

@@ -117,15 +117,19 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
             height: 20.h,
           ),
           Expanded(
-            child:
-                Consumer<ChatlistsProvider>(builder: (context, provider, _) {
+            child: Consumer<ChatlistsProvider>(builder: (context, provider, _) {
               var allLists = provider.chatlists;
               // var allLists = [];
               if (allLists.isEmpty) {
                 return Stack(
                   alignment: Alignment.center,
                   children: [
-                    Image.asset(chatlistBackground,width: double.infinity,height: double.infinity,fit: BoxFit.fitWidth,),
+                    Image.asset(
+                      chatlistBackground,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.fitWidth,
+                    ),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -167,14 +171,15 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                   ),
                 );
               }
-              if (chatlistsView == ChatlistsView.CHATVIEW)
+              if (chatlistsView == ChatlistsView.CHATVIEW) {
                 return ListView.separated(
                     separatorBuilder: (ctx, i) => Divider(),
                     itemCount: allLists.length,
-                    padding:  const EdgeInsets.symmetric(horizontal: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
                     itemBuilder: (ctx, i) {
                       return ChatCard(allLists, i);
                     });
+              }
               //PERSONVIEW case
               return FutureBuilder(
                 future: chatlistsProvider.getAllFriends(),
@@ -188,7 +193,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                   return ListView.separated(
                       itemCount: friendsList.length,
                       separatorBuilder: (ctx, i) => Divider(),
-                      padding:  const EdgeInsets.symmetric(horizontal: 15),
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
                       itemBuilder: (ctx, i) {
                         return InkWell(
                           onTap: () {
@@ -199,8 +204,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                                     friendName: friendsList[i].name,
                                     friendEmail: friendsList[i].email,
                                     friendImageURL: friendsList[i].imageURL,
-                                    friendChatlists:
-                                        friendsList[i].chatlists));
+                                    friendChatlists: friendsList[i].chatlists));
                           },
                           child: Padding(
                             padding: const EdgeInsets.symmetric(vertical: 10),
@@ -213,13 +217,11 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                                 ),
                                 15.pw,
                                 Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       friendsList[i].name,
-                                      style: TextStylesInter
-                                          .textViewSemiBold16
+                                      style: TextStylesInter.textViewSemiBold16
                                           .copyWith(color: black2),
                                     ),
                                     5.ph,
