@@ -41,6 +41,7 @@
 			<string>thebargainb.app</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
+				<string>com.googleusercontent.apps.482980918038-lpplqbj7s1rn3ugms25src4rmbnprb0q</string>
 				<string>BargainB</string>
 				<string>app-1-482980918038-ios-fa10c1a6b5719271155637</string>
 			</array>
