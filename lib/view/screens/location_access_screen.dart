@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/assets_manager.dart';
@@ -33,7 +34,7 @@ class LocationAccessScreen extends StatelessWidget {
             Image.asset(onboarding4),
             30.ph,
             Text(
-              "Location data access",
+              "Data access",
               style: TextStyles.textViewSemiBold30.copyWith(color: prussian),
               textAlign: TextAlign.center,
             ),
@@ -76,8 +77,15 @@ class LocationAccessScreen extends StatelessWidget {
               color: mainYellow,
               height: 60.h,
               width: double.infinity,
-              onPressed: () => AppNavigator.pushReplacement(
-                  context: context, screen: MainScreen()),
+              onPressed: () async {
+                if (await AppTrackingTransparency.trackingAuthorizationStatus ==
+                TrackingStatus.notDetermined) {
+                  // Request system's tracking authorization dialog
+                  await AppTrackingTransparency.requestTrackingAuthorization();
+                }
+                AppNavigator.pushReplacement(
+                  context: context, screen: MainScreen());
+              },
               child: Text(
                 "Accept",
                 style: TextStyles.textViewSemiBold16.copyWith(color: white),
@@ -90,8 +98,15 @@ class LocationAccessScreen extends StatelessWidget {
               color: Colors.transparent,
               height: 60.h,
               width: double.infinity,
-              onPressed: () => AppNavigator.pushReplacement(
-                  context: context, screen: MainScreen()),
+              onPressed: () async {
+                if (await AppTrackingTransparency.trackingAuthorizationStatus ==
+                TrackingStatus.notDetermined) {
+                  // Request system's tracking authorization dialog
+                  await AppTrackingTransparency.requestTrackingAuthorization();
+                }
+                AppNavigator.pushReplacement(
+                  context: context, screen: MainScreen());
+              },
               child: Text(
                 "Not Now",
                 style: TextStyles.textViewSemiBold16.copyWith(color: black),

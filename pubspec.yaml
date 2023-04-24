@@ -66,8 +66,9 @@ dependencies:
   flutter_contacts: ^1.1.6
   intl_phone_field: ^3.1.0
   firebase_app_check: ^0.1.1+14
-  pinput: ^2.2.31
+  pinput: ^2.2.21
   mixpanel_flutter: ^2.1.1
+  app_tracking_transparency: ^2.0.3
   cached_network_image: ^3.2.3
   url_launcher: ^6.1.10
   infinite_scroll_pagination: ^3.2.0
