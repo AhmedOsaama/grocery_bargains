@@ -211,19 +211,31 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   GestureDetector(
                     //sharing
                     onTap: () async {
-                      Provider.of<ChatlistsProvider>(context, listen: false)
-                          .showChooseListDialog(
-                        context: context,
-                        isSharing: true,
-                        listItem: ListItem(
-                            name: widget.productName,
-                            oldPrice: widget.oldPrice,
-                            price: defaultPrice.toString(),
-                            isChecked: false,
-                            quantity: quantity,
-                            imageURL: widget.imageURL,
-                            size: widget.size1),
-                      );
+                      if (FirebaseAuth.instance.currentUser == null) {
+                        showDialog(
+                            context: context,
+                            builder: (ctx) =>
+                                SigninDialog(
+                                  body:
+                                  'You have to be signed in to use this feature.',
+                                  buttonText: 'Sign in',
+                                  title: 'Sign In',
+                                ));
+                      } else {
+                        Provider.of<ChatlistsProvider>(context, listen: false)
+                            .showChooseListDialog(
+                          context: context,
+                          isSharing: true,
+                          listItem: ListItem(
+                              name: widget.productName,
+                              oldPrice: widget.oldPrice,
+                              price: defaultPrice.toString(),
+                              isChecked: false,
+                              quantity: quantity,
+                              imageURL: widget.imageURL,
+                              size: widget.size1),
+                        );
+                      }
                     },
                     child: Column(
                       children: [

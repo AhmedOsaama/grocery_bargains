@@ -55,6 +55,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> saveRememberMePref() async {
     var pref = await SharedPreferences.getInstance();
     pref.setBool("rememberMe", rememberMe);
+
+  }
+  Future<void> saveFirstTimePref() async {
+    var pref = await SharedPreferences.getInstance();
+    pref.setBool("firstTime", false);
   }
 
   Future<void> _submitAuthForm(String email, String username,
@@ -87,6 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await saveUserData(userCredential);
 
         saveRememberMePref();
+        saveFirstTimePref();
         AppNavigator.pushReplacement(
             context: context, screen: OnBoardingScreen());
       } else {
@@ -114,7 +120,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
         print("logged in");
         saveRememberMePref();
-        //   AppNavigator.pushReplacement(context: context, screen: HomeScreen());
+        saveFirstTimePref();
         AppNavigator.pushReplacement(context: context, screen: MainScreen());
       }
     } on FirebaseAuthException catch (error) {
@@ -553,6 +559,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
       var pref = await SharedPreferences.getInstance();
       var isFirstTime = pref.getBool("firstTime") ?? true;
+      print("IS FIRST TIME:" + isFirstTime.toString());
       if (isFirstTime) {
         pref.setBool("firstTime", false);
 

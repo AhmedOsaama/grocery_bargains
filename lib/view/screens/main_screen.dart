@@ -52,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
           'InitSession error: ${platformException.code} - ${platformException.message}');
     });
     // FlutterBranchSdk.validateSDKIntegration();
-    Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists();
+   if(FirebaseAuth.instance.currentUser != null) Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists();
   }
 
   @override

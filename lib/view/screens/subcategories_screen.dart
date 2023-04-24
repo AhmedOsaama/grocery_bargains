@@ -92,146 +92,146 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                 ),
               ),
               15.ph,
-              SizedBox(
-                height: 30.h,
-                child: Row(children: [
-                  Container(
-                    width: 70.w,
-                    decoration: BoxDecoration(
-                        color: white,
-                        border: Border.all(color: dropBorderColor),
-                        borderRadius: BorderRadius.all(Radius.circular(4.r))),
-                    child: Center(
-                      child: DropdownButton<String>(
-                        value: sortDropdownValue,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: mainPurple,
-                        ),
-                        iconSize: 24,
-                        //elevation: 16,
-                        underline: Container(),
-                        style: TextStyle(color: purple50, fontSize: 16.sp),
-                        borderRadius: BorderRadius.circular(4.r),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            sortDropdownValue = newValue!;
-                          });
-                        },
-                        items: <String>['Sort', 'Two', 'Free', 'Four']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                  8.pw,
-                  Container(
-                    width: 80.w,
-                    decoration: BoxDecoration(
-                        color: white,
-                        border: Border.all(color: dropBorderColor),
-                        borderRadius: BorderRadius.all(Radius.circular(4.r))),
-                    child: Center(
-                      child: DropdownButton<String>(
-                        value: brandDropdownValue,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: mainPurple,
-                        ),
-                        iconSize: 24,
-                        //elevation: 16,
-                        underline: Container(),
-                        style: TextStyle(color: purple50, fontSize: 16.sp),
-                        borderRadius: BorderRadius.circular(4.r),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            brandDropdownValue = newValue!;
-                          });
-                        },
-                        items: <String>['Brand', 'Two', 'Free', 'Four']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                  8.pw,
-                  Container(
-                    width: 76.w,
-                    decoration: BoxDecoration(
-                        color: white,
-                        border: Border.all(color: dropBorderColor),
-                        borderRadius: BorderRadius.all(Radius.circular(4.r))),
-                    child: Center(
-                      child: DropdownButton<String>(
-                        value: storeDropdownValue,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: mainPurple,
-                        ),
-                        iconSize: 24,
-                        //elevation: 16,
-                        underline: Container(),
-                        style: TextStyle(color: purple50, fontSize: 16.sp),
-                        borderRadius: BorderRadius.circular(4.r),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            storeDropdownValue = newValue!;
-                          });
-                        },
-                        items: <String>['Store', 'Two', 'Free', 'Four']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                  8.pw,
-                  Container(
-                    width: 68.w,
-                    decoration: BoxDecoration(
-                        color: white,
-                        border: Border.all(color: dropBorderColor),
-                        borderRadius: BorderRadius.all(Radius.circular(4.r))),
-                    child: Center(
-                      child: DropdownButton<String>(
-                        value: sizeDropdownValue,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: mainPurple,
-                        ),
-                        underline: Container(),
-                        iconSize: 24,
-                        //elevation: 16,
-                        style: TextStyle(color: purple50, fontSize: 16.sp),
-                        borderRadius: BorderRadius.circular(4.r),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            sizeDropdownValue = newValue!;
-                          });
-                        },
-                        items: <String>['Size', 'Two', 'Free', 'Four']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ]),
-              ),
+              // SizedBox(
+              //   height: 30.h,
+              //   child: Row(children: [
+              //     Container(
+              //       width: 70.w,
+              //       decoration: BoxDecoration(
+              //           color: white,
+              //           border: Border.all(color: dropBorderColor),
+              //           borderRadius: BorderRadius.all(Radius.circular(4.r))),
+              //       child: Center(
+              //         child: DropdownButton<String>(
+              //           value: sortDropdownValue,
+              //           icon: Icon(
+              //             Icons.keyboard_arrow_down,
+              //             color: mainPurple,
+              //           ),
+              //           iconSize: 24,
+              //           //elevation: 16,
+              //           underline: Container(),
+              //           style: TextStyle(color: purple50, fontSize: 16.sp),
+              //           borderRadius: BorderRadius.circular(4.r),
+              //           onChanged: (String? newValue) {
+              //             setState(() {
+              //               sortDropdownValue = newValue!;
+              //             });
+              //           },
+              //           items: <String>['Sort', 'Two', 'Free', 'Four']
+              //               .map<DropdownMenuItem<String>>((String value) {
+              //             return DropdownMenuItem<String>(
+              //               value: value,
+              //               child: Text(value),
+              //             );
+              //           }).toList(),
+              //         ),
+              //       ),
+              //     ),
+              //     8.pw,
+              //     Container(
+              //       width: 80.w,
+              //       decoration: BoxDecoration(
+              //           color: white,
+              //           border: Border.all(color: dropBorderColor),
+              //           borderRadius: BorderRadius.all(Radius.circular(4.r))),
+              //       child: Center(
+              //         child: DropdownButton<String>(
+              //           value: brandDropdownValue,
+              //           icon: Icon(
+              //             Icons.keyboard_arrow_down,
+              //             color: mainPurple,
+              //           ),
+              //           iconSize: 24,
+              //           //elevation: 16,
+              //           underline: Container(),
+              //           style: TextStyle(color: purple50, fontSize: 16.sp),
+              //           borderRadius: BorderRadius.circular(4.r),
+              //           onChanged: (String? newValue) {
+              //             setState(() {
+              //               brandDropdownValue = newValue!;
+              //             });
+              //           },
+              //           items: <String>['Brand', 'Two', 'Free', 'Four']
+              //               .map<DropdownMenuItem<String>>((String value) {
+              //             return DropdownMenuItem<String>(
+              //               value: value,
+              //               child: Text(value),
+              //             );
+              //           }).toList(),
+              //         ),
+              //       ),
+              //     ),
+              //     8.pw,
+              //     Container(
+              //       width: 76.w,
+              //       decoration: BoxDecoration(
+              //           color: white,
+              //           border: Border.all(color: dropBorderColor),
+              //           borderRadius: BorderRadius.all(Radius.circular(4.r))),
+              //       child: Center(
+              //         child: DropdownButton<String>(
+              //           value: storeDropdownValue,
+              //           icon: Icon(
+              //             Icons.keyboard_arrow_down,
+              //             color: mainPurple,
+              //           ),
+              //           iconSize: 24,
+              //           //elevation: 16,
+              //           underline: Container(),
+              //           style: TextStyle(color: purple50, fontSize: 16.sp),
+              //           borderRadius: BorderRadius.circular(4.r),
+              //           onChanged: (String? newValue) {
+              //             setState(() {
+              //               storeDropdownValue = newValue!;
+              //             });
+              //           },
+              //           items: <String>['Store', 'Two', 'Free', 'Four']
+              //               .map<DropdownMenuItem<String>>((String value) {
+              //             return DropdownMenuItem<String>(
+              //               value: value,
+              //               child: Text(value),
+              //             );
+              //           }).toList(),
+              //         ),
+              //       ),
+              //     ),
+              //     8.pw,
+              //     Container(
+              //       width: 68.w,
+              //       decoration: BoxDecoration(
+              //           color: white,
+              //           border: Border.all(color: dropBorderColor),
+              //           borderRadius: BorderRadius.all(Radius.circular(4.r))),
+              //       child: Center(
+              //         child: DropdownButton<String>(
+              //           value: sizeDropdownValue,
+              //           icon: Icon(
+              //             Icons.keyboard_arrow_down,
+              //             color: mainPurple,
+              //           ),
+              //           underline: Container(),
+              //           iconSize: 24,
+              //           //elevation: 16,
+              //           style: TextStyle(color: purple50, fontSize: 16.sp),
+              //           borderRadius: BorderRadius.circular(4.r),
+              //           onChanged: (String? newValue) {
+              //             setState(() {
+              //               sizeDropdownValue = newValue!;
+              //             });
+              //           },
+              //           items: <String>['Size', 'Two', 'Free', 'Four']
+              //               .map<DropdownMenuItem<String>>((String value) {
+              //             return DropdownMenuItem<String>(
+              //               value: value,
+              //               child: Text(value),
+              //             );
+              //           }).toList(),
+              //         ),
+              //       ),
+              //     ),
+              //   ]),
+              // ),            //TODO: uncomment filters section
               15.ph,
               Text(
                 widget.subCategory,

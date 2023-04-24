@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/screens/location_access_screen.dart';
+import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -49,8 +52,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
-                  onPressed: () => AppNavigator.pushReplacement(
-                      context: context, screen: LocationAccessScreen()),
+                  onPressed: () => finishOnBoarding(context),
                   child: Text(
                     LocaleKeys.skip.tr(),
                     style: TextStyles.textViewRegular14
@@ -71,9 +73,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                 ),
                 GenericButton(
                   onPressed: () {
-                    if (pageNumber == 2)
-                      AppNavigator.pushReplacement(
-                          context: context, screen: LocationAccessScreen());
+                    if (pageNumber == 2) finishOnBoarding(context);
                     setState(() {
                       if (pageNumber < 2) {
                         _pageController.animateToPage(pageNumber.toInt() + 1,
@@ -102,6 +102,16 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       ),
     );
   }
+
+  void finishOnBoarding(BuildContext context) {
+    Platform.isIOS ?
+                         AppNavigator.pushReplacement(
+                             context: context, screen: LocationAccessScreen())
+                             :
+                         AppNavigator.pushReplacement(
+                             context: context, screen: MainScreen());
+                       }
+
 
   var slide1 = Column(
     children: [
