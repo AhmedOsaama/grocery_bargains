@@ -1,5 +1,7 @@
 import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/view/widgets/signin_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -86,23 +88,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     ComparisonProduct productComparison;
 
     try {
-      productComparison = Provider
-              .of<ProductsProvider>(context, listen: false)
+      productComparison = Provider.of<ProductsProvider>(context, listen: false)
           .comparisonProducts
           .firstWhere((comparisonProduct) =>
               comparisonProduct.id == widget.comparisonId);
-        comparisonItems.add(PriceComparisonItem(
-            price: productComparison.jumboPrice,
-            size: productComparison.jumboSize ?? "N/A",
-            storeImagePath: jumbo));
-        comparisonItems.add(PriceComparisonItem(
-            price: productComparison.albertPrice,
-            size: productComparison.albertPrice,
-            storeImagePath: albert));
-        comparisonItems.add(PriceComparisonItem(
-            price: productComparison.hoogvlietPrice,
-            size: productComparison.hoogvlietSize,
-            storeImagePath: hoogLogo));
+      comparisonItems.add(PriceComparisonItem(
+          price: productComparison.jumboPrice,
+          size: productComparison.jumboSize ?? "N/A",
+          storeImagePath: jumbo));
+      comparisonItems.add(PriceComparisonItem(
+          price: productComparison.albertPrice,
+          size: productComparison.albertPrice,
+          storeImagePath: albert));
+      comparisonItems.add(PriceComparisonItem(
+          price: productComparison.hoogvlietPrice,
+          size: productComparison.hoogvlietSize,
+          storeImagePath: hoogLogo));
     } catch (e) {
       print("Failed to get price comparisons in product detail");
     }
@@ -156,19 +157,31 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       GestureDetector(
                         //adding
                         onTap: () async {
-                          Provider.of<ChatlistsProvider>(context, listen: false)
-                              .showChooseListDialog(
-                            context: context,
-                            isSharing: false,
-                            listItem: ListItem(
-                                name: widget.productName,
-                                oldPrice: widget.oldPrice,
-                                price: defaultPrice.toString(),
-                                isChecked: false,
-                                quantity: quantity,
-                                imageURL: widget.imageURL,
-                                size: widget.size1),
-                          );
+                          if (FirebaseAuth.instance.currentUser == null) {
+                            showDialog(
+                                context: context,
+                                builder: (ctx) => SigninDialog(
+                                      body:
+                                          'You have to be signed in to use this feature.',
+                                      buttonText: 'Sign in',
+                                      title: 'Sign In',
+                                    ));
+                          } else {
+                            Provider.of<ChatlistsProvider>(context,
+                                    listen: false)
+                                .showChooseListDialog(
+                              context: context,
+                              isSharing: false,
+                              listItem: ListItem(
+                                  name: widget.productName,
+                                  oldPrice: widget.oldPrice,
+                                  price: defaultPrice.toString(),
+                                  isChecked: false,
+                                  quantity: quantity,
+                                  imageURL: widget.imageURL,
+                                  size: widget.size1),
+                            );
+                          }
                         },
                         child: Container(
                           padding: EdgeInsets.all(21),
@@ -198,19 +211,31 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   GestureDetector(
                     //sharing
                     onTap: () async {
-                      Provider.of<ChatlistsProvider>(context, listen: false)
-                          .showChooseListDialog(
-                        context: context,
-                        isSharing: true,
-                        listItem: ListItem(
-                            name: widget.productName,
-                            oldPrice: widget.oldPrice,
-                            price: defaultPrice.toString(),
-                            isChecked: false,
-                            quantity: quantity,
-                            imageURL: widget.imageURL,
-                            size: widget.size1),
-                      );
+                      if (FirebaseAuth.instance.currentUser == null) {
+                        showDialog(
+                            context: context,
+                            builder: (ctx) =>
+                                SigninDialog(
+                                  body:
+                                  'You have to be signed in to use this feature.',
+                                  buttonText: 'Sign in',
+                                  title: 'Sign In',
+                                ));
+                      } else {
+                        Provider.of<ChatlistsProvider>(context, listen: false)
+                            .showChooseListDialog(
+                          context: context,
+                          isSharing: true,
+                          listItem: ListItem(
+                              name: widget.productName,
+                              oldPrice: widget.oldPrice,
+                              price: defaultPrice.toString(),
+                              isChecked: false,
+                              quantity: quantity,
+                              imageURL: widget.imageURL,
+                              size: widget.size1),
+                        );
+                      }
                     },
                     child: Column(
                       children: [

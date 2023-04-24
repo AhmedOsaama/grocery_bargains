@@ -65,10 +65,12 @@ class _HomeScreenState extends State<HomeScreen> {
     // getAllValueBargainsFuture =
     //     Provider.of<ProductsProvider>(context, listen: false)
     //         .populateBestValueBargains();
-    getUserDataFuture = FirebaseFirestore.instance
-        .collection('/users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
+    if (FirebaseAuth.instance.currentUser != null) {
+      getUserDataFuture = FirebaseFirestore.instance
+          .collection('/users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+    }
     DynamicLinkService().listenToDynamicLinks(
         context); //case 2 the app is open but in background and opened again via deep link
     // WidgetsBinding.instance.addObserver(this);
@@ -135,16 +137,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ConnectionState.waiting) {
                           return const Center(
                               child: CircularProgressIndicator());
-                        }
-                        // if(googleProvider.isGoogleSignedIn){
-                        //   return Text(
-                        //     style: TextStylesInter.textViewSemiBold24
-                        //         .copyWith(color: mainPurple),
-                        //     '${'Hello, ' + (googleProvider.user.displayName ?? "Google user")}!',
-                        //   );
-                        // }
-
-                        else {
+                        } else if (snapshot.hasData) {
                           if (!snapshot.data!.data()!.containsKey("privacy")) {
                             FirebaseFirestore.instance
                                 .collection('users')
@@ -169,13 +162,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                 .copyWith(color: mainPurple),
                             '${'Hello, ' + snapshot.data!['username']}!',
                           );
+                        } else {
+                          return Text(
+                            style: TextStylesInter.textViewSemiBold24
+                                .copyWith(color: mainPurple),
+                            'Hello, Guest!',
+                          );
                         }
                       }),
                   FutureBuilder(
                       future: getUserDataFuture,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
+                                ConnectionState.waiting ||
+                            !snapshot.hasData) {
                           return Container();
                         }
                         // if(googleProvider.isGoogleSignedIn){
@@ -275,7 +275,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     }
                     var allLists = snapshot.data?.docs ?? [];
-                    if (!snapshot.hasData || allLists.isEmpty) {
+                    if (!snapshot.hasData ||
+                        allLists.isEmpty ||
+                        FirebaseAuth.instance.currentUser == null) {
                       return GestureDetector(
                         onTap: () {
                           AppNavigator.push(

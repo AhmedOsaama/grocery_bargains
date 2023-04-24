@@ -1,3 +1,5 @@
+import 'package:bargainb/view/widgets/signin_dialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
@@ -50,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
           'InitSession error: ${platformException.code} - ${platformException.message}');
     });
     // FlutterBranchSdk.validateSDKIntegration();
-    Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists();
+   if(FirebaseAuth.instance.currentUser != null) Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists();
   }
 
   @override
@@ -93,9 +95,20 @@ class _MainScreenState extends State<MainScreen> {
                 color: selectedIndex == 2 ? selectedColor : unSelectedColor,
               ),
               onPressed: () {
-                setState(() {
-                  selectedIndex = 2;
-                });
+                if (FirebaseAuth.instance.currentUser == null) {
+                  showDialog(
+                      context: context,
+                      builder: (ctx) => SigninDialog(
+                            body:
+                                'You have to be signed in to use this feature.',
+                            buttonText: 'Sign in',
+                            title: 'Sign In',
+                          ));
+                } else {
+                  setState(() {
+                    selectedIndex = 2;
+                  });
+                }
               },
             ),
           ],

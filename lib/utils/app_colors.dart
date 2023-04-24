@@ -24,6 +24,7 @@ const Color iris = Color.fromRGBO(99, 104, 176, 1);
 const Color yellowTextColor = Color.fromRGBO(255, 168, 0, 1);
 const Color purpleTextColor = Color.fromRGBO(173, 0, 255, 1);
 const Color mainPurple = Color.fromRGBO(52, 99, 237, 1);
+const Color mainYellow = Color.fromRGBO(255, 184, 31, 1);
 const Color tealTextColor = Color.fromRGBO(37, 102, 175, 1);
 const Color prussian = Color.fromRGBO(5, 55, 84, 1);
 const Color gunmetal = Color.fromRGBO(61, 62, 59, 1);

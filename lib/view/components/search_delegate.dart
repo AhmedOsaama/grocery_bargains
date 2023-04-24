@@ -152,31 +152,35 @@ class MySearchDelegate extends SearchDelegate {
                   : ListView(
                       scrollDirection: Axis.horizontal,
                       children: categories.map((element) {
-                        return GestureDetector(
-                          onTap: () => AppNavigator.pushReplacement(
-                              context: context,
-                              screen: CategoriesScreen(
-                                category: element.category,
-                              )),
-                          child: SizedBox(
-                            width: 71.w,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  element.image,
-                                  width: 65.w,
-                                  height: 65.h,
-                                ),
-                                Text(
-                                  element.category,
-                                  style: TextStyles.textViewMedium10
-                                      .copyWith(color: gunmetal),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 3,
-                                )
-                              ],
+                        return Padding(
+                          padding: EdgeInsets.only(
+                              left: categories.first == element ? 0 : 8.0),
+                          child: GestureDetector(
+                            onTap: () => AppNavigator.pushReplacement(
+                                context: context,
+                                screen: CategoriesScreen(
+                                  category: element.category,
+                                )),
+                            child: SizedBox(
+                              width: 71.w,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    element.image,
+                                    width: 65.w,
+                                    height: 65.h,
+                                  ),
+                                  Text(
+                                    element.category,
+                                    style: TextStyles.textViewMedium10
+                                        .copyWith(color: gunmetal),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 3,
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         );

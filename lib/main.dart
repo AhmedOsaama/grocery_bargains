@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
+import 'package:bargainb/view/screens/register_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,7 +25,6 @@ import 'providers/products_provider.dart';
 import 'services/dynamic_link_service.dart';
 import 'view/screens/main_screen.dart';
 import 'view/screens/onboarding_screen.dart';
-import 'view/screens/register_screen.dart';
 
 //To apply keys for the various languages used.
 // flutter pub run easy_localization:generate -S ./assets/translations -f keys -o locale_keys.g.dart
@@ -70,7 +72,7 @@ Future<void> main() async {
     //   print('result === $onValue');
     // });
     // }
-    pref.setBool("firstTime", false);
+    // pref.setBool("firstTime", false);
   }
   final String path = await DynamicLinkService().handleDynamicLinks();
 
@@ -212,7 +214,7 @@ class _MyAppState extends State<MyApp> {
               return StreamBuilder(
                   stream: authStateChangesStream,
                   builder: (context, snapshot) {
-                    if (!widget.isRemembered) return RegisterScreen();
+                    if (!widget.isRemembered && Platform.isAndroid) return RegisterScreen();
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Container(
                         width: double.infinity,
@@ -229,15 +231,17 @@ class _MyAppState extends State<MyApp> {
                             listId: widget.notificationMessage?.data['listId'],
                             isNotificationOpened: true);
                       }
-                      // return DynamicLinkService()
-                      //     .getStartPage(dynamicLinkPath); //case 1
+
                       return widget.isFirstTime
                           ? OnBoardingScreen()
                           : MainScreen();
-                      // return HomeScreen();
                     }
-                    // return HomeScreen();
-                    return RegisterScreen();
+                  if(Platform.isIOS) {
+                    return widget.isFirstTime
+                        ? OnBoardingScreen()
+                        : MainScreen();
+                  }
+                  return RegisterScreen();
                   });
             }),
         localizationsDelegates: context.localizationDelegates,
