@@ -16,6 +16,7 @@ import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   OnBoardingScreen({Key? key}) : super(key: key);
@@ -103,7 +104,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     );
   }
 
+  Future<void> saveFirstTimePref() async {
+    var pref = await SharedPreferences.getInstance();
+    pref.setBool("firstTime", false);
+  }
+
   void finishOnBoarding(BuildContext context) {
+    saveFirstTimePref();
     Platform.isIOS ?
                          AppNavigator.pushReplacement(
                              context: context, screen: LocationAccessScreen())
