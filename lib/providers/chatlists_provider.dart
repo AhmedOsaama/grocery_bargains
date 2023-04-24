@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:bargainb/models/list_item.dart';
-import 'package:provider/provider.dart';
 
 import '../config/routes/app_navigator.dart';
 import '../utils/assets_manager.dart';
@@ -115,7 +114,8 @@ class ChatlistsProvider with ChangeNotifier {
     // }
     showDialog(
         context: context,
-        builder: (ctx) => ChooseListDialog(isSharing: isSharing, item: listItem));
+        builder: (ctx) =>
+            ChooseListDialog(isSharing: isSharing, item: listItem));
   }
 
   Future<String> createChatList() async {

@@ -1,4 +1,5 @@
 import 'package:bargainb/utils/icons_manager.dart';
+import 'package:bargainb/view/screens/location_access_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -12,7 +13,6 @@ import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/button.dart';
-import 'package:bargainb/view/screens/main_screen.dart';
 
 class OnBoardingScreen extends StatefulWidget {
   OnBoardingScreen({Key? key}) : super(key: key);
@@ -50,16 +50,14 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
               children: [
                 TextButton(
                   onPressed: () => AppNavigator.pushReplacement(
-                      context: context, screen: MainScreen()),
+                      context: context, screen: LocationAccessScreen()),
                   child: Text(
                     LocaleKeys.skip.tr(),
                     style: TextStyles.textViewRegular14
                         .copyWith(color: Color.fromRGBO(113, 146, 242, 1)),
                   ),
                 ),
-                // SizedBox(width: 5.w,),
                 Container(
-                  margin: EdgeInsets.only(left: 20),
                   child: DotsIndicator(
                     dotsCount: 3,
                     position: pageNumber,
@@ -75,7 +73,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   onPressed: () {
                     if (pageNumber == 2)
                       AppNavigator.pushReplacement(
-                          context: context, screen: MainScreen());
+                          context: context, screen: LocationAccessScreen());
                     setState(() {
                       if (pageNumber < 2) {
                         _pageController.animateToPage(pageNumber.toInt() + 1,

@@ -1,9 +1,11 @@
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/screens/friend_chatlists_screen.dart';
+import 'package:bargainb/view/screens/register_screen.dart';
 import 'package:bargainb/view/widgets/chat_card.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -120,6 +122,43 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
             child: Consumer<ChatlistsProvider>(builder: (context, provider, _) {
               var allLists = provider.chatlists;
               // var allLists = [];
+              if (FirebaseAuth.instance.currentUser == null) {
+                return Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Image.asset(
+                      chatlistBackground,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.fitWidth,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        50.ph,
+                        DottedContainer(text: "Sign In to Use Chatlists"),
+                        SizedBox(
+                          height: 100.h,
+                        ),
+                        GenericButton(
+                          borderRadius: BorderRadius.circular(6),
+                          // borderColor: borderColor,
+                          color: mainYellow,
+                          height: 60.h,
+                          width: 158.w,
+                          onPressed: () => AppNavigator.pushReplacement(
+                              context: context, screen: RegisterScreen()),
+                          child: Text(
+                            "Sign in",
+                            style: TextStyles.textViewSemiBold16
+                                .copyWith(color: white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              }
               if (allLists.isEmpty) {
                 return Stack(
                   alignment: Alignment.center,
@@ -131,7 +170,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                       fit: BoxFit.fitWidth,
                     ),
                     Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         50.ph,
                         DottedContainer(text: LocaleKeys.startAChatlist.tr()),
@@ -301,21 +340,23 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
         // SizedBox(
         //   height: 10.h,
         // ),
-        GenericButton(
-          width: 60,
-          height: 60,
-          onPressed: () async {
-            await startChatList();
-          },
-          color: yellow,
-          padding: EdgeInsets.zero,
-          borderRadius: BorderRadius.circular(20),
-          child: const Icon(
-            Icons.add,
-            color: Colors.black,
-            size: 50,
-          ),
-        ),
+        FirebaseAuth.instance.currentUser == null
+            ? Container()
+            : GenericButton(
+                width: 60,
+                height: 60,
+                onPressed: () async {
+                  await startChatList();
+                },
+                color: yellow,
+                padding: EdgeInsets.zero,
+                borderRadius: BorderRadius.circular(20),
+                child: const Icon(
+                  Icons.add,
+                  color: Colors.black,
+                  size: 50,
+                ),
+              ),
       ],
     );
   }

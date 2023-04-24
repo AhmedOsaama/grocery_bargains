@@ -23,3 +23,5 @@ const String personImage = "$imgPath/personImage.jpeg";
 const String onboarding1 = "$imgPath/onboarding1.png";
 const String onboarding2 = "$imgPath/onboarding2.png";
 const String onboarding3 = "$imgPath/onboarding3.png";
+const String onboarding4 = "$imgPath/onboarding4.png";
+const String signinDialog = "$imgPath/signindialog.png";
