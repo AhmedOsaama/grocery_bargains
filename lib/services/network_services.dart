@@ -2,6 +2,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class NetworkServices {
+
+  //"all" requests
+
   static Future<http.Response> getAllAlbertProducts() async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/function-1');
@@ -43,11 +46,7 @@ class NetworkServices {
   }
 
 
-
-
-
-
-
+  //"limited" requests
 
   static Future<http.Response> getProducts(int startingIndex) async {
     final url = Uri.parse(
@@ -64,6 +63,8 @@ class NetworkServices {
         url, headers: {'Content-Type': 'application/json',});
     return response;
   }
+
+  //searches
 
   static Future<http.Response> searchAlbertProducts(String searchTerm) async {
     final url = Uri.parse(
@@ -84,6 +85,32 @@ class NetworkServices {
   static Future<http.Response> searchHoogvlietProducts(String searchTerm) async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/search_hoogvliet?search=$searchTerm');
+    var response = await http.get(
+        url, headers: {'Content-Type': 'application/json',});
+    return response;
+  }
+
+  //searches by link
+
+  static Future<http.Response> searchAlbertProductByLink(String searchTerm) async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/search_albert_by_link?search=$searchTerm');
+    var response = await http.get(
+        url, headers: {'Content-Type': 'application/json',});
+    return response;
+  }
+
+  static Future<http.Response> searchJumboProductByLink(String searchTerm) async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/search_jumbo_by_link?search=$searchTerm');
+    var response = await http.get(
+        url, headers: {'Content-Type': 'application/json',});
+    return response;
+  }
+
+  static Future<http.Response> searchHoogvlietProductByLink(String searchTerm) async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/search_hoogvliet_by_link?search=$searchTerm');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;

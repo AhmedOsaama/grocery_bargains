@@ -47,8 +47,8 @@ class DiscountItem extends StatelessWidget {
       // return product.oldPrice ?? ;
     }
     if(selectedStore == "Hoogvliet") {
-      var product = productsProvider.jumboProducts.firstWhere((product) {
-        return product.url == comparisonProduct.jumboLink;
+      var product = productsProvider.hoogvlietProducts.firstWhere((product) {
+        return product.url == comparisonProduct.hoogvlietLink;
       });
       return product.oldPrice ?? product.price;
       // return product.oldPrice ?? ;
@@ -107,7 +107,11 @@ class DiscountItem extends StatelessWidget {
         return product.url == comparisonProduct.jumboLink;
       });
     }
-    //TODO: do the same for Hoogvliet
+    if(selectedStore == "Hoogvliet") {
+      product = productsProvider.hoogvlietProducts.firstWhere((product) {
+        return product.url == comparisonProduct.hoogvlietLink;
+      });
+    }
     try {
       if (product?.oldPrice == null) return null;
       var oldPrice = double.tryParse(product?.oldPrice ?? "") ?? 0;

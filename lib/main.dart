@@ -155,15 +155,15 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> getAllProducts() async {
-    await Provider.of<ProductsProvider>(context, listen: false)
-        .getAllAlbertProducts();
-    print("1");
-    await Provider.of<ProductsProvider>(context, listen: false)
-        .getAllJumboProducts();
-    print("2");
-    await Provider.of<ProductsProvider>(context, listen: false)
-        .getAllHoogvlietProducts();
-    print("3");
+    // await Provider.of<ProductsProvider>(context, listen: false)
+    //     .getAllAlbertProducts();
+    // print("1");
+    // await Provider.of<ProductsProvider>(context, listen: false)
+    //     .getAllJumboProducts();
+    // print("2");
+    // await Provider.of<ProductsProvider>(context, listen: false)
+    //     .getAllHoogvlietProducts();
+    // print("3");
     await Provider.of<ProductsProvider>(context, listen: false)
         .getLimitedPriceComparisons(0);
     print("4");
