@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
       print("PAGE KEY: " + pageKey.toString());
       if(pageKey > 0) {
         await Provider.of<ProductsProvider>(context, listen: false)
-            .getLimitedPriceComparisons(pageKey);
+            .getAllProducts(pageKey);
       }
       final newProducts = Provider.of<ProductsProvider>(context, listen: false)
           .comparisonProducts;
@@ -557,7 +557,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child:
                     Consumer<ProductsProvider>(builder: (context, provider, _) {
                   bestValueBargains = provider.bestValueBargains;
-                  print("HOME SCREEN Best value bargains Length: " + bestValueBargains.length.toString());
+                  // print("HOME SCREEN Best value bargains Length: " + bestValueBargains.length.toString());
                   // print(bestValueBargains.length);
                   return ListView(
                       scrollDirection: Axis.horizontal,

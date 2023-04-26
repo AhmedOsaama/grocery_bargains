@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bargainb/models/product.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/register_screen.dart';
@@ -147,30 +148,14 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    initMixpanel();
     Provider.of<ProductsProvider>(context, listen: false).getAllCategories();
     getAllProductsFuture =
-        getAllProducts().timeout(Duration(seconds: 6), onTimeout: () {});
+        Provider.of<ProductsProvider>(context,listen: false).getAllProducts(0).timeout(Duration(seconds: 6), onTimeout: () {});
     authStateChangesStream = FirebaseAuth.instance.authStateChanges();
+    initMixpanel();
   }
 
-  Future<void> getAllProducts() async {
-    // await Provider.of<ProductsProvider>(context, listen: false)
-    //     .getAllAlbertProducts();
-    // print("1");
-    // await Provider.of<ProductsProvider>(context, listen: false)
-    //     .getAllJumboProducts();
-    // print("2");
-    // await Provider.of<ProductsProvider>(context, listen: false)
-    //     .getAllHoogvlietProducts();
-    // print("3");
-    await Provider.of<ProductsProvider>(context, listen: false)
-        .getLimitedPriceComparisons(0);
-    print("4");
-    await Provider.of<ProductsProvider>(context, listen: false)
-        .populateBestValueBargains();
-    print("5");
-  }
+
 
   Future<void> initMixpanel() async {
     // Replace with your Project Token

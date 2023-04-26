@@ -142,6 +142,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         // Image.asset(productImages.elementAt(selectedIndex))
                         Image.network(
                       widget.imageURL,
+                      errorBuilder: (ctx,_,s) => Icon(Icons.no_photography),
                       width: 214.w,
                       height: 214.h,
                     )),
@@ -437,6 +438,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           children: [
                             Image.network(
                               widget.imageURL,
+                              errorBuilder: (ctx,_,s) => Icon(Icons.no_photography),
                               width: 64,
                               height: 64,
                             ),
