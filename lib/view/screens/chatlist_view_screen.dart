@@ -2,6 +2,8 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:bargainb/models/chatlist.dart';
+import 'package:bargainb/utils/assets_manager.dart';
+import 'package:bargainb/view/components/draggable_list.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -21,6 +23,8 @@ import 'package:bargainb/view/widgets/chat_view_widget.dart';
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
 import '../components/dotted_container.dart';
+
+var imagesWidgets = ValueNotifier(<Widget>[]);
 
 class ChatListViewScreen extends StatefulWidget {
   final String listId;
@@ -148,7 +152,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
           imageURL: imageUrl,
           name: userName,
           email: email));
-      log("img $imageUrl");
+
       if (imageUrl.isEmpty) {
         imageWidgets.add(
           SvgPicture.asset(
@@ -550,9 +554,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                         onPressed: () {
                           setState(() {
                             widget.isListView = !widget.isListView;
-                            // getListItemsFuture = FirebaseFirestore.instance
-                            //     .collection('/lists/${widget.listId}/items').orderBy('time')
-                            //     .get();
                           });
                         },
                         icon: widget.isListView
@@ -573,19 +574,70 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                               .get(),
                           builder: (context, snapshot) {
                             final items = snapshot.data?.docs ?? [];
+
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
                               return Container();
                             }
-                            if (items.isEmpty || !snapshot.hasData) {
-                              return Container(
-                                margin: EdgeInsets.only(top: 100.h),
-                                alignment: Alignment.topCenter,
-                                child: DottedContainer(
-                                  text: LocaleKeys.addToListFirstItem.tr(),
-                                ),
-                              );
+                            var storeImages = {
+                              "jumbo": false,
+                              "hoogvliet": false,
+                              "albert": false
+                            };
+                            itemsState.value = items;
+                            if (itemsState.value.isNotEmpty) {
+                              itemsState.value.forEach((element) {
+                                if (element["text"] == "") {
+                                  if (element["item_image"]
+                                      .toString()
+                                      .contains("jumbo")) {
+                                    storeImages["jumbo"] = true;
+                                  } else if (element["item_image"]
+                                      .toString()
+                                      .contains(".ah.")) {
+                                    storeImages["albert"] = true;
+                                  } else if (element["item_image"]
+                                      .toString()
+                                      .contains("hoogvliet")) {
+                                    storeImages["hoogvliet"] = true;
+                                  }
+                                }
+                              });
                             }
+                            imagesWidgets.value = [];
+                            storeImages.forEach((key, value) {
+                              if (value) {
+                                switch (key) {
+                                  case "jumbo":
+                                    imagesWidgets.value.add(SizedBox(
+                                        height: 50.h,
+                                        width: 50.w,
+                                        child: Image.asset(jumbo)));
+                                    break;
+                                  case "albert":
+                                    imagesWidgets.value.add(SizedBox(
+                                        height: 40.h,
+                                        width: 40.w,
+                                        child: Image.asset(albert)));
+
+                                    break;
+                                  case "hoogvliet":
+                                    imagesWidgets.value.add(SizedBox(
+                                        height: 50.h,
+                                        width: 50.w,
+                                        child: Image.asset(hoogLogo)));
+                                    break;
+                                }
+                                imagesWidgets.value.add(10.pw);
+                              }
+                            });
+                            var total = 0.0;
+                            items.forEach(
+                              (element) {
+                                if (element["text"].toString().isEmpty)
+                                  total += double.parse(element["item_price"]);
+                              },
+                            );
                             return Column(
                               children: [
                                 Row(
@@ -618,177 +670,76 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                     SizedBox(
                                       width: 10.w,
                                     ),
+                                    Text(
+                                      "€ " + total.toStringAsFixed(2),
+                                      style: TextStyles.textViewBold15
+                                          .copyWith(color: prussian),
+                                    ),
+                                    10.pw
                                   ],
                                 ),
-                                Expanded(
-                                  child: ListView.separated(
-                                      itemCount: items.length,
-                                      separatorBuilder: (ctx, _) =>
-                                          const Divider(),
-                                      itemBuilder: (ctx, i) {
-                                        var doc = items[i];
-                                        var isChecked =
-                                            items[i]['item_isChecked'];
-                                        if (items[i]['text'] != '') {
-                                          return Opacity(
-                                            opacity: isChecked ? 0.6 : 1,
-                                            child: Row(
-                                              children: [
-                                                30.pw,
-                                                Checkbox(
-                                                  value: isChecked,
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      isChecked = !isChecked;
-                                                    });
-                                                    FirebaseFirestore.instance
-                                                        .collection(
-                                                            "/lists/${doc.reference.parent.parent?.id}/items")
-                                                        .doc(doc.id)
-                                                        .update({
-                                                      "item_isChecked":
-                                                          isChecked,
-                                                    }).catchError((e) {
-                                                      print(e);
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(
-                                                              const SnackBar(
-                                                                  content: Text(
-                                                                      "This operation couldn't be done please try again")));
-                                                    });
-                                                    // updateList();
-                                                  },
-                                                ),
-                                                Text(
-                                                  items[i]['text'],
-                                                  style: TextStylesInter
-                                                      .textViewRegular16
-                                                      .copyWith(color: black2),
-                                                )
-                                              ],
-                                            ),
-                                          );
-                                        }
-                                        var itemName = items[i]['item_name'];
-                                        var itemImage = items[i]['item_image'];
-                                        var itemDescription =
-                                            items[i]['item_size'];
-                                        var itemPrice = items[i]['item_price'];
-                                        return Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Expanded(
-                                              child: Opacity(
-                                                opacity: isChecked ? 0.6 : 1,
+                                ValueListenableBuilder(
+                                    valueListenable: imagesWidgets,
+                                    builder: (context, value, m) {
+                                      return imagesWidgets.value.isNotEmpty
+                                          ? Flexible(
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8.0),
                                                 child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
                                                   children: [
-                                                    30.pw,
-                                                    Checkbox(
-                                                      value: isChecked,
-                                                      onChanged: (value) {
-                                                        setState(() {
-                                                          isChecked =
-                                                              !isChecked;
-                                                        });
-                                                        FirebaseFirestore
-                                                            .instance
-                                                            .collection(
-                                                                "/lists/${doc.reference.parent.parent?.id}/items")
-                                                            .doc(doc.id)
-                                                            .update({
-                                                          "item_isChecked":
-                                                              isChecked,
-                                                        }).catchError((e) {
-                                                          print(e);
-                                                          ScaffoldMessenger.of(
-                                                                  context)
-                                                              .showSnackBar(
-                                                                  const SnackBar(
-                                                                      content: Text(
-                                                                          "This operation couldn't be done please try again")));
-                                                        });
-                                                        // updateList();
-                                                      },
-                                                    ),
-                                                    Image.network(
-                                                      itemImage,
-                                                      width: 55,
-                                                      height: 55,
-                                                    ),
-                                                    SizedBox(
-                                                      width: 12.w,
-                                                    ),
-                                                    Container(
-                                                      width: 140.w,
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Text(
-                                                            itemName,
-                                                            overflow:
-                                                                TextOverflow
-                                                                    .ellipsis,
-                                                            style: TextStyles
-                                                                .textViewSemiBold14
-                                                                .copyWith(
-                                                                    color:
-                                                                        prussian,
-                                                                    decoration: isChecked
-                                                                        ? TextDecoration
-                                                                            .lineThrough
-                                                                        : null),
-                                                          ),
-                                                          Container(
-                                                            width: 150.w,
-                                                            child: Text(
-                                                              "$itemDescription",
-                                                              style: TextStyles
-                                                                  .textViewLight12
-                                                                  .copyWith(
-                                                                      color:
-                                                                          prussian,
-                                                                      decoration: isChecked
-                                                                          ? TextDecoration
-                                                                              .lineThrough
-                                                                          : null),
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                    Spacer(),
                                                     Text(
-                                                      "€ $itemPrice",
+                                                      "Stores",
                                                       style: TextStyles
-                                                          .textViewMedium13
+                                                          .textViewMedium10
                                                           .copyWith(
-                                                        color: prussian,
-                                                        decoration: isChecked
-                                                            ? TextDecoration
-                                                                .lineThrough
-                                                            : null,
-                                                      ),
+                                                              color: Color
+                                                                  .fromRGBO(
+                                                                      113,
+                                                                      146,
+                                                                      242,
+                                                                      1)),
+                                                    ),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      children:
+                                                          imagesWidgets.value,
                                                     ),
                                                   ],
                                                 ),
                                               ),
+                                            )
+                                          : Container();
+                                    }),
+                                items.isNotEmpty && items.isEmpty ||
+                                        !snapshot.hasData
+                                    ? Column(
+                                        children: [
+                                          40.ph,
+                                          Container(
+                                            alignment: Alignment.topCenter,
+                                            child: DottedContainer(
+                                              text: LocaleKeys
+                                                  .addToListFirstItem
+                                                  .tr(),
                                             ),
-                                            IconButton(
-                                                onPressed: () async {
-                                                  await deleteItemFromList(
-                                                      items, i, doc);
-                                                },
-                                                icon: const Icon(
-                                                  Icons.delete,
-                                                  color: Colors.red,
-                                                )),
-                                          ],
-                                        );
-                                      }),
+                                          ),
+                                          40.ph,
+                                        ],
+                                      )
+                                    : Container(),
+                                Expanded(
+                                  child: DraggableList(
+                                    inChatView: false,
+                                    items: items,
+                                    listId: widget.listId,
+                                  ),
                                 ),
                               ],
                             );
@@ -833,21 +784,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
         ),
       ));
     }
-  }
-
-  Future<void> deleteItemFromList(List<QueryDocumentSnapshot<Object?>> items,
-      int i, QueryDocumentSnapshot<Object?> doc) async {
-    try {
-      await Provider.of<ChatlistsProvider>(context, listen: false)
-          .deleteItemFromChatlist(
-              widget.listId, doc.id, items[i]['item_price']);
-    } catch (e) {
-      print(e);
-    }
-    setState(() {
-      items.remove(items[i]);
-    });
-    //TODO: check if the item has a chat reference before deleting and if it has then mark the item as un added
   }
 
   // void markItemAsAdded() {

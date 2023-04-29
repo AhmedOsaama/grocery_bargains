@@ -1,6 +1,7 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/product_category.dart';
 import 'package:bargainb/utils/assets_manager.dart';
+import 'package:bargainb/view/components/draggable_list.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/screens/categories_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -62,7 +63,6 @@ class _ChatViewState extends State<ChatView> {
     super.initState();
   }
 
-
   String getTotalListPrice(List items) {
     var total = 0.0;
     for (var item in items) {
@@ -83,10 +83,7 @@ class _ChatViewState extends State<ChatView> {
       controller: panelController,
       body: Container(
         decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(chatlistBackground)
-          )
-        ),
+            image: DecorationImage(image: AssetImage(chatlistBackground))),
         padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Stack(
           children: [
@@ -180,7 +177,12 @@ class _ChatViewState extends State<ChatView> {
                               style: TextStyles.textViewMedium15
                                   .copyWith(color: black2),
                             ),
-                            Text(" ${getTotalListPrice(items)}"),
+                            10.pw,
+                            Text(
+                              "€ " + getTotalListPrice(items),
+                              style: TextStyles.textViewBold15
+                                  .copyWith(color: prussian),
+                            ),
                             SizedBox(
                               width: 10.w,
                             ),
@@ -190,157 +192,26 @@ class _ChatViewState extends State<ChatView> {
                                     isExpandingChatlist = !isExpandingChatlist;
                                   });
                                 },
-                                icon: SvgPicture.asset(arrowDown)),
+                                icon: isExpandingChatlist
+                                    ? Icon(
+                                        Icons.keyboard_arrow_up,
+                                        color: mainPurple,
+                                        size: 30.sp,
+                                      )
+                                    : Icon(
+                                        Icons.keyboard_arrow_down,
+                                        color: mainPurple,
+                                        size: 30.sp,
+                                      )),
                           ],
                         ),
                         if (isExpandingChatlist)
-                          Expanded(
-                            child: ListView.separated(
-                                itemCount: items.length,
-                                separatorBuilder: (ctx, _) => const Divider(),
-                                itemBuilder: (ctx, i) {
-                                  var doc = items[i];
-                                  var isChecked = items[i]['item_isChecked'];
-                                  if (items[i]['text'] != '') {
-                                    return Opacity(
-                                      opacity: isChecked ? 0.6 : 1,
-                                      child: Row(
-                                        children: [
-                                          // 30.pw,
-                                          Checkbox(
-                                            value: isChecked,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                isChecked = !isChecked;
-                                              });
-                                              FirebaseFirestore.instance
-                                                  .collection(
-                                                      "/lists/${doc.reference.parent.parent?.id}/items")
-                                                  .doc(doc.id)
-                                                  .update({
-                                                "item_isChecked": isChecked,
-                                              }).catchError((e) {
-                                                print(e);
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(const SnackBar(
-                                                        content: Text(
-                                                            "This operation couldn't be done please try again")));
-                                              });
-                                              // updateList();
-                                            },
-                                          ),
-                                          Text(
-                                            items[i]['text'],
-                                            style: TextStylesInter
-                                                .textViewRegular16
-                                                .copyWith(color: black2),
-                                          )
-                                        ],
-                                      ),
-                                    );
-                                  }
-                                  var itemName = items[i]['item_name'];
-                                  var itemImage = items[i]['item_image'];
-                                  var itemDescription = items[i]['item_size'];
-                                  var itemPrice = items[i]['item_price'];
-                                  return Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: Opacity(
-                                          opacity: isChecked ? 0.6 : 1,
-                                          child: Row(
-                                            children: [
-                                              // 30.pw,
-                                              Checkbox(
-                                                value: isChecked,
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    isChecked = !isChecked;
-                                                  });
-                                                  FirebaseFirestore.instance
-                                                      .collection(
-                                                          "/lists/${doc.reference.parent.parent?.id}/items")
-                                                      .doc(doc.id)
-                                                      .update({
-                                                    "item_isChecked": isChecked,
-                                                  }).catchError((e) {
-                                                    print(e);
-                                                    ScaffoldMessenger.of(
-                                                            context)
-                                                        .showSnackBar(
-                                                            const SnackBar(
-                                                                content: Text(
-                                                                    "This operation couldn't be done please try again")));
-                                                  });
-                                                  // updateList();
-                                                },
-                                              ),
-                                              Image.network(
-                                                itemImage,
-                                                width: 55,
-                                                height: 55,
-                                              ),
-                                              SizedBox(
-                                                width: 12.w,
-                                              ),
-                                              Container(
-                                                width: 140.w,
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      itemName,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: TextStyles
-                                                          .textViewSemiBold14
-                                                          .copyWith(
-                                                              color: prussian,
-                                                              decoration: isChecked
-                                                                  ? TextDecoration
-                                                                      .lineThrough
-                                                                  : null),
-                                                    ),
-                                                    Container(
-                                                      width: 150.w,
-                                                      child: Text(
-                                                        "$itemDescription",
-                                                        style: TextStyles
-                                                            .textViewLight12
-                                                            .copyWith(
-                                                                color: prussian,
-                                                                decoration: isChecked
-                                                                    ? TextDecoration
-                                                                        .lineThrough
-                                                                    : null),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                              Spacer(),
-                                              Text(
-                                                "€ $itemPrice",
-                                                style: TextStyles
-                                                    .textViewMedium13
-                                                    .copyWith(
-                                                  color: prussian,
-                                                  decoration: isChecked
-                                                      ? TextDecoration
-                                                          .lineThrough
-                                                      : null,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                }),
+                          Flexible(
+                            child: DraggableList(
+                              items: items,
+                              listId: widget.listId,
+                              inChatView: true,
+                            ),
                           ),
                       ],
                     ),

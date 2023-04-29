@@ -179,7 +179,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   isChecked: false,
                                   quantity: quantity,
                                   imageURL: widget.imageURL,
-                                  size: widget.size1),
+                                  size: widget.size1,
+                                  text: ''),
                             );
                           }
                         },
@@ -222,7 +223,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             isChecked: false,
                             quantity: quantity,
                             imageURL: widget.imageURL,
-                            size: widget.size1),
+                            size: widget.size1,
+                            text: ''),
                       );
                     },
                     child: Column(

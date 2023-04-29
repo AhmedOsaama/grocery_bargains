@@ -1,4 +1,4 @@
-class ListItem{
+class ListItem {
   String name;
   String size;
   String imageURL;
@@ -7,9 +7,15 @@ class ListItem{
   String? oldPrice;
   String storeName;
   bool isChecked;
-
-  ListItem({
-    this.oldPrice,
-    this.storeName = "Albert Heijn",
-    required this.name,required this.price,required this.isChecked,required this.quantity,required this.imageURL,required this.size});
+  String text;
+  ListItem(
+      {this.oldPrice,
+      this.storeName = "Albert Heijn",
+      required this.name,
+      required this.price,
+      required this.text,
+      required this.isChecked,
+      required this.quantity,
+      required this.imageURL,
+      required this.size});
 }
