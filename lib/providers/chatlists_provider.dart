@@ -234,7 +234,41 @@ class ChatlistsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> addItemToList(ListItem item, String docId) async {
+  Future<bool> shareItem(
+      {required ListItem item, required String docId}) async {
+    //TODO: duplicated with chat_view_widget line 310
+    final userData = await FirebaseFirestore.instance
+        .collection('/users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    await FirebaseFirestore.instance.collection('/lists/$docId/messages').add({
+      'item_name': item.name,
+      'item_image': item.imageURL,
+      'item_description': item.size,
+      'store_name': item.storeName,
+      'isAddedToList': false,
+      'item_price': item.price,
+      'item_oldPrice': item.oldPrice,
+      'message': "",
+      'createdAt': Timestamp.now(),
+      'userId': FirebaseAuth.instance.currentUser!.uid,
+      'username': userData['username'],
+      'userImageURL': userData['imageURL'],
+    });
+    FirebaseFirestore.instance.collection('/lists').doc(docId).update({
+      "last_message": "Shared ${item.name}",
+      "last_message_date": Timestamp.now(),
+      "last_message_userId": FirebaseAuth.instance.currentUser?.uid,
+      "last_message_userName": userData['username'],
+    }).onError((error, stackTrace) => () {
+          return false;
+        });
+
+    return true;
+  }
+
+  Future<bool> addItemToList(ListItem item, String docId) async {
+    bool done = true;
     final userData = await FirebaseFirestore.instance
         .collection('/users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -245,11 +279,14 @@ class ChatlistsProvider with ChangeNotifier {
       "item_price": item.price,
       "item_image": item.imageURL,
       "item_isChecked": false,
-      "text": "",
+      "text": item.text,
       "owner": userData['username'],
       "time": Timestamp.now(),
+    }).catchError((e) {
+      done = false;
     });
     updateChatList(docId, '', userData);
+    return done;
   }
 
   Future<void> shareItemAsMessage(

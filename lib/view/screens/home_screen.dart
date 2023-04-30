@@ -1,12 +1,17 @@
+import 'dart:developer';
+
 import 'package:bargainb/models/bestValue_item.dart';
 import 'package:bargainb/models/comparison_product.dart';
+import 'package:bargainb/view/components/chatlist_swiper.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
+import 'package:bargainb/view/widgets/store_list_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,7 +31,6 @@ import '../../services/dynamic_link_service.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/icons_manager.dart';
 import '../widgets/discountItem.dart';
-import '../widgets/store_list_widget.dart';
 import 'latest_bargains_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -116,6 +120,15 @@ class _HomeScreenState extends State<HomeScreen> {
   //   }
   //   super.didChangeAppLifecycleState(state);
   // }
+  final List<Color> colors = [
+    Colors.red,
+    Colors.orange,
+    Colors.yellow,
+    Colors.green,
+    Colors.blue,
+    Colors.indigo,
+    Colors.purple,
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -236,38 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ))
                 ],
               ),
-              // Consumer<ChatlistsProvider>(builder: (ctx, provider, _) {
-              //   var chatlists = provider.chatlists;
-              //   if (chatlists.isEmpty) {
-              //           return GestureDetector(
-              //             onTap: (){
-              //               AppNavigator.push(context: context, screen: ChatlistsScreen());
-              //             },
-              //             child: Image.asset(
-              //               newChatList,
-              //             ),
-              //           );
-              //         }
-              //   return SizedBox(
-              //     height: 260.h,
-              //     child: Stack(
-              //         alignment: Alignment.topCenter,
-              //         children: chatlists.map(
-              //           (list) {
-              //             return Positioned(
-              //               right: chatlists.indexOf(list) * 90.w,
-              //               child: Container(
-              //                 width: 170.w,
-              //                 child: StoreListWidget(
-              //                     listId: list.id,
-              //                     storeImagePath: list['storeImageUrl'],
-              //                     listName: list['list_name']),
-              //               ),
-              //             );
-              //           },
-              //         ).toList()),
-              //   );
-              // }),
+
               FutureBuilder(
                   future: getAllListsFuture,
                   builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -292,25 +274,61 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       );
                     }
-                    return SizedBox(
-                      height: 170.h,
-                      child: Stack(
-                          alignment: Alignment.topCenter,
-                          children: allLists.map(
-                            (list) {
-                              return Positioned(
-                                right: allLists.indexOf(list) * 90.w,
-                                child: Container(
-                                  width: 170.w,
-                                  child: StoreListWidget(
-                                      listId: list.id,
-                                      storeImagePath: list['storeImageUrl'],
-                                      listName: list['list_name']),
-                                ),
-                              );
-                            },
-                          ).toList()),
-                    );
+
+                    if (true) {
+                      List<String> ids = [];
+                      allLists.forEach(
+                        (element) {
+                          log(element.data().toString());
+                          ids.add(element.id);
+                        },
+                      );
+                      return SizedBox(
+                        height: 190.h,
+                        width: double.infinity,
+                        child: ChatlistSwiper.builder(
+                          itemCount: allLists.length,
+                          ids: ids,
+                          aspectRatio: 1,
+                          depthFactor: 0.7,
+                          dx: 130,
+                          dy: 0,
+                          paddingStart: 0,
+                          verticalPadding: 0,
+                          visiblePageCount: allLists.length,
+                          widgetBuilder: (index) {
+                            return Container(
+                              child: StoreListWidget(
+                                  listId: allLists.elementAt(index).id,
+                                  storeImagePath: allLists
+                                      .elementAt(index)['storeImageUrl'],
+                                  listName:
+                                      allLists.elementAt(index)['list_name']),
+                            );
+                          },
+                        ),
+                      );
+                    } else {
+                      return SizedBox(
+                        height: 170.h,
+                        child: Stack(
+                            alignment: Alignment.topCenter,
+                            children: allLists.map(
+                              (list) {
+                                return Positioned(
+                                  right: allLists.indexOf(list) * 90.w,
+                                  child: Container(
+                                    width: 170.w,
+                                    child: StoreListWidget(
+                                        listId: list.id,
+                                        storeImagePath: list['storeImageUrl'],
+                                        listName: list['list_name']),
+                                  ),
+                                );
+                              },
+                            ).toList()),
+                      );
+                    }
                   }),
               SizedBox(
                 height: 10.h,

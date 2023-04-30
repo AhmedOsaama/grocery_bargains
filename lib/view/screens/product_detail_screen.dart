@@ -142,7 +142,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         // Image.asset(productImages.elementAt(selectedIndex))
                         Image.network(
                       widget.imageURL,
-                      errorBuilder: (ctx,_,s) => Icon(Icons.no_photography),
                       width: 214.w,
                       height: 214.h,
                     )),
@@ -180,7 +179,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   isChecked: false,
                                   quantity: quantity,
                                   imageURL: widget.imageURL,
-                                  size: widget.size1),
+                                  size: widget.size1,
+                                  text: ''),
                             );
                           }
                         },
@@ -234,8 +234,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               isChecked: false,
                               quantity: quantity,
                               imageURL: widget.imageURL,
-                              size: widget.size1),
-                        );
+                              size: widget.size1,
+                        text: ''),);
                       }
                     },
                     child: Column(
