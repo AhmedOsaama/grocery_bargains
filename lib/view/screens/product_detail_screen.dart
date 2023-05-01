@@ -106,6 +106,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           storeImagePath: hoogLogo));
     } catch (e) {
       print("Failed to get price comparisons in product detail");
+      print(e);
     }
 
     super.didChangeDependencies();

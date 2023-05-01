@@ -66,6 +66,30 @@ class NetworkServices {
 
   //searches
 
+  static Future<http.Response> searchComparisonByAlbertLink(String searchTerm) async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/search_comparison_by_albert_link?search=$searchTerm');
+    var response = await http.get(
+        url, headers: {'Content-Type': 'application/json',});
+    return response;
+  }
+
+  static Future<http.Response> searchComparisonByJumboLink(String searchTerm) async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/search_comparison_by_jumbo_link?search=$searchTerm');
+    var response = await http.get(
+        url, headers: {'Content-Type': 'application/json',});
+    return response;
+  }
+
+  static Future<http.Response> searchComparisonByHoogvlietLink(String searchTerm) async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/search_comparison_by_hoogvliet_link?search=$searchTerm');
+    var response = await http.get(
+        url, headers: {'Content-Type': 'application/json',});
+    return response;
+  }
+
   static Future<http.Response> searchAlbertProducts(String searchTerm) async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/function-3?search=$searchTerm');
@@ -100,6 +124,7 @@ class NetworkServices {
     return response;
   }
 
+
   static Future<http.Response> searchJumboProductByLink(String searchTerm) async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/search_jumbo_by_link?search=$searchTerm');
@@ -111,6 +136,31 @@ class NetworkServices {
   static Future<http.Response> searchHoogvlietProductByLink(String searchTerm) async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/search_hoogvliet_by_link?search=$searchTerm');
+    var response = await http.get(
+        url, headers: {'Content-Type': 'application/json',});
+    return response;
+  }
+
+  //by name
+  static Future<http.Response> searchAlbertProductByName(String searchTerm) async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/search_albert_by_name?search=$searchTerm');
+    var response = await http.get(
+        url, headers: {'Content-Type': 'application/json',});
+    return response;
+  }
+
+  static Future<http.Response> searchJumboProductByName(String searchTerm) async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/search_jumbo_by_name?search=$searchTerm');
+    var response = await http.get(
+        url, headers: {'Content-Type': 'application/json',});
+    return response;
+  }
+
+  static Future<http.Response> searchHoogvlietProductByName(String searchTerm) async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/search_hoogvliet_by_name?search=$searchTerm');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;

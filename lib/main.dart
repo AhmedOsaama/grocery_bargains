@@ -163,6 +163,7 @@ class _MyAppState extends State<MyApp> {
     mixPanel = await Mixpanel.init("752b3abf782a7347499ccb3ebb504194",
         trackAutomaticEvents: true);
     mixPanel.track("test event");
+    mixPanel.track("initialized_event");
   }
 
   @override

@@ -154,7 +154,7 @@ class ProductsProvider with ChangeNotifier {
         var productName = product['name'];
         var imageURL = product['image_url'];
         var storeName = product.containsKey('product_brand')
-            ? product['product_brand']
+            ? "Albert"
             : "Jumbo";
         var description = product['product_description'];
         var category = product['product_category'] ?? "";
@@ -193,7 +193,7 @@ class ProductsProvider with ChangeNotifier {
             category: category,
             url: productURL);
         productList.add(productObj);
-    populateBestValueBargains(productObj);
+    // populateBestValueBargains(productObj);
       }
     } catch (e) {
       print("SDAOIJDIUWAHIUEHUIWQHEUIWHQIUEHOIUQWHE");
@@ -262,23 +262,35 @@ class ProductsProvider with ChangeNotifier {
         if (jumboSize == null) continue;
         //Albert
         var albertName = product['albert_product_name'];
-        //TODO: continue
+        if(albertName == null) continue;
         var albertLink = product['albert_product_link'];
+        if(albertLink == null) continue;
         var albertId = product['albert_product_id'];
+        if(albertId == null) continue;
         var albertImageURL = product['albert_image_url'];
+        if(albertImageURL == null) continue;
         var albertPrice = product['albert_price'];
+        if(albertPrice == null) continue;
         var albertSize = product['albert_unit_size'];
+        if(albertSize == null) continue;
         //Hoogvliet
         var hoogvlietName = product['hoogvliet_product_name'];
+        if(hoogvlietName == null) continue;
         var hoogvlietLink = product['hoogvliet_product_link'];
+        if(hoogvlietLink == null) continue;
         var hoogvlietOldPrice = product['hoogvliet_was_price'] ?? "";
+        if(hoogvlietOldPrice == null) continue;
         var hoogvlietImageURL = product['hoogvliet_image_link'];
+        if(hoogvlietImageURL == null) continue;
         var hoogvlietPrice = product['hoogvliet_price'];
+        if(hoogvlietPrice == null) continue;
         var hoogvlietUnit = product['hoogvliet_unit'];
+        if(hoogvlietUnit == null) continue;
+
        await Future.wait([
-         addJumboProduct(jumboLink),
-          addAlbertProduct(albertLink),
-          addHoogvlietProduct(hoogvlietLink)
+          addAlbertProduct(albertName),
+         addJumboProduct(jumboName),
+          addHoogvlietProduct(hoogvlietName)
         ]);
 
 
@@ -303,7 +315,7 @@ class ProductsProvider with ChangeNotifier {
             hoogvlietPrice: hoogvlietPrice,
             hoogvlietSize: hoogvlietUnit
         ));
-        log('Comparison Finished');
+        log('Comparison Finished + ${DateTime.now()}');
     } catch (e) {
       print("Error in comparisons");
       print(e);
@@ -315,7 +327,7 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> addAlbertProduct(albertLink) async {
      //get Albert product using link
-    var response = await NetworkServices.searchAlbertProductByLink(albertLink);
+    var response = await NetworkServices.searchAlbertProductByName(albertLink);
     //convert json Albert to Product
     var albertProduct = convertToAlbertProductFromJson(jsonDecode(response.body)[0]);               //might fail with range error if it couldn't find the albert product in the above function. e.g. array is empty
     //add Albert product to the list of Albert products
@@ -329,7 +341,7 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> addJumboProduct(jumboLink) async {
      //get jumbo product using link
-    var response = await NetworkServices.searchJumboProductByLink(jumboLink);
+    var response = await NetworkServices.searchJumboProductByName(jumboLink);
     //convert json jumbo to Product
     var jumboProduct = convertToJumboProductFromJson(jsonDecode(response.body)[0]);
     //add jumbo product to the list of jumbo products
@@ -342,7 +354,7 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> addHoogvlietProduct(hoogvlietLink) async {
      //get hoogvliet product using link
-    var response = await NetworkServices.searchHoogvlietProductByLink(hoogvlietLink);
+    var response = await NetworkServices.searchHoogvlietProductByName(hoogvlietLink);
     //convert json hoogvliet to Product
     var hoogvlietProduct = convertToHoogvlietProductFromJson(jsonDecode(response.body)[0]);
     //add hoogvliet product to the list of hoogvliet products
@@ -353,15 +365,15 @@ class ProductsProvider with ChangeNotifier {
     }
   }
 
-  Future<int> getAllPriceComparisons() async {
-    var decodedProductsList = [];
-    var response = await NetworkServices.getAllPriceComparisons();
-    decodedProductsList = jsonDecode(response.body);
-    comparisonProducts = await convertToComparisonProductListFromJson(decodedProductsList);
-    print("Total number of comparison products: ${comparisonProducts.length}");
-    notifyListeners();
-    return response.statusCode;
-  }
+  // Future<int> getAllPriceComparisons() async {
+  //   var decodedProductsList = [];
+  //   var response = await NetworkServices.getAllPriceComparisons();
+  //   decodedProductsList = jsonDecode(response.body);
+  //   comparisonProducts = await convertToComparisonProductListFromJson(decodedProductsList);
+  //   print("Total number of comparison products: ${comparisonProducts.length}");
+  //   notifyListeners();
+  //   return response.statusCode;
+  // }
 
   Future<List<ComparisonProduct>> getLimitedPriceComparisons(int startingIndex) async {
     var decodedProductsList = [];
@@ -658,9 +670,10 @@ class ProductsProvider with ChangeNotifier {
     var albertProducts = convertToProductListFromJson(albertResponse);
     var jumboProducts = convertToProductListFromJson(jumboResponse);
     var hoogvlietProducts = convertToHoogvlietProductListFromJson(hoogvlietResponse);
-    var searchResult = [...jumboProducts, ...albertProducts,...hoogvlietProducts]..shuffle();
+    var searchResult = [...jumboProducts, ...albertProducts,...hoogvlietProducts];
     return searchResult;
   }
+
 
   String getImage(String storeName) {
     if (storeName == 'AH') return albert;

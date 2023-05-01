@@ -33,25 +33,29 @@ class DiscountItem extends StatelessWidget {
   var selectedStore = (['Albert',"Jumbo", "Hoogvliet"]..shuffle()).first;
 
   String getPrice(ProductsProvider productsProvider){
-    if(selectedStore == "Albert") {
-      var product = productsProvider.albertProducts.firstWhere((product) {
-        return product.url == comparisonProduct.albertLink;
-      });
-      return product.oldPrice ?? product.price;
-    }
-    if(selectedStore == "Jumbo") {
-      var product = productsProvider.jumboProducts.firstWhere((product) {
-        return product.url == comparisonProduct.jumboLink;
-      });
-      return product.oldPrice ?? product.price;
-      // return product.oldPrice ?? ;
-    }
-    if(selectedStore == "Hoogvliet") {
-      var product = productsProvider.hoogvlietProducts.firstWhere((product) {
-        return product.url == comparisonProduct.hoogvlietLink;
-      });
-      return product.oldPrice ?? product.price;
-      // return product.oldPrice ?? ;
+    try {
+      if (selectedStore == "Albert") {
+        var product = productsProvider.albertProducts.firstWhere((product) {
+          return product.url == comparisonProduct.albertLink;
+        });
+        return product.oldPrice ?? product.price;
+      }
+      if (selectedStore == "Jumbo") {
+        var product = productsProvider.jumboProducts.firstWhere((product) {
+          return product.url == comparisonProduct.jumboLink;
+        });
+        return product.oldPrice ?? product.price;
+        // return product.oldPrice ?? ;
+      }
+      if (selectedStore == "Hoogvliet") {
+        var product = productsProvider.hoogvlietProducts.firstWhere((product) {
+          return product.url == comparisonProduct.hoogvlietLink;
+        });
+        return product.oldPrice ?? product.price;
+        // return product.oldPrice ?? ;
+      }
+    }catch(e){
+      print(e);
     }
     return "0.00";
   }
@@ -97,20 +101,24 @@ class DiscountItem extends StatelessWidget {
 
   String? getDiscountValue(ProductsProvider productsProvider){
     Product? product;
-    if(selectedStore == "Albert") {
-      product = productsProvider.albertProducts.firstWhere((product) {
-        return product.url == comparisonProduct.albertLink;
-      });
-    }
-    if(selectedStore == "Jumbo") {
-      product = productsProvider.jumboProducts.firstWhere((product) {
-        return product.url == comparisonProduct.jumboLink;
-      });
-    }
-    if(selectedStore == "Hoogvliet") {
-      product = productsProvider.hoogvlietProducts.firstWhere((product) {
-        return product.url == comparisonProduct.hoogvlietLink;
-      });
+    try {
+      if (selectedStore == "Albert") {
+        product = productsProvider.albertProducts.firstWhere((product) {
+          return product.url == comparisonProduct.albertLink;
+        });
+      }
+      if (selectedStore == "Jumbo") {
+        product = productsProvider.jumboProducts.firstWhere((product) {
+          return product.url == comparisonProduct.jumboLink;
+        });
+      }
+      if (selectedStore == "Hoogvliet") {
+        product = productsProvider.hoogvlietProducts.firstWhere((product) {
+          return product.url == comparisonProduct.hoogvlietLink;
+        });
+      }
+    }catch(e){
+      print(e);
     }
     try {
       if (product?.oldPrice == null) return null;
@@ -340,6 +348,7 @@ class DiscountItem extends StatelessWidget {
       context: context,
       isSharing: true,
       listItem: ListItem(
+        text: '',
           name: productName,
           oldPrice: oldPrice,
           price: price1 ?? price2,
@@ -357,6 +366,7 @@ class DiscountItem extends StatelessWidget {
       context: context,
       isSharing: false,
       listItem: ListItem(
+        text: '',
           name: productName,
           oldPrice: oldPrice,
           price: price1 ?? price2,
