@@ -347,6 +347,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                 height: 60,
                 onPressed: () async {
                   await startChatList();
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Successfully created a chatlist")));
                 },
                 color: yellow,
                 padding: EdgeInsets.zero,

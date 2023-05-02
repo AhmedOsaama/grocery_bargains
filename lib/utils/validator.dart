@@ -11,6 +11,7 @@ class Validator {
 
   static String? phoneValidator(String? value) {
     if (value != null && (value.trim().isEmpty || value.trim().length < 4)) {
+      print("NOT VALID");
       // return tr("error_field_required");
       return "Invalid phone number";
     }

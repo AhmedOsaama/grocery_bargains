@@ -125,9 +125,9 @@ class DiscountItem extends StatelessWidget {
       var oldPrice = double.tryParse(product?.oldPrice ?? "") ?? 0;
       var currentPrice = double.parse(product!.price);
       var price2 = double.tryParse(product.price2 ?? "") ?? 0;
-      print("oldPrice: " + oldPrice.toString());
-      print("currentPrice: " + currentPrice.toString());
-      print("currentPrice: " + price2.toString());
+      // print("oldPrice: " + oldPrice.toString());
+      // print("currentPrice: " + currentPrice.toString());
+      // print("currentPrice: " + price2.toString());
       if(oldPrice > currentPrice)
       return (oldPrice - currentPrice).toStringAsFixed(2);
       if(oldPrice > price2) return (oldPrice - price2).toStringAsFixed(2);

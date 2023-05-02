@@ -416,7 +416,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   physics: NeverScrollableScrollPhysics(),
                   children: productSizes.map((size) {
                     var index = productSizes.indexOf(size);
-                    if (size.size.isEmpty) {
+                    print(size.price);
+                    if (size.size.isEmpty || size.size == "None" || size.price == '0.0') {
                       return Container();
                     }
                     return GestureDetector(

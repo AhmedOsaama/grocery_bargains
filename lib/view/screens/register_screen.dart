@@ -235,7 +235,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Container(
                   decoration: BoxDecoration(boxShadow: Utils.boxShadow),
                   child: IntlPhoneField(
-                    disableLengthCheck: true,
+                    disableLengthCheck: false,
                     initialCountryCode: "NL",
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
@@ -269,8 +269,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
-                      print(value?.number);
-                      return Validator.phoneValidator(value?.number);
+                      return Validator.phoneValidator(value!.number);
                     },
                   ),
                 ),
@@ -471,12 +470,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         verificationFailed: (e) {
           print("Verification failed");
           print(e.toString());
-          print(e.plugin);
           print(e.message);
           print(e.code);
           if (e.code == 'invalid-phone-number') {
             print('The provided phone number is not valid.');
           }
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message.toString())));
           completer.complete(userCredential);
         },
         forceResendingToken: resendToken,
