@@ -32,34 +32,6 @@ class DiscountItem extends StatelessWidget {
 
   var selectedStore = (['Albert',"Jumbo", "Hoogvliet"]..shuffle()).first;
 
-  String getPrice(ProductsProvider productsProvider){
-    try {
-      if (selectedStore == "Albert") {
-        var product = productsProvider.albertProducts.firstWhere((product) {
-          return product.url == comparisonProduct.albertLink;
-        });
-        return product.oldPrice ?? product.price;
-      }
-      if (selectedStore == "Jumbo") {
-        var product = productsProvider.jumboProducts.firstWhere((product) {
-          return product.url == comparisonProduct.jumboLink;
-        });
-        return product.oldPrice ?? product.price;
-        // return product.oldPrice ?? ;
-      }
-      if (selectedStore == "Hoogvliet") {
-        var product = productsProvider.hoogvlietProducts.firstWhere((product) {
-          return product.url == comparisonProduct.hoogvlietLink;
-        });
-        return product.oldPrice ?? product.price;
-        // return product.oldPrice ?? ;
-      }
-    }catch(e){
-      print(e);
-    }
-    return "0.00";
-  }
-
   String getProductImage() {
     if(selectedStore == "Albert"){
       return comparisonProduct.albertImageURL;
@@ -99,8 +71,40 @@ class DiscountItem extends StatelessWidget {
     return "";
   }
 
+ String getPrice(ProductsProvider productsProvider){
+   try {
+     if (selectedStore == "Albert") {
+       var product = productsProvider.albertProducts.firstWhere((product) {
+         return product.url == comparisonProduct.albertLink;
+       });
+       return product.oldPrice ?? product.price ?? product.price2!;
+     }
+     if (selectedStore == "Jumbo") {
+       var product = productsProvider.jumboProducts.firstWhere((product) {
+         return product.url == comparisonProduct.jumboLink;
+       });
+       return product.oldPrice ?? product.price ?? product.price2!;
+       // return product.oldPrice ?? ;
+     }
+     if (selectedStore == "Hoogvliet") {
+       var product = productsProvider.hoogvlietProducts.firstWhere((product) {
+         return product.url == comparisonProduct.hoogvlietLink;
+       });
+       return product.oldPrice ?? product.price ?? product.price2!;
+       // return product.oldPrice ?? ;
+     }
+   }catch(e){
+     print(comparisonProduct.albertName);
+     print(comparisonProduct.jumboName);
+     print(comparisonProduct.hoogvlietName);
+     print("Error in getting current price in Discount Item");
+     print(e);
+   }
+   return "0.00";
+ }
+
   String? getDiscountValue(ProductsProvider productsProvider){
-    Product? product;
+    late Product product;
     try {
       if (selectedStore == "Albert") {
         product = productsProvider.albertProducts.firstWhere((product) {
@@ -121,9 +125,9 @@ class DiscountItem extends StatelessWidget {
       print(e);
     }
     try {
-      if (product?.oldPrice == null) return null;
-      var oldPrice = double.tryParse(product?.oldPrice ?? "") ?? 0;
-      var currentPrice = double.parse(product!.price);
+      if (product.oldPrice == null) return null;
+      var oldPrice = double.tryParse(product.oldPrice ?? "") ?? 0;
+      var currentPrice = double.parse(product.price ?? product.price2!);
       var price2 = double.tryParse(product.price2 ?? "") ?? 0;
       // print("oldPrice: " + oldPrice.toString());
       // print("currentPrice: " + currentPrice.toString());
@@ -142,62 +146,7 @@ class DiscountItem extends StatelessWidget {
     var productsProvider = Provider.of<ProductsProvider>(context,listen: false);
     return GestureDetector(
       onTap: () {
-        if(selectedStore == "Albert") {
-          var product = productsProvider.albertProducts.firstWhere((product) {
-            return product.url == comparisonProduct.albertLink;
-          });
-          AppNavigator.push(
-              context: context,
-              screen: ProductDetailScreen(
-                comparisonId: comparisonProduct.id,
-                productId: product.id,
-                storeName: selectedStore,
-                productName: product.name,
-                imageURL: product.imageURL,
-                description: product.description,
-                price1:
-                double.tryParse(product.price) ?? 0.0,
-                price2: double.tryParse(product.price2 ?? "") ?? 0.0,
-                size1: product.size,
-                size2: product.size2 ?? "",
-              ));
-        }
-        if(selectedStore == "Jumbo") {
-          var product = productsProvider.jumboProducts.firstWhere((product) => product.url == comparisonProduct.jumboLink);
-          AppNavigator.push(
-              context: context,
-              screen: ProductDetailScreen(
-                comparisonId: comparisonProduct.id,
-                productId: product.id,
-                storeName: selectedStore,
-                productName: product.name,
-                imageURL: product.imageURL,
-                description: product.description,
-                price1:
-                double.tryParse(product.price) ?? 0.0,
-                price2: null,
-                size1: product.size,
-                size2: product.size2 ?? "",
-              ));
-        }
-        if(selectedStore == "Hoogvliet") {
-          var product = productsProvider.hoogvlietProducts.firstWhere((product) => product.url == comparisonProduct.hoogvlietLink);
-          AppNavigator.push(
-              context: context,
-              screen: ProductDetailScreen(
-                comparisonId: comparisonProduct.id,
-                productId: product.id,
-                storeName: selectedStore,
-                productName: product.name,
-                imageURL: product.imageURL,
-                description: product.description,
-                price1:
-                double.tryParse(product.price) ?? 0.0,
-                price2: null,
-                size1: product.size,
-                size2: product.size2 ?? "",
-              ));
-        }
+        goToStoreProductPage(productsProvider, context);
       },
       child: Container(
         decoration: const BoxDecoration(color: Colors.white, boxShadow: [
@@ -337,9 +286,64 @@ class DiscountItem extends StatelessWidget {
     );
   }
 
-
-
-
+  void goToStoreProductPage(ProductsProvider productsProvider, BuildContext context) {
+     if(selectedStore == "Albert") {
+      var product = productsProvider.albertProducts.firstWhere((product) {
+        return product.url == comparisonProduct.albertLink;
+      });
+      AppNavigator.push(
+          context: context,
+          screen: ProductDetailScreen(
+            comparisonId: comparisonProduct.id,
+            productId: product.id,
+            storeName: selectedStore,
+            productName: product.name,
+            imageURL: product.imageURL,
+            description: product.description,
+            price1:
+            double.tryParse(product.price ?? "") ?? 0.0,
+            price2: double.tryParse(product.price2 ?? "") ?? 0.0,
+            size1: product.size,
+            size2: product.size2 ?? "",
+          ));
+    }
+    if(selectedStore == "Jumbo") {
+      var product = productsProvider.jumboProducts.firstWhere((product) => product.url == comparisonProduct.jumboLink);
+      AppNavigator.push(
+          context: context,
+          screen: ProductDetailScreen(
+            comparisonId: comparisonProduct.id,
+            productId: product.id,
+            storeName: selectedStore,
+            productName: product.name,
+            imageURL: product.imageURL,
+            description: product.description,
+            price1:
+            double.tryParse(product.price ?? "") ?? 0.0,
+            price2: null,
+            size1: product.size,
+            size2: product.size2 ?? "",
+          ));
+    }
+    if(selectedStore == "Hoogvliet") {
+      var product = productsProvider.hoogvlietProducts.firstWhere((product) => product.url == comparisonProduct.hoogvlietLink);
+      AppNavigator.push(
+          context: context,
+          screen: ProductDetailScreen(
+            comparisonId: comparisonProduct.id,
+            productId: product.id,
+            storeName: selectedStore,
+            productName: product.name,
+            imageURL: product.imageURL,
+            description: product.description,
+            price1:
+            double.tryParse(product.price ?? "") ?? 0.0,
+            price2: null,
+            size1: product.size,
+            size2: product.size2 ?? "",
+          ));
+    }
+  }
 
   Future<void> shareDiscountItem(BuildContext context, productName, oldPrice,
       price1, price2, imageURL, size1) {

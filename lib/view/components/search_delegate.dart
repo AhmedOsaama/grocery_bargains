@@ -91,7 +91,7 @@ class MySearchDelegate extends SearchDelegate {
                 var imageURL = searchResults[i].imageURL;
                 var storeName = searchResults[i].storeName;
                 var description = searchResults[i].description;
-                var price1 = searchResults[i].price;
+                var price1 = searchResults[i].price ?? '';
                 var price2 = searchResults[i].price2 ?? '';
                 var oldPrice = searchResults[i].oldPrice ?? "";
                 var size1 = searchResults[i].size;

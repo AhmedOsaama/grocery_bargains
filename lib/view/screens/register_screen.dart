@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bargainb/utils/mixpanel_utils.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/otp_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -514,6 +515,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> loginWithSocial(BuildContext context, bool isApple) async {
     late UserCredential userCredential;
+    String providerName;
     if (isApple) {
       final credential = await SignInWithApple.getAppleIDCredential(
         scopes: [
@@ -529,10 +531,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       userCredential =
           await FirebaseAuth.instance.signInWithCredential(appleCredential);
       print(userCredential);
+      providerName = 'Apple';
     } else {
       userCredential =
           await Provider.of<GoogleSignInProvider>(context, listen: false)
               .loginWithGoogle();
+      providerName = "Google";
     }
     if (userCredential.user != null) {
       var userSnapshot = await FirebaseFirestore.instance
@@ -555,6 +559,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await saveUserData(userCredential);
       }
       saveRememberMePref();
+      MixpanelUtils().createUser(userName: "TEST NAME",email: userCredential.user!.email.toString(),id: userCredential.user!.uid);
+      MixpanelUtils().trackSocialLogin(providerName: providerName);
 
       var pref = await SharedPreferences.getInstance();
       var isFirstTime = pref.getBool("firstTime") ?? true;

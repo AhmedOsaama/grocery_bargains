@@ -148,9 +148,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    Provider.of<ProductsProvider>(context, listen: false).getAllCategories();
     getAllProductsFuture =
         Provider.of<ProductsProvider>(context,listen: false).getAllProducts(0).timeout(Duration(seconds: 6), onTimeout: () {});
+    Provider.of<ProductsProvider>(context, listen: false).getAllCategories();
     authStateChangesStream = FirebaseAuth.instance.authStateChanges();
     initMixpanel();
   }
@@ -162,7 +162,6 @@ class _MyAppState extends State<MyApp> {
     // Once you've called this method once, you can access `mixpanel` throughout the rest of your application.
     mixPanel = await Mixpanel.init("752b3abf782a7347499ccb3ebb504194",
         trackAutomaticEvents: true);
-    mixPanel.track("test event");
   }
 
   @override

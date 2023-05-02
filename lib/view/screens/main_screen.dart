@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:bargainb/view/screens/home_screen.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
@@ -53,6 +54,7 @@ class _MainScreenState extends State<MainScreen> {
     });
     // FlutterBranchSdk.validateSDKIntegration();
    if(FirebaseAuth.instance.currentUser != null) Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists();
+
   }
 
   @override

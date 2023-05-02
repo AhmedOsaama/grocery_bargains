@@ -34,12 +34,13 @@ class ProductsProvider with ChangeNotifier {
         var description = decodedProduct['product_description'];
         var category = decodedProduct['product_category'] ?? "";
         var subCategory = decodedProduct['type_of_product'];
-        var price1 = decodedProduct['price_1'] ?? "";
-        var price2 =  decodedProduct['price_2'] ?? "";
-        var oldPrice = decodedProduct['befor_offer'] ?? "";
-        var size1 = decodedProduct['unit_size_1'] ?? "";
-        var size2 = decodedProduct['unit_size_2'] ?? "";
-        var offer = decodedProduct['new_offer'] ?? "";
+        var price1 = decodedProduct['price_1'];
+        var price2 =  decodedProduct['price_2'];
+        if(price1 == null && price2 == null) return null;
+        var oldPrice = decodedProduct['befor_offer'];
+        var size1 = decodedProduct['unit_size_1'];
+        var size2 = decodedProduct['unit_size_2'];
+        var offer = decodedProduct['new_offer'];
         var productURL = decodedProduct['product_link'];
 
        albertProduct = Product(
@@ -59,6 +60,7 @@ class ProductsProvider with ChangeNotifier {
             url: productURL);
 
     } catch (e) {
+      print(decodedProduct['name']);
       print("Error in converting Albert json to product");
       print(e);
     }
@@ -75,11 +77,11 @@ class ProductsProvider with ChangeNotifier {
         var category = decodedProduct['product_category'] ?? "";
         var subCategory = "";
         var price1 = decodedProduct['price'];
-        var price2 = "";
-        var oldPrice = decodedProduct['old_price'] ?? "";
+        var price2 = null;
+        var oldPrice = decodedProduct['old_price'];
         var size1 = decodedProduct['unit_size'];
-        var size2 = "";
-        var offer = decodedProduct['offer'] ?? "";
+        var size2 = null;
+        var offer = decodedProduct['offer'] ;
         var productURL = decodedProduct['product_link'];
 
         jumboProduct = Product(
@@ -108,18 +110,22 @@ class ProductsProvider with ChangeNotifier {
     Product? hoogvlietProduct;
     try {
         var id = decodedProduct['id'];
-        var productName = decodedProduct['name'] ?? "";
-        var imageURL = decodedProduct['image_link'] ?? "";
+        var productName = decodedProduct['name'];
+        if(productName == null) return null;
+        var imageURL = decodedProduct['image_link'];
+        if(imageURL == null) return null;
         var storeName = "Hoogvliet";
         var description = decodedProduct['description'] ?? "";
         var category = decodedProduct['category'] ?? "";
         var subCategory = decodedProduct['type_of_product'] ?? "";
-        var price1 = decodedProduct['price'] ?? "";
+        var price1 = decodedProduct['price'];
+        if(price1 == null) return null;
         var price2 = "";
-        var oldPrice = decodedProduct['was_price'] ?? "";
-        var size1 = decodedProduct['unit'] ?? "";
+        var oldPrice = decodedProduct['was_price'];
+        var size1 = decodedProduct['unit'];
+        if(size1 == null) return null;
         var size2 = "";
-        var offer = decodedProduct['offer'] ?? "";
+        var offer = decodedProduct['offer'];
         var productURL = decodedProduct['product_link'] ?? "";
 
         hoogvlietProduct = Product(
@@ -293,7 +299,6 @@ class ProductsProvider with ChangeNotifier {
           addHoogvlietProduct(hoogvlietName)
         ]);
 
-
         comparisonList.add(
         ComparisonProduct(
           id: id,
@@ -315,7 +320,7 @@ class ProductsProvider with ChangeNotifier {
             hoogvlietPrice: hoogvlietPrice,
             hoogvlietSize: hoogvlietUnit
         ));
-        log('Comparison Finished + ${DateTime.now()}');
+        // log('Comparison Finished + ${DateTime.now()}');
     } catch (e) {
       print("Error in comparisons");
       print(e);
@@ -329,6 +334,8 @@ class ProductsProvider with ChangeNotifier {
      //get Albert product using link
     var response = await NetworkServices.searchAlbertProductByName(albertLink);
     //convert json Albert to Product
+    var decodedProducts = jsonDecode(response.body);
+    if(decodedProducts.isEmpty || jsonDecode(response.body)[0] == null) return;
     var albertProduct = convertToAlbertProductFromJson(jsonDecode(response.body)[0]);               //might fail with range error if it couldn't find the albert product in the above function. e.g. array is empty
     //add Albert product to the list of Albert products
     if(albertProduct != null){
@@ -343,6 +350,8 @@ class ProductsProvider with ChangeNotifier {
      //get jumbo product using link
     var response = await NetworkServices.searchJumboProductByName(jumboLink);
     //convert json jumbo to Product
+    var decodedProducts = jsonDecode(response.body);
+    if(decodedProducts.isEmpty || jsonDecode(response.body)[0] == null) return;
     var jumboProduct = convertToJumboProductFromJson(jsonDecode(response.body)[0]);
     //add jumbo product to the list of jumbo products
     if(jumboProduct != null){
@@ -356,6 +365,8 @@ class ProductsProvider with ChangeNotifier {
      //get hoogvliet product using link
     var response = await NetworkServices.searchHoogvlietProductByName(hoogvlietLink);
     //convert json hoogvliet to Product
+    var decodedProducts = jsonDecode(response.body);
+    if(decodedProducts.isEmpty || jsonDecode(response.body)[0] == null) return;
     var hoogvlietProduct = convertToHoogvlietProductFromJson(jsonDecode(response.body)[0]);
     //add hoogvliet product to the list of hoogvliet products
     if(hoogvlietProduct != null){
@@ -395,78 +406,78 @@ class ProductsProvider with ChangeNotifier {
   }
 
 
-  Future<int> getAllAlbertProducts() async {
-    var decodedProductsList = [];
-    var response = await NetworkServices.getAllAlbertProducts();
-    try {
-      decodedProductsList = jsonDecode(response.body);
-      albertProducts = convertToProductListFromJson(decodedProductsList);
+  // Future<int> getAllAlbertProducts() async {
+  //   var decodedProductsList = [];
+  //   var response = await NetworkServices.getAllAlbertProducts();
+  //   try {
+  //     decodedProductsList = jsonDecode(response.body);
+  //     albertProducts = convertToProductListFromJson(decodedProductsList);
+  //
+  //     if (albertProducts.isNotEmpty) {
+  //       albertProducts.forEach((element) {
+  //         if (element.oldPrice != null) {
+  //           if (double.parse(element.oldPrice!) > double.parse(element.price)) {
+  //             deals.add(element);
+  //           }
+  //         }
+  //       });
+  //     }
+  //   } catch (e) {
+  //     // print(e);
+  //   }
+  //   print("Total number of Albert products: ${albertProducts.length}");
+  //   notifyListeners();
+  //   return response.statusCode;
+  // }
 
-      if (albertProducts.isNotEmpty) {
-        albertProducts.forEach((element) {
-          if (element.oldPrice != null) {
-            if (double.parse(element.oldPrice!) > double.parse(element.price)) {
-              deals.add(element);
-            }
-          }
-        });
-      }
-    } catch (e) {
-      // print(e);
-    }
-    print("Total number of Albert products: ${albertProducts.length}");
-    notifyListeners();
-    return response.statusCode;
-  }
+  // Future<int> getAllJumboProducts() async {
+  //   var decodedProductsList = [];
+  //   var response = await NetworkServices.getAllJumboProducts();
+  //   decodedProductsList = jsonDecode(response.body);
+  //   jumboProducts = convertToProductListFromJson(decodedProductsList);
+  //
+  //   if (jumboProducts.isNotEmpty) {
+  //     jumboProducts.forEach((element) {
+  //       try {
+  //         if (element.oldPrice != null) {
+  //           if (double.parse(element.oldPrice!) > double.tryParse(element.price ?? element.price2)) {
+  //             deals.add(element);
+  //           }
+  //         }
+  //       }catch(e){
+  //         // print(e);
+  //       }
+  //     });
+  //   }
+  //   print("jumbo products length: ${jumboProducts.length}");
+  //   notifyListeners();
+  //   return response.statusCode;
+  // }
 
-  Future<int> getAllJumboProducts() async {
-    var decodedProductsList = [];
-    var response = await NetworkServices.getAllJumboProducts();
-    decodedProductsList = jsonDecode(response.body);
-    jumboProducts = convertToProductListFromJson(decodedProductsList);
-
-    if (jumboProducts.isNotEmpty) {
-      jumboProducts.forEach((element) {
-        try {
-          if (element.oldPrice != null) {
-            if (double.parse(element.oldPrice!) > double.parse(element.price)) {
-              deals.add(element);
-            }
-          }
-        }catch(e){
-          // print(e);
-        }
-      });
-    }
-    print("jumbo products length: ${jumboProducts.length}");
-    notifyListeners();
-    return response.statusCode;
-  }
-
-  Future<int> getAllHoogvlietProducts() async {
-    var decodedProductsList = [];
-    var response = await NetworkServices.getAllHoogvlietProducts();
-    decodedProductsList = jsonDecode(response.body);
-    hoogvlietProducts = convertToHoogvlietProductListFromJson(decodedProductsList);
-
-    if (hoogvlietProducts.isNotEmpty) {
-      hoogvlietProducts.forEach((element) {
-        try {
-          if (element.oldPrice != null) {
-            if (double.parse(element.oldPrice!) > double.parse(element.price)) {
-              deals.add(element);
-            }
-          }
-        }catch(e){
-          // print("Error getting hoogvliet deals");
-          // print(e);
-        }
-      });
-    }
-    print("Hoogvliet products length: ${hoogvlietProducts.length}");
-    notifyListeners();
-    return response.statusCode;
-  }
+  // Future<int> getAllHoogvlietProducts() async {
+  //   var decodedProductsList = [];
+  //   var response = await NetworkServices.getAllHoogvlietProducts();
+  //   decodedProductsList = jsonDecode(response.body);
+  //   hoogvlietProducts = convertToHoogvlietProductListFromJson(decodedProductsList);
+  //
+  //   if (hoogvlietProducts.isNotEmpty) {
+  //     hoogvlietProducts.forEach((element) {
+  //       try {
+  //         if (element.oldPrice != null) {
+  //           if (double.parse(element.oldPrice!) > double.parse(element.price)) {
+  //             deals.add(element);
+  //           }
+  //         }
+  //       }catch(e){
+  //         // print("Error getting hoogvliet deals");
+  //         // print(e);
+  //       }
+  //     });
+  //   }
+  //   print("Hoogvliet products length: ${hoogvlietProducts.length}");
+  //   notifyListeners();
+  //   return response.statusCode;
+  // }
 
   Future<int> getAllCategories() async {
     var response = await NetworkServices.getAllAlbertCategories();
@@ -547,10 +558,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> getAllProducts(int pageKey) async {
-    final comparisonProducts = await getLimitedPriceComparisons(pageKey);
-    print("4");
-    // populateBestValueBargains(products);
-    // print("5");
+    await getLimitedPriceComparisons(pageKey);
   }
 
   void populateBestValueBargains(Product product) {
@@ -563,7 +571,7 @@ class ProductsProvider with ChangeNotifier {
         var subCategory = product.subCategory ?? "";
         var storeName = "Albert";
         var description = product.description;
-        var price1 = product.price;
+        var price1 = product.price ?? "";
         var price2 = product.price2 ?? "";
         var oldPrice = product.oldPrice ?? "";
         String size1 = product.size;

@@ -286,7 +286,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                               if ((double.parse(
                                           products.elementAt(index).oldPrice!) -
                                       double.parse(
-                                          products.elementAt(index).price)) <=
+                                          products.elementAt(index).price ?? products[index].price2!)) <=
                                   0) {
                                 oldPriceExists = false;
                               }
@@ -323,7 +323,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                     description: p.description,
                                     size1: p.size,
                                     size2: p.size2 ?? "",
-                                    price1: double.tryParse(p.price) ?? 0.0,
+                                    price1: double.tryParse(p.price ?? "") ?? 0.0,
                                     price2:
                                         double.tryParse(p.price2 ?? "") ?? 0.0,
                                   )),
@@ -436,10 +436,10 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                                       20.pw,
                                                       Text(
                                                         "€" +
-                                                            products
+                                                            (products
                                                                 .elementAt(
                                                                     index)
-                                                                .price,
+                                                                .price ?? products[index].price2!) ,
                                                         style: TextStylesInter
                                                             .textViewMedium15
                                                             .copyWith(
@@ -478,12 +478,12 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                                                             .oldPrice!) -
                                                                         double.parse(products
                                                                             .elementAt(index)
-                                                                            .price)) >
+                                                                            .price ?? products[index].price2!)) >
                                                                     0
                                                                 ? Text(
                                                                     " €" +
                                                                         (double.parse(products.elementAt(index).oldPrice!) -
-                                                                                double.parse(products.elementAt(index).price))
+                                                                                double.parse(products.elementAt(index).price ?? products[index].price2!))
                                                                             .toStringAsFixed(2) +
                                                                         " less",
                                                                     style: TextStylesInter
