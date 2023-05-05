@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/models/product_category.dart';
@@ -51,6 +52,7 @@ class ProductsProvider with ChangeNotifier {
             ? product['new_offer']
             : product['offer'];
         var productURL = product['product_link'];
+
         productList.add(Product(
             storeName: storeName,
             id: id,
@@ -114,16 +116,18 @@ class ProductsProvider with ChangeNotifier {
     return productList;
   }
 
-  List<ComparisonProduct> convertToComparisonProductListFromJson(decodedProductsList) {
+  List<ComparisonProduct> convertToComparisonProductListFromJson(
+      decodedProductsList) {
     List<ComparisonProduct> comparisonList = [];
 
-      for (var product in decodedProductsList) {
-    try {
+    for (var product in decodedProductsList) {
+      try {
         var id = product['id'];
         //Jumbo
         var jumboName = product['jumbo_product_name'];
         var jumboLink = product['jumbo_product_link'];
-        if(jumboProducts.indexWhere((product) => product.url == jumboLink) == -1) continue;
+        if (jumboProducts.indexWhere((product) => product.url == jumboLink) ==
+            -1) continue;
         var jumboImageURL = product['jumbo_image_url'];
         if (jumboImageURL == null) continue;
         var jumboPrice = product['jumbo_price'];
@@ -132,7 +136,8 @@ class ProductsProvider with ChangeNotifier {
         //Albert
         var albertName = product['albert_product_name'];
         var albertLink = product['albert_product_link'];
-        if(albertProducts.indexWhere((product) => product.url == albertLink) == -1) continue;
+        if (albertProducts.indexWhere((product) => product.url == albertLink) ==
+            -1) continue;
         var albertId = product['albert_product_id'];
         var albertImageURL = product['albert_image_url'];
         var albertPrice = product['albert_price'];
@@ -140,22 +145,23 @@ class ProductsProvider with ChangeNotifier {
         //Hoogvliet
         var hoogvlietName = product['hoogvliet_product_name'];
         var hoogvlietLink = product['hoogvliet_product_link'];
-        if(hoogvlietProducts.indexWhere((product) => product.url == hoogvlietLink) == -1) continue;
+        if (hoogvlietProducts
+                .indexWhere((product) => product.url == hoogvlietLink) ==
+            -1) continue;
         var hoogvlietOldPrice = product['hoogvliet_was_price'] ?? "";
         var hoogvlietImageURL = product['hoogvliet_image_link'];
         var hoogvlietPrice = product['hoogvliet_price'];
         var hoogvlietUnit = product['hoogvliet_unit'];
 
-        comparisonList.add(
-        ComparisonProduct(
-          id: id,
+        comparisonList.add(ComparisonProduct(
+            id: id,
             albertId: albertId,
             albertImageURL: albertImageURL,
             albertLink: albertLink,
             albertName: albertName,
             albertPrice: albertPrice,
             albertSize: albertSize,
-          jumboSize: jumboSize,
+            jumboSize: jumboSize,
             jumboImageURL: jumboImageURL,
             jumboLink: jumboLink,
             jumboName: jumboName,
@@ -165,13 +171,12 @@ class ProductsProvider with ChangeNotifier {
             hoogvlietOldPrice: hoogvlietOldPrice,
             hoogvlietName: hoogvlietName,
             hoogvlietPrice: hoogvlietPrice,
-            hoogvlietSize: hoogvlietUnit
-        ));
-    } catch (e) {
-      print("Error in comparisons");
-      print(e);
-    }
+            hoogvlietSize: hoogvlietUnit));
+      } catch (e) {
+        print("Error in comparisons");
+        print(e);
       }
+    }
     print("COMPARISON PRODUCTS LENGTH: " + comparisonList.length.toString());
     return comparisonList;
   }
@@ -180,7 +185,8 @@ class ProductsProvider with ChangeNotifier {
     var decodedProductsList = [];
     var response = await NetworkServices.getAllPriceComparisons();
     decodedProductsList = jsonDecode(response.body);
-    comparisonProducts = convertToComparisonProductListFromJson(decodedProductsList);
+    comparisonProducts =
+        convertToComparisonProductListFromJson(decodedProductsList);
     print("Total number of comparison products: ${comparisonProducts.length}");
     notifyListeners();
     return response.statusCode;
@@ -224,7 +230,7 @@ class ProductsProvider with ChangeNotifier {
               deals.add(element);
             }
           }
-        }catch(e){
+        } catch (e) {
           // print(e);
         }
       });
@@ -238,7 +244,8 @@ class ProductsProvider with ChangeNotifier {
     var decodedProductsList = [];
     var response = await NetworkServices.getAllHoogvlietProducts();
     decodedProductsList = jsonDecode(response.body);
-    hoogvlietProducts = convertToHoogvlietProductListFromJson(decodedProductsList);
+    hoogvlietProducts =
+        convertToHoogvlietProductListFromJson(decodedProductsList);
 
     if (hoogvlietProducts.isNotEmpty) {
       hoogvlietProducts.forEach((element) {
@@ -248,7 +255,7 @@ class ProductsProvider with ChangeNotifier {
               deals.add(element);
             }
           }
-        }catch(e){
+        } catch (e) {
           // print("Error getting hoogvliet deals");
           // print(e);
         }
@@ -269,42 +276,268 @@ class ProductsProvider with ChangeNotifier {
     return response.statusCode;
   }
 
-  List<Product> getProductsByCategory(String category) {
+  List<Product> getProductsByCategory(
+      String category, String store, String brand) {
     List<Product> products = [];
-    albertProducts.forEach((element) {
-      if (element.category != "") {
-        if (element.category.toLowerCase() == category.toLowerCase()) {
-          products.add(element);
+
+    if (store == "Store" && brand == "Brand") {
+      albertProducts.forEach((element) {
+        if (element.category != "") {
+          if (element.category.toLowerCase() == category.toLowerCase()) {
+            products.add(element);
+          }
         }
-      }
-    });
-    jumboProducts.forEach((element) {
-      if (element.category != "") {
-        if (element.category.toLowerCase() == category.toLowerCase()) {
-          products.add(element);
+      });
+      jumboProducts.forEach((element) {
+        if (element.category != "") {
+          if (element.category.toLowerCase() == category.toLowerCase()) {
+            products.add(element);
+          }
         }
+      });
+      hoogvlietProducts.forEach((element) {
+        if (element.category != "") {
+          if (element.category.toLowerCase() == category.toLowerCase()) {
+            products.add(element);
+          }
+        }
+      });
+    } else if (store != "Store" && brand == "Brand") {
+      switch (store) {
+        case "Albert":
+          albertProducts.forEach((element) {
+            if (element.category != "") {
+              if (element.category.toLowerCase() == category.toLowerCase()) {
+                products.add(element);
+              }
+            }
+          });
+          break;
+        case "Jumbo":
+          jumboProducts.forEach((element) {
+            if (element.category != "") {
+              if (element.category.toLowerCase() == category.toLowerCase()) {
+                products.add(element);
+              }
+            }
+          });
+          break;
+        case "Hoogvliet":
+          hoogvlietProducts.forEach((element) {
+            if (element.category != "") {
+              if (element.category.toLowerCase() == category.toLowerCase()) {
+                products.add(element);
+              }
+            }
+          });
+          break;
       }
-    });
+    } else if (store == "Store" && brand != "Brand") {
+      albertProducts.forEach((element) {
+        if (element.storeName != "") {
+          if (element.storeName.toLowerCase() == brand.toLowerCase() &&
+              (element.category.toLowerCase() == category.toLowerCase())) {
+            products.add(element);
+          }
+        }
+      });
+      jumboProducts.forEach((element) {
+        if (element.storeName != "") {
+          if (element.storeName.toLowerCase() == brand.toLowerCase() &&
+              (element.category.toLowerCase() == category.toLowerCase())) {
+            products.add(element);
+          }
+        }
+      });
+      hoogvlietProducts.forEach((element) {
+        if (element.storeName != "") {
+          if (element.storeName.toLowerCase() == brand.toLowerCase() &&
+              (element.category.toLowerCase() == category.toLowerCase())) {
+            products.add(element);
+          }
+        }
+      });
+    } else {
+      switch (store) {
+        case "Albert":
+          albertProducts.forEach((element) {
+            if (element.storeName != "") {
+              if (element.storeName.toLowerCase() == brand.toLowerCase() &&
+                  (element.category.toLowerCase() == category.toLowerCase())) {
+                products.add(element);
+              }
+            }
+          });
+          break;
+        case "Jumbo":
+          jumboProducts.forEach((element) {
+            if (element.storeName != "") {
+              if (element.storeName.toLowerCase() == brand.toLowerCase() &&
+                  (element.category.toLowerCase() == category.toLowerCase())) {
+                products.add(element);
+              }
+            }
+          });
+          break;
+        case "Hoogvliet":
+          hoogvlietProducts.forEach((element) {
+            if (element.storeName != "") {
+              if (element.storeName.toLowerCase() == brand.toLowerCase() &&
+                  (element.category.toLowerCase() == category.toLowerCase())) {
+                products.add(element);
+              }
+            }
+          });
+          break;
+      }
+    }
     return products;
   }
 
-  List<Product> getProductsBySubCategory(String category) {
-    List<Product> products = [];
-    albertProducts.forEach((element) {
-      if (element.subCategory != null && element.subCategory != "") {
-        if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
-          products.add(element);
-        }
-      }
-    });
-    jumboProducts.forEach((element) {
-      if (element.subCategory != null && element.subCategory != "") {
-        if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
-          products.add(element);
-        }
-      }
-    });
+  List<Product> sortProducts(String filter, List<Product> pro) {
+    try {
+      switch (filter) {
+        case 'Price low - high':
+          pro.sort(
+              (a, b) => double.parse(a.price).compareTo(double.parse(b.price)));
+          break;
+        case 'Price high - low':
+          pro.sort(
+              (a, b) => double.parse(b.price).compareTo(double.parse(a.price)));
+          break;
 
+        /* case 'Nutri Score A - E':
+      
+        break; */
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+
+    return pro;
+  }
+
+  List<Product> getProductsBySubCategory(
+      String category, String store, String brand) {
+    List<Product> products = [];
+
+    if (store == "Store" && brand == "Brand") {
+      albertProducts.forEach((element) {
+        if (element.subCategory != null) {
+          if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
+            products.add(element);
+          }
+        }
+      });
+      jumboProducts.forEach((element) {
+        if (element.subCategory != null) {
+          if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
+            products.add(element);
+          }
+        }
+      });
+      hoogvlietProducts.forEach((element) {
+        if (element.subCategory != null) {
+          if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
+            products.add(element);
+          }
+        }
+      });
+    } else if (store != "Store" && brand == "Brand") {
+      switch (store) {
+        case "Albert":
+          albertProducts.forEach((element) {
+            if (element.subCategory != null) {
+              if (element.subCategory!.toLowerCase() ==
+                  category.toLowerCase()) {
+                products.add(element);
+              }
+            }
+          });
+          break;
+        case "Jumbo":
+          jumboProducts.forEach((element) {
+            if (element.subCategory != null) {
+              if (element.subCategory!.toLowerCase() ==
+                  category.toLowerCase()) {
+                products.add(element);
+              }
+            }
+          });
+          break;
+        case "Hoogvliet":
+          hoogvlietProducts.forEach((element) {
+            if (element.subCategory != null) {
+              if (element.subCategory!.toLowerCase() ==
+                  category.toLowerCase()) {
+                products.add(element);
+              }
+            }
+          });
+          break;
+      }
+    } else if (store == "Store" && brand != "Brand") {
+      albertProducts.forEach((element) {
+        if (element.storeName != "" && (element.subCategory != null)) {
+          if (element.storeName.toLowerCase() == brand.toLowerCase() &&
+              (element.subCategory!.toLowerCase() == category.toLowerCase())) {
+            products.add(element);
+          }
+        }
+      });
+      jumboProducts.forEach((element) {
+        if (element.storeName != "" && (element.subCategory != null)) {
+          if (element.storeName.toLowerCase() == brand.toLowerCase() &&
+              (element.subCategory!.toLowerCase() == category.toLowerCase())) {
+            products.add(element);
+          }
+        }
+      });
+      hoogvlietProducts.forEach((element) {
+        if (element.storeName != "" && (element.subCategory != null)) {
+          if (element.storeName.toLowerCase() == brand.toLowerCase() &&
+              (element.subCategory!.toLowerCase() == category.toLowerCase())) {
+            products.add(element);
+          }
+        }
+      });
+    } else {
+      switch (store) {
+        case "Albert":
+          albertProducts.forEach((element) {
+            if (element.storeName != "" && (element.subCategory != null)) {
+              if (element.storeName.toLowerCase() == brand.toLowerCase() &&
+                  (element.subCategory!.toLowerCase() ==
+                      category.toLowerCase())) {
+                products.add(element);
+              }
+            }
+          });
+          break;
+        case "Jumbo":
+          jumboProducts.forEach((element) {
+            if (element.storeName != "" && (element.subCategory != null)) {
+              if (element.storeName.toLowerCase() == brand.toLowerCase() &&
+                  (element.subCategory!.toLowerCase() ==
+                      category.toLowerCase())) {
+                products.add(element);
+              }
+            }
+          });
+          break;
+        case "Hoogvliet":
+          hoogvlietProducts.forEach((element) {
+            if (element.storeName != "" && (element.subCategory != null)) {
+              if (element.storeName.toLowerCase() == brand.toLowerCase() &&
+                  (element.subCategory!.toLowerCase() ==
+                      category.toLowerCase())) {
+                products.add(element);
+              }
+            }
+          });
+          break;
+      }
+    }
     return products;
   }
 
@@ -413,7 +646,7 @@ class ProductsProvider with ChangeNotifier {
     } catch (e) {
       print(e);
     }
-    print( "Best value bargains length: " + bestValueBargains.length.toString());
+    print("Best value bargains length: " + bestValueBargains.length.toString());
     notifyListeners();
     return bestValueBargains;
   }
@@ -436,11 +669,13 @@ class ProductsProvider with ChangeNotifier {
   Future<int> getLimitedPriceComparisons(int startingIndex) async {
     var decodedProductsList = [];
     if (startingIndex == 0) comparisonProducts.clear();
-    var response = await NetworkServices.getLimitedPriceComparisons(startingIndex);
+    var response =
+        await NetworkServices.getLimitedPriceComparisons(startingIndex);
     decodedProductsList = jsonDecode(response.body);
     print(decodedProductsList.length);
 
-    comparisonProducts.addAll(convertToComparisonProductListFromJson(decodedProductsList));
+    comparisonProducts
+        .addAll(convertToComparisonProductListFromJson(decodedProductsList));
     // albertProducts.removeAt(0);
 
     print(
@@ -458,8 +693,13 @@ class ProductsProvider with ChangeNotifier {
         (await NetworkServices.searchHoogvlietProducts(searchTerm)).body);
     var albertProducts = convertToProductListFromJson(albertResponse);
     var jumboProducts = convertToProductListFromJson(jumboResponse);
-    var hoogvlietProducts = convertToHoogvlietProductListFromJson(hoogvlietResponse);
-    var searchResult = [...jumboProducts, ...albertProducts,...hoogvlietProducts]..shuffle();
+    var hoogvlietProducts =
+        convertToHoogvlietProductListFromJson(hoogvlietResponse);
+    var searchResult = [
+      ...jumboProducts,
+      ...albertProducts,
+      ...hoogvlietProducts
+    ]..shuffle();
     return searchResult;
   }
 

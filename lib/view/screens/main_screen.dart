@@ -1,15 +1,21 @@
+import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/view/widgets/signin_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:bargainb/view/screens/home_screen.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 
 import '../../providers/chatlists_provider.dart';
+
+PersistentTabController NavigatorController =
+    PersistentTabController(initialIndex: 0);
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -21,13 +27,9 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
 // class _MainScreenState extends State<MainScreen> {
   var selectedIndex = 0;
-  final _pages = [
-    const HomeScreen(),
-    const ChatlistsScreen(),
-    const ProfileScreen(),
-  ];
-  final selectedColor = Color.fromRGBO(99, 104, 176, 1);
-  final unSelectedColor = Color.fromRGBO(219, 221, 228, 1);
+
+  final selectedColor = mainPurple;
+  final unSelectedColor = purple30;
 
   // void initState() {
   //   getUserDataFuture = FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
@@ -58,64 +60,71 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[selectedIndex],
-      bottomNavigationBar: Container(
-        padding: EdgeInsets.symmetric(vertical: 10.h),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              icon: Icon(
-                Icons.home_outlined,
-                color: selectedIndex == 0 ? selectedColor : unSelectedColor,
-              ),
-              onPressed: () {
-                setState(() {
-                  selectedIndex = 0;
-                });
-              },
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.sticky_note_2_outlined,
-                color: selectedIndex == 1 ? selectedColor : unSelectedColor,
-              ),
-              onPressed: () async {
-                setState(() {
-                  selectedIndex = 1;
-                });
-              },
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.account_circle_outlined,
-                color: selectedIndex == 2 ? selectedColor : unSelectedColor,
-              ),
-              onPressed: () {
-                if (FirebaseAuth.instance.currentUser == null) {
-                  showDialog(
-                      context: context,
-                      builder: (ctx) => SigninDialog(
-                            body:
-                                'You have to be signed in to use this feature.',
-                            buttonText: 'Sign in',
-                            title: 'Sign In',
-                          ));
-                } else {
-                  setState(() {
-                    selectedIndex = 2;
-                  });
-                }
-              },
-            ),
-          ],
-        ),
+      body: PersistentTabView(
+        context,
+        controller: NavigatorController,
+        items: _navBarsItems(),
+        screens: _buildScreens(),
+        navBarStyle: NavBarStyle.simple,
+        stateManagement: true,
       ),
     );
     // }
     // );
+  }
+
+  List<Widget> _buildScreens() {
+    return [
+      HomeScreen(),
+      ChatlistsScreen(),
+      FirebaseAuth.instance.currentUser == null ? Container() : ProfileScreen(),
+    ];
+  }
+
+  List<PersistentBottomNavBarItem> _navBarsItems() {
+    return [
+      PersistentBottomNavBarItem(
+        icon: Icon(
+          Icons.home_outlined,
+          size: 24.sp,
+        ),
+        title: ("Home"),
+        textStyle: TextStyle(fontSize: 12.sp),
+        activeColorPrimary: selectedColor,
+        inactiveColorPrimary: unSelectedColor,
+      ),
+      PersistentBottomNavBarItem(
+        icon: Icon(
+          Icons.chat_outlined,
+          size: 24.sp,
+        ),
+        title: ("Chatlists"),
+        textStyle: TextStyle(fontSize: 12.sp),
+        activeColorPrimary: selectedColor,
+        inactiveColorPrimary: unSelectedColor,
+      ),
+      PersistentBottomNavBarItem(
+          icon: Icon(
+            Icons.account_circle_outlined,
+            size: 24.sp,
+          ),
+          title: ("Profile"),
+          textStyle: TextStyle(fontSize: 12.sp),
+          activeColorPrimary: selectedColor,
+          inactiveColorPrimary: unSelectedColor,
+          onPressed: (p) {
+            if (FirebaseAuth.instance.currentUser == null) {
+              showDialog(
+                  context: context,
+                  builder: (ctx) => SigninDialog(
+                        body: 'You have to be signed in to use this feature.',
+                        buttonText: 'Sign in',
+                        title: 'Sign In',
+                      ));
+            } else {
+              NavigatorController.jumpToTab(2);
+            }
+          }),
+    ];
   }
 }

@@ -2,8 +2,10 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:bargainb/models/chatlist.dart';
+import 'package:bargainb/models/userinfo.dart' as UserInfo;
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/components/draggable_list.dart';
+import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -12,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
@@ -56,8 +59,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   late Future<Widget> getUserImagesFuture;
   late Future<QuerySnapshot> getListItemsFuture;
   bool isEditingName = false;
-  List<UserInfo> listUsers = [];
-  List<UserInfo> contactsList = [];
+  List<UserInfo.UserInfo> listUsers = [];
+  List<UserInfo.UserInfo> contactsList = [];
   var inviteFriendController = TextEditingController();
   bool isContactsPermissionGranted = false;
 
@@ -122,7 +125,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
           .get()
           .timeout(Duration(seconds: 10));
       userIds = list['userIds'];
-      log(userIds.length.toString());
     } catch (e) {
       print(e);
       return SvgPicture.asset(
@@ -136,8 +138,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     String userName = "";
     String email = "";
     String phoneNumber = "";
+    String id = "";
     for (var userId in userIds) {
-      log(userId);
       //for every userId in the chatlist
       final userSnapshot = await FirebaseFirestore.instance
           .collection('/users')
@@ -147,7 +149,9 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       email = userSnapshot.data()!['email'];
       userName = userSnapshot.data()!['username'];
       phoneNumber = userSnapshot.data()!['phoneNumber'];
-      listUsers.add(UserInfo(
+      id = userSnapshot.data()!['phoneNumber'];
+      listUsers.add(UserInfo.UserInfo(
+          id: id,
           phoneNumber: phoneNumber,
           imageURL: imageUrl,
           name: userName,
@@ -195,11 +199,9 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
               var phoneNumber = user.get('phoneNumber');
 
               var contactIndex = contacts.indexWhere((contact) {
-                log(contact.phones.toString());
-
                 return (contact.phones.first.normalizedNumber == phoneNumber);
               });
-              //   log("i:" + contactIndex.toString());
+
               if (contactIndex != -1) {
                 //match found
                 var contact = contacts.elementAt(contactIndex);
@@ -211,7 +213,9 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                   var name = user.get('username');
                   var email = user.get('email');
                   var imageURL = user.get('imageURL');
-                  contactsList.add(UserInfo(
+                  var id = "";
+                  contactsList.add(UserInfo.UserInfo(
+                      id: id,
                       phoneNumber: phoneNumber,
                       imageURL: imageURL,
                       name: name,
@@ -642,15 +646,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    // IconButton(
-                                    //     onPressed: () => shareListViaDeepLink(), icon: Icon(Icons.share_outlined)),
-                                    // IconButton(
-                                    //     onPressed: () {
-                                    //       setState(() {
-                                    //         widget.isListView = !widget.isListView;
-                                    //       });
-                                    //     },
-                                    //     icon: Icon(Icons.message_outlined)),
                                     Spacer(),
                                     Text(
                                       "${items.length} items",
@@ -717,8 +712,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                             )
                                           : Container();
                                     }),
-                                items.isNotEmpty && items.isEmpty ||
-                                        !snapshot.hasData
+                                items.isEmpty
                                     ? Column(
                                         children: [
                                           40.ph,
@@ -735,6 +729,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                       )
                                     : Container(),
                                 Expanded(
+                                  flex: 7,
                                   child: DraggableList(
                                     inChatView: false,
                                     items: items,
@@ -757,7 +752,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   }
 
   Future<void> addContactToChatlist(
-      UserInfo userInfo, BuildContext context) async {
+      UserInfo.UserInfo userInfo, BuildContext context) async {
     try {
       var userData = await FirebaseFirestore.instance
           .collection('/users')
@@ -817,20 +812,9 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
         .updateListName(value, widget.listId);
   }
 
-  void deleteList(BuildContext context) {
+  Future<void> deleteList(BuildContext context) async {
     Provider.of<ChatlistsProvider>(context, listen: false)
         .deleteList(context, widget.listId);
+    await pushDynamicScreen(context, screen: ChatlistsScreen());
   }
-}
-
-class UserInfo {
-  String name;
-  String email;
-  String imageURL;
-  String phoneNumber;
-  UserInfo(
-      {required this.phoneNumber,
-      required this.imageURL,
-      required this.name,
-      required this.email});
 }

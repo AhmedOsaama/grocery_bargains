@@ -308,7 +308,8 @@ class _ChatViewState extends State<ChatView> {
                     SharedPreferences pref =
                         await SharedPreferences.getInstance();
                     return showSearch(
-                        context: context, delegate: MySearchDelegate(pref));
+                        context: context,
+                        delegate: MySearchDelegate(pref, false));
                   },
                   prefixIcon: Icon(Icons.search),
                   borderRaduis: 999,

@@ -1,4 +1,4 @@
-import 'package:bargainb/view/screens/chatlist_view_screen.dart';
+import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 
 class ChatlistSwiper extends StatefulWidget {
@@ -59,13 +59,17 @@ class _ChatlistSwiperState extends State<ChatlistSwiper> {
               behavior: HitTestBehavior.opaque,
               onTapDown: (details) async {
                 if (details.localPosition.dx < 223) {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (ctx) => ChatListViewScreen(
-                      // updateList: updateList,
-                      listId: widget.ids.elementAt(index),
-                      isListView: false,
-                    ),
-                  ));
+                  NavigatorController.jumpToTab(1);
+                  /*  pushNewScreen(context,
+                      screen: ChatListViewScreen(
+                        listId: widget.ids.elementAt(index),
+                        isListView: false,
+                      )); */
+                  /*      Navigator.of(context).push(MaterialPageRoute(
+                      builder: (ctx) => ChatListViewScreen(
+                            listId: widget.ids.elementAt(index),
+                            isListView: false,
+                          ))); */
                 } else if (details.localPosition.dx > 223) {
                   _pageController.animateToPage(++index,
                       duration: const Duration(milliseconds: 400),

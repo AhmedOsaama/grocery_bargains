@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/components/generic_field.dart';
 import 'package:bargainb/view/components/plus_button.dart';
@@ -36,7 +38,6 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
 
   int? _selectedIndex;
   String sortDropdownValue = 'Sort';
-  String sizeDropdownValue = 'Size';
   String brandDropdownValue = 'Brand';
   String storeDropdownValue = 'Store';
 
@@ -45,6 +46,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
     super.initState();
   }
 
+  List<Product> products = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +84,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                   SharedPreferences pref =
                       await SharedPreferences.getInstance();
                   return showSearch(
-                      context: context, delegate: MySearchDelegate(pref));
+                      context: context, delegate: MySearchDelegate(pref, true));
                 },
                 prefixIcon: Icon(Icons.search),
                 borderRaduis: 999,
@@ -96,13 +98,15 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                 height: 30.h,
                 child: Row(children: [
                   Container(
-                    width: 70.w,
+                    width: 100.w,
                     decoration: BoxDecoration(
                         color: white,
                         border: Border.all(color: dropBorderColor),
                         borderRadius: BorderRadius.all(Radius.circular(4.r))),
                     child: Center(
                       child: DropdownButton<String>(
+                        isExpanded: true,
+
                         value: sortDropdownValue,
                         icon: Icon(
                           Icons.keyboard_arrow_down,
@@ -114,15 +118,43 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                         style: TextStyle(color: purple50, fontSize: 16.sp),
                         borderRadius: BorderRadius.circular(4.r),
                         onChanged: (String? newValue) {
+                          var v = products;
                           setState(() {
+                            products = [];
                             sortDropdownValue = newValue!;
                           });
+
+                          v = Provider.of<ProductsProvider>(context,
+                                  listen: false)
+                              .sortProducts(sortDropdownValue, v);
+
+                          setState(() {
+                            products = v;
+                          });
                         },
-                        items: <String>['Sort', 'Two', 'Free', 'Four']
-                            .map<DropdownMenuItem<String>>((String value) {
+                        items: <String>[
+                          'Sort',
+                          //'Relevance',
+                          'Price low - high',
+                          'Price high - low',
+                          // 'Nutri Score A - E'
+                        ].map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
-                            child: Text(value),
+                            child: Center(
+                              child: Text(
+                                value,
+                                maxLines: 1,
+                                style: value == "Sort"
+                                    ? TextStyles.textViewRegular16
+                                        .copyWith(color: purple50)
+                                    : (value == sortDropdownValue
+                                        ? TextStyles.textViewRegular10
+                                            .copyWith(color: mainPurple)
+                                        : TextStyles.textViewRegular10
+                                            .copyWith(color: black2)),
+                              ),
+                            ),
                           );
                         }).toList(),
                       ),
@@ -130,13 +162,14 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                   ),
                   8.pw,
                   Container(
-                    width: 80.w,
+                    width: 100.w,
                     decoration: BoxDecoration(
                         color: white,
                         border: Border.all(color: dropBorderColor),
                         borderRadius: BorderRadius.all(Radius.circular(4.r))),
                     child: Center(
                       child: DropdownButton<String>(
+                        isExpanded: true,
                         value: brandDropdownValue,
                         icon: Icon(
                           Icons.keyboard_arrow_down,
@@ -148,15 +181,66 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                         style: TextStyle(color: purple50, fontSize: 16.sp),
                         borderRadius: BorderRadius.circular(4.r),
                         onChanged: (String? newValue) {
+                          var v;
                           setState(() {
+                            products = [];
                             brandDropdownValue = newValue!;
                           });
+
+                          v = Provider.of<ProductsProvider>(context,
+                                  listen: false)
+                              .getProductsBySubCategory(widget.subCategory,
+                                  storeDropdownValue, brandDropdownValue);
+
+                          setState(() {
+                            products = v;
+                          });
                         },
-                        items: <String>['Brand', 'Two', 'Free', 'Four']
-                            .map<DropdownMenuItem<String>>((String value) {
+                        items: <String>[
+                          'Brand',
+                          'AH',
+                          'AH Organic',
+                          'Bonduelle',
+                          'Heel',
+                          'CelaVita',
+                          'Innocent',
+                          'Iglo',
+                          'Sole Valley',
+                          'Del Monte',
+                          'CoolBest',
+                          'Arch',
+                          'Chiquita',
+                          'Knorr',
+                          'Healthy People',
+                          'Bieze',
+                          'No Fairytales',
+                          'Fairtrade Original',
+                          'kanzi',
+                          'miras',
+                          'moon pop',
+                          'Pink Lady',
+                          'AH Misfits',
+                          'Ardos',
+                          'Capri Sun',
+                          'Drogheria'
+                        ].map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
-                            child: Text(value),
+                            child: Center(
+                              child: Text(
+                                overflow: TextOverflow.ellipsis,
+                                value,
+                                maxLines: 1,
+                                style: value == "Brand"
+                                    ? TextStyles.textViewRegular16
+                                        .copyWith(color: purple50)
+                                    : (value == brandDropdownValue
+                                        ? TextStyles.textViewRegular10
+                                            .copyWith(color: mainPurple)
+                                        : TextStyles.textViewRegular10
+                                            .copyWith(color: black2)),
+                              ),
+                            ),
                           );
                         }).toList(),
                       ),
@@ -164,7 +248,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                   ),
                   8.pw,
                   Container(
-                    width: 76.w,
+                    width: 100.w,
                     decoration: BoxDecoration(
                         color: white,
                         border: Border.all(color: dropBorderColor),
@@ -172,6 +256,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                     child: Center(
                       child: DropdownButton<String>(
                         value: storeDropdownValue,
+                        isExpanded: true,
                         icon: Icon(
                           Icons.keyboard_arrow_down,
                           color: mainPurple,
@@ -182,49 +267,42 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                         style: TextStyle(color: purple50, fontSize: 16.sp),
                         borderRadius: BorderRadius.circular(4.r),
                         onChanged: (String? newValue) {
+                          List<Product> v = [];
                           setState(() {
+                            products = [];
                             storeDropdownValue = newValue!;
                           });
-                        },
-                        items: <String>['Store', 'Two', 'Free', 'Four']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                  8.pw,
-                  Container(
-                    width: 68.w,
-                    decoration: BoxDecoration(
-                        color: white,
-                        border: Border.all(color: dropBorderColor),
-                        borderRadius: BorderRadius.all(Radius.circular(4.r))),
-                    child: Center(
-                      child: DropdownButton<String>(
-                        value: sizeDropdownValue,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: mainPurple,
-                        ),
-                        underline: Container(),
-                        iconSize: 24,
-                        //elevation: 16,
-                        style: TextStyle(color: purple50, fontSize: 16.sp),
-                        borderRadius: BorderRadius.circular(4.r),
-                        onChanged: (String? newValue) {
+                          try {
+                            v = Provider.of<ProductsProvider>(context,
+                                    listen: false)
+                                .getProductsBySubCategory(widget.subCategory,
+                                    storeDropdownValue, brandDropdownValue);
+                          } catch (e) {
+                            log(e.toString());
+                          }
+                          log(v.length.toString());
                           setState(() {
-                            sizeDropdownValue = newValue!;
+                            products = v;
                           });
                         },
-                        items: <String>['Size', 'Two', 'Free', 'Four']
+                        items: <String>['Store', 'Albert', 'Jumbo', 'Hoogvliet']
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
-                            child: Text(value),
+                            child: Center(
+                              child: Text(
+                                value,
+                                maxLines: 1,
+                                style: value == "Store"
+                                    ? TextStyles.textViewRegular16
+                                        .copyWith(color: purple50)
+                                    : (value == storeDropdownValue
+                                        ? TextStyles.textViewRegular10
+                                            .copyWith(color: mainPurple)
+                                        : TextStyles.textViewRegular10
+                                            .copyWith(color: black2)),
+                              ),
+                            ),
                           );
                         }).toList(),
                       ),
@@ -244,10 +322,17 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                   //  height: ScreenUtil().screenHeight,
                   child: Consumer<ProductsProvider>(
                     builder: (ctx, provider, _) {
-                      var products =
-                          provider.getProductsBySubCategory(widget.subCategory);
+                      if (sortDropdownValue == "Sort" &&
+                          brandDropdownValue == "Brand" &&
+                          storeDropdownValue == "Store") {
+                        products = provider.getProductsBySubCategory(
+                            widget.subCategory,
+                            storeDropdownValue,
+                            brandDropdownValue);
+                      }
                       if (provider.albertProducts.isEmpty &&
-                          provider.jumboProducts.isEmpty) {
+                          provider.jumboProducts.isEmpty &&
+                          provider.hoogvlietProducts.isEmpty) {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
@@ -257,7 +342,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               50.ph,
-                              Text("No products matches this category"),
+                              Text("No products found !"),
                             ],
                           ),
                         );
@@ -269,9 +354,10 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                           gridDelegate:
                               const SliverGridDelegateWithMaxCrossAxisExtent(
                                   maxCrossAxisExtent: 200,
-                                  childAspectRatio: 0.6,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10),
+                                  mainAxisExtent: 260,
+                                  childAspectRatio: 0.67,
+                                  crossAxisSpacing: 5,
+                                  mainAxisSpacing: 5),
                           itemCount: products.length,
                           itemBuilder: (BuildContext ctx, index) {
                             var oldPriceExists = true;
@@ -328,6 +414,8 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                         double.tryParse(p.price2 ?? "") ?? 0.0,
                                   )),
                               child: Container(
+                                height: 250.h,
+                                width: 175.w,
                                 decoration: BoxDecoration(
                                   boxShadow: [
                                     new BoxShadow(
@@ -345,16 +433,16 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                   child: Row(
                                     children: [
                                       Expanded(
-                                        flex: 3,
+                                        flex: 4,
                                         child: Column(
                                           children: [
-                                            45.ph,
+                                            23.ph,
                                             Row(
                                               children: [
                                                 40.pw,
                                                 Container(
-                                                  width: 60.w,
-                                                  height: 60.h,
+                                                  width: 52.w,
+                                                  height: 42.h,
                                                   child: CachedNetworkImage(
                                                     imageUrl: products
                                                         .elementAt(index)
@@ -503,6 +591,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                         ),
                                       ),
                                       Expanded(
+                                        flex: 2,
                                         child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
@@ -522,6 +611,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                           ],
                                         ),
                                       ),
+                                      10.pw
                                     ],
                                   ),
                                 ),

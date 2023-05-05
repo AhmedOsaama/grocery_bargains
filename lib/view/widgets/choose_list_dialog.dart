@@ -3,6 +3,7 @@ import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
 
@@ -178,20 +179,37 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                     15.ph,
                     GenericButton(
                         //TODO: create and share or add an item button(Check the figma flow)
-                        onPressed: () {
+                        onPressed: () async {
                           if (done) {
                             Navigator.of(context).pop();
-                            Navigator.of(context).push(MaterialPageRoute(
+                            await pushDynamicScreen(context,
+                                screen: MaterialPageRoute(
+                                  builder: (ctx) => ChatListViewScreen(
+                                    // updateList: updateList,
+                                    listId: selectedListId,
+                                    isListView: !widget.isSharing,
+                                  ),
+                                ),
+                                withNavBar: true);
+                            /*     pushNewScreen(context,
+                                screen: ChatListViewScreen(
+                                  // updateList: updateList,
+                                  listId: selectedListId,
+                                  isListView: !widget.isSharing,
+                                ),
+                                withNavBar: true); */
+                            /* Navigator.of(context, rootNavigator: false)
+                                .push(MaterialPageRoute(
                               builder: (ctx) => ChatListViewScreen(
                                 // updateList: updateList,
                                 listId: selectedListId,
                                 isListView: !widget.isSharing,
                               ),
-                            ));
+                            ));  */
                           } else {
                             Provider.of<ChatlistsProvider>(context,
                                     listen: false)
-                                .createChatList();
+                                .createChatList([]);
                           }
                         },
                         height: 60.h,

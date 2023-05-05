@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bargainb/models/chatlist.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -51,9 +53,47 @@ class ChatlistsProvider with ChangeNotifier {
       });
     } catch (e) {
       print("Error occurred while fetching chatlists");
-      print(e);
+      log(e.toString());
     }
     notifyListeners();
+  }
+
+  Future<List<ChatList>> getAllSharedChatlists(String id) async {
+    List<ChatList> list = [];
+    var snapshot = await getAllChatlistsFuture();
+
+    try {
+      snapshot.docs.forEach((chatlistDoc) {
+        if (chatlistDoc['userIds'].toString().contains(id)) {
+          var lastMessage = chatlistDoc['last_message'];
+          var lastMessageDate = chatlistDoc['last_message_date'];
+          var lastMessageUserId = chatlistDoc['last_message_userId'];
+          var lastMessageUserName = chatlistDoc['last_message_userName'];
+          var chatlistName = chatlistDoc['list_name'];
+          var itemLength = chatlistDoc['size'];
+          var storeImageUrl = chatlistDoc['storeImageUrl'];
+          var storeName = chatlistDoc['storeName'];
+          var totalPrice = chatlistDoc['total_price'];
+          var userIds = chatlistDoc['userIds'];
+          list.add(ChatList(
+              id: chatlistDoc.id,
+              name: chatlistName,
+              storeName: storeName,
+              userIds: userIds,
+              totalPrice: totalPrice,
+              storeImageUrl: storeImageUrl,
+              itemLength: itemLength,
+              lastMessage: lastMessage,
+              lastMessageDate: lastMessageDate,
+              lastMessageUserId: lastMessageUserId,
+              lastMessageUserName: lastMessageUserName));
+        }
+      });
+    } catch (e) {
+      print("Error occurred while fetching chatlists");
+      log(e.toString());
+    }
+    return list;
   }
 
   Future<List> getAllFriends() async {
@@ -83,6 +123,8 @@ class ChatlistsProvider with ChangeNotifier {
       var userName = userSnapshot.data()!['username'];
 
       var userImage = userSnapshot.data()!['imageURL'];
+      var phone = userSnapshot.data()!['phoneNumber'];
+      var id = userSnapshot.id;
       var userEmail = userSnapshot.data()!['email'];
 
       //getting all the lists with a particular user
@@ -95,7 +137,9 @@ class ChatlistsProvider with ChangeNotifier {
           imageURL: userImage,
           email: userEmail,
           name: userName,
-          chatlists: userLists));
+          chatlists: userLists,
+          id: id,
+          phone: phone));
     }
     return friendsList;
   }
@@ -118,7 +162,8 @@ class ChatlistsProvider with ChangeNotifier {
             ChooseListDialog(isSharing: isSharing, item: listItem));
   }
 
-  Future<String> createChatList() async {
+  Future<String> createChatList(List<String> userIds) async {
+    userIds.add(FirebaseAuth.instance.currentUser!.uid);
     var docRef = await FirebaseFirestore.instance.collection('/lists').add({
       "last_message": "",
       "last_message_date": Timestamp.now(),
@@ -129,7 +174,7 @@ class ChatlistsProvider with ChangeNotifier {
       "storeImageUrl": storePlaceholder,
       "storeName": "None",
       "total_price": 0.0,
-      "userIds": [FirebaseAuth.instance.currentUser?.uid],
+      "userIds": userIds,
     });
     chatlists.add(ChatList(
         id: docRef.id,
@@ -178,6 +223,7 @@ class ChatlistsProvider with ChangeNotifier {
         "total_price":
             FieldValue.increment((double.tryParse(itemPrice) ?? 0) * -1),
       });
+
       chatlist.itemLength -= 1;
       chatlist.totalPrice -= double.tryParse(itemPrice) ?? 0;
       notifyListeners();
