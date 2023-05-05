@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bargainb/models/product.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/register_screen.dart';
@@ -148,14 +147,13 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    getAllProductsFuture =
-        Provider.of<ProductsProvider>(context,listen: false).getAllProducts(0).timeout(Duration(seconds: 6), onTimeout: () {});
+    getAllProductsFuture = Provider.of<ProductsProvider>(context, listen: false)
+        .getAllProducts(0)
+        .timeout(Duration(seconds: 6), onTimeout: () {});
     Provider.of<ProductsProvider>(context, listen: false).getAllCategories();
     authStateChangesStream = FirebaseAuth.instance.authStateChanges();
     initMixpanel();
   }
-
-
 
   Future<void> initMixpanel() async {
     // Replace with your Project Token
@@ -198,7 +196,8 @@ class _MyAppState extends State<MyApp> {
               return StreamBuilder(
                   stream: authStateChangesStream,
                   builder: (context, snapshot) {
-                    if (!widget.isRemembered && Platform.isAndroid) return RegisterScreen();
+                    if (!widget.isRemembered && Platform.isAndroid)
+                      return RegisterScreen();
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Container(
                         width: double.infinity,
@@ -220,12 +219,12 @@ class _MyAppState extends State<MyApp> {
                           ? OnBoardingScreen()
                           : MainScreen();
                     }
-                  if(Platform.isIOS) {
-                    return widget.isFirstTime
-                        ? OnBoardingScreen()
-                        : MainScreen();
-                  }
-                  return RegisterScreen();
+                    if (Platform.isIOS) {
+                      return widget.isFirstTime
+                          ? OnBoardingScreen()
+                          : MainScreen();
+                    }
+                    return RegisterScreen();
                   });
             }),
         localizationsDelegates: context.localizationDelegates,

@@ -1,4 +1,5 @@
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
+import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -182,30 +183,15 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                         onPressed: () async {
                           if (done) {
                             Navigator.of(context).pop();
-                            await pushDynamicScreen(context,
-                                screen: MaterialPageRoute(
-                                  builder: (ctx) => ChatListViewScreen(
-                                    // updateList: updateList,
-                                    listId: selectedListId,
-                                    isListView: !widget.isSharing,
-                                  ),
-                                ),
-                                withNavBar: true);
-                            /*     pushNewScreen(context,
+
+                            await pushNewScreen(context,
                                 screen: ChatListViewScreen(
                                   // updateList: updateList,
                                   listId: selectedListId,
-                                  isListView: !widget.isSharing,
+                                  isListView: false,
                                 ),
-                                withNavBar: true); */
-                            /* Navigator.of(context, rootNavigator: false)
-                                .push(MaterialPageRoute(
-                              builder: (ctx) => ChatListViewScreen(
-                                // updateList: updateList,
-                                listId: selectedListId,
-                                isListView: !widget.isSharing,
-                              ),
-                            ));  */
+                                withNavBar: false);
+                            NavigatorController.jumpToTab(1);
                           } else {
                             Provider.of<ChatlistsProvider>(context,
                                     listen: false)

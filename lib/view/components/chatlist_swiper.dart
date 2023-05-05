@@ -1,5 +1,7 @@
+import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 class ChatlistSwiper extends StatefulWidget {
   final StorySwiperWidgetBuilder widgetBuilder;
@@ -59,6 +61,13 @@ class _ChatlistSwiperState extends State<ChatlistSwiper> {
               behavior: HitTestBehavior.opaque,
               onTapDown: (details) async {
                 if (details.localPosition.dx < 223) {
+                  await pushNewScreen(context,
+                      screen: ChatListViewScreen(
+                        // updateList: updateList,
+                        listId: widget.ids.elementAt(index),
+                        isListView: false,
+                      ),
+                      withNavBar: false);
                   NavigatorController.jumpToTab(1);
                   /*  pushNewScreen(context,
                       screen: ChatListViewScreen(

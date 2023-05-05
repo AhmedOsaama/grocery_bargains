@@ -136,7 +136,7 @@ class _ChatViewState extends State<ChatView> {
             StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection("/lists/${widget.listId}/items")
-                    .orderBy('time', descending: true)
+                    .orderBy('time')
                     .snapshots(),
                 builder: (context, snapshot) {
                   final items = snapshot.data?.docs ?? [];

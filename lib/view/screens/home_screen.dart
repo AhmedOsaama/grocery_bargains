@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
       print("PAGE KEY: " + pageKey.toString());
       if (pageKey > 0) {
         await Provider.of<ProductsProvider>(context, listen: false)
-            .getAllProducts(pageKey);
+            .getLimitedPriceComparisons(pageKey);
       }
       final newProducts = Provider.of<ProductsProvider>(context, listen: false)
           .comparisonProducts;
@@ -102,24 +102,6 @@ class _HomeScreenState extends State<HomeScreen> {
       _pagingController.error = "Something wrong ! Please try again";
     }
   }
-
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   if(state == AppLifecycleState.resumed){
-  //     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-  //       print(message);
-  //       print("onMessageOpenedApp: " + message.data['listId']);
-  //       print("onMessageOpenedApp title: " + message.notification!.title!);
-  //       print("onMessageOpenedApp body: " + message.notification!.body!);
-  //       print('PUSHING A PAGE');
-  //       AppNavigator.push(context: context, screen: ChatListViewScreen(listId: message.data['listId'], listName: message.notification!.title!));
-  //     });
-  //   }
-  //   if(state == AppLifecycleState.paused){
-  //     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  //   }
-  //   super.didChangeAppLifecycleState(state);
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -201,15 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               !snapshot.hasData) {
                             return Container();
                           }
-                          // if(googleProvider.isGoogleSignedIn){
-                          //   return googleProvider.user.photoUrl != "" && googleProvider.user.photoUrl != null
-                          //       ? CircleAvatar(
-                          //     backgroundImage:
-                          //     NetworkImage(googleProvider.user.photoUrl!),
-                          //     radius: 30,
-                          //   )
-                          //       : SvgPicture.asset(personIcon);
-                          // }
+
                           return snapshot.data!['imageURL'] != ""
                               ? GestureDetector(
                                   onTap: () async {
@@ -262,7 +236,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ))
                   ],
                 ),
-
                 FutureBuilder(
                     future: getAllListsFuture,
                     builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -340,117 +313,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ))
                   ],
                 ),
-                // Container(
-                //   height: 200.h,
-                //   child: FutureBuilder<int>(
-                //       future: getAllProductsFuture,
-                //       builder: (context, snapshot) {
-                //         if (snapshot.connectionState == ConnectionState.waiting) {
-                //           return const Center(
-                //             child: CircularProgressIndicator(),
-                //           );
-                //         }
-                //         if (snapshot.data != 200) {
-                //           return const Center(
-                //             child: Text(
-                //                 "Something went wrong. Please try again later"),
-                //           );
-                //         }
-                //         allProducts =
-                //             Provider.of<ProductsProvider>(context, listen: false)
-                //                 .allProducts;
-                //         print("\n RESPONSE: ${allProducts.length}");
-                //         return ListView.builder(
-                //           itemCount: allProducts.length + 1,
-                //           scrollDirection: Axis.horizontal,
-                //           itemBuilder: (ctx, i) {
-                //             if (i >= allProducts.length) {
-                //               var productId = allProducts[i - 1]['id'];
-                //               return Padding(
-                //                 padding: EdgeInsets.symmetric(horizontal: 32),
-                //                 child: isLoading
-                //                     ? Center(
-                //                         child: CircularProgressIndicator(
-                //                         color: verdigris,
-                //                       ))
-                //                     : Center(
-                //                         child: Container(
-                //                           decoration: BoxDecoration(
-                //                             border:
-                //                                 Border.all(color: Colors.grey),
-                //                             borderRadius:
-                //                                 BorderRadius.circular(12),
-                //                           ),
-                //                           child: InkWell(
-                //                             onTap: () async {
-                //                               setState(() {
-                //                                 isLoading = true;
-                //                               });
-                //                               print(productId);
-                //                               await fetch(productId + 1);
-                //                               setState(() {
-                //                                 isLoading = false;
-                //                               });
-                //                             },
-                //                             borderRadius:
-                //                                 BorderRadius.circular(12),
-                //                             child: Padding(
-                //                               padding: const EdgeInsets.all(5),
-                //                               child: Row(
-                //                                 mainAxisSize: MainAxisSize.min,
-                //                                 children: [
-                //                                   Text(
-                //                                     "See more",
-                //                                     style: TextStyles
-                //                                         .textViewMedium10
-                //                                         .copyWith(
-                //                                             color: prussian),
-                //                                   ),
-                //                                   Icon(
-                //                                     Icons.arrow_forward_ios,
-                //                                     size: 18,
-                //                                     color: Colors.grey,
-                //                                   ),
-                //                                 ],
-                //                               ),
-                //                             ),
-                //                           ),
-                //                         ),
-                //                       ),
-                //               );
-                //             } // see more case
-                //             var id = allProducts[i]['id'];
-                //             var productName = allProducts[i]['name'];
-                //             var imageURL = allProducts[i]['image_url'];
-                //             var storeName = allProducts[i]['product_brand'];
-                //             var description =
-                //                 allProducts[i]['product_description'];
-                //             var price1 = allProducts[i]['price_1'];
-                //             var price2 = allProducts[i]['price_2'];
-                //             var oldPrice = allProducts[i]['befor_offer'];
-                //             var size1 = allProducts[i]['unit_size_1'] ?? "";
-                //             var size2 = allProducts[i]['unit_size_2'];
-                //             return DiscountItem(
-                //               onAdd: () => addDiscountItem(context, productName,
-                //                   oldPrice, price1, price2, imageURL, size1),
-                //               onShare: () => shareDiscountItem(
-                //                   context,
-                //                   productName,
-                //                   oldPrice,
-                //                   price1,
-                //                   price2,
-                //                   imageURL,
-                //                   size1),
-                //               name: productName,
-                //               imageURL: imageURL,
-                //               albertPriceAfter: price1 ?? price2,
-                //               measurement: size1 ?? size2,
-                //               jumboPriceAfter: '0.0',
-                //             );
-                //           },
-                //         );
-                //       }),
-                // ),
                 Container(
                   height: 220.h,
                   child: Consumer<ProductsProvider>(
@@ -664,8 +526,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  Future fetch(int startingIndex) {
+/*   Future fetch(int startingIndex) {
     return Provider.of<ProductsProvider>(context, listen: false)
         .getProducts(startingIndex);
-  }
+  } */
 }
