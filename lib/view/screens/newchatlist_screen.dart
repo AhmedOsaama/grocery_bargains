@@ -166,11 +166,18 @@ class _NewChatlistScreenState extends State<NewChatlistScreen> {
                       return Center(child: CircularProgressIndicator());
                     }
                     return snapshot.data!.isEmpty
-                        ? Text(
-                            'No contacts found :(',
-                            style: TextStylesInter.textViewRegular12
-                                .copyWith(color: black),
-                          )
+                        ? (isContactsPermissionGranted
+                            ? Text(
+                                'No contacts found :(',
+                                style: TextStylesInter.textViewRegular12
+                                    .copyWith(color: black),
+                              )
+                            : Text(
+                                'Please add your number to see your friends on BargainB',
+                                maxLines: 2,
+                                style: TextStylesInter.textViewRegular12
+                                    .copyWith(color: black),
+                              ))
                         : ListView(
                             physics: NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
