@@ -318,435 +318,412 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
           ),
         ],
       ),
-      body: Container(
-        decoration: BoxDecoration(
-            color: isInvitingFriends ? Color.fromRGBO(245, 247, 254, 0) : white,
-            boxShadow: [
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(color: white, boxShadow: [
               BoxShadow(
                   blurRadius: 50,
                   offset: Offset(0, 20),
                   color: Color.fromRGBO(52, 99, 237, 0.15)),
             ]),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                30.pw,
-                SizedBox(
-                  width: 10.w,
-                ),
-              ],
-            ),
-            if (isInvitingFriends)
-              Container(
-                decoration: BoxDecoration(color: white, boxShadow: [
-                  BoxShadow(
-                      blurRadius: 20,
-                      offset: Offset(0, 20),
-                      color: Color.fromRGBO(52, 99, 237, 0.15)),
-                ]),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Row(
                     children: [
-                      if (listUsers.isNotEmpty) ...[
-                        Text(
-                          'Members',
-                          style: TextStylesInter.textViewSemiBold26
-                              .copyWith(color: black),
+                      isEditingName
+                          ? Container(
+                              width: 210.w,
+                              child: TextFormField(
+                                initialValue: chatList.name,
+                                style: TextStyles.textViewSemiBold24
+                                    .copyWith(color: prussian),
+                                onFieldSubmitted: (value) async {
+                                  await updateListName(value);
+                                },
+                              ),
+                            )
+                          : Container(
+                              width: 210.w,
+                              child: Text(
+                                chatList.name,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyles.textViewSemiBold24
+                                    .copyWith(color: prussian),
+                              ),
+                            ),
+                      Spacer(),
+                      DropdownButton(
+                        underline: Container(),
+                        icon: Icon(
+                          Icons.more_vert,
+                          color: Colors.black,
                         ),
-                        10.ph,
-                        ListView(
-                            shrinkWrap: true,
-                            children: listUsers.map((userInfo) {
-                              return Row(
-                                children: [
-                                  userInfo.imageURL.isEmpty
-                                      ? SvgPicture.asset(
-                                          peopleIcon,
-                                          width: 35.w,
-                                          height: 35.h,
-                                        )
-                                      : CircleAvatar(
-                                          backgroundImage: NetworkImage(
-                                            userInfo.imageURL,
-                                          ),
-                                          radius: 20,
-                                        ),
-                                  20.pw,
-                                  Text(
-                                    userInfo.name,
-                                    style: TextStylesInter.textViewRegular16
-                                        .copyWith(color: black2),
-                                  )
-                                ],
-                              );
-                            }).toList()),
-                      ],
-                      50.ph,
-                      if (contactsList.isNotEmpty) ...[
-                        Text(
-                          'Add to list',
-                          style: TextStylesInter.textViewSemiBold26
-                              .copyWith(color: black),
-                        ),
-                        15.ph,
-                        Text(
-                          'CONTACTS ON BARGAINB',
-                          style: TextStylesInter.textViewRegular12
-                              .copyWith(color: mainPurple),
-                        ),
-                        10.ph,
-                        ListView(
-                            shrinkWrap: true,
-                            children: contactsList.map((userInfo) {
-                              return Padding(
-                                padding: EdgeInsets.only(top: 10),
-                                child: Row(
-                                  children: [
-                                    userInfo.imageURL.isEmpty
-                                        ? SvgPicture.asset(
-                                            peopleIcon,
-                                            width: 35.w,
-                                            height: 35.h,
-                                          )
-                                        : CircleAvatar(
-                                            backgroundImage: NetworkImage(
-                                              userInfo.imageURL,
-                                            ),
-                                            radius: 20,
-                                          ),
-                                    20.pw,
-                                    Text(
-                                      userInfo.name,
-                                      style: TextStylesInter.textViewRegular16
-                                          .copyWith(color: black2),
-                                    ),
-                                    Spacer(),
-                                    InkWell(
-                                      onTap: () => addContactToChatlist(
-                                          userInfo, context),
-                                      child: Row(children: [
-                                        Text(
-                                          "Add",
-                                          style: TextStylesInter
-                                              .textViewSemiBold14
-                                              .copyWith(color: mainPurple),
-                                        ),
-                                        10.pw,
-                                        CircleAvatar(
-                                          child: Icon(
-                                            Icons.person_add_alt,
-                                            color: white,
-                                          ),
-                                          backgroundColor: mainPurple,
-                                        )
-                                      ]),
-                                    )
-                                  ],
-                                ),
-                              );
-                            }).toList()),
-                      ],
-                      if (contactsList.isEmpty && !isContactsPermissionGranted)
-                        Text(
-                          "Please add your number to see your friends on BargainB",
-                          style: TextStylesInter.textViewRegular15
-                              .copyWith(color: black),
-                        ),
-                      if (contactsList.isEmpty && isContactsPermissionGranted)
-                        Text(
-                          "No contacts found on BargainB",
-                          style: TextStylesInter.textViewRegular15
-                              .copyWith(color: black),
-                        ),
+                        items: const [
+                          DropdownMenuItem(
+                              value: 'rename', child: Text("Rename")),
+                          DropdownMenuItem(
+                              value: 'remove', child: Text("Remove")),
+                          DropdownMenuItem(
+                            value: 'copy',
+                            enabled: false,
+                            child: Text("Copy"),
+                          ),
+                        ],
+                        onChanged: (option) {
+                          if (option == 'rename') {
+                            // Share.share("text");
 
-                      // GenericField(
-                      //   controller: inviteFriendController,
-                      //   prefixIcon: Icon(Icons.person_add_alt),
-                      //   hintText: LocaleKeys.inputEmail.tr(),
-                      //   hintStyle:
-                      //       TextStylesDMSans.textViewBold14.copyWith(color: black2),
-                      //   onSubmitted: (email) async {
-                      //     try {
-                      //       var userData = await FirebaseFirestore.instance
-                      //           .collection('/users')
-                      //           .where('email', isEqualTo: email.trim())
-                      //           .get();
-                      //       var userId = userData.docs.first.id;
-                      //       FirebaseFirestore.instance
-                      //           .collection('/lists')
-                      //           .doc(widget.listId)
-                      //           .update({
-                      //         "userIds": FieldValue.arrayUnion([userId])
-                      //       });
-                      //     } catch (e) {
-                      //       print("ERROR: $e");
-                      //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      //         content: Text(
-                      //           "Couldn't find a user with that email",
-                      //         ),
-                      //       ));
-                      //     }
-                      //     inviteFriendController.clear();
-                      //   },
-                      // )
+                            setState(() {
+                              isEditingName = true;
+                            });
+                          } else if (option == 'remove') {
+                            deleteList(context);
+                          }
+                        },
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            setState(() {
+                              widget.isListView = !widget.isListView;
+                            });
+                          },
+                          icon: widget.isListView
+                              ? Icon(Icons.chat_outlined)
+                              : SvgPicture.asset(listViewIcon)),
                     ],
                   ),
                 ),
-              ),
-            if (!isInvitingFriends) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
-                  children: [
-                    isEditingName
-                        ? Container(
-                            width: 210.w,
-                            child: TextFormField(
-                              initialValue: chatList.name,
-                              style: TextStyles.textViewSemiBold24
-                                  .copyWith(color: prussian),
-                              onFieldSubmitted: (value) async {
-                                await updateListName(value);
-                              },
-                            ),
-                          )
-                        : Container(
-                            width: 210.w,
-                            child: Text(
-                              chatList.name,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyles.textViewSemiBold24
-                                  .copyWith(color: prussian),
-                            ),
-                          ),
-                    Spacer(),
-                    DropdownButton(
-                      underline: Container(),
-                      icon: Icon(
-                        Icons.more_vert,
-                        color: Colors.black,
-                      ),
-                      items: const [
-                        DropdownMenuItem(
-                            value: 'rename', child: Text("Rename")),
-                        DropdownMenuItem(
-                            value: 'remove', child: Text("Remove")),
-                        DropdownMenuItem(
-                          value: 'copy',
-                          enabled: false,
-                          child: Text("Copy"),
-                        ),
-                      ],
-                      onChanged: (option) {
-                        if (option == 'rename') {
-                          // Share.share("text");
-
-                          setState(() {
-                            isEditingName = true;
-                          });
-                        } else if (option == 'remove') {
-                          deleteList(context);
-                        }
-                      },
-                    ),
-                    IconButton(
-                        onPressed: () {
-                          setState(() {
-                            widget.isListView = !widget.isListView;
-                          });
-                        },
-                        icon: widget.isListView
-                            ? Icon(Icons.chat_outlined)
-                            : SvgPicture.asset(listViewIcon)),
-                  ],
+                Divider(
+                  height: 20.h,
                 ),
-              ),
-              Divider(
-                height: 20.h,
-              ),
-              widget.isListView
-                  ? Expanded(
-                      child: FutureBuilder<QuerySnapshot>(
-                          future: FirebaseFirestore.instance
-                              .collection('/lists/${widget.listId}/items')
-                              .orderBy('time')
-                              .get(),
-                          builder: (context, snapshot) {
-                            final items = snapshot.data?.docs ?? [];
+                widget.isListView
+                    ? Expanded(
+                        child: FutureBuilder<QuerySnapshot>(
+                            future: FirebaseFirestore.instance
+                                .collection('/lists/${widget.listId}/items')
+                                .orderBy('time')
+                                .get(),
+                            builder: (context, snapshot) {
+                              final items = snapshot.data?.docs ?? [];
 
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Container();
-                            }
-                            var storeImages = {
-                              "jumbo": false,
-                              "hoogvliet": false,
-                              "albert": false
-                            };
-                            itemsState.value = items;
-                            if (itemsState.value.isNotEmpty) {
-                              itemsState.value.forEach((element) {
-                                if (element["text"] == "") {
-                                  if (element["item_image"]
-                                      .toString()
-                                      .contains("jumbo")) {
-                                    storeImages["jumbo"] = true;
-                                  } else if (element["item_image"]
-                                      .toString()
-                                      .contains(".ah.")) {
-                                    storeImages["albert"] = true;
-                                  } else if (element["item_image"]
-                                      .toString()
-                                      .contains("hoogvliet")) {
-                                    storeImages["hoogvliet"] = true;
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Container();
+                              }
+                              var storeImages = {
+                                "jumbo": false,
+                                "hoogvliet": false,
+                                "albert": false
+                              };
+                              itemsState.value = items;
+                              if (itemsState.value.isNotEmpty) {
+                                itemsState.value.forEach((element) {
+                                  if (element["text"] == "") {
+                                    if (element["item_image"]
+                                        .toString()
+                                        .contains("jumbo")) {
+                                      storeImages["jumbo"] = true;
+                                    } else if (element["item_image"]
+                                        .toString()
+                                        .contains(".ah.")) {
+                                      storeImages["albert"] = true;
+                                    } else if (element["item_image"]
+                                        .toString()
+                                        .contains("hoogvliet")) {
+                                      storeImages["hoogvliet"] = true;
+                                    }
                                   }
+                                });
+                              }
+                              imagesWidgets.value = [];
+                              storeImages.forEach((key, value) {
+                                if (value) {
+                                  switch (key) {
+                                    case "jumbo":
+                                      imagesWidgets.value.add(SizedBox(
+                                          height: 50.h,
+                                          width: 50.w,
+                                          child: Image.asset(jumbo)));
+                                      break;
+                                    case "albert":
+                                      imagesWidgets.value.add(SizedBox(
+                                          height: 40.h,
+                                          width: 40.w,
+                                          child: Image.asset(albert)));
+
+                                      break;
+                                    case "hoogvliet":
+                                      imagesWidgets.value.add(SizedBox(
+                                          height: 50.h,
+                                          width: 50.w,
+                                          child: Image.asset(hoogLogo)));
+                                      break;
+                                  }
+                                  imagesWidgets.value.add(10.pw);
                                 }
                               });
-                            }
-                            imagesWidgets.value = [];
-                            storeImages.forEach((key, value) {
-                              if (value) {
-                                switch (key) {
-                                  case "jumbo":
-                                    imagesWidgets.value.add(SizedBox(
-                                        height: 50.h,
-                                        width: 50.w,
-                                        child: Image.asset(jumbo)));
-                                    break;
-                                  case "albert":
-                                    imagesWidgets.value.add(SizedBox(
-                                        height: 40.h,
-                                        width: 40.w,
-                                        child: Image.asset(albert)));
-
-                                    break;
-                                  case "hoogvliet":
-                                    imagesWidgets.value.add(SizedBox(
-                                        height: 50.h,
-                                        width: 50.w,
-                                        child: Image.asset(hoogLogo)));
-                                    break;
-                                }
-                                imagesWidgets.value.add(10.pw);
-                              }
-                            });
-                            var total = 0.0;
-                            items.forEach(
-                              (element) {
-                                if (element["text"].toString().isEmpty)
-                                  total += double.parse(element["item_price"]);
-                              },
-                            );
-                            return Column(
-                              children: [
-                                Row(
-                                  children: [
-                                    Spacer(),
-                                    Text(
-                                      "${items.length} items",
-                                      style: TextStyles.textViewMedium10
-                                          .copyWith(
-                                              color: Color.fromRGBO(
-                                                  204, 204, 203, 1)),
-                                    ),
-                                    SizedBox(
-                                      width: 10.w,
-                                    ),
-                                    Text(
-                                      LocaleKeys.total.tr(),
-                                      style: TextStyles.textViewMedium15
-                                          .copyWith(color: prussian),
-                                    ),
-                                    SizedBox(
-                                      width: 10.w,
-                                    ),
-                                    Text(
-                                      "€ " + total.toStringAsFixed(2),
-                                      style: TextStyles.textViewBold15
-                                          .copyWith(color: prussian),
-                                    ),
-                                    10.pw
-                                  ],
-                                ),
-                                ValueListenableBuilder(
-                                    valueListenable: imagesWidgets,
-                                    builder: (context, value, m) {
-                                      return imagesWidgets.value.isNotEmpty
-                                          ? Flexible(
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8.0),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Text(
-                                                      "Stores",
-                                                      style: TextStyles
-                                                          .textViewMedium10
-                                                          .copyWith(
-                                                              color: Color
-                                                                  .fromRGBO(
-                                                                      113,
-                                                                      146,
-                                                                      242,
-                                                                      1)),
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceEvenly,
-                                                      children:
-                                                          imagesWidgets.value,
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            )
-                                          : Container();
-                                    }),
-                                items.isEmpty
-                                    ? Column(
-                                        children: [
-                                          40.ph,
-                                          Container(
-                                            alignment: Alignment.topCenter,
-                                            child: DottedContainer(
-                                              text: LocaleKeys
-                                                  .addToListFirstItem
-                                                  .tr(),
-                                            ),
-                                          ),
-                                          40.ph,
-                                        ],
-                                      )
-                                    : Container(),
-                                Expanded(
-                                  flex: 7,
-                                  child: DraggableList(
-                                    inChatView: false,
-                                    items: items,
-                                    listId: widget.listId,
+                              var total = 0.0;
+                              items.forEach(
+                                (element) {
+                                  if (element["text"].toString().isEmpty)
+                                    total +=
+                                        double.parse(element["item_price"]);
+                                },
+                              );
+                              return Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      Spacer(),
+                                      Text(
+                                        "${items.length} items",
+                                        style: TextStyles.textViewMedium10
+                                            .copyWith(
+                                                color: Color.fromRGBO(
+                                                    204, 204, 203, 1)),
+                                      ),
+                                      SizedBox(
+                                        width: 10.w,
+                                      ),
+                                      Text(
+                                        LocaleKeys.total.tr(),
+                                        style: TextStyles.textViewMedium15
+                                            .copyWith(color: prussian),
+                                      ),
+                                      SizedBox(
+                                        width: 10.w,
+                                      ),
+                                      Text(
+                                        "€ " + total.toStringAsFixed(2),
+                                        style: TextStyles.textViewBold15
+                                            .copyWith(color: prussian),
+                                      ),
+                                      10.pw
+                                    ],
                                   ),
-                                ),
-                              ],
-                            );
-                          }),
-                    )
-                  : Expanded(
-                      child: ChatView(
-                      listId: widget.listId,
-                    ))
-            ],
-          ],
-        ),
+                                  ValueListenableBuilder(
+                                      valueListenable: imagesWidgets,
+                                      builder: (context, value, m) {
+                                        return imagesWidgets.value.isNotEmpty
+                                            ? Flexible(
+                                                child: Padding(
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 8.0),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Text(
+                                                        "Stores",
+                                                        style: TextStyles
+                                                            .textViewMedium10
+                                                            .copyWith(
+                                                                color: Color
+                                                                    .fromRGBO(
+                                                                        113,
+                                                                        146,
+                                                                        242,
+                                                                        1)),
+                                                      ),
+                                                      Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceEvenly,
+                                                        children:
+                                                            imagesWidgets.value,
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              )
+                                            : Container();
+                                      }),
+                                  items.isEmpty
+                                      ? Column(
+                                          children: [
+                                            40.ph,
+                                            Container(
+                                              alignment: Alignment.topCenter,
+                                              child: DottedContainer(
+                                                text: LocaleKeys
+                                                    .addToListFirstItem
+                                                    .tr(),
+                                              ),
+                                            ),
+                                            40.ph,
+                                          ],
+                                        )
+                                      : Container(),
+                                  Expanded(
+                                    flex: 7,
+                                    child: DraggableList(
+                                      inChatView: false,
+                                      items: items,
+                                      listId: widget.listId,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }),
+                      )
+                    : Expanded(
+                        child: ChatView(
+                        listId: widget.listId,
+                      ))
+              ],
+            ),
+          ),
+          isInvitingFriends
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Container(
+                    height: ScreenUtil().screenHeight * 0.45,
+                    decoration: BoxDecoration(
+                        color: white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                              blurRadius: 20,
+                              offset: Offset(0, 20),
+                              color: Color.fromRGBO(52, 99, 237, 0.15)),
+                        ]),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (listUsers.isNotEmpty) ...[
+                              Text(
+                                'Members',
+                                style: TextStylesInter.textViewSemiBold26
+                                    .copyWith(color: black),
+                              ),
+                              10.ph,
+                              ListView(
+                                  shrinkWrap: true,
+                                  children: listUsers.map((userInfo) {
+                                    return Row(
+                                      children: [
+                                        userInfo.imageURL.isEmpty
+                                            ? SvgPicture.asset(
+                                                peopleIcon,
+                                                width: 35.w,
+                                                height: 35.h,
+                                              )
+                                            : CircleAvatar(
+                                                backgroundImage: NetworkImage(
+                                                  userInfo.imageURL,
+                                                ),
+                                                radius: 20,
+                                              ),
+                                        20.pw,
+                                        Text(
+                                          userInfo.name,
+                                          style: TextStylesInter
+                                              .textViewRegular16
+                                              .copyWith(color: black2),
+                                        )
+                                      ],
+                                    );
+                                  }).toList()),
+                            ],
+                            50.ph,
+                            if (contactsList.isNotEmpty) ...[
+                              Text(
+                                'Add to list',
+                                style: TextStylesInter.textViewSemiBold26
+                                    .copyWith(color: black),
+                              ),
+                              15.ph,
+                              Text(
+                                'CONTACTS ON BARGAINB',
+                                style: TextStylesInter.textViewRegular12
+                                    .copyWith(color: mainPurple),
+                              ),
+                              10.ph,
+                              ListView(
+                                  shrinkWrap: true,
+                                  children: contactsList.map((userInfo) {
+                                    return Padding(
+                                      padding: EdgeInsets.only(top: 10),
+                                      child: Row(
+                                        children: [
+                                          userInfo.imageURL.isEmpty
+                                              ? SvgPicture.asset(
+                                                  peopleIcon,
+                                                  width: 35.w,
+                                                  height: 35.h,
+                                                )
+                                              : CircleAvatar(
+                                                  backgroundImage: NetworkImage(
+                                                    userInfo.imageURL,
+                                                  ),
+                                                  radius: 20,
+                                                ),
+                                          20.pw,
+                                          Text(
+                                            userInfo.name,
+                                            style: TextStylesInter
+                                                .textViewRegular16
+                                                .copyWith(color: black2),
+                                          ),
+                                          Spacer(),
+                                          InkWell(
+                                            onTap: () => addContactToChatlist(
+                                                userInfo, context),
+                                            child: Row(children: [
+                                              Text(
+                                                "Add",
+                                                style: TextStylesInter
+                                                    .textViewSemiBold14
+                                                    .copyWith(
+                                                        color: mainPurple),
+                                              ),
+                                              10.pw,
+                                              CircleAvatar(
+                                                child: Icon(
+                                                  Icons.person_add_alt,
+                                                  color: white,
+                                                ),
+                                                backgroundColor: mainPurple,
+                                              )
+                                            ]),
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  }).toList()),
+                            ],
+                            if (contactsList.isEmpty &&
+                                !isContactsPermissionGranted)
+                              Text(
+                                "Please add your number to see your friends on BargainB",
+                                style: TextStylesInter.textViewRegular15
+                                    .copyWith(color: black),
+                              ),
+                            if (contactsList.isEmpty &&
+                                isContactsPermissionGranted)
+                              Text(
+                                "No contacts found on BargainB",
+                                style: TextStylesInter.textViewRegular15
+                                    .copyWith(color: black),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : Container(),
+        ],
       ),
     );
   }
