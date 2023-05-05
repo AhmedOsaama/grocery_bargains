@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:bargainb/models/product.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
+import 'package:bargainb/view/screens/register_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -69,7 +73,7 @@ Future<void> main() async {
     //   print('result === $onValue');
     // });
     // }
-    pref.setBool("firstTime", false);
+    // pref.setBool("firstTime", false);
   }
   final String path = await DynamicLinkService().handleDynamicLinks();
 
@@ -144,37 +148,20 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    initMixpanel();
-    Provider.of<ProductsProvider>(context, listen: false).getAllCategories();
     getAllProductsFuture =
-        getAllProducts().timeout(Duration(seconds: 6), onTimeout: () {});
+        Provider.of<ProductsProvider>(context,listen: false).getAllProducts(0).timeout(Duration(seconds: 6), onTimeout: () {});
+    Provider.of<ProductsProvider>(context, listen: false).getAllCategories();
     authStateChangesStream = FirebaseAuth.instance.authStateChanges();
+    initMixpanel();
   }
 
-  Future<void> getAllProducts() async {
-    await Provider.of<ProductsProvider>(context, listen: false)
-        .getAllAlbertProducts();
-    print("1");
-    await Provider.of<ProductsProvider>(context, listen: false)
-        .getAllJumboProducts();
-    print("2");
-    await Provider.of<ProductsProvider>(context, listen: false)
-        .getAllHoogvlietProducts();
-    print("3");
-    await Provider.of<ProductsProvider>(context, listen: false)
-        .getLimitedPriceComparisons(0);
-    print("4");
-    await Provider.of<ProductsProvider>(context, listen: false)
-        .populateBestValueBargains();
-    print("5");
-  }
+
 
   Future<void> initMixpanel() async {
     // Replace with your Project Token
     // Once you've called this method once, you can access `mixpanel` throughout the rest of your application.
     mixPanel = await Mixpanel.init("752b3abf782a7347499ccb3ebb504194",
         trackAutomaticEvents: true);
-    mixPanel.track("test event");
   }
 
   @override
@@ -211,7 +198,7 @@ class _MyAppState extends State<MyApp> {
               return StreamBuilder(
                   stream: authStateChangesStream,
                   builder: (context, snapshot) {
-                    //if (!widget.isRemembered) return RegisterScreen();
+                    if (!widget.isRemembered && Platform.isAndroid) return RegisterScreen();
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return Container(
                         width: double.infinity,
@@ -233,10 +220,12 @@ class _MyAppState extends State<MyApp> {
                           ? OnBoardingScreen()
                           : MainScreen();
                     }
-
+                  if(Platform.isIOS) {
                     return widget.isFirstTime
                         ? OnBoardingScreen()
                         : MainScreen();
+                  }
+                  return RegisterScreen();
                   });
             }),
         localizationsDelegates: context.localizationDelegates,

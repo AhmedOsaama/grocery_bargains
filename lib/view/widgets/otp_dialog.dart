@@ -19,7 +19,7 @@ class OtpDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      alignment: Alignment.bottomCenter,
+      alignment: Alignment.center,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding: const EdgeInsets.all(10),

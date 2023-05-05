@@ -209,7 +209,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                     participant.phoneNumber ==
                     contact.phones.first.normalizedNumber);
                 if (participantIndex == -1) {
-                  //contact not found in participants
+                  //contact is not part of the chatlist
                   var name = user.get('username');
                   var email = user.get('email');
                   var imageURL = user.get('imageURL');

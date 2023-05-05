@@ -2,7 +2,7 @@ class Product {
   String name;
   String imageURL;
   String description;
-  String price;
+  String? price;
   String? price2;
   String? oldPrice;
   String size;
@@ -17,8 +17,7 @@ class Product {
   Product(
       {
         required this.storeName,
-        required this.id,
-      required this.price,
+        required this.id, this.price,
       required this.description,
       required this.imageURL,
       required this.name,

@@ -407,7 +407,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                             .elementAt(index)
                                             .oldPrice!) -
                                         double.parse(
-                                            products.elementAt(index).price)) <=
+                                            products.elementAt(index).price ??
+                                                products[index].price2!)) <=
                                     0) {
                                   oldPriceExists = false;
                                 }
@@ -445,7 +446,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                       description: p.description,
                                       size1: p.size,
                                       size2: p.size2 ?? "",
-                                      price1: double.tryParse(p.price) ?? 0.0,
+                                      price1:
+                                          double.tryParse(p.price ?? "") ?? 0.0,
                                       price2: double.tryParse(p.price2 ?? "") ??
                                           0.0,
                                     )),
@@ -564,10 +566,13 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                                         20.pw,
                                                         Text(
                                                           "€" +
-                                                              products
-                                                                  .elementAt(
-                                                                      index)
-                                                                  .price,
+                                                              (products
+                                                                      .elementAt(
+                                                                          index)
+                                                                      .price ??
+                                                                  products[
+                                                                          index]
+                                                                      .price2!),
                                                           style: TextStylesInter
                                                               .textViewMedium15
                                                               .copyWith(
@@ -604,13 +609,12 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                                                               .elementAt(
                                                                                   index)
                                                                               .oldPrice!) -
-                                                                          double.parse(products
-                                                                              .elementAt(index)
-                                                                              .price)) >
+                                                                          double.parse(products.elementAt(index).price ??
+                                                                              products[index].price2!)) >
                                                                       0
                                                                   ? Text(
                                                                       " €" +
-                                                                          (double.parse(products.elementAt(index).oldPrice!) - double.parse(products.elementAt(index).price))
+                                                                          (double.parse(products.elementAt(index).oldPrice!) - double.parse(products.elementAt(index).price ?? products[index].price2!))
                                                                               .toStringAsFixed(2) +
                                                                           " less",
                                                                       style: TextStylesInter

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bargainb/utils/mixpanel_utils.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/otp_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -55,6 +56,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> saveRememberMePref() async {
     var pref = await SharedPreferences.getInstance();
     pref.setBool("rememberMe", rememberMe);
+
+  }
+  Future<void> saveFirstTimePref() async {
+    var pref = await SharedPreferences.getInstance();
+    pref.setBool("firstTime", false);
   }
 
   Future<void> _submitAuthForm(String email, String username,
@@ -87,6 +93,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await saveUserData(userCredential);
 
         saveRememberMePref();
+        saveFirstTimePref();
         AppNavigator.pushReplacement(
             context: context, screen: OnBoardingScreen());
       } else {
@@ -114,7 +121,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
         print("logged in");
         saveRememberMePref();
-        //   AppNavigator.pushReplacement(context: context, screen: HomeScreen());
+        saveFirstTimePref();
         AppNavigator.pushReplacement(context: context, screen: MainScreen());
       }
     } on FirebaseAuthException catch (error) {
@@ -229,7 +236,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Container(
                   decoration: BoxDecoration(boxShadow: Utils.boxShadow),
                   child: IntlPhoneField(
-                    disableLengthCheck: true,
+                    disableLengthCheck: false,
                     initialCountryCode: "NL",
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
@@ -263,8 +270,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
-                      print(value?.number);
-                      return Validator.phoneValidator(value?.number);
+                      return Validator.phoneValidator(value!.number);
                     },
                   ),
                 ),
@@ -465,12 +471,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         verificationFailed: (e) {
           print("Verification failed");
           print(e.toString());
-          print(e.plugin);
           print(e.message);
           print(e.code);
           if (e.code == 'invalid-phone-number') {
             print('The provided phone number is not valid.');
           }
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message.toString())));
           completer.complete(userCredential);
         },
         forceResendingToken: resendToken,
@@ -509,6 +515,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> loginWithSocial(BuildContext context, bool isApple) async {
     late UserCredential userCredential;
+    String providerName;
     if (isApple) {
       final credential = await SignInWithApple.getAppleIDCredential(
         scopes: [
@@ -524,10 +531,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       userCredential =
           await FirebaseAuth.instance.signInWithCredential(appleCredential);
       print(userCredential);
+      providerName = 'Apple';
     } else {
       userCredential =
           await Provider.of<GoogleSignInProvider>(context, listen: false)
               .loginWithGoogle();
+      providerName = "Google";
     }
     if (userCredential.user != null) {
       var userSnapshot = await FirebaseFirestore.instance
@@ -550,9 +559,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await saveUserData(userCredential);
       }
       saveRememberMePref();
+      MixpanelUtils().createUser(userName: "TEST NAME",email: userCredential.user!.email.toString(),id: userCredential.user!.uid);
+      MixpanelUtils().trackSocialLogin(providerName: providerName);
 
       var pref = await SharedPreferences.getInstance();
       var isFirstTime = pref.getBool("firstTime") ?? true;
+      print("IS FIRST TIME:" + isFirstTime.toString());
       if (isFirstTime) {
         pref.setBool("firstTime", false);
 

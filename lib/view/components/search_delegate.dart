@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:bargainb/models/product_category.dart';
+import 'package:bargainb/services/network_services.dart';
 import 'package:bargainb/view/screens/categories_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +55,8 @@ class MySearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
+   var productProvider = Provider
+        .of<ProductsProvider>(context, listen: false);
     if (query.isNotEmpty) saveRecentSearches();
     // List allProducts =
     //     Provider.of<ProductsProvider>(context, listen: false).allProducts;
@@ -82,19 +87,56 @@ class MySearchDelegate extends SearchDelegate {
               itemBuilder: (ctx, i) {
                 var id = searchResults[i].id;
                 var productName = searchResults[i].name;
+                var productLink = searchResults[i].url;
                 var imageURL = searchResults[i].imageURL;
                 var storeName = searchResults[i].storeName;
                 var description = searchResults[i].description;
-                var price1 = searchResults[i].price;
+                var price1 = searchResults[i].price ?? '';
                 var price2 = searchResults[i].price2 ?? '';
                 var oldPrice = searchResults[i].oldPrice ?? "";
                 var size1 = searchResults[i].size;
                 var size2 = searchResults[i].size2 ?? "";
                 return GestureDetector(
-                  onTap: () => AppNavigator.push(
+                  onTap: () async {
+                    var comparisonId = -1;
+                    var comparisonResponse;
+                    print("StoreName: "+ storeName);
+                    try {
+                      if (storeName == "Albert") {
+                        // comparisonId = Provider
+                        //     .of<ProductsProvider>(context, listen: false)
+                        //     .comparisonProducts
+                        //     .firstWhere((comparison) =>
+                        // comparison.albertLink == productLink).id;
+                        comparisonResponse = await NetworkServices.searchComparisonByAlbertLink(productLink);
+                      }
+                      if (storeName == "Jumbo") {
+                        // comparisonId = Provider
+                        //     .of<ProductsProvider>(context, listen: false)
+                        //     .comparisonProducts
+                        //     .firstWhere((comparison) =>
+                        // comparison.jumboLink == productLink).id;
+                        comparisonResponse = await NetworkServices.searchComparisonByJumboLink(productLink);
+                      }
+                      if (storeName == "Hoogvliet") {
+                        // comparisonId = Provider
+                        //     .of<ProductsProvider>(context, listen: false)
+                        //     .comparisonProducts
+                        //     .firstWhere((comparison) =>
+                        // comparison.hoogvlietLink == productLink).id;
+                        comparisonResponse = await NetworkServices.searchComparisonByHoogvlietLink(productLink);
+                      }
+                      var comparisons = await productProvider.convertToComparisonProductListFromJson(jsonDecode(comparisonResponse.body));
+                      productProvider.comparisonProducts.add(comparisons.first);
+                      comparisonId = comparisons.first.id;
+                    }catch(e){
+                      print("Error in search: couldn't find comparison for the selected product");
+                      print(e);
+                    }
+                    AppNavigator.push(
                       context: context,
                       screen: ProductDetailScreen(
-                        comparisonId: -1,
+                        comparisonId: comparisonId,
                         productId: id,
                         oldPrice: oldPrice,
                         storeName: storeName,
@@ -105,7 +147,8 @@ class MySearchDelegate extends SearchDelegate {
                         size2: size2,
                         price1: double.tryParse(price1) ?? 0.0,
                         price2: double.tryParse(price2) ?? 0.0,
-                      )),
+                      ));
+                  },
                   child: SearchItem(
                     name: productName,
                     imageURL: imageURL,

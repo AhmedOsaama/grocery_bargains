@@ -43,7 +43,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PagingController<int, ComparisonProduct> _pagingController =
       PagingController(firstPageKey: 0);
-  static const _pageSize = 50;
+  static const _pageSize = 5;
 
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
   // late Future<int> getAllProductsFuture;
@@ -83,8 +83,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _fetchPage(int pageKey) async {
     try {
       print("PAGE KEY: " + pageKey.toString());
-      await Provider.of<ProductsProvider>(context, listen: false)
-          .getLimitedPriceComparisons(pageKey);
+      if (pageKey > 0) {
+        await Provider.of<ProductsProvider>(context, listen: false)
+            .getAllProducts(pageKey);
+      }
       final newProducts = Provider.of<ProductsProvider>(context, listen: false)
           .comparisonProducts;
 

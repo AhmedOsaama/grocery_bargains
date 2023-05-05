@@ -7,6 +7,7 @@ import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
+
 import 'package:provider/provider.dart';
 import 'package:bargainb/view/screens/home_screen.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
@@ -54,7 +55,8 @@ class _MainScreenState extends State<MainScreen> {
           'InitSession error: ${platformException.code} - ${platformException.message}');
     });
     // FlutterBranchSdk.validateSDKIntegration();
-    Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists();
+    if (FirebaseAuth.instance.currentUser != null)
+      Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists();
   }
 
   @override
