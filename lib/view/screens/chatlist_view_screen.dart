@@ -583,143 +583,152 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
           isInvitingFriends
               ? Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Container(
-                    height: ScreenUtil().screenHeight * 0.45,
-                    decoration: BoxDecoration(
-                        color: white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                              blurRadius: 20,
-                              offset: Offset(0, 20),
-                              color: Color.fromRGBO(52, 99, 237, 0.15)),
-                        ]),
-                    child: Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (listUsers.isNotEmpty) ...[
-                              Text(
-                                'Members',
-                                style: TextStylesInter.textViewSemiBold26
-                                    .copyWith(color: black),
-                              ),
-                              10.ph,
-                              ListView(
-                                  shrinkWrap: true,
-                                  children: listUsers.map((userInfo) {
-                                    return Row(
-                                      children: [
-                                        userInfo.imageURL.isEmpty
-                                            ? SvgPicture.asset(
-                                                peopleIcon,
-                                                width: 35.w,
-                                                height: 35.h,
-                                              )
-                                            : CircleAvatar(
-                                                backgroundImage: NetworkImage(
-                                                  userInfo.imageURL,
-                                                ),
-                                                radius: 20,
-                                              ),
-                                        20.pw,
-                                        Text(
-                                          userInfo.name,
-                                          style: TextStylesInter
-                                              .textViewRegular16
-                                              .copyWith(color: black2),
-                                        )
-                                      ],
-                                    );
-                                  }).toList()),
-                            ],
-                            50.ph,
-                            if (contactsList.isNotEmpty) ...[
-                              Text(
-                                'Add to list',
-                                style: TextStylesInter.textViewSemiBold26
-                                    .copyWith(color: black),
-                              ),
-                              15.ph,
-                              Text(
-                                'CONTACTS ON BARGAINB',
-                                style: TextStylesInter.textViewRegular12
-                                    .copyWith(color: mainPurple),
-                              ),
-                              10.ph,
-                              ListView(
-                                  shrinkWrap: true,
-                                  children: contactsList.map((userInfo) {
-                                    return Padding(
-                                      padding: EdgeInsets.only(top: 10),
-                                      child: Row(
-                                        children: [
-                                          userInfo.imageURL.isEmpty
-                                              ? SvgPicture.asset(
-                                                  peopleIcon,
-                                                  width: 35.w,
-                                                  height: 35.h,
-                                                )
-                                              : CircleAvatar(
-                                                  backgroundImage: NetworkImage(
-                                                    userInfo.imageURL,
+                  child: Wrap(
+                    children: [
+                      Container(
+                        /*     height: contactsList.isEmpty
+                            ? ScreenUtil().screenHeight * 0.3
+                            : ScreenUtil().screenHeight * 0.5, */
+                        decoration: BoxDecoration(
+                            color: white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                  blurRadius: 20,
+                                  offset: Offset(0, 20),
+                                  color: Color.fromRGBO(52, 99, 237, 0.15)),
+                            ]),
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (listUsers.isNotEmpty) ...[
+                                  Text(
+                                    'Members',
+                                    style: TextStylesInter.textViewSemiBold26
+                                        .copyWith(color: black),
+                                  ),
+                                  10.ph,
+                                  ListView(
+                                      shrinkWrap: true,
+                                      children: listUsers.map((userInfo) {
+                                        return Row(
+                                          children: [
+                                            userInfo.imageURL.isEmpty
+                                                ? SvgPicture.asset(
+                                                    peopleIcon,
+                                                    width: 35.w,
+                                                    height: 35.h,
+                                                  )
+                                                : CircleAvatar(
+                                                    backgroundImage:
+                                                        NetworkImage(
+                                                      userInfo.imageURL,
+                                                    ),
+                                                    radius: 20,
                                                   ),
-                                                  radius: 20,
-                                                ),
-                                          20.pw,
-                                          Text(
-                                            userInfo.name,
-                                            style: TextStylesInter
-                                                .textViewRegular16
-                                                .copyWith(color: black2),
-                                          ),
-                                          Spacer(),
-                                          InkWell(
-                                            onTap: () => addContactToChatlist(
-                                                userInfo, context),
-                                            child: Row(children: [
+                                            20.pw,
+                                            Text(
+                                              userInfo.name,
+                                              style: TextStylesInter
+                                                  .textViewRegular16
+                                                  .copyWith(color: black2),
+                                            )
+                                          ],
+                                        );
+                                      }).toList()),
+                                ],
+                                50.ph,
+                                if (contactsList.isNotEmpty) ...[
+                                  Text(
+                                    'Add to list',
+                                    style: TextStylesInter.textViewSemiBold26
+                                        .copyWith(color: black),
+                                  ),
+                                  15.ph,
+                                  Text(
+                                    'CONTACTS ON BARGAINB',
+                                    style: TextStylesInter.textViewRegular12
+                                        .copyWith(color: mainPurple),
+                                  ),
+                                  10.ph,
+                                  ListView(
+                                      shrinkWrap: true,
+                                      children: contactsList.map((userInfo) {
+                                        return Padding(
+                                          padding: EdgeInsets.only(top: 10),
+                                          child: Row(
+                                            children: [
+                                              userInfo.imageURL.isEmpty
+                                                  ? SvgPicture.asset(
+                                                      peopleIcon,
+                                                      width: 35.w,
+                                                      height: 35.h,
+                                                    )
+                                                  : CircleAvatar(
+                                                      backgroundImage:
+                                                          NetworkImage(
+                                                        userInfo.imageURL,
+                                                      ),
+                                                      radius: 20,
+                                                    ),
+                                              20.pw,
                                               Text(
-                                                "Add",
+                                                userInfo.name,
                                                 style: TextStylesInter
-                                                    .textViewSemiBold14
-                                                    .copyWith(
-                                                        color: mainPurple),
+                                                    .textViewRegular16
+                                                    .copyWith(color: black2),
                                               ),
-                                              10.pw,
-                                              CircleAvatar(
-                                                child: Icon(
-                                                  Icons.person_add_alt,
-                                                  color: white,
-                                                ),
-                                                backgroundColor: mainPurple,
+                                              Spacer(),
+                                              InkWell(
+                                                onTap: () =>
+                                                    addContactToChatlist(
+                                                        userInfo, context),
+                                                child: Row(children: [
+                                                  Text(
+                                                    "Add",
+                                                    style: TextStylesInter
+                                                        .textViewSemiBold14
+                                                        .copyWith(
+                                                            color: mainPurple),
+                                                  ),
+                                                  10.pw,
+                                                  CircleAvatar(
+                                                    child: Icon(
+                                                      Icons.person_add_alt,
+                                                      color: white,
+                                                    ),
+                                                    backgroundColor: mainPurple,
+                                                  )
+                                                ]),
                                               )
-                                            ]),
-                                          )
-                                        ],
-                                      ),
-                                    );
-                                  }).toList()),
-                            ],
-                            if (contactsList.isEmpty &&
-                                !isContactsPermissionGranted)
-                              Text(
-                                "Please add your number to see your friends on BargainB",
-                                style: TextStylesInter.textViewRegular15
-                                    .copyWith(color: black),
-                              ),
-                            if (contactsList.isEmpty &&
-                                isContactsPermissionGranted)
-                              Text(
-                                "No contacts found on BargainB",
-                                style: TextStylesInter.textViewRegular15
-                                    .copyWith(color: black),
-                              ),
-                          ],
+                                            ],
+                                          ),
+                                        );
+                                      }).toList()),
+                                ],
+                                if (contactsList.isEmpty &&
+                                    !isContactsPermissionGranted)
+                                  Text(
+                                    "Please add your number to see your friends on BargainB",
+                                    style: TextStylesInter.textViewRegular15
+                                        .copyWith(color: black),
+                                  ),
+                                if (contactsList.isEmpty &&
+                                    isContactsPermissionGranted)
+                                  Text(
+                                    "No contacts found on BargainB",
+                                    style: TextStylesInter.textViewRegular15
+                                        .copyWith(color: black),
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 )
               : Container(),
