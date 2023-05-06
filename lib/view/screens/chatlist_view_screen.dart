@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -19,6 +20,7 @@ import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/chat_view_widget.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
@@ -66,23 +68,24 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
   @override
   void initState() {
-    chatList = Provider.of<ChatlistsProvider>(context, listen: false)
-        .chatlists
-        .firstWhere((chatList) => chatList.id == widget.listId);
     if (widget.isUsingDynamicLink) {
       var currentUserId = FirebaseAuth.instance.currentUser?.uid;
       FirebaseFirestore.instance
           .collection('/lists')
           .doc(widget.listId)
           .get()
-          .then((listSnapshot) {
+          .then((listSnapshot) async {
         final List userIds = listSnapshot.data()!['userIds'];
         if (!userIds.contains(currentUserId)) {
           userIds.add(currentUserId);
-          FirebaseFirestore.instance
+          await FirebaseFirestore.instance
               .collection('/lists')
               .doc(widget.listId)
               .update({"userIds": userIds});
+          await Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlists();
+          chatList = Provider.of<ChatlistsProvider>(context, listen: false)
+              .chatlists
+              .firstWhere((chatList) => chatList.id == widget.listId);
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content:
                   Text("User added successfully to list ${chatList.name}")));
@@ -91,6 +94,11 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
               const SnackBar(content: Text("User Already Exists in the list")));
         }
       });
+    }else {
+      chatList = Provider
+          .of<ChatlistsProvider>(context, listen: false)
+          .chatlists
+          .firstWhere((chatList) => chatList.id == widget.listId);
     }
     getUserImagesFuture = getUserImages();
 
@@ -458,6 +466,10 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                           style: TextStylesInter.textViewRegular15
                               .copyWith(color: black),
                         ),
+                      20.ph,
+                      TextButton(onPressed: (){
+                        shareListViaDeepLink();
+                      }, child: Text("Invite via link"))
 
                       // GenericField(
                       //   controller: inviteFriendController,
@@ -820,6 +832,38 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   void deleteList(BuildContext context) {
     Provider.of<ChatlistsProvider>(context, listen: false)
         .deleteList(context, widget.listId);
+  }
+
+  shareListViaDeepLink() async {
+    print(":soakdjioiwqje");
+    BranchUniversalObject buo = BranchUniversalObject(
+      canonicalIdentifier: 'invite_to_list',
+      //canonicalUrl: '',
+      title: chatList.name,
+      imageUrl: 'https://play-lh.googleusercontent.com/u6LMBvrIXH6r1LFQftqjSzebxflasn-nhcoZUlP6DjWHV6fmrwgNFyjJeFwFmckrySHF=w240-h480-rw',
+      contentDescription: 'Hey, I would like to invite you to ${chatList.name} in BargainB',
+      // keywords: ['Plugin', 'Branch', 'Flutter'],
+      publiclyIndex: true,
+      locallyIndex: true,
+      contentMetadata: BranchContentMetaData()..addCustomMetadata('list_id', chatList.id)
+
+    );
+    BranchLinkProperties lp = BranchLinkProperties(
+      //alias: 'flutterplugin', //define link url,
+        channel: 'facebook',
+        feature: 'sharing',
+        stage: 'new share',
+        tags: ['one', 'two', 'three']
+    );
+    BranchResponse response =
+        await FlutterBranchSdk.getShortUrl(buo: buo, linkProperties: lp);
+
+    if (response.success) {
+      print('Link generated: ${response.result}');
+    } else {
+      print('Error : ${response.errorCode} - ${response.errorMessage}');
+    }
+    Share.share(response.result);
   }
 }
 

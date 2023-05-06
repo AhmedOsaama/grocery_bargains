@@ -1,4 +1,7 @@
+import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/widgets/signin_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -39,13 +42,43 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+    if(FirebaseAuth.instance.currentUser != null) Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists();
 
     FlutterBranchSdk.initSession().listen((data) {
       print("branch data: " + data.entries.toList().toString());
       if (data.containsKey("+clicked_branch_link") &&
           data["+clicked_branch_link"] == true) {
         //Link clicked. Add logic to get link data and route user to correct screen
-        print('Custom string: ${data["custom_string"]}');
+        var listId = data["list_id"];
+        print('Custom string: ${listId}');
+        if(listId != null){
+          var currentUserId = FirebaseAuth.instance.currentUser?.uid;
+          FirebaseFirestore.instance
+              .collection('/lists')
+              .doc(listId)
+              .get()
+              .then((listSnapshot) async {
+            final List userIds = listSnapshot.data()!['userIds'];
+            if (!userIds.contains(currentUserId)) {
+              userIds.add(currentUserId);
+              await FirebaseFirestore.instance
+                  .collection('/lists')
+                  .doc(listId)
+                  .update({"userIds": userIds});
+              await Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlists();
+              var chatList = Provider.of<ChatlistsProvider>(context, listen: false)
+                  .chatlists
+                  .firstWhere((chatList) => chatList.id == listId);
+              AppNavigator.push(context: context, screen: ChatListViewScreen(listId: listId));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content:
+                  Text("User added successfully to list ${chatList.name}")));
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("User Already Exists in the list")));
+            }
+          });
+        }
       }
     }, onError: (error) {
       PlatformException platformException = error as PlatformException;
@@ -53,7 +86,6 @@ class _MainScreenState extends State<MainScreen> {
           'InitSession error: ${platformException.code} - ${platformException.message}');
     });
     // FlutterBranchSdk.validateSDKIntegration();
-   if(FirebaseAuth.instance.currentUser != null) Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists();
 
   }
 

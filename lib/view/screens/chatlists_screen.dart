@@ -236,7 +236,6 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                       itemBuilder: (ctx, i) {
                         return InkWell(
                           onTap: () {
-                            //TODO: go to the person's profile page and display mutual lists.
                             AppNavigator.push(
                                 context: context,
                                 screen: FriendChatlistsScreen(
