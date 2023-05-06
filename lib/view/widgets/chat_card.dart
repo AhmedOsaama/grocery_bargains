@@ -61,25 +61,27 @@ class ChatCard extends StatelessWidget {
                   ),
                 ],
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${allLists[i].lastMessageUserId == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : allLists[i].lastMessageUserName}: ',
-                    style: TextStylesInter.textViewRegular14
-                        .copyWith(color: black2),
-                  ),
-                  Container(
-                    width: 150.w,
-                    child: Text(
-                      allLists[i].lastMessage,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStylesInter.textViewRegular14
-                          .copyWith(color: black2),
+              allLists[i].lastMessage.isEmpty
+                  ? Text("")
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${allLists[i].lastMessageUserId == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : allLists[i].lastMessageUserName}: ',
+                          style: TextStylesInter.textViewRegular14
+                              .copyWith(color: black2),
+                        ),
+                        Container(
+                          width: 150.w,
+                          child: Text(
+                            allLists[i].lastMessage,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStylesInter.textViewRegular14
+                                .copyWith(color: black2),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
             ],
           ),
           Spacer(),

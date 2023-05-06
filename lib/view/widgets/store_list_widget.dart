@@ -37,7 +37,9 @@ class _StoreListWidgetState extends State<StoreListWidget> {
     for (var item in storeItems) {
       if (item.data().containsKey('item_price') &&
           item['item_price'].runtimeType == String) {
-        total += double.parse(item['item_price']);
+        if (item['item_price'] != "") {
+          total += double.parse(item['item_price']);
+        }
       } else if (item.data().containsKey('item_price') &&
           item['item_price'].runtimeType == double) {
         total += item['item_price'] ?? 0;
@@ -45,6 +47,7 @@ class _StoreListWidgetState extends State<StoreListWidget> {
         total += 0;
       }
     }
+
     return total.toStringAsFixed(2);
   }
 
@@ -153,11 +156,15 @@ class _StoreListWidgetState extends State<StoreListWidget> {
                       var isChecked = storeItems[i]['item_isChecked'];
                       var itemName =
                           storeItems[i].data().toString().contains('item_name')
-                              ? storeItems[i]['item_name']
+                              ? (storeItems[i]['text'] != ""
+                                  ? storeItems[i]['text']
+                                  : storeItems[i]['item_name'])
                               : storeItems[i]['text'];
                       var itemPrice =
                           storeItems[i].data().toString().contains('item_price')
-                              ? storeItems[i]['item_price']
+                              ? (storeItems[i]['item_price'] == ""
+                                  ? 0.0
+                                  : storeItems[i]['item_price'])
                               : "0.0";
                       var doc = storeItems[i];
                       if (i > 2) {

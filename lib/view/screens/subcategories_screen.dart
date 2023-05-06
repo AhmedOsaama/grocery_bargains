@@ -1,6 +1,8 @@
+import 'dart:developer';
+
+import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/components/generic_field.dart';
-import 'package:bargainb/view/components/plus_button.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -36,7 +38,6 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
 
   int? _selectedIndex;
   String sortDropdownValue = 'Sort';
-  String sizeDropdownValue = 'Size';
   String brandDropdownValue = 'Brand';
   String storeDropdownValue = 'Store';
 
@@ -45,6 +46,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
     super.initState();
   }
 
+  List<Product> products = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +84,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                   SharedPreferences pref =
                       await SharedPreferences.getInstance();
                   return showSearch(
-                      context: context, delegate: MySearchDelegate(pref));
+                      context: context, delegate: MySearchDelegate(pref, true));
                 },
                 prefixIcon: Icon(Icons.search),
                 borderRaduis: 999,
@@ -92,146 +94,222 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                 ),
               ),
               15.ph,
-              // SizedBox(
-              //   height: 30.h,
-              //   child: Row(children: [
-              //     Container(
-              //       width: 70.w,
-              //       decoration: BoxDecoration(
-              //           color: white,
-              //           border: Border.all(color: dropBorderColor),
-              //           borderRadius: BorderRadius.all(Radius.circular(4.r))),
-              //       child: Center(
-              //         child: DropdownButton<String>(
-              //           value: sortDropdownValue,
-              //           icon: Icon(
-              //             Icons.keyboard_arrow_down,
-              //             color: mainPurple,
-              //           ),
-              //           iconSize: 24,
-              //           //elevation: 16,
-              //           underline: Container(),
-              //           style: TextStyle(color: purple50, fontSize: 16.sp),
-              //           borderRadius: BorderRadius.circular(4.r),
-              //           onChanged: (String? newValue) {
-              //             setState(() {
-              //               sortDropdownValue = newValue!;
-              //             });
-              //           },
-              //           items: <String>['Sort', 'Two', 'Free', 'Four']
-              //               .map<DropdownMenuItem<String>>((String value) {
-              //             return DropdownMenuItem<String>(
-              //               value: value,
-              //               child: Text(value),
-              //             );
-              //           }).toList(),
-              //         ),
-              //       ),
-              //     ),
-              //     8.pw,
-              //     Container(
-              //       width: 80.w,
-              //       decoration: BoxDecoration(
-              //           color: white,
-              //           border: Border.all(color: dropBorderColor),
-              //           borderRadius: BorderRadius.all(Radius.circular(4.r))),
-              //       child: Center(
-              //         child: DropdownButton<String>(
-              //           value: brandDropdownValue,
-              //           icon: Icon(
-              //             Icons.keyboard_arrow_down,
-              //             color: mainPurple,
-              //           ),
-              //           iconSize: 24,
-              //           //elevation: 16,
-              //           underline: Container(),
-              //           style: TextStyle(color: purple50, fontSize: 16.sp),
-              //           borderRadius: BorderRadius.circular(4.r),
-              //           onChanged: (String? newValue) {
-              //             setState(() {
-              //               brandDropdownValue = newValue!;
-              //             });
-              //           },
-              //           items: <String>['Brand', 'Two', 'Free', 'Four']
-              //               .map<DropdownMenuItem<String>>((String value) {
-              //             return DropdownMenuItem<String>(
-              //               value: value,
-              //               child: Text(value),
-              //             );
-              //           }).toList(),
-              //         ),
-              //       ),
-              //     ),
-              //     8.pw,
-              //     Container(
-              //       width: 76.w,
-              //       decoration: BoxDecoration(
-              //           color: white,
-              //           border: Border.all(color: dropBorderColor),
-              //           borderRadius: BorderRadius.all(Radius.circular(4.r))),
-              //       child: Center(
-              //         child: DropdownButton<String>(
-              //           value: storeDropdownValue,
-              //           icon: Icon(
-              //             Icons.keyboard_arrow_down,
-              //             color: mainPurple,
-              //           ),
-              //           iconSize: 24,
-              //           //elevation: 16,
-              //           underline: Container(),
-              //           style: TextStyle(color: purple50, fontSize: 16.sp),
-              //           borderRadius: BorderRadius.circular(4.r),
-              //           onChanged: (String? newValue) {
-              //             setState(() {
-              //               storeDropdownValue = newValue!;
-              //             });
-              //           },
-              //           items: <String>['Store', 'Two', 'Free', 'Four']
-              //               .map<DropdownMenuItem<String>>((String value) {
-              //             return DropdownMenuItem<String>(
-              //               value: value,
-              //               child: Text(value),
-              //             );
-              //           }).toList(),
-              //         ),
-              //       ),
-              //     ),
-              //     8.pw,
-              //     Container(
-              //       width: 68.w,
-              //       decoration: BoxDecoration(
-              //           color: white,
-              //           border: Border.all(color: dropBorderColor),
-              //           borderRadius: BorderRadius.all(Radius.circular(4.r))),
-              //       child: Center(
-              //         child: DropdownButton<String>(
-              //           value: sizeDropdownValue,
-              //           icon: Icon(
-              //             Icons.keyboard_arrow_down,
-              //             color: mainPurple,
-              //           ),
-              //           underline: Container(),
-              //           iconSize: 24,
-              //           //elevation: 16,
-              //           style: TextStyle(color: purple50, fontSize: 16.sp),
-              //           borderRadius: BorderRadius.circular(4.r),
-              //           onChanged: (String? newValue) {
-              //             setState(() {
-              //               sizeDropdownValue = newValue!;
-              //             });
-              //           },
-              //           items: <String>['Size', 'Two', 'Free', 'Four']
-              //               .map<DropdownMenuItem<String>>((String value) {
-              //             return DropdownMenuItem<String>(
-              //               value: value,
-              //               child: Text(value),
-              //             );
-              //           }).toList(),
-              //         ),
-              //       ),
-              //     ),
-              //   ]),
-              // ),            //TODO: uncomment filters section
+              SizedBox(
+                height: 30.h,
+                child: Row(children: [
+                  Container(
+                    width: 100.w,
+                    decoration: BoxDecoration(
+                        color: white,
+                        border: Border.all(color: dropBorderColor),
+                        borderRadius: BorderRadius.all(Radius.circular(4.r))),
+                    child: Center(
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+
+                        value: sortDropdownValue,
+                        icon: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: mainPurple,
+                        ),
+                        iconSize: 24,
+                        //elevation: 16,
+                        underline: Container(),
+                        style: TextStyle(color: purple50, fontSize: 16.sp),
+                        borderRadius: BorderRadius.circular(4.r),
+                        onChanged: (String? newValue) {
+                          var v = products;
+                          setState(() {
+                            products = [];
+                            sortDropdownValue = newValue!;
+                          });
+
+                          v = Provider.of<ProductsProvider>(context,
+                                  listen: false)
+                              .sortProducts(sortDropdownValue, v);
+
+                          setState(() {
+                            products = v;
+                          });
+                        },
+                        items: <String>[
+                          'Sort',
+                          //'Relevance',
+                          'Price low - high',
+                          'Price high - low',
+                          // 'Nutri Score A - E'
+                        ].map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Center(
+                              child: Text(
+                                value,
+                                maxLines: 1,
+                                style: value == "Sort"
+                                    ? TextStyles.textViewRegular16
+                                        .copyWith(color: purple50)
+                                    : (value == sortDropdownValue
+                                        ? TextStyles.textViewRegular10
+                                            .copyWith(color: mainPurple)
+                                        : TextStyles.textViewRegular10
+                                            .copyWith(color: black2)),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                  8.pw,
+                  Container(
+                    width: 100.w,
+                    decoration: BoxDecoration(
+                        color: white,
+                        border: Border.all(color: dropBorderColor),
+                        borderRadius: BorderRadius.all(Radius.circular(4.r))),
+                    child: Center(
+                      child: DropdownButton<String>(
+                        isExpanded: true,
+                        value: brandDropdownValue,
+                        icon: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: mainPurple,
+                        ),
+                        iconSize: 24,
+                        //elevation: 16,
+                        underline: Container(),
+                        style: TextStyle(color: purple50, fontSize: 16.sp),
+                        borderRadius: BorderRadius.circular(4.r),
+                        onChanged: (String? newValue) {
+                          var v;
+                          setState(() {
+                            products = [];
+                            brandDropdownValue = newValue!;
+                          });
+
+                          v = Provider.of<ProductsProvider>(context,
+                                  listen: false)
+                              .getProductsBySubCategory(widget.subCategory,
+                                  storeDropdownValue, brandDropdownValue);
+
+                          setState(() {
+                            products = v;
+                          });
+                        },
+                        items: <String>[
+                          'Brand',
+                          'AH',
+                          'AH Organic',
+                          'Bonduelle',
+                          'Heel',
+                          'CelaVita',
+                          'Innocent',
+                          'Iglo',
+                          'Sole Valley',
+                          'Del Monte',
+                          'CoolBest',
+                          'Arch',
+                          'Chiquita',
+                          'Knorr',
+                          'Healthy People',
+                          'Bieze',
+                          'No Fairytales',
+                          'Fairtrade Original',
+                          'kanzi',
+                          'miras',
+                          'moon pop',
+                          'Pink Lady',
+                          'AH Misfits',
+                          'Ardos',
+                          'Capri Sun',
+                          'Drogheria'
+                        ].map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Center(
+                              child: Text(
+                                overflow: TextOverflow.ellipsis,
+                                value,
+                                maxLines: 1,
+                                style: value == "Brand"
+                                    ? TextStyles.textViewRegular16
+                                        .copyWith(color: purple50)
+                                    : (value == brandDropdownValue
+                                        ? TextStyles.textViewRegular10
+                                            .copyWith(color: mainPurple)
+                                        : TextStyles.textViewRegular10
+                                            .copyWith(color: black2)),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                  8.pw,
+                  Container(
+                    width: 100.w,
+                    decoration: BoxDecoration(
+                        color: white,
+                        border: Border.all(color: dropBorderColor),
+                        borderRadius: BorderRadius.all(Radius.circular(4.r))),
+                    child: Center(
+                      child: DropdownButton<String>(
+                        value: storeDropdownValue,
+                        isExpanded: true,
+                        icon: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: mainPurple,
+                        ),
+                        iconSize: 24,
+                        //elevation: 16,
+                        underline: Container(),
+                        style: TextStyle(color: purple50, fontSize: 16.sp),
+                        borderRadius: BorderRadius.circular(4.r),
+                        onChanged: (String? newValue) {
+                          List<Product> v = [];
+                          setState(() {
+                            products = [];
+                            storeDropdownValue = newValue!;
+                          });
+                          try {
+                            v = Provider.of<ProductsProvider>(context,
+                                    listen: false)
+                                .getProductsBySubCategory(widget.subCategory,
+                                    storeDropdownValue, brandDropdownValue);
+                          } catch (e) {
+                            log(e.toString());
+                          }
+                          log(v.length.toString());
+                          setState(() {
+                            products = v;
+                          });
+                        },
+                        items: <String>['Store', 'Albert', 'Jumbo', 'Hoogvliet']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Center(
+                              child: Text(
+                                value,
+                                maxLines: 1,
+                                style: value == "Store"
+                                    ? TextStyles.textViewRegular16
+                                        .copyWith(color: purple50)
+                                    : (value == storeDropdownValue
+                                        ? TextStyles.textViewRegular10
+                                            .copyWith(color: mainPurple)
+                                        : TextStyles.textViewRegular10
+                                            .copyWith(color: black2)),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ]),
+              ),
               15.ph,
               Text(
                 widget.subCategory,
@@ -244,10 +322,17 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                   //  height: ScreenUtil().screenHeight,
                   child: Consumer<ProductsProvider>(
                     builder: (ctx, provider, _) {
-                      var products =
-                          provider.getProductsBySubCategory(widget.subCategory);
+                      if (sortDropdownValue == "Sort" &&
+                          brandDropdownValue == "Brand" &&
+                          storeDropdownValue == "Store") {
+                        products = provider.getProductsBySubCategory(
+                            widget.subCategory,
+                            storeDropdownValue,
+                            brandDropdownValue);
+                      }
                       if (provider.albertProducts.isEmpty &&
-                          provider.jumboProducts.isEmpty) {
+                          provider.jumboProducts.isEmpty &&
+                          provider.hoogvlietProducts.isEmpty) {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
@@ -257,7 +342,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               50.ph,
-                              Text("No products matches this category"),
+                              Text("No products found !"),
                             ],
                           ),
                         );
@@ -269,9 +354,10 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                           gridDelegate:
                               const SliverGridDelegateWithMaxCrossAxisExtent(
                                   maxCrossAxisExtent: 200,
-                                  childAspectRatio: 0.6,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10),
+                                  mainAxisExtent: 260,
+                                  childAspectRatio: 0.67,
+                                  crossAxisSpacing: 5,
+                                  mainAxisSpacing: 5),
                           itemCount: products.length,
                           itemBuilder: (BuildContext ctx, index) {
                             var oldPriceExists = true;
@@ -286,7 +372,8 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                               if ((double.parse(
                                           products.elementAt(index).oldPrice!) -
                                       double.parse(
-                                          products.elementAt(index).price ?? products[index].price2!)) <=
+                                          products.elementAt(index).price ??
+                                              products[index].price2!)) <=
                                   0) {
                                 oldPriceExists = false;
                               }
@@ -323,11 +410,14 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                     description: p.description,
                                     size1: p.size,
                                     size2: p.size2 ?? "",
-                                    price1: double.tryParse(p.price ?? "") ?? 0.0,
+                                    price1:
+                                        double.tryParse(p.price ?? "") ?? 0.0,
                                     price2:
                                         double.tryParse(p.price2 ?? "") ?? 0.0,
                                   )),
                               child: Container(
+                                height: 250.h,
+                                width: 175.w,
                                 decoration: BoxDecoration(
                                   boxShadow: [
                                     new BoxShadow(
@@ -345,16 +435,16 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                   child: Row(
                                     children: [
                                       Expanded(
-                                        flex: 3,
+                                        flex: 4,
                                         child: Column(
                                           children: [
-                                            45.ph,
+                                            23.ph,
                                             Row(
                                               children: [
                                                 40.pw,
                                                 Container(
-                                                  width: 60.w,
-                                                  height: 60.h,
+                                                  width: 52.w,
+                                                  height: 42.h,
                                                   child: CachedNetworkImage(
                                                     imageUrl: products
                                                         .elementAt(index)
@@ -437,9 +527,11 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                                       Text(
                                                         "€" +
                                                             (products
-                                                                .elementAt(
-                                                                    index)
-                                                                .price ?? products[index].price2!) ,
+                                                                    .elementAt(
+                                                                        index)
+                                                                    .price ??
+                                                                products[index]
+                                                                    .price2!),
                                                         style: TextStylesInter
                                                             .textViewMedium15
                                                             .copyWith(
@@ -476,9 +568,8 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                                                             .elementAt(
                                                                                 index)
                                                                             .oldPrice!) -
-                                                                        double.parse(products
-                                                                            .elementAt(index)
-                                                                            .price ?? products[index].price2!)) >
+                                                                        double.parse(products.elementAt(index).price ??
+                                                                            products[index].price2!)) >
                                                                     0
                                                                 ? Text(
                                                                     " €" +
@@ -503,25 +594,130 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                         ),
                                       ),
                                       Expanded(
+                                        flex: 2,
                                         child: Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: [
-                                            IconButton(
-                                                onPressed: () {},
-                                                icon: SvgPicture.asset(
-                                                    chatShare)),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 15.0),
+                                              child: PopupMenuButton(
+                                                  position:
+                                                      PopupMenuPosition.under,
+                                                  color: white,
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8.r)),
+                                                  child: SvgPicture.asset(
+                                                      chatShare),
+                                                  itemBuilder: (context) {
+                                                    List<
+                                                            PopupMenuEntry<
+                                                                dynamic>>
+                                                        items = [];
+                                                    Provider.of<ChatlistsProvider>(
+                                                            context,
+                                                            listen: false)
+                                                        .chatlists
+                                                        .forEach((e) => {
+                                                              items.add(
+                                                                  PopupMenuItem(
+                                                                onTap:
+                                                                    () async {
+                                                                  await Provider.of<ChatlistsProvider>(context, listen: false).shareItemAsMessage(
+                                                                      itemName:
+                                                                          products[index]
+                                                                              .name,
+                                                                      itemImage: products
+                                                                          .elementAt(
+                                                                              index)
+                                                                          .imageURL,
+                                                                      itemSize: products
+                                                                          .elementAt(
+                                                                              index)
+                                                                          .size,
+                                                                      itemPrice: products
+                                                                          .elementAt(
+                                                                              index)
+                                                                          .price,
+                                                                      itemOldPrice: products
+                                                                          .elementAt(
+                                                                              index)
+                                                                          .oldPrice,
+                                                                      listId:
+                                                                          e.id);
+                                                                },
+                                                                child: Text(
+                                                                  e.name,
+                                                                  style: TextStyles
+                                                                      .textViewSemiBold12
+                                                                      .copyWith(
+                                                                          color:
+                                                                              black2),
+                                                                ),
+                                                              ))
+                                                            });
+                                                    return items;
+                                                  }),
+                                            ),
                                             Column(
                                               children: [
-                                                PlusButton(onTap: () {}),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    AppNavigator.push(
+                                                        context: context,
+                                                        screen:
+                                                            ProductDetailScreen(
+                                                          comparisonId: -1,
+                                                          productId: p.id,
+                                                          oldPrice:
+                                                              p.oldPrice ?? "",
+                                                          storeName:
+                                                              p.storeName,
+                                                          productName: p.name,
+                                                          imageURL: p.imageURL,
+                                                          description:
+                                                              p.description,
+                                                          size1: p.size,
+                                                          size2: p.size2 ?? "",
+                                                          price1:
+                                                              double.tryParse(
+                                                                      p.price ??
+                                                                          "") ??
+                                                                  0.0,
+                                                          price2:
+                                                              double.tryParse(
+                                                                      p.price2 ??
+                                                                          "") ??
+                                                                  0.0,
+                                                        ));
+                                                  },
+                                                  child: Container(
+                                                    padding: EdgeInsets.all(5),
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                      border: Border.all(
+                                                          color: borderColor),
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.arrow_forward_ios,
+                                                      color: mainPurple,
+                                                    ),
+                                                  ),
+                                                ),
                                                 20.ph
                                               ],
                                             )
                                           ],
                                         ),
                                       ),
+                                      10.pw
                                     ],
                                   ),
                                 ),

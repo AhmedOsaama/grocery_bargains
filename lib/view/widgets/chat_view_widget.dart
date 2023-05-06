@@ -120,7 +120,7 @@ class _ChatViewState extends State<ChatView> {
                               itemOldPrice:
                                   messages[index]['item_oldPrice'] ?? "0.0",
                               itemImage: messages[index]['item_image'],
-                              storeName: messages[index]['store_name'],
+                              storeName: messages[index]['store_name'] ?? "",
                               isMe: messages[index]['userId'] ==
                                   FirebaseAuth.instance.currentUser!.uid,
                               message: messages[index]['message'],
@@ -136,7 +136,7 @@ class _ChatViewState extends State<ChatView> {
             StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection("/lists/${widget.listId}/items")
-                    .orderBy('time', descending: true)
+                    .orderBy('time')
                     .snapshots(),
                 builder: (context, snapshot) {
                   final items = snapshot.data?.docs ?? [];
@@ -292,8 +292,12 @@ class _ChatViewState extends State<ChatView> {
           isCollapsed = true;
         });
       },
+      maxHeight: ScreenUtil().screenHeight * 0.60,
       panel: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
+        padding: const EdgeInsets.only(
+          left: 15,
+          right: 15,
+        ),
         child: SingleChildScrollView(
           physics: NeverScrollableScrollPhysics(),
           child: Column(
@@ -308,7 +312,8 @@ class _ChatViewState extends State<ChatView> {
                     SharedPreferences pref =
                         await SharedPreferences.getInstance();
                     return showSearch(
-                        context: context, delegate: MySearchDelegate(pref));
+                        context: context,
+                        delegate: MySearchDelegate(pref, true));
                   },
                   prefixIcon: Icon(Icons.search),
                   borderRaduis: 999,
@@ -322,7 +327,7 @@ class _ChatViewState extends State<ChatView> {
                 List<ProductCategory> categories = [];
                 categories = provider.categories;
                 return SizedBox(
-                  height: ScreenUtil().screenHeight / 7,
+                  height: ScreenUtil().screenHeight / 6,
                   child: categories.isEmpty
                       ? const Center(
                           child: CircularProgressIndicator(),
@@ -337,7 +342,7 @@ class _ChatViewState extends State<ChatView> {
                                     category: element.category,
                                   )),
                               child: SizedBox(
-                                width: 71.w,
+                                width: 80.w,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -382,6 +387,7 @@ class _ChatViewState extends State<ChatView> {
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (ctx, i) {
                         return DiscountItem(
+                          inGridView: false,
                           comparisonProduct: comparisonProducts[i],
                         );
                       },
@@ -389,7 +395,7 @@ class _ChatViewState extends State<ChatView> {
                   },
                 ),
               ),
-              6.ph,
+              50.ph,
             ],
           ),
         ),

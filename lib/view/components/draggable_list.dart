@@ -31,13 +31,14 @@ class DraggableList extends StatefulWidget {
 
 class ItemData {
   ItemData(this.text, this.key, this.name, this.img, this.size, this.price,
-      this.isChecked, this.id, this.parentId);
+      this.isChecked, this.id, this.parentId, this.owner);
 
   final String text;
   final String name;
   final String img;
   final String size;
   final String price;
+  final String owner;
   bool isChecked;
   final String id;
   final String? parentId;
@@ -69,7 +70,8 @@ class _DraggableListState extends State<DraggableList> {
             "",
             element["item_isChecked"] ?? false,
             element.id,
-            element.reference.parent.parent?.id ?? ""));
+            element.reference.parent.parent?.id ?? "",
+            element["owner"]));
       } else {
         _items.add(ItemData(
             element["text"] ?? "",
@@ -80,12 +82,13 @@ class _DraggableListState extends State<DraggableList> {
             element['item_price'] ?? "",
             element["item_isChecked"] ?? false,
             element.id,
-            element.reference.parent.parent?.id ?? ""));
+            element.reference.parent.parent?.id ?? "",
+            element["owner"] ?? ""));
       }
     });
     if (!widget.inChatView) {
-      _items
-          .add(ItemData("ç", ValueKey("ç"), "", "", "", "0.0", false, "", ""));
+      _items.add(
+          ItemData("ç", ValueKey("ç"), "", "", "", "0.0", false, "", "", ""));
     }
     itemsState.value = _items;
     itemsState.notifyListeners();
@@ -113,6 +116,47 @@ class _DraggableListState extends State<DraggableList> {
   @override
   Widget build(BuildContext context) {
     return ReorderableList(
+        onReorderDone: (draggedItem) async {
+          final instance = FirebaseFirestore.instance;
+          final batch = instance.batch();
+          var collection = instance
+              .collection('lists')
+              .doc(widget.listId)
+              .collection("items");
+          var snapshots = await collection.get();
+          try {
+            List<DocumentReference<Map<String, dynamic>>> refs = [];
+
+            for (var doc in snapshots.docs) {
+              refs.add(doc.reference);
+              batch.delete(doc.reference);
+            }
+            int i = 0;
+
+            for (var item in _items) {
+              if (item.text != "ç") {
+                batch.set(
+                  refs.elementAt(i),
+                  {
+                    "item_name": item.name,
+                    "item_size": item.size,
+                    "item_price": item.price,
+                    "item_image": item.img,
+                    "item_isChecked": false,
+                    "text": item.text,
+                    "owner": item.owner,
+                    "time": Timestamp.now(),
+                  },
+                );
+                i++;
+              }
+            }
+
+            await batch.commit();
+          } catch (e) {
+            log(e.toString());
+          }
+        },
         onReorder: _reorderCallback,
         child: ValueListenableBuilder(
             valueListenable: itemsState,
@@ -231,6 +275,7 @@ class _ItemState extends State<Item> {
                                       "",
                                       "0.0",
                                       false,
+                                      "",
                                       "",
                                       ""));
                                   itemsState.value.add(r);
@@ -512,7 +557,6 @@ class _ItemState extends State<Item> {
     if (storeItems.isNotEmpty) {
       storeItems.forEach((element) {
         if (element["text"] == "") {
-          log("product");
           if (element["item_image"].toString().contains("jumbo")) {
             storeImages["jumbo"] = true;
           } else if (element["item_image"].toString().contains(".ah.")) {
@@ -524,7 +568,6 @@ class _ItemState extends State<Item> {
       });
       List<Widget> newImages = [];
       storeImages.forEach((key, value) {
-        log("here");
         if (value) {
           switch (key) {
             case "jumbo":

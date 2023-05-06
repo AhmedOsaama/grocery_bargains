@@ -41,7 +41,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String username = "";
   String email = "";
   String password = "";
-  bool _isLoading = false;
+
   bool isLogin = true;
   bool isObscured = true;
 
@@ -56,8 +56,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> saveRememberMePref() async {
     var pref = await SharedPreferences.getInstance();
     pref.setBool("rememberMe", rememberMe);
-
   }
+
   Future<void> saveFirstTimePref() async {
     var pref = await SharedPreferences.getInstance();
     pref.setBool("firstTime", false);
@@ -68,9 +68,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
     try {
       if (!isLogin) {
-        setState(() {
-          _isLoading = true;
-        });
         // userCredential = await _auth.createUserWithEmailAndPassword(
         //     email: email, password: password);
         var result = await FirebaseFirestore.instance
@@ -97,9 +94,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         AppNavigator.pushReplacement(
             context: context, screen: OnBoardingScreen());
       } else {
-        setState(() {
-          _isLoading = true;
-        });
         // userCredential = await _auth.signInWithEmailAndPassword(
         //     email: email, password: phoneNumber);
         print("Logging in...");
@@ -135,9 +129,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         content: Text(message),
         backgroundColor: Theme.of(ctx).colorScheme.error,
       ));
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
@@ -476,7 +467,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           if (e.code == 'invalid-phone-number') {
             print('The provided phone number is not valid.');
           }
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message.toString())));
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(e.message.toString())));
           completer.complete(userCredential);
         },
         forceResendingToken: resendToken,
@@ -559,7 +551,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await saveUserData(userCredential);
       }
       saveRememberMePref();
-      MixpanelUtils().createUser(userName: "TEST NAME",email: userCredential.user!.email.toString(),id: userCredential.user!.uid);
+      MixpanelUtils().createUser(
+          userName: "TEST NAME",
+          email: userCredential.user!.email.toString(),
+          id: userCredential.user!.uid);
       MixpanelUtils().trackSocialLogin(providerName: providerName);
 
       var pref = await SharedPreferences.getInstance();

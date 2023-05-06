@@ -153,6 +153,11 @@ abstract class TextStyles {
     fontWeight: regular,
     fontFamily: fontFamilyPoppins,
   );
+  static TextStyle textViewRegular11 = TextStyle(
+    fontSize: 11.sp,
+    fontWeight: regular,
+    fontFamily: fontFamilyPoppins,
+  );
   static TextStyle textViewRegular12 = TextStyle(
     fontSize: 12.sp,
     fontWeight: regular,
@@ -245,6 +250,11 @@ abstract class TextStyles {
     fontWeight: medium,
     fontFamily: fontFamilyPoppins,
   );
+  static TextStyle textViewSemiBold12 = TextStyle(
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: fontFamilyPoppins,
+  );
   static TextStyle textViewSemiBold14 = TextStyle(
     fontSize: 14.sp,
     fontWeight: FontWeight.w600,
@@ -263,6 +273,11 @@ abstract class TextStyles {
 
   static TextStyle textViewSemiBold16 = TextStyle(
     fontSize: 16.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: fontFamilyPoppins,
+  );
+  static TextStyle textViewSemiBold17 = TextStyle(
+    fontSize: 17.sp,
     fontWeight: FontWeight.w600,
     fontFamily: fontFamilyPoppins,
   );

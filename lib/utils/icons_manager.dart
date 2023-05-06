@@ -31,3 +31,6 @@ const String bargainbIcon = "$imgPath/bargainb_icon.svg";
 const String lock = "$imgPath/lock.svg";
 const String bee = "$imgPath/bee.svg";
 const String bee1 = "$imgPath/bee.png";
+const String addmsg = "$imgPath/addmsg.svg";
+const String newperson = "$imgPath/newperson.svg";
+const String closeIcon = "$imgPath/closeIcon.svg";

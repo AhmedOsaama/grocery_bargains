@@ -225,7 +225,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               color: mainPurple,
                             ),
                             settingText: "Your Status",
-                            value: "Hello! I’m using BargainB. Join the app",
+                            value: snapshot.data!['status'],
                             onTap: () => {
                               setState(() {
                                 isEditing = !isEditing;

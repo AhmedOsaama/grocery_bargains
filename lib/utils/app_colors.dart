@@ -12,12 +12,14 @@ const Color grey = Color.fromRGBO(238, 235, 233, 1);
 const Color darkGrey = Color.fromRGBO(204, 204, 203, 1);
 const Color green = Color.fromRGBO(64, 161, 138, 1);
 const Color lightGreen = Color.fromRGBO(103, 196, 172, 1);
+const Color hintText = Color.fromRGBO(138, 138, 142, 1);
 const Color lightGrey = Color(0xffD9D9D9);
 const Color liteGrey = Color(0xffA3A3A3);
 
 const Color black = Color(0xff000000);
 const Color hintbuttonSocial = Color(0xff03034d);
 const Color borderColor = Color.fromRGBO(137, 137, 137, 1);
+const Color phoneText = Color.fromRGBO(72, 72, 74, 1);
 const Color shadowColor = Color.fromRGBO(52, 99, 237, 0.15);
 const Color dropBorderColor = Color.fromRGBO(235, 235, 235, 1);
 const Color iris = Color.fromRGBO(99, 104, 176, 1);
