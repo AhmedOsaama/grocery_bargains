@@ -1,5 +1,6 @@
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/view/widgets/signin_dialog.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -100,7 +101,7 @@ class _MainScreenState extends State<MainScreen> {
           Icons.chat_outlined,
           size: 24.sp,
         ),
-        title: ("Chatlists"),
+        title: ("chatlists".tr()),
         textStyle: TextStyle(fontSize: 12.sp),
         activeColorPrimary: selectedColor,
         inactiveColorPrimary: unSelectedColor,
@@ -110,7 +111,7 @@ class _MainScreenState extends State<MainScreen> {
             Icons.account_circle_outlined,
             size: 24.sp,
           ),
-          title: ("Profile"),
+          title: ("profile".tr()),
           textStyle: TextStyle(fontSize: 12.sp),
           activeColorPrimary: selectedColor,
           inactiveColorPrimary: unSelectedColor,

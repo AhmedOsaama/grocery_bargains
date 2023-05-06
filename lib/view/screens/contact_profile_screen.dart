@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/chatlist.dart';
 import 'package:bargainb/providers/google_sign_in_provider.dart';
@@ -8,6 +10,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/utils/app_colors.dart';
@@ -27,9 +30,16 @@ class ContactProfileScreen extends StatefulWidget {
 
 class _ContactProfileScreenState extends State<ContactProfileScreen> {
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
+
+  bool isDeleting = false;
+  bool showDeleteIcon = false;
+  Map<String, bool> checks = {};
   @override
   void initState() {
     updateUserDataFuture();
+    widget.lists.forEach((element) {
+      checks.addAll({element.id: false});
+    });
     super.initState();
   }
 
@@ -45,6 +55,39 @@ class _ContactProfileScreenState extends State<ContactProfileScreen> {
   Widget build(BuildContext context) {
     return Consumer<GoogleSignInProvider>(builder: (ctx, provider, _) {
       return Scaffold(
+        floatingActionButton: showDeleteIcon
+            ? FloatingActionButton(
+                onPressed: () async {
+                  final instance = FirebaseFirestore.instance;
+                  final batch = instance.batch();
+                  var collection = instance.collection('lists');
+                  var snapshots = await collection.get();
+                  try {
+                    for (var doc in snapshots.docs) {
+                      if (checks.containsKey(doc.id)) {
+                        if (checks[doc.id] == true) {
+                          batch.delete(doc.reference);
+                          var e;
+                          widget.lists.forEach((element) {
+                            if (element.id == doc.id) {
+                              e = element;
+                            }
+                          });
+                          widget.lists.remove(e);
+                        }
+                      }
+                    }
+
+                    await batch.commit();
+                  } catch (e) {
+                    log(e.toString());
+                  }
+                  setState(() {
+                    isDeleting = false;
+                  });
+                },
+                child: Icon(Icons.delete))
+            : Container(),
         appBar: AppBar(
           centerTitle: true,
           elevation: 0.2,
@@ -55,41 +98,87 @@ class _ContactProfileScreenState extends State<ContactProfileScreen> {
           ),
           actions: [
             Center(
-              child: PopupMenuButton(
-                  color: white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.r)),
-                  child: Text(
-                    LocaleKeys.edit.tr(),
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 17.sp,
-                        color: mainPurple),
-                  ),
-                  itemBuilder: (context) => [
-                        PopupMenuItem(
-                          child: Text(
-                            "List removal",
-                            style: TextStyles.textViewSemiBold12
-                                .copyWith(color: black2),
-                          ),
-                        ),
-                        PopupMenuItem(
-                          height: 0.h,
-                          enabled: false,
-                          child: Divider(
-                            color: grey,
-                            thickness: 2,
-                          ),
-                        ),
-                        PopupMenuItem(
-                          child: Text(
-                            "Delete",
-                            style: TextStyles.textViewSemiBold12
-                                .copyWith(color: black2),
-                          ),
-                        ),
-                      ]),
+              child: isDeleting
+                  ? TextButton(
+                      onPressed: () {
+                        setState(() {
+                          checks.forEach((key, value) {
+                            checks[key] = false;
+                          });
+                          showDeleteIcon = false;
+                          isDeleting = false;
+                        });
+                      },
+                      child: Text(
+                        "Cancel",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 17.sp,
+                            color: mainPurple),
+                      ),
+                    )
+                  : PopupMenuButton(
+                      color: white,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.r)),
+                      child: Text(
+                        LocaleKeys.edit.tr(),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 17.sp,
+                            color: mainPurple),
+                      ),
+                      itemBuilder: (context) => [
+                            PopupMenuItem(
+                              onTap: () {
+                                setState(() {
+                                  isDeleting = true;
+                                });
+                              },
+                              child: Text(
+                                "List removal",
+                                style: TextStyles.textViewSemiBold12
+                                    .copyWith(color: black2),
+                              ),
+                            ),
+                            PopupMenuItem(
+                              height: 0.h,
+                              enabled: false,
+                              child: Divider(
+                                color: grey,
+                                thickness: 2,
+                              ),
+                            ),
+                            PopupMenuItem(
+                              onTap: () async {
+                                String id = "";
+                                var contacts =
+                                    await FlutterContacts.getContacts(
+                                        withProperties: true, withPhoto: false);
+                                contacts.forEach((element) {
+                                  element.phones.forEach((e) {
+                                    if (e.normalizedNumber ==
+                                        widget.user.phoneNumber) {
+                                      id = element.id;
+                                    }
+                                  });
+                                });
+                                Contact contact = Contact(id: id);
+
+                                try {
+                                  await FlutterContacts.deleteContact(contact);
+                                  AppNavigator.pop(context: context);
+                                } catch (e) {
+                                  log(e.toString());
+                                }
+                              },
+                              child: Text(
+                                "Delete",
+                                style: TextStyles.textViewSemiBold12
+                                    .copyWith(color: black2),
+                              ),
+                            ),
+                          ]),
             ),
             15.pw
           ],
@@ -242,16 +331,39 @@ class _ContactProfileScreenState extends State<ContactProfileScreen> {
                                                         .lastMessage
                                                         .isNotEmpty
                                                     ? Text(
-                                                        "${widget.lists.elementAt(i).lastMessageUserId == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : widget.lists.elementAt(i).lastMessageUserName} : ${widget.lists.elementAt(i).lastMessage}")
+                                                        "${widget.lists.elementAt(i).lastMessageUserId == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : widget.lists.elementAt(i).lastMessageUserName} : ${widget.lists.elementAt(i).lastMessage.length > 30 ? widget.lists.elementAt(i).lastMessage.substring(0, 30) + "..." : widget.lists.elementAt(i).lastMessage}",
+                                                        overflow:
+                                                            TextOverflow.clip,
+                                                      )
                                                     : Text("")
                                               ],
                                             )
                                           ],
                                         ),
-                                        Icon(
-                                          Icons.arrow_forward_ios,
-                                          color: mainPurple,
-                                        )
+                                        isDeleting
+                                            ? Checkbox(
+                                                activeColor: purple70,
+                                                checkColor: white,
+                                                side: BorderSide(
+                                                    width: 3, color: purple70),
+                                                shape: CircleBorder(),
+                                                value: checks[widget.lists
+                                                    .elementAt(i)
+                                                    .id],
+                                                splashRadius: 10,
+                                                onChanged: (v) {
+                                                  setState(() {
+                                                    checks[widget.lists
+                                                        .elementAt(i)
+                                                        .id] = v!;
+                                                    showDeleteIcon = checks
+                                                        .containsValue(true);
+                                                  });
+                                                })
+                                            : Icon(
+                                                Icons.arrow_forward_ios,
+                                                color: mainPurple,
+                                              )
                                       ],
                                     ),
                                   );

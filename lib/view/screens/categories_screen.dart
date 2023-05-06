@@ -1,5 +1,4 @@
 import 'package:bargainb/utils/icons_manager.dart';
-import 'package:bargainb/view/components/plus_button.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/screens/subcategories_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -646,7 +645,53 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                                       chatShare)),
                                               Column(
                                                 children: [
-                                                  PlusButton(onTap: () {}),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      AppNavigator.push(
+                                                          context: context,
+                                                          screen:
+                                                              ProductDetailScreen(
+                                                            comparisonId: -1,
+                                                            productId: p.id,
+                                                            oldPrice:
+                                                                p.oldPrice ??
+                                                                    "",
+                                                            storeName:
+                                                                p.storeName,
+                                                            productName: p.name,
+                                                            imageURL:
+                                                                p.imageURL,
+                                                            description:
+                                                                p.description,
+                                                            size1: p.size,
+                                                            size2:
+                                                                p.size2 ?? "",
+                                                            price1: double.tryParse(
+                                                                    p.price ??
+                                                                        "") ??
+                                                                0.0,
+                                                            price2: double.tryParse(
+                                                                    p.price2 ??
+                                                                        "") ??
+                                                                0.0,
+                                                          ));
+                                                    },
+                                                    child: Container(
+                                                      padding:
+                                                          EdgeInsets.all(5),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        border: Border.all(
+                                                            color: borderColor),
+                                                      ),
+                                                      child: Icon(
+                                                        Icons.arrow_forward_ios,
+                                                        color: mainPurple,
+                                                      ),
+                                                    ),
+                                                  ),
                                                   20.ph
                                                 ],
                                               )

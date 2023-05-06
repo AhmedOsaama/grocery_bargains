@@ -30,15 +30,17 @@ class MySearchDelegate extends SearchDelegate {
         onTap: () {
           query = '';
         },
-        child: Container(
-            margin: EdgeInsets.only(right: 10.w),
-            padding: EdgeInsets.all(5),
-            decoration: BoxDecoration(
-                shape: BoxShape.circle, border: Border.all(color: grey)),
-            child: Icon(
-              Icons.close,
-              color: Colors.black,
-            )),
+        child: query.isNotEmpty
+            ? Container(
+                margin: EdgeInsets.only(right: 10.w),
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle, border: Border.all(color: grey)),
+                child: Icon(
+                  Icons.close,
+                  color: Colors.black,
+                ))
+            : Container(),
       ),
     ];
   }
@@ -55,8 +57,7 @@ class MySearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-   var productProvider = Provider
-        .of<ProductsProvider>(context, listen: false);
+    var productProvider = Provider.of<ProductsProvider>(context, listen: false);
     if (query.isNotEmpty) saveRecentSearches();
     // List allProducts =
     //     Provider.of<ProductsProvider>(context, listen: false).allProducts;
@@ -100,7 +101,7 @@ class MySearchDelegate extends SearchDelegate {
                   onTap: () async {
                     var comparisonId = -1;
                     var comparisonResponse;
-                    print("StoreName: "+ storeName);
+                    print("StoreName: " + storeName);
                     try {
                       if (storeName == "Albert") {
                         // comparisonId = Provider
@@ -108,7 +109,9 @@ class MySearchDelegate extends SearchDelegate {
                         //     .comparisonProducts
                         //     .firstWhere((comparison) =>
                         // comparison.albertLink == productLink).id;
-                        comparisonResponse = await NetworkServices.searchComparisonByAlbertLink(productLink);
+                        comparisonResponse =
+                            await NetworkServices.searchComparisonByAlbertLink(
+                                productLink);
                       }
                       if (storeName == "Jumbo") {
                         // comparisonId = Provider
@@ -116,7 +119,9 @@ class MySearchDelegate extends SearchDelegate {
                         //     .comparisonProducts
                         //     .firstWhere((comparison) =>
                         // comparison.jumboLink == productLink).id;
-                        comparisonResponse = await NetworkServices.searchComparisonByJumboLink(productLink);
+                        comparisonResponse =
+                            await NetworkServices.searchComparisonByJumboLink(
+                                productLink);
                       }
                       if (storeName == "Hoogvliet") {
                         // comparisonId = Provider
@@ -124,30 +129,34 @@ class MySearchDelegate extends SearchDelegate {
                         //     .comparisonProducts
                         //     .firstWhere((comparison) =>
                         // comparison.hoogvlietLink == productLink).id;
-                        comparisonResponse = await NetworkServices.searchComparisonByHoogvlietLink(productLink);
+                        comparisonResponse = await NetworkServices
+                            .searchComparisonByHoogvlietLink(productLink);
                       }
-                      var comparisons = await productProvider.convertToComparisonProductListFromJson(jsonDecode(comparisonResponse.body));
+                      var comparisons = await productProvider
+                          .convertToComparisonProductListFromJson(
+                              jsonDecode(comparisonResponse.body));
                       productProvider.comparisonProducts.add(comparisons.first);
                       comparisonId = comparisons.first.id;
-                    }catch(e){
-                      print("Error in search: couldn't find comparison for the selected product");
+                    } catch (e) {
+                      print(
+                          "Error in search: couldn't find comparison for the selected product");
                       print(e);
                     }
                     AppNavigator.push(
-                      context: context,
-                      screen: ProductDetailScreen(
-                        comparisonId: comparisonId,
-                        productId: id,
-                        oldPrice: oldPrice,
-                        storeName: storeName,
-                        productName: productName,
-                        imageURL: imageURL,
-                        description: description,
-                        size1: size1,
-                        size2: size2,
-                        price1: double.tryParse(price1) ?? 0.0,
-                        price2: double.tryParse(price2) ?? 0.0,
-                      ));
+                        context: context,
+                        screen: ProductDetailScreen(
+                          comparisonId: comparisonId,
+                          productId: id,
+                          oldPrice: oldPrice,
+                          storeName: storeName,
+                          productName: productName,
+                          imageURL: imageURL,
+                          description: description,
+                          size1: size1,
+                          size2: size2,
+                          price1: double.tryParse(price1) ?? 0.0,
+                          price2: double.tryParse(price2) ?? 0.0,
+                        ));
                   },
                   child: SearchItem(
                     name: productName,
@@ -189,7 +198,7 @@ class MySearchDelegate extends SearchDelegate {
             !showCategories
                 ? Container()
                 : Expanded(
-                    flex: 3,
+                    flex: 4,
                     child: categories.isEmpty
                         ? const Center(
                             child: CircularProgressIndicator(),
@@ -199,8 +208,8 @@ class MySearchDelegate extends SearchDelegate {
                             children: categories.map((element) {
                               return Padding(
                                 padding: EdgeInsets.only(
-                                    left:
-                                        categories.first == element ? 0 : 8.0),
+                                  left: categories.first == element ? 0 : 10.0,
+                                ),
                                 child: GestureDetector(
                                   onTap: () => AppNavigator.pushReplacement(
                                       context: context,

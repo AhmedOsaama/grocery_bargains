@@ -14,7 +14,7 @@ import '../view/widgets/choose_list_dialog.dart';
 class ChatlistsProvider with ChangeNotifier {
   List<ChatList> chatlists = [];
   late Future<QuerySnapshot> chatlistsFuture;
-
+  var chatlistsView = ChatlistsView.CHATVIEW;
   Future<QuerySnapshot> getAllChatlistsFuture() async {
     chatlistsFuture = FirebaseFirestore.instance
         .collection('/lists')

@@ -45,7 +45,6 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
   // late Future<QuerySnapshot> getAllListsFuture;
   late Future<QuerySnapshot> getListItemsFuture;
   var isFabPressed = false;
-  var chatlistsView = ChatlistsView.CHATVIEW;
 
   bool isAdding = false;
   @override
@@ -80,27 +79,36 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                   IconButton(
                       onPressed: () {
                         setState(() {
-                          if (chatlistsView == ChatlistsView.CHATVIEW) {
-                            chatlistsView = ChatlistsView.LISTVIEW;
-                          } else if (chatlistsView == ChatlistsView.LISTVIEW) {
-                            chatlistsView = ChatlistsView.CHATVIEW;
+                          if (chatlistsProvider.chatlistsView ==
+                              ChatlistsView.CHATVIEW) {
+                            chatlistsProvider.chatlistsView =
+                                ChatlistsView.LISTVIEW;
+                          } else if (chatlistsProvider.chatlistsView ==
+                              ChatlistsView.LISTVIEW) {
+                            chatlistsProvider.chatlistsView =
+                                ChatlistsView.CHATVIEW;
                           } else {
-                            chatlistsView = ChatlistsView.CHATVIEW;
+                            chatlistsProvider.chatlistsView =
+                                ChatlistsView.CHATVIEW;
                           }
                         });
                       },
-                      icon: chatlistsView == ChatlistsView.CHATVIEW
+                      icon: chatlistsProvider.chatlistsView ==
+                              ChatlistsView.CHATVIEW
                           ? SvgPicture.asset(listViewIcon)
                           : Icon(Icons.chat_outlined)),
                   IconButton(
                     onPressed: () {
                       setState(() {
-                        if (chatlistsView != ChatlistsView.PERSONVIEW) {
-                          chatlistsView = ChatlistsView.PERSONVIEW;
+                        if (chatlistsProvider.chatlistsView !=
+                            ChatlistsView.PERSONVIEW) {
+                          chatlistsProvider.chatlistsView =
+                              ChatlistsView.PERSONVIEW;
                         }
                       });
                     },
-                    icon: chatlistsView != ChatlistsView.PERSONVIEW
+                    icon: chatlistsProvider.chatlistsView !=
+                            ChatlistsView.PERSONVIEW
                         ? Icon(Icons.account_circle_outlined)
                         : Container(),
                   )
@@ -196,7 +204,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                     ],
                   );
                 }
-                if (chatlistsView == ChatlistsView.LISTVIEW) {
+                if (chatlistsProvider.chatlistsView == ChatlistsView.LISTVIEW) {
                   return SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -224,7 +232,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                     ),
                   );
                 }
-                if (chatlistsView == ChatlistsView.CHATVIEW) {
+                if (chatlistsProvider.chatlistsView == ChatlistsView.CHATVIEW) {
                   log(allLists.first.totalPrice.toString());
                   return ListView.separated(
                       separatorBuilder: (ctx, i) => Divider(),

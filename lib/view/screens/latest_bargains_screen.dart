@@ -2,9 +2,13 @@ import 'dart:developer';
 
 import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/utils/empty_padding.dart';
+import 'package:bargainb/view/components/generic_field.dart';
+import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
@@ -36,8 +40,9 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
     var comparisonProducts =
         Provider.of<ProductsProvider>(context, listen: true).comparisonProducts;
     return Scaffold(
+        backgroundColor: white,
         appBar: AppBar(
-          elevation: 1,
+          elevation: 0,
           centerTitle: true,
           backgroundColor: white,
           foregroundColor: Colors.black,
@@ -50,19 +55,47 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
             ? Center(
                 child: CircularProgressIndicator(),
               )
-            : PagedGridView<int, ComparisonProduct>(
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 15,
-                    crossAxisSpacing: 15),
-                pagingController: _pagingController,
-                showNewPageProgressIndicatorAsGridChild: false,
-                builderDelegate: PagedChildBuilderDelegate(
-                    itemBuilder: ((context, item, index) {
-                  return DiscountItem(
-                    comparisonProduct: item,
-                  );
-                })),
+            : Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                child: Column(
+                  children: [
+                    10.ph,
+                    GenericField(
+                      isFilled: true,
+                      onTap: () async {
+                        SharedPreferences pref =
+                            await SharedPreferences.getInstance();
+                        return showSearch(
+                            context: context,
+                            delegate: MySearchDelegate(pref, true));
+                      },
+                      prefixIcon: Icon(Icons.search),
+                      borderRaduis: 999,
+                    ),
+                    10.ph,
+                    Expanded(
+                      child: PagedGridView<int, ComparisonProduct>(
+                        shrinkWrap: true,
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 200,
+                                mainAxisExtent: 260,
+                                childAspectRatio: 0.67,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10),
+                        pagingController: _pagingController,
+                        showNewPageProgressIndicatorAsGridChild: false,
+                        builderDelegate: PagedChildBuilderDelegate(
+                            itemBuilder: ((context, item, index) {
+                          return DiscountItem(
+                            inGridView: true,
+                            comparisonProduct: item,
+                          );
+                        })),
+                      ),
+                    ),
+                  ],
+                ),
               ));
   }
 

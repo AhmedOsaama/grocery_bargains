@@ -383,6 +383,7 @@ class _ChatViewState extends State<ChatView> {
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (ctx, i) {
                         return DiscountItem(
+                          inGridView: false,
                           comparisonProduct: comparisonProducts[i],
                         );
                       },

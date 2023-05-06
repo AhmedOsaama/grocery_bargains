@@ -68,6 +68,7 @@ class _ChatlistSwiperState extends State<ChatlistSwiper> {
                         isListView: false,
                       ),
                       withNavBar: false);
+
                   NavigatorController.jumpToTab(1);
                   /*  pushNewScreen(context,
                       screen: ChatListViewScreen(

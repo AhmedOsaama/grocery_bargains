@@ -4,6 +4,7 @@ import 'package:bargainb/models/bestValue_item.dart';
 import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/view/components/chatlist_swiper.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
+import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/widgets/store_list_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -195,7 +196,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                     radius: 30,
                                   ),
                                 )
-                              : SvgPicture.asset(bee);
+                              : GestureDetector(
+                                  onTap: () async {
+                                    NavigatorController.jumpToTab(2);
+                                  },
+                                  child: SvgPicture.asset(bee));
                         }),
                   ],
                 ),
@@ -229,7 +234,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           .copyWith(color: black2),
                     ),
                     TextButton(
-                        onPressed: () => NavigatorController.jumpToTab(1),
+                        onPressed: () {
+                          Provider.of<ChatlistsProvider>(context, listen: false)
+                              .chatlistsView = ChatlistsView.LISTVIEW;
+                          Provider.of<ChatlistsProvider>(context, listen: false)
+                              .notifyListeners();
+                          NavigatorController.jumpToTab(1);
+                        },
                         child: Text(
                           'See all',
                           style: textButtonStyle,
@@ -314,7 +325,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 Container(
-                  height: 220.h,
+                  height: 250.h,
                   child: Consumer<ProductsProvider>(
                     builder: (ctx, provider, _) {
                       var comparisonProducts = provider.comparisonProducts;
@@ -331,6 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   itemBuilder: (context, item, index) => Row(
                                         children: [
                                           DiscountItem(
+                                            inGridView: false,
                                             comparisonProduct: item,
                                           ),
                                           10.pw

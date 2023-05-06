@@ -15,8 +15,10 @@ import '../screens/product_detail_screen.dart';
 
 class DiscountItem extends StatelessWidget {
   final ComparisonProduct comparisonProduct;
-
-  DiscountItem({Key? key, required this.comparisonProduct}) : super(key: key);
+  final bool inGridView;
+  DiscountItem(
+      {Key? key, required this.comparisonProduct, required this.inGridView})
+      : super(key: key);
 
   var selectedStore = (['Albert', "Jumbo", "Hoogvliet"]..shuffle()).first;
 
@@ -138,152 +140,164 @@ class DiscountItem extends StatelessWidget {
         goToStoreProductPage(productsProvider, context);
       },
       child: Container(
-        decoration: const BoxDecoration(color: Colors.white, boxShadow: [
-          BoxShadow(
-              color: Color.fromRGBO(59, 59, 59, 0.13),
-              blurRadius: 15,
-              offset: Offset(0, 4))
-        ]),
-        // margin: const EdgeInsets.all(10),
-        padding: EdgeInsets.symmetric(horizontal: 15.w),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(vertical: 10.h),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Image.network(
-                        getProductImage(),
-                        errorBuilder: (context, _, s) {
-                          return Icon(Icons.image_not_supported);
-                        },
-                        height: 50.h,
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 105.w,
-                          child: Text(
-                            getProductName(),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyles.textViewSemiBold14,
-                          ),
-                        ),
-                        Text(
-                          getProductSize(),
-                          style: TextStyles.textViewMedium12.copyWith(
-                              color: Color.fromRGBO(204, 204, 204, 1)),
-                        ),
-                        Text(
-                          "€${getPrice(productsProvider)}",
-                          style: TextStylesInter.textViewBold18,
-                        ),
-                        5.ph,
-                        if (getDiscountValue(productsProvider) != null)
-                          Text(
-                            "Save €${getDiscountValue(productsProvider)}",
-                            style: TextStylesInter.textViewMedium10.copyWith(
-                                color: Color.fromRGBO(24, 195, 54, 1)),
-                          ),
-                      ],
-                    ),
-                  ],
-                ),
-                // 10.pw,
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: white,
+          boxShadow: [
+            new BoxShadow(
+              color: shadowColor,
+              blurRadius: 20.0,
+            ),
+          ],
+        ),
+        margin: EdgeInsets.symmetric(vertical: inGridView ? 0 : 10),
+        padding: EdgeInsets.symmetric(horizontal: inGridView ? 0 : 15.w),
+        child: Card(
+          shadowColor: shadowColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Column(
                     children: [
-                      Image.asset(
-                        productsProvider.getImage(selectedStore),
-                        width: 22,
-                        height: 21,
-                      ),
-                      100.ph,
                       Container(
-                        padding: EdgeInsets.all(5),
+                        padding: EdgeInsets.symmetric(vertical: 10.h),
                         decoration: BoxDecoration(
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: borderColor),
                         ),
-                        child: Icon(
-                          Icons.arrow_forward_ios,
-                          color: mainPurple,
+                        child: Image.network(
+                          getProductImage(),
+                          errorBuilder: (context, _, s) {
+                            return Icon(Icons.image_not_supported);
+                          },
+                          height: 90.h,
+                          width: 100.w,
                         ),
-                      )
-                      // IconButton(
-                      //     onPressed: () {
-                      //       if(selectedStore == "Albert") {
-                      //         var product = productsProvider.albertProducts.firstWhere((product) => product.url == comparisonProduct.albertLink);
-                      //         shareDiscountItem(context, product.name,
-                      //             product.oldPrice, product.price, product.price2, product.imageURL, product.size);
-                      //       }
-                      //       if(selectedStore == "Jumbo") {
-                      //         var product = productsProvider.jumboProducts.firstWhere((product) => product.url == comparisonProduct.jumboLink);
-                      //         shareDiscountItem(context, product.name,
-                      //             product.oldPrice, product.price, product.price2, product.imageURL, product.size);
-                      //       }
-                      //
-                      //     },
-                      //     icon: SvgPicture.asset(chatShare)),
-                      // 20.ph,
-                      // PlusButton(onTap: () {
-                      //   if(selectedStore == "Albert") {
-                      //     var product = productsProvider.albertProducts.firstWhere((product) => product.url == comparisonProduct.albertLink);
-                      //     addDiscountItem(context, product.name,
-                      //         product.oldPrice, product.price, product.price2, product.imageURL, product.size);
-                      //   }
-                      //   if(selectedStore == "Jumbo") {
-                      //     var product = productsProvider.jumboProducts.firstWhere((product) => product.url == comparisonProduct.jumboLink);
-                      //     addDiscountItem(context, product.name,
-                      //         product.oldPrice, product.price, product.price2, product.imageURL, product.size);
-                      //   }
-                      // }),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 105.w,
+                            child: Text(
+                              getProductName(),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyles.textViewSemiBold14,
+                            ),
+                          ),
+                          Text(
+                            getProductSize(),
+                            style: TextStyles.textViewMedium12.copyWith(
+                                color: Color.fromRGBO(204, 204, 204, 1)),
+                          ),
+                          10.ph,
+                          Text(
+                            "€${getPrice(productsProvider)}",
+                            style: TextStylesInter.textViewBold18,
+                          ),
+                          5.ph,
+                          if (getDiscountValue(productsProvider) != null)
+                            Text(
+                              "Save €${getDiscountValue(productsProvider)}",
+                              style: TextStylesInter.textViewMedium10.copyWith(
+                                  color: Color.fromRGBO(24, 195, 54, 1)),
+                            ),
+                        ],
+                      ),
                     ],
                   ),
-                ),
-              ],
-            ),
-            // Row(
-            //   children: [
-            //     Container(
-            //       padding: EdgeInsets.all(5),
-            //       decoration: selectedStore == "Albert" ? BoxDecoration(
-            //           borderRadius: BorderRadius.circular(10),
-            //           border: Border.all(color: mainPurple)
-            //       ) : null,
-            //       child: StorePrice(
-            //         currentPrice: comparisonProduct.albertPrice,
-            //         // oldPrice: widget.albertPriceBefore,
-            //         storeImagePath: albert,
-            //       ),
-            //     ),
-            //     30.pw,
-            //     Container(
-            //       padding: EdgeInsets.all(5),
-            //       decoration: selectedStore == "Jumbo" ? BoxDecoration(
-            //           borderRadius: BorderRadius.circular(10),
-            //           border: Border.all(color: mainPurple)
-            //       ) : null,
-            //       child: StorePrice(
-            //         currentPrice: comparisonProduct.jumboPrice,
-            //         // oldPrice: widget.jumboPriceBefore,
-            //         storeImagePath: jumbo,
-            //       ),
-            //     ),
-            //   ],
-            // )
-          ],
+                  // 10.pw,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Image.asset(
+                          productsProvider.getImage(selectedStore),
+                          width: 22,
+                          height: 21,
+                        ),
+                        100.ph,
+                        Container(
+                          padding: EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: borderColor),
+                          ),
+                          child: Icon(
+                            Icons.arrow_forward_ios,
+                            color: mainPurple,
+                          ),
+                        )
+                        // IconButton(
+                        //     onPressed: () {
+                        //       if(selectedStore == "Albert") {
+                        //         var product = productsProvider.albertProducts.firstWhere((product) => product.url == comparisonProduct.albertLink);
+                        //         shareDiscountItem(context, product.name,
+                        //             product.oldPrice, product.price, product.price2, product.imageURL, product.size);
+                        //       }
+                        //       if(selectedStore == "Jumbo") {
+                        //         var product = productsProvider.jumboProducts.firstWhere((product) => product.url == comparisonProduct.jumboLink);
+                        //         shareDiscountItem(context, product.name,
+                        //             product.oldPrice, product.price, product.price2, product.imageURL, product.size);
+                        //       }
+                        //
+                        //     },
+                        //     icon: SvgPicture.asset(chatShare)),
+                        // 20.ph,
+                        // PlusButton(onTap: () {
+                        //   if(selectedStore == "Albert") {
+                        //     var product = productsProvider.albertProducts.firstWhere((product) => product.url == comparisonProduct.albertLink);
+                        //     addDiscountItem(context, product.name,
+                        //         product.oldPrice, product.price, product.price2, product.imageURL, product.size);
+                        //   }
+                        //   if(selectedStore == "Jumbo") {
+                        //     var product = productsProvider.jumboProducts.firstWhere((product) => product.url == comparisonProduct.jumboLink);
+                        //     addDiscountItem(context, product.name,
+                        //         product.oldPrice, product.price, product.price2, product.imageURL, product.size);
+                        //   }
+                        // }),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              // Row(
+              //   children: [
+              //     Container(
+              //       padding: EdgeInsets.all(5),
+              //       decoration: selectedStore == "Albert" ? BoxDecoration(
+              //           borderRadius: BorderRadius.circular(10),
+              //           border: Border.all(color: mainPurple)
+              //       ) : null,
+              //       child: StorePrice(
+              //         currentPrice: comparisonProduct.albertPrice,
+              //         // oldPrice: widget.albertPriceBefore,
+              //         storeImagePath: albert,
+              //       ),
+              //     ),
+              //     30.pw,
+              //     Container(
+              //       padding: EdgeInsets.all(5),
+              //       decoration: selectedStore == "Jumbo" ? BoxDecoration(
+              //           borderRadius: BorderRadius.circular(10),
+              //           border: Border.all(color: mainPurple)
+              //       ) : null,
+              //       child: StorePrice(
+              //         currentPrice: comparisonProduct.jumboPrice,
+              //         // oldPrice: widget.jumboPriceBefore,
+              //         storeImagePath: jumbo,
+              //       ),
+              //     ),
+              //   ],
+              // )
+            ],
+          ),
         ),
       ),
     );

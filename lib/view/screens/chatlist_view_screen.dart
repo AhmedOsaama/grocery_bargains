@@ -723,6 +723,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                     style: TextStylesInter.textViewRegular15
                                         .copyWith(color: black),
                                   ),
+                                10.ph
                               ],
                             ),
                           ),
