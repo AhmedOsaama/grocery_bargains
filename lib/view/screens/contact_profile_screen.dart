@@ -43,7 +43,6 @@ class _ContactProfileScreenState extends State<ContactProfileScreen> {
     super.initState();
   }
 
-  String brandDropdownValue = '';
   void updateUserDataFuture() {
     getUserDataFuture = FirebaseFirestore.instance
         .collection('/users')

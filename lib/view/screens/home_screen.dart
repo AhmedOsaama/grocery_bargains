@@ -325,97 +325,107 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 Container(
+                  width: double.infinity,
                   height: 250.h,
-                  child: Consumer<ProductsProvider>(
-                    builder: (ctx, provider, _) {
-                      var comparisonProducts = provider.comparisonProducts;
-                      if (comparisonProducts.isEmpty) {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else {
-                        return PagedListView<int, ComparisonProduct>(
-                          scrollDirection: Axis.horizontal,
-                          pagingController: _pagingController,
-                          builderDelegate:
-                              PagedChildBuilderDelegate<ComparisonProduct>(
-                                  itemBuilder: (context, item, index) => Row(
-                                        children: [
-                                          DiscountItem(
-                                            inGridView: false,
-                                            comparisonProduct: item,
-                                          ),
-                                          10.pw
-                                        ],
-                                      )),
-                        );
-                      }
+                  child: Row(
+                    children: [
+                      5.pw,
+                      Flexible(
+                        child: Consumer<ProductsProvider>(
+                          builder: (ctx, provider, _) {
+                            var comparisonProducts =
+                                provider.comparisonProducts;
+                            if (comparisonProducts.isEmpty) {
+                              return Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else {
+                              return PagedListView<int, ComparisonProduct>(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.horizontal,
+                                pagingController: _pagingController,
+                                builderDelegate: PagedChildBuilderDelegate<
+                                        ComparisonProduct>(
+                                    itemBuilder: (context, item, index) => Row(
+                                          children: [
+                                            DiscountItem(
+                                              inGridView: false,
+                                              comparisonProduct: item,
+                                            ),
+                                            10.pw
+                                          ],
+                                        )),
+                              );
+                            }
 
-                      /*    return ListView.builder(
-                        itemCount: comparisonProducts.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (ctx, i) {
-                          // if (i >= comparisonProducts.length) {
-                          //   var productId = comparisonProducts[i-1].id;
-                          //   return Padding(
-                          //     padding: EdgeInsets.symmetric(horizontal: 32),
-                          //     child: isLoading
-                          //         ? Center(
-                          //         child: CircularProgressIndicator(
-                          //           color: verdigris,
-                          //         ))
-                          //         : Center(
-                          //       child: Container(
-                          //         decoration: BoxDecoration(
-                          //           border:
-                          //           Border.all(color: Colors.grey),
-                          //           borderRadius:
-                          //           BorderRadius.circular(12),
-                          //         ),
-                          //         child: InkWell(
-                          //           onTap: () async {
-                          //             setState(() {
-                          //               isLoading = true;
-                          //             });
-                          //             print(productId);
-                          //             await fetch(productId + 1);
-                          //             setState(() {
-                          //               isLoading = false;
-                          //             });
-                          //           },
-                          //           borderRadius:
-                          //           BorderRadius.circular(12),
-                          //           child: Padding(
-                          //             padding: const EdgeInsets.all(5),
-                          //             child: Row(
-                          //               mainAxisSize: MainAxisSize.min,
-                          //               children: [
-                          //                 Text(
-                          //                   "See more",
-                          //                   style: TextStyles
-                          //                       .textViewMedium10
-                          //                       .copyWith(
-                          //                       color: prussian),
-                          //                 ),
-                          //                 Icon(
-                          //                   Icons.arrow_forward_ios,
-                          //                   size: 18,
-                          //                   color: Colors.grey,
-                          //                 ),
-                          //               ],
-                          //             ),
-                          //           ),
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   );
-                          // } // see more case
-                          return DiscountItem(
-                            comparisonProduct: comparisonProducts[i],
-                          );
-                        },
-                      ); */
-                    },
+                            /*    return ListView.builder(
+                              itemCount: comparisonProducts.length,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (ctx, i) {
+                                // if (i >= comparisonProducts.length) {
+                                //   var productId = comparisonProducts[i-1].id;
+                                //   return Padding(
+                                //     padding: EdgeInsets.symmetric(horizontal: 32),
+                                //     child: isLoading
+                                //         ? Center(
+                                //         child: CircularProgressIndicator(
+                                //           color: verdigris,
+                                //         ))
+                                //         : Center(
+                                //       child: Container(
+                                //         decoration: BoxDecoration(
+                                //           border:
+                                //           Border.all(color: Colors.grey),
+                                //           borderRadius:
+                                //           BorderRadius.circular(12),
+                                //         ),
+                                //         child: InkWell(
+                                //           onTap: () async {
+                                //             setState(() {
+                                //               isLoading = true;
+                                //             });
+                                //             print(productId);
+                                //             await fetch(productId + 1);
+                                //             setState(() {
+                                //               isLoading = false;
+                                //             });
+                                //           },
+                                //           borderRadius:
+                                //           BorderRadius.circular(12),
+                                //           child: Padding(
+                                //             padding: const EdgeInsets.all(5),
+                                //             child: Row(
+                                //               mainAxisSize: MainAxisSize.min,
+                                //               children: [
+                                //                 Text(
+                                //                   "See more",
+                                //                   style: TextStyles
+                                //                       .textViewMedium10
+                                //                       .copyWith(
+                                //                       color: prussian),
+                                //                 ),
+                                //                 Icon(
+                                //                   Icons.arrow_forward_ios,
+                                //                   size: 18,
+                                //                   color: Colors.grey,
+                                //                 ),
+                                //               ],
+                                //             ),
+                                //           ),
+                                //         ),
+                                //       ),
+                                //     ),
+                                //   );
+                                // } // see more case
+                                return DiscountItem(
+                                  comparisonProduct: comparisonProducts[i],
+                                );
+                              },
+                            ); */
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 Row(

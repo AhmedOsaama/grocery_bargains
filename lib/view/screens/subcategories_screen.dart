@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/components/generic_field.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
@@ -600,10 +601,69 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: [
-                                            IconButton(
-                                                onPressed: () {},
-                                                icon: SvgPicture.asset(
-                                                    chatShare)),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 15.0),
+                                              child: PopupMenuButton(
+                                                  position:
+                                                      PopupMenuPosition.under,
+                                                  color: white,
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              8.r)),
+                                                  child: SvgPicture.asset(
+                                                      chatShare),
+                                                  itemBuilder: (context) {
+                                                    List<
+                                                            PopupMenuEntry<
+                                                                dynamic>>
+                                                        items = [];
+                                                    Provider.of<ChatlistsProvider>(
+                                                            context,
+                                                            listen: false)
+                                                        .chatlists
+                                                        .forEach((e) => {
+                                                              items.add(
+                                                                  PopupMenuItem(
+                                                                onTap:
+                                                                    () async {
+                                                                  await Provider.of<ChatlistsProvider>(context, listen: false).shareItemAsMessage(
+                                                                      itemName:
+                                                                          products[index]
+                                                                              .name,
+                                                                      itemImage: products
+                                                                          .elementAt(
+                                                                              index)
+                                                                          .imageURL,
+                                                                      itemSize: products
+                                                                          .elementAt(
+                                                                              index)
+                                                                          .size,
+                                                                      itemPrice: products
+                                                                          .elementAt(
+                                                                              index)
+                                                                          .price,
+                                                                      itemOldPrice: products
+                                                                          .elementAt(
+                                                                              index)
+                                                                          .oldPrice,
+                                                                      listId:
+                                                                          e.id);
+                                                                },
+                                                                child: Text(
+                                                                  e.name,
+                                                                  style: TextStyles
+                                                                      .textViewSemiBold12
+                                                                      .copyWith(
+                                                                          color:
+                                                                              black2),
+                                                                ),
+                                                              ))
+                                                            });
+                                                    return items;
+                                                  }),
+                                            ),
                                             Column(
                                               children: [
                                                 GestureDetector(

@@ -1,3 +1,4 @@
+import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/screens/subcategories_screen.dart';
@@ -32,14 +33,117 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   TextStyle textButtonStyle =
       TextStylesInter.textViewRegular16.copyWith(color: mainPurple);
   bool switchValue = false;
+  int counter = 0;
   bool isSortOpen = false;
   String sortDropdownValue = 'Sort';
   String brandDropdownValue = 'Brand';
   String storeDropdownValue = 'Store';
 
+  List<Widget> chips = [];
+  List<Widget> chipsToShow = [];
+  int maxChipsToShow = 6;
   @override
   void initState() {
+    Provider.of<ProductsProvider>(context, listen: false)
+        .categories
+        .forEach((element) {
+      if (element.category == widget.category) {
+        if (element.subcategories.isNotEmpty) {
+          element.subcategories.split(",").forEach((element) {
+            chips.add(Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: ChoiceChip(
+                label: Text(element),
+                labelStyle: const TextStyle(color: mainPurple),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(6))),
+                backgroundColor: purple10,
+                selected: false,
+                onSelected: (bool value) {
+                  AppNavigator.push(
+                      context: context,
+                      screen: SubCategoriesScreen(subCategory: element));
+                },
+              ),
+            ));
+          });
+        }
+      }
+    });
+    if (chips.isNotEmpty) {
+      if (chips.length > 6 && chipsToShow.length < chips.length) {
+        chipsToShow = chips.getRange(0, 6).toList();
+
+        chipsToShow.add(
+          ChoiceChip(
+            label: Text("Show more..."),
+            labelStyle: const TextStyle(color: black2),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(6)),
+            ),
+            selected: false,
+            backgroundColor: Colors.transparent,
+            onSelected: (bool value) {
+              setState(() {
+                chipsToShow.clear();
+                chipsToShow.addAll(chips);
+                chipsToShow.add(ChoiceChip(
+                  label: Text("Show less..."),
+                  labelStyle: const TextStyle(color: black2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(6)),
+                  ),
+                  selected: false,
+                  backgroundColor: Colors.transparent,
+                  onSelected: (bool value) {
+                    setState(() {
+                      chipsToShow.clear();
+                      chipsToShow = chips.getRange(0, 6).toList();
+                      chipsToShow.add(showMoreButton());
+                    });
+                  },
+                ));
+              });
+            },
+          ),
+        );
+      }
+    }
     super.initState();
+  }
+
+  Widget showMoreButton() {
+    return ChoiceChip(
+      label: Text("Show more..."),
+      labelStyle: const TextStyle(color: black2),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(6)),
+      ),
+      selected: false,
+      backgroundColor: Colors.transparent,
+      onSelected: (bool value) {
+        setState(() {
+          chipsToShow.clear();
+          chipsToShow.addAll(chips);
+          chipsToShow.add(ChoiceChip(
+            label: Text("Show less..."),
+            labelStyle: const TextStyle(color: black2),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(6)),
+            ),
+            selected: false,
+            backgroundColor: Colors.transparent,
+            onSelected: (bool value) {
+              setState(() {
+                chipsToShow.clear();
+                chipsToShow = chips.getRange(0, 6).toList();
+                chipsToShow.add(showMoreButton());
+              });
+            },
+          ));
+        });
+      },
+    );
   }
 
   List<Product> products = [];
@@ -105,30 +209,15 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   style: TextStylesInter.textViewSemiBold16
                       .copyWith(color: black2),
                 ),
-                Consumer<ProductsProvider>(builder: (c, provider, _) {
-                  String sub = "";
-                  List<String> subCategories = [];
-                  provider.categories.forEach((element) {
-                    if (element.category == widget.category) {
-                      sub = element.subcategories;
-                    }
-                  });
-                  if (sub.isNotEmpty) {
-                    sub.split(",").forEach((element) {
-                      subCategories.add(element);
-                    });
-                  }
-                  if (subCategories.isNotEmpty) {
-                    return choiceChips(subCategories);
-                  }
-                  return Center(
-                    child: Text(
-                      "No subcategories found",
-                      style: TextStylesInter.textViewMedium10
-                          .copyWith(color: black),
-                    ),
-                  );
-                }),
+                chipsToShow.isNotEmpty
+                    ? choiceChips()
+                    : Center(
+                        child: Text(
+                          "No subcategories found",
+                          style: TextStylesInter.textViewMedium10
+                              .copyWith(color: black),
+                        ),
+                      ),
                 16.ph,
                 Row(children: [
                   Container(
@@ -639,10 +728,71 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.center,
                                             children: [
-                                              IconButton(
-                                                  onPressed: () {},
-                                                  icon: SvgPicture.asset(
-                                                      chatShare)),
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 15.0),
+                                                child: PopupMenuButton(
+                                                    position:
+                                                        PopupMenuPosition.under,
+                                                    color: white,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        8.r)),
+                                                    child: SvgPicture.asset(
+                                                        chatShare),
+                                                    itemBuilder: (context) {
+                                                      List<
+                                                              PopupMenuEntry<
+                                                                  dynamic>>
+                                                          items = [];
+                                                      Provider.of<ChatlistsProvider>(
+                                                              context,
+                                                              listen: false)
+                                                          .chatlists
+                                                          .forEach((e) => {
+                                                                items.add(
+                                                                    PopupMenuItem(
+                                                                  onTap:
+                                                                      () async {
+                                                                    await Provider.of<ChatlistsProvider>(context, listen: false).shareItemAsMessage(
+                                                                        itemName:
+                                                                            products[index]
+                                                                                .name,
+                                                                        itemImage: products
+                                                                            .elementAt(
+                                                                                index)
+                                                                            .imageURL,
+                                                                        itemSize: products
+                                                                            .elementAt(
+                                                                                index)
+                                                                            .size,
+                                                                        itemPrice: products
+                                                                            .elementAt(
+                                                                                index)
+                                                                            .price,
+                                                                        itemOldPrice: products
+                                                                            .elementAt(
+                                                                                index)
+                                                                            .oldPrice,
+                                                                        listId:
+                                                                            e.id);
+                                                                  },
+                                                                  child: Text(
+                                                                    e.name,
+                                                                    style: TextStyles
+                                                                        .textViewSemiBold12
+                                                                        .copyWith(
+                                                                            color:
+                                                                                black2),
+                                                                  ),
+                                                                ))
+                                                              });
+                                                      return items;
+                                                    }),
+                                              ),
                                               Column(
                                                 children: [
                                                   GestureDetector(
@@ -718,8 +868,18 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     );
   }
 
-  Widget choiceChips(List<String> subs) {
-    List<Widget> chips = [];
+  Widget choiceChips() {
+    return Wrap(
+      spacing: 6,
+      direction: Axis.horizontal,
+      children: chipsToShow,
+    );
+  }
+
+  /*  List<Widget> getChips() {
+    if (subCategories.length > 6 && subs.length < subCategories.length) {
+      subs = subCategories.getRange(0, 6).toList();
+    }
 
     for (int i = 0; i < subs.length; i++) {
       Widget item = Padding(
@@ -740,12 +900,48 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       );
       chips.add(item);
     }
-    return Wrap(
-      spacing: 6,
-      direction: Axis.horizontal,
-      children: chips,
-    );
-  }
+
+    if (subCategories.length > 6 && subs.length < subCategories.length) {
+      chips.add(
+        ChoiceChip(
+          label: Text("Show more..."),
+          labelStyle: const TextStyle(color: black2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(6)),
+          ),
+          selected: false,
+          backgroundColor: Colors.transparent,
+          onSelected: (bool value) {
+            setState(() {
+              subs.addAll(subCategories.skip(6));
+
+              chips = getChips();
+            });
+          },
+        ),
+      );
+    } else {
+      chips.add(
+        ChoiceChip(
+          label: Text("Show less..."),
+          labelStyle: const TextStyle(color: black2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(6)),
+          ),
+          selected: false,
+          backgroundColor: Colors.transparent,
+          onSelected: (bool value) {
+            setState(() {
+              chips.clear();
+              subs = subCategories.getRange(0, 6).toList();
+              //chips = getChips();
+            });
+          },
+        ),
+      );
+    }
+    return chips;
+  } */
 
   Future fetch(int startingIndex) {
     return Provider.of<ProductsProvider>(context, listen: false)
