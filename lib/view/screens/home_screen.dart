@@ -456,10 +456,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: bestValueBargains.map((bargain) {
                           return GestureDetector(
                             onTap: () {
+                              var comparisonId = -1;
+                              if(bargain.store == "Albert") {
+                                comparisonId = Provider
+                                    .of<ProductsProvider>(context, listen: false)
+                                    .comparisonProducts
+                                    .firstWhere((comparison) =>
+                                comparison.albertName == bargain.itemName).id;
+                              }
                               AppNavigator.push(
                                   context: context,
                                   screen: ProductDetailScreen(
-                                    comparisonId: -1,
+                                    comparisonId: comparisonId,
                                     productId: bargain.itemId,
                                     storeName: bargain.store,
                                     productName: bargain.itemName,

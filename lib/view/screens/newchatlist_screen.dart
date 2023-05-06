@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/icons_manager.dart';
@@ -136,7 +138,8 @@ class _NewChatlistScreenState extends State<NewChatlistScreen> {
                 10.ph,
                 GestureDetector(
                   onTap: () {
-                    Share.share('Hello! I’m using BargainB, you can down...');
+                    Platform.isAndroid ?
+                    Share.share('Hello! I’m using BargainB, you can download it from https://play.google.com/store/apps/details?id=thebargainb.app&hl=en&gl=US') : Share.share('Hello! I’m using BargainB, you can download it from https://apps.apple.com/us/app/bargainb-grocery-savings/id6446258008');
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
