@@ -107,6 +107,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
             },
           ),
         );
+      } else {
+        chipsToShow = chips;
       }
     }
     super.initState();
