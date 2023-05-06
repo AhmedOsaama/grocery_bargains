@@ -37,75 +37,86 @@ class ChatCard extends StatelessWidget {
             height: 45,
           ),
           18.pw,
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                allLists[i].name,
-                style:
-                    TextStylesInter.textViewSemiBold16.copyWith(color: black2),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    "${allLists[i].itemLength} items",
-                    style: TextStylesInter.textViewMedium10
-                        .copyWith(color: purple50),
-                  ),
-                  5.pw,
-                  Text(
-                    "€${allLists[i].totalPrice.toStringAsFixed(2)}",
-                    style: TextStylesInter.textViewMedium10
-                        .copyWith(color: black2),
-                  ),
-                ],
-              ),
-              allLists[i].lastMessage.isEmpty
-                  ? Text("")
-                  : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          '${allLists[i].lastMessageUserId == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : allLists[i].lastMessageUserName}: ',
-                          style: TextStylesInter.textViewRegular14
-                              .copyWith(color: black2),
-                        ),
-                        Container(
-                          width: 150.w,
-                          child: Text(
-                            allLists[i].lastMessage,
-                            overflow: TextOverflow.ellipsis,
+          Expanded(
+            flex: 2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  allLists[i].name,
+                  style: TextStylesInter.textViewSemiBold16
+                      .copyWith(color: black2),
+                ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "${allLists[i].itemLength} items",
+                      style: TextStylesInter.textViewMedium10
+                          .copyWith(color: purple50),
+                    ),
+                    5.pw,
+                    Text(
+                      "€${allLists[i].totalPrice.toStringAsFixed(2)}",
+                      style: TextStylesInter.textViewMedium10
+                          .copyWith(color: black2),
+                    ),
+                  ],
+                ),
+                allLists[i].lastMessage.isEmpty
+                    ? Text("")
+                    : Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '${allLists[i].lastMessageUserId == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : allLists[i].lastMessageUserName}: ',
                             style: TextStylesInter.textViewRegular14
                                 .copyWith(color: black2),
                           ),
-                        ),
-                      ],
-                    ),
-            ],
+                          Container(
+                            //width: 100.w,
+                            child: Flexible(
+                              child: Text(
+                                allLists[i].lastMessage,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStylesInter.textViewRegular14
+                                    .copyWith(color: black2),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+              ],
+            ),
           ),
-          Spacer(),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                (allLists[i].lastMessageDate.toDate()).toString().split(' ')[0],
-                style: TextStylesInter.textViewRegular14
-                    .copyWith(color: Color.fromRGBO(72, 72, 74, 1)),
-                overflow: TextOverflow.ellipsis,
-              ),
-              FutureBuilder(
-                  future: getUserImages(allLists[i].id),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                          child: CircularProgressIndicator(
-                        color: verdigris,
-                      ));
-                    }
-                    return snapshot.data ?? SvgPicture.asset(peopleIcon);
-                  }),
-            ],
+          Expanded(
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      (allLists[i].lastMessageDate.toDate())
+                          .toString()
+                          .split(' ')[0],
+                      style: TextStylesInter.textViewRegular14
+                          .copyWith(color: Color.fromRGBO(72, 72, 74, 1)),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+                FutureBuilder(
+                    future: getUserImages(allLists[i].id),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                            child: CircularProgressIndicator(
+                          color: verdigris,
+                        ));
+                      }
+                      return snapshot.data ?? SvgPicture.asset(peopleIcon);
+                    }),
+              ],
+            ),
           )
         ],
       ),

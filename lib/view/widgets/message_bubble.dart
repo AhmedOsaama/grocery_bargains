@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bargainb/utils/app_colors.dart';
 
@@ -122,8 +121,9 @@ class _MessageBubbleState extends State<MessageBubble> {
                               : SvgPicture.asset(add)),
                       5.pw,
                       Container(
-                        // width: 10,
-                        width: widget.message.length > 40 ? 220.w : null,
+                        width: widget.message.length > 40
+                            ? MediaQuery.of(context).size.width * 0.6
+                            : null,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 5),
                         margin: const EdgeInsets.symmetric(
@@ -170,6 +170,9 @@ class _MessageBubbleState extends State<MessageBubble> {
                               : SvgPicture.asset(add)),
                       5.pw,
                       Container(
+                        width: widget.message.length > 40
+                            ? MediaQuery.of(context).size.width * 0.6
+                            : null,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 5),
                         margin: const EdgeInsets.symmetric(
