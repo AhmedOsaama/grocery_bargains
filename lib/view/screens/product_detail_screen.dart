@@ -96,7 +96,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     print(bestValueSize);
     ComparisonProduct productComparison;
 
-    try {
+    // try {
       var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
       productComparison = productsProvider
           .comparisonProducts
@@ -123,10 +123,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             size: productComparison.hoogvlietSize,
             storeImagePath: hoogLogo),
       ));
-    } catch (e) {
-      print("Failed to get price comparisons in product detail");
-      print(e);
-    }
+    // } catch (e) {
+    //   print("Failed to get price comparisons in product detail");
+    //   print(e);
+    // }
 
     super.didChangeDependencies();
   }

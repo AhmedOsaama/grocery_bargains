@@ -123,7 +123,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                       5.pw,
                       Container(
                         // width: 10,
-                        width: widget.message.length > 40 ? 220.w : null,
+                        width: widget.message.length > 30 ? 220.w : null,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 5),
                         margin: const EdgeInsets.symmetric(
@@ -170,6 +170,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                               : SvgPicture.asset(add)),
                       5.pw,
                       Container(
+                        width: widget.message.length > 30 ? 220.w : null,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 5),
                         margin: const EdgeInsets.symmetric(

@@ -28,7 +28,7 @@ class ProductsProvider with ChangeNotifier {
       var id = decodedProduct['id'];
       var productName = decodedProduct['name'];
       var imageURL = decodedProduct['image_url'];
-      var storeName = decodedProduct['product_brand'];
+      var storeName = "Albert";
       var description = decodedProduct['product_description'];
       var category = decodedProduct['product_category'] ?? "";
       var subCategory = decodedProduct['type_of_product'];
@@ -903,6 +903,38 @@ class ProductsProvider with ChangeNotifier {
     ];
     return searchResult;
   }
+
+  Future<int> getComparisonId(String storeName, String productLink) async {
+    var comparisonId = -1;
+    var comparisonResponse;
+    print("StoreName: " + storeName);
+    try {
+      if (storeName == "Albert") {
+        comparisonResponse =
+        await NetworkServices.searchComparisonByAlbertLink(
+            productLink);
+      }
+      if (storeName == "Jumbo") {
+        comparisonResponse =
+        await NetworkServices.searchComparisonByJumboLink(
+            productLink);
+      }
+      if (storeName == "Hoogvliet") {
+        comparisonResponse = await NetworkServices
+            .searchComparisonByHoogvlietLink(productLink);
+      }
+      var comparisons = await convertToComparisonProductListFromJson(
+          jsonDecode(comparisonResponse.body));
+      comparisonProducts.add(comparisons.first);
+      comparisonId = comparisons.first.id;
+    } catch (e) {
+      print(
+          "Error in search: couldn't find comparison for the selected product");
+      print(e);
+    }
+    return comparisonId;
+  }
+
 
   String getImage(String storeName) {
     if (storeName == 'AH') return albert;

@@ -36,7 +36,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
 
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
-      alignment: Alignment.bottomCenter,
+      alignment: Alignment.center,
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       content: SizedBox(
