@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/icons_manager.dart';
-import 'package:bargainb/models/userinfo.dart' as UserInfo;
+import 'package:bargainb/models/user_info.dart' as UserInfo;
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/contact_profile_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
@@ -20,14 +20,14 @@ final contactsCheckbox = new ValueNotifier(<String, bool>{});
 //Map<String, bool> contactsCheckbox = ValueNotifer({});
 class NewGroupChatScreen extends StatefulWidget {
   NewGroupChatScreen({Key? key, required this.contactsList}) : super(key: key);
-  List<UserInfo.UserInfo> contactsList;
+  List<UserInfo.UserContactInfo> contactsList;
   @override
   State<NewGroupChatScreen> createState() => _NewGroupChatScreenState();
 }
 
 class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
-  List<UserInfo.UserInfo> addedList = [];
-  Map<String, List<UserInfo.UserInfo>> contactsOrdered = {};
+  List<UserInfo.UserContactInfo> addedList = [];
+  Map<String, List<UserInfo.UserContactInfo>> contactsOrdered = {};
 
   List<String> alphabets =
       List.generate(26, (index) => String.fromCharCode(index + 65));

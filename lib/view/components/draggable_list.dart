@@ -251,52 +251,7 @@ class _ItemState extends State<Item> {
                   ? ((widget.data.text == "ç")
                       ? ((GestureDetector(
                           onTap: () async {
-                            if (isAdding) {
-                              if (!formisEmpty) {
-                                try {
-                                  await Provider.of<ChatlistsProvider>(context,
-                                          listen: false)
-                                      .addItemToList(
-                                          ListItem(
-                                              imageURL: '',
-                                              isChecked: false,
-                                              name: '',
-                                              price: "0.0",
-                                              quantity: 0,
-                                              size: '',
-                                              text: newItem),
-                                          widget.listId);
-                                  var r = itemsState.value.last;
-                                  itemsState.value.last = (ItemData(
-                                      newItem,
-                                      ValueKey(newItem),
-                                      "",
-                                      "",
-                                      "",
-                                      "0.0",
-                                      false,
-                                      "",
-                                      "",
-                                      ""));
-                                  itemsState.value.add(r);
-
-                                  itemsState.notifyListeners();
-                                } catch (e) {
-                                  log(e.toString());
-                                }
-                                setState(() {
-                                  isAdding = !isAdding;
-                                });
-                              } else {
-                                setState(() {
-                                  isAdding = !isAdding;
-                                });
-                              }
-                            } else {
-                              setState(() {
-                                isAdding = !isAdding;
-                              });
-                            }
+                            await addItemManually(context);
                           },
                           child: Row(
                             children: [
@@ -338,6 +293,7 @@ class _ItemState extends State<Item> {
                                                     : grey),
                                           ),
                                         ),
+                                        onFieldSubmitted: (_) => addItemManually(context),
                                         onChanged: (value) {
                                           if (value.isEmpty) {
                                             setState(() {
@@ -550,6 +506,55 @@ class _ItemState extends State<Item> {
     );
 
     return content;
+  }
+
+  Future<void> addItemManually(BuildContext context) async {
+     if (isAdding) {
+      if (!formisEmpty) {
+        try {
+          await Provider.of<ChatlistsProvider>(context,
+                  listen: false)
+              .addItemToList(
+                  ListItem(
+                      imageURL: '',
+                      isChecked: false,
+                      name: '',
+                      price: "0.0",
+                      quantity: 0,
+                      size: '',
+                      text: newItem),
+                  widget.listId);
+          var r = itemsState.value.last;
+          itemsState.value.last = (ItemData(
+              newItem,
+              ValueKey(newItem),
+              "",
+              "",
+              "",
+              "0.0",
+              false,
+              "",
+              "",
+              ""));
+          itemsState.value.add(r);
+
+          itemsState.notifyListeners();
+        } catch (e) {
+          log(e.toString());
+        }
+        setState(() {
+          isAdding = !isAdding;
+        });
+      } else {
+        setState(() {
+          isAdding = !isAdding;
+        });
+      }
+    } else {
+      setState(() {
+        isAdding = !isAdding;
+      });
+    }
   }
 
   void updateStoreImages(var storeItems) {

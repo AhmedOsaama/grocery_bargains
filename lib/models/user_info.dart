@@ -1,10 +1,10 @@
-class UserInfo {
+class UserContactInfo {
   String name;
   String email;
   String imageURL;
   String phoneNumber;
   String id;
-  UserInfo({
+  UserContactInfo({
     required this.phoneNumber,
     required this.imageURL,
     required this.name,

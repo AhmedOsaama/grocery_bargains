@@ -3,7 +3,7 @@ import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/components/chats_search_delegate.dart';
 import 'package:bargainb/view/components/generic_field.dart';
-import 'package:bargainb/models/userinfo.dart' as UserInfo;
+import 'package:bargainb/models/user_info.dart' as UserInfo;
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/contact_profile_screen.dart';
 import 'package:bargainb/view/screens/newgroupchat_screen.dart';
@@ -28,7 +28,7 @@ class NewChatlistScreen extends StatefulWidget {
 }
 
 class _NewChatlistScreenState extends State<NewChatlistScreen> {
-  List<UserInfo.UserInfo> contactsList = [];
+  List<UserInfo.UserContactInfo> contactsList = [];
   bool isContactsPermissionGranted = false;
   @override
   void initState() {
@@ -251,8 +251,8 @@ class _NewChatlistScreenState extends State<NewChatlistScreen> {
     );
   }
 
-  Future<List<UserInfo.UserInfo>> getContacts() async {
-    List<UserInfo.UserInfo> contactss = [];
+  Future<List<UserInfo.UserContactInfo>> getContacts() async {
+    List<UserInfo.UserContactInfo> contactss = [];
 
     var userInfo = await FirebaseFirestore.instance
         .collection('/users')
@@ -291,7 +291,7 @@ class _NewChatlistScreenState extends State<NewChatlistScreen> {
                   var imageURL = user.get('imageURL');
                   var id = user.id;
 
-                  contactss.add(UserInfo.UserInfo(
+                  contactss.add(UserInfo.UserContactInfo(
                       id: id,
                       phoneNumber: phoneNumber,
                       imageURL: imageURL,

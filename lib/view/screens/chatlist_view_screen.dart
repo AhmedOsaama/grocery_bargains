@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:bargainb/models/chatlist.dart';
+import 'package:bargainb/models/user_info.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/components/draggable_list.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
@@ -9,9 +10,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
@@ -19,10 +22,12 @@ import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/chat_view_widget.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
 import '../components/dotted_container.dart';
+import 'chatlists_screen.dart';
 
 var imagesWidgets = ValueNotifier(<Widget>[]);
 
@@ -56,8 +61,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   late Future<Widget> getUserImagesFuture;
   late Future<QuerySnapshot> getListItemsFuture;
   bool isEditingName = false;
-  List<UserInfo> listUsers = [];
-  List<UserInfo> contactsList = [];
+  List<UserContactInfo> listUsers = [];
+  List<UserContactInfo> contactsList = [];
   var inviteFriendController = TextEditingController();
   bool isContactsPermissionGranted = false;
 
@@ -147,7 +152,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       email = userSnapshot.data()!['email'];
       userName = userSnapshot.data()!['username'];
       phoneNumber = userSnapshot.data()!['phoneNumber'];
-      listUsers.add(UserInfo(
+      listUsers.add(UserContactInfo(
+        id: '',
           phoneNumber: phoneNumber,
           imageURL: imageUrl,
           name: userName,
@@ -211,7 +217,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                   var name = user.get('username');
                   var email = user.get('email');
                   var imageURL = user.get('imageURL');
-                  contactsList.add(UserInfo(
+                  contactsList.add(UserContactInfo(
+                    id: '',
                       phoneNumber: phoneNumber,
                       imageURL: imageURL,
                       name: name,
@@ -364,16 +371,9 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                               value: 'rename', child: Text("Rename")),
                           DropdownMenuItem(
                               value: 'remove', child: Text("Remove")),
-                          DropdownMenuItem(
-                            value: 'copy',
-                            enabled: false,
-                            child: Text("Copy"),
-                          ),
                         ],
                         onChanged: (option) {
                           if (option == 'rename') {
-                            // Share.share("text");
-
                             setState(() {
                               isEditingName = true;
                             });
@@ -719,7 +719,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                     style: TextStylesInter.textViewRegular15
                                         .copyWith(color: black),
                                   ),
-                                10.ph
+                                10.ph,
+                                TextButton(onPressed: () => shareListViaDeepLink(), child: Text("Invite people via link"))
                               ],
                             ),
                           ),
@@ -735,7 +736,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   }
 
   Future<void> addContactToChatlist(
-      UserInfo userInfo, BuildContext context) async {
+      UserContactInfo userInfo, BuildContext context) async {
     try {
       var userData = await FirebaseFirestore.instance
           .collection('/users')

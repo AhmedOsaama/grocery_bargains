@@ -17,12 +17,12 @@ import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:bargainb/models/userinfo.dart' as UserInfo;
+import 'package:bargainb/models/user_info.dart' as UserInfo;
 
 class ContactProfileScreen extends StatefulWidget {
   ContactProfileScreen({Key? key, required this.user, required this.lists})
       : super(key: key);
-  UserInfo.UserInfo user;
+  UserInfo.UserContactInfo user;
   List<ChatList> lists;
   @override
   State<ContactProfileScreen> createState() => _ContactProfileScreenState();
