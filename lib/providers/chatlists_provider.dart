@@ -58,6 +58,15 @@ class ChatlistsProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<List<ChatList>> searchChatLists(String searchTerm) async {
+    var searchResult = chatlists
+        .where((element) =>
+            (element.name.toLowerCase().contains(searchTerm.toLowerCase())))
+        .toList();
+
+    return searchResult;
+  }
+
   Future<List<ChatList>> getAllSharedChatlists(String id) async {
     List<ChatList> list = [];
     var snapshot = await getAllChatlistsFuture();

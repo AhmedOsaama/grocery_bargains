@@ -1,8 +1,8 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/icons_manager.dart';
+import 'package:bargainb/view/components/chats_search_delegate.dart';
 import 'package:bargainb/view/components/generic_field.dart';
-import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/models/userinfo.dart' as UserInfo;
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/contact_profile_screen.dart';
@@ -66,8 +66,7 @@ class _NewChatlistScreenState extends State<NewChatlistScreen> {
                     SharedPreferences pref =
                         await SharedPreferences.getInstance();
                     return showSearch(
-                        context: context,
-                        delegate: MySearchDelegate(pref, false));
+                        context: context, delegate: ChatSearchDelegate(pref));
                   },
                   prefixIcon: Icon(Icons.search),
                   borderRaduis: 999,

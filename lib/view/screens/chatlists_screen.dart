@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:bargainb/models/chatlist.dart';
 import 'package:bargainb/utils/assets_manager.dart';
-import 'package:bargainb/view/components/search_delegate.dart';
+import 'package:bargainb/view/components/chats_search_delegate.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/contact_profile_screen.dart';
 import 'package:bargainb/models/userinfo.dart' as UserInfo;
@@ -126,8 +126,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                   SharedPreferences pref =
                       await SharedPreferences.getInstance();
                   return showSearch(
-                      context: context,
-                      delegate: MySearchDelegate(pref, false));
+                      context: context, delegate: ChatSearchDelegate(pref));
                 },
                 prefixIcon: Icon(Icons.search),
                 borderRaduis: 999,
