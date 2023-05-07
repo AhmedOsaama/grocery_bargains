@@ -33,10 +33,10 @@ class ChatCard extends StatelessWidget {
         children: [
           Image.asset(
             storePlaceholder,
-            width: 45,
-            height: 45,
+            width: 30,
+            height: 30,
           ),
-          18.pw,
+          10.pw,
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -68,15 +68,15 @@ class ChatCard extends StatelessWidget {
                       children: [
                         Text(
                           '${allLists[i].lastMessageUserId == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : allLists[i].lastMessageUserName}: ',
-                          style: TextStylesInter.textViewRegular14
+                          style: TextStylesInter.textViewRegular13
                               .copyWith(color: black2),
                         ),
                         Container(
-                          width: 150.w,
+                          width: 130.w,
                           child: Text(
                             allLists[i].lastMessage,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStylesInter.textViewRegular14
+                            style: TextStylesInter.textViewRegular13
                                 .copyWith(color: black2),
                           ),
                         ),

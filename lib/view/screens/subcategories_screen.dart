@@ -97,226 +97,226 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                 ),
               ),
               15.ph,
-              SizedBox(
-                height: 30.h,
-                child: Row(children: [
-                  Container(
-                    width: 100.w,
-                    decoration: BoxDecoration(
-                        color: white,
-                        border: Border.all(color: dropBorderColor),
-                        borderRadius: BorderRadius.all(Radius.circular(4.r))),
-                    child: Center(
-                      child: DropdownButton<String>(
-                        isExpanded: true,
-
-                        value: sortDropdownValue,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: mainPurple,
-                        ),
-                        iconSize: 24,
-                        //elevation: 16,
-                        underline: Container(),
-                        style: TextStyle(color: purple50, fontSize: 16.sp),
-                        borderRadius: BorderRadius.circular(4.r),
-                        onChanged: (String? newValue) {
-                          var v = products;
-                          setState(() {
-                            products = [];
-                            sortDropdownValue = newValue!;
-                          });
-
-                          v = Provider.of<ProductsProvider>(context,
-                                  listen: false)
-                              .sortProducts(sortDropdownValue, v);
-
-                          setState(() {
-                            products = v;
-                          });
-                        },
-                        items: <String>[
-                          'Sort',
-                          //'Relevance',
-                          'Price low - high',
-                          'Price high - low',
-                          // 'Nutri Score A - E'
-                        ].map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Center(
-                              child: Text(
-                                value,
-                                maxLines: 1,
-                                style: value == "Sort"
-                                    ? TextStyles.textViewRegular16
-                                        .copyWith(color: purple50)
-                                    : (value == sortDropdownValue
-                                        ? TextStyles.textViewRegular10
-                                            .copyWith(color: mainPurple)
-                                        : TextStyles.textViewRegular10
-                                            .copyWith(color: black2)),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                  8.pw,
-                  Container(
-                    width: 100.w,
-                    decoration: BoxDecoration(
-                        color: white,
-                        border: Border.all(color: dropBorderColor),
-                        borderRadius: BorderRadius.all(Radius.circular(4.r))),
-                    child: Center(
-                      child: DropdownButton<String>(
-                        isExpanded: true,
-                        value: brandDropdownValue,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: mainPurple,
-                        ),
-                        iconSize: 24,
-                        //elevation: 16,
-                        underline: Container(),
-                        style: TextStyle(color: purple50, fontSize: 16.sp),
-                        borderRadius: BorderRadius.circular(4.r),
-                        onChanged: (String? newValue) {
-                          // var v;
-                          setState(() {
-                            products = [];
-                            brandDropdownValue = newValue!;
-                          });
-
-                          setState(() {
-                            getProductsBySubCategoryFuture = Provider.of<ProductsProvider>(context,
-                                    listen: false)
-                                .getProductsBySubCategory(widget.subCategory,
-                                    storeDropdownValue, brandDropdownValue);
-                          });
-
-                          // setState(() {
-                          //   products = v;
-                          // });
-                        },
-                        items: <String>[
-                          'Brand',
-                          'AH',
-                          'AH Organic',
-                          'Bonduelle',
-                          'Heel',
-                          'CelaVita',
-                          'Innocent',
-                          'Iglo',
-                          'Sole Valley',
-                          'Del Monte',
-                          'CoolBest',
-                          'Arch',
-                          'Chiquita',
-                          'Knorr',
-                          'Healthy People',
-                          'Bieze',
-                          'No Fairytales',
-                          'Fairtrade Original',
-                          'kanzi',
-                          'miras',
-                          'moon pop',
-                          'Pink Lady',
-                          'AH Misfits',
-                          'Ardos',
-                          'Capri Sun',
-                          'Drogheria'
-                        ].map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Center(
-                              child: Text(
-                                overflow: TextOverflow.ellipsis,
-                                value,
-                                maxLines: 1,
-                                style: value == "Brand"
-                                    ? TextStyles.textViewRegular16
-                                        .copyWith(color: purple50)
-                                    : (value == brandDropdownValue
-                                        ? TextStyles.textViewRegular10
-                                            .copyWith(color: mainPurple)
-                                        : TextStyles.textViewRegular10
-                                            .copyWith(color: black2)),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                  8.pw,
-                  Container(
-                    width: 100.w,
-                    decoration: BoxDecoration(
-                        color: white,
-                        border: Border.all(color: dropBorderColor),
-                        borderRadius: BorderRadius.all(Radius.circular(4.r))),
-                    child: Center(
-                      child: DropdownButton<String>(
-                        value: storeDropdownValue,
-                        isExpanded: true,
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: mainPurple,
-                        ),
-                        iconSize: 24,
-                        //elevation: 16,
-                        underline: Container(),
-                        style: TextStyle(color: purple50, fontSize: 16.sp),
-                        borderRadius: BorderRadius.circular(4.r),
-                        onChanged: (String? newValue) {
-                          List<Product> v = [];
-                          setState(() {
-                            products = [];
-                            storeDropdownValue = newValue!;
-                          });
-                          try {
-                            setState(() {
-                              getProductsBySubCategoryFuture = Provider.of<ProductsProvider>(context,
-                                      listen: false)
-                                  .getProductsBySubCategory(widget.subCategory,
-                                      storeDropdownValue, brandDropdownValue);
-                            });
-                          } catch (e) {
-                            log(e.toString());
-                          }
-                          log(v.length.toString());
-                          // setState(() {
-                          //   products = v;
-                          // });
-                        },
-                        items: <String>['Store', 'Albert', 'Jumbo', 'Hoogvliet']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Center(
-                              child: Text(
-                                value,
-                                maxLines: 1,
-                                style: value == "Store"
-                                    ? TextStyles.textViewRegular16
-                                        .copyWith(color: purple50)
-                                    : (value == storeDropdownValue
-                                        ? TextStyles.textViewRegular10
-                                            .copyWith(color: mainPurple)
-                                        : TextStyles.textViewRegular10
-                                            .copyWith(color: black2)),
-                              ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ]),
-              ),
+              // SizedBox(
+              //   height: 30.h,
+              //   child: Row(children: [
+              //     Container(
+              //       width: 100.w,
+              //       decoration: BoxDecoration(
+              //           color: white,
+              //           border: Border.all(color: dropBorderColor),
+              //           borderRadius: BorderRadius.all(Radius.circular(4.r))),
+              //       child: Center(
+              //         child: DropdownButton<String>(
+              //           isExpanded: true,
+              //
+              //           value: sortDropdownValue,
+              //           icon: Icon(
+              //             Icons.keyboard_arrow_down,
+              //             color: mainPurple,
+              //           ),
+              //           iconSize: 24,
+              //           //elevation: 16,
+              //           underline: Container(),
+              //           style: TextStyle(color: purple50, fontSize: 16.sp),
+              //           borderRadius: BorderRadius.circular(4.r),
+              //           onChanged: (String? newValue) {
+              //             var v = products;
+              //             setState(() {
+              //               products = [];
+              //               sortDropdownValue = newValue!;
+              //             });
+              //
+              //             v = Provider.of<ProductsProvider>(context,
+              //                     listen: false)
+              //                 .sortProducts(sortDropdownValue, v);
+              //
+              //             setState(() {
+              //               products = v;
+              //             });
+              //           },
+              //           items: <String>[
+              //             'Sort',
+              //             //'Relevance',
+              //             'Price low - high',
+              //             'Price high - low',
+              //             // 'Nutri Score A - E'
+              //           ].map<DropdownMenuItem<String>>((String value) {
+              //             return DropdownMenuItem<String>(
+              //               value: value,
+              //               child: Center(
+              //                 child: Text(
+              //                   value,
+              //                   maxLines: 1,
+              //                   style: value == "Sort"
+              //                       ? TextStyles.textViewRegular16
+              //                           .copyWith(color: purple50)
+              //                       : (value == sortDropdownValue
+              //                           ? TextStyles.textViewRegular10
+              //                               .copyWith(color: mainPurple)
+              //                           : TextStyles.textViewRegular10
+              //                               .copyWith(color: black2)),
+              //                 ),
+              //               ),
+              //             );
+              //           }).toList(),
+              //         ),
+              //       ),
+              //     ),
+              //     8.pw,
+              //     Container(
+              //       width: 100.w,
+              //       decoration: BoxDecoration(
+              //           color: white,
+              //           border: Border.all(color: dropBorderColor),
+              //           borderRadius: BorderRadius.all(Radius.circular(4.r))),
+              //       child: Center(
+              //         child: DropdownButton<String>(
+              //           isExpanded: true,
+              //           value: brandDropdownValue,
+              //           icon: Icon(
+              //             Icons.keyboard_arrow_down,
+              //             color: mainPurple,
+              //           ),
+              //           iconSize: 24,
+              //           //elevation: 16,
+              //           underline: Container(),
+              //           style: TextStyle(color: purple50, fontSize: 16.sp),
+              //           borderRadius: BorderRadius.circular(4.r),
+              //           onChanged: (String? newValue) {
+              //             // var v;
+              //             setState(() {
+              //               products = [];
+              //               brandDropdownValue = newValue!;
+              //             });
+              //
+              //             setState(() {
+              //               getProductsBySubCategoryFuture = Provider.of<ProductsProvider>(context,
+              //                       listen: false)
+              //                   .getProductsBySubCategory(widget.subCategory,
+              //                       storeDropdownValue, brandDropdownValue);
+              //             });
+              //
+              //             // setState(() {
+              //             //   products = v;
+              //             // });
+              //           },
+              //           items: <String>[
+              //             'Brand',
+              //             'AH',
+              //             'AH Organic',
+              //             'Bonduelle',
+              //             'Heel',
+              //             'CelaVita',
+              //             'Innocent',
+              //             'Iglo',
+              //             'Sole Valley',
+              //             'Del Monte',
+              //             'CoolBest',
+              //             'Arch',
+              //             'Chiquita',
+              //             'Knorr',
+              //             'Healthy People',
+              //             'Bieze',
+              //             'No Fairytales',
+              //             'Fairtrade Original',
+              //             'kanzi',
+              //             'miras',
+              //             'moon pop',
+              //             'Pink Lady',
+              //             'AH Misfits',
+              //             'Ardos',
+              //             'Capri Sun',
+              //             'Drogheria'
+              //           ].map<DropdownMenuItem<String>>((String value) {
+              //             return DropdownMenuItem<String>(
+              //               value: value,
+              //               child: Center(
+              //                 child: Text(
+              //                   overflow: TextOverflow.ellipsis,
+              //                   value,
+              //                   maxLines: 1,
+              //                   style: value == "Brand"
+              //                       ? TextStyles.textViewRegular16
+              //                           .copyWith(color: purple50)
+              //                       : (value == brandDropdownValue
+              //                           ? TextStyles.textViewRegular10
+              //                               .copyWith(color: mainPurple)
+              //                           : TextStyles.textViewRegular10
+              //                               .copyWith(color: black2)),
+              //                 ),
+              //               ),
+              //             );
+              //           }).toList(),
+              //         ),
+              //       ),
+              //     ),
+              //     8.pw,
+              //     Container(
+              //       width: 100.w,
+              //       decoration: BoxDecoration(
+              //           color: white,
+              //           border: Border.all(color: dropBorderColor),
+              //           borderRadius: BorderRadius.all(Radius.circular(4.r))),
+              //       child: Center(
+              //         child: DropdownButton<String>(
+              //           value: storeDropdownValue,
+              //           isExpanded: true,
+              //           icon: Icon(
+              //             Icons.keyboard_arrow_down,
+              //             color: mainPurple,
+              //           ),
+              //           iconSize: 24,
+              //           //elevation: 16,
+              //           underline: Container(),
+              //           style: TextStyle(color: purple50, fontSize: 16.sp),
+              //           borderRadius: BorderRadius.circular(4.r),
+              //           onChanged: (String? newValue) {
+              //             List<Product> v = [];
+              //             setState(() {
+              //               products = [];
+              //               storeDropdownValue = newValue!;
+              //             });
+              //             try {
+              //               setState(() {
+              //                 getProductsBySubCategoryFuture = Provider.of<ProductsProvider>(context,
+              //                         listen: false)
+              //                     .getProductsBySubCategory(widget.subCategory,
+              //                         storeDropdownValue, brandDropdownValue);
+              //               });
+              //             } catch (e) {
+              //               log(e.toString());
+              //             }
+              //             log(v.length.toString());
+              //             // setState(() {
+              //             //   products = v;
+              //             // });
+              //           },
+              //           items: <String>['Store', 'Albert', 'Jumbo', 'Hoogvliet']
+              //               .map<DropdownMenuItem<String>>((String value) {
+              //             return DropdownMenuItem<String>(
+              //               value: value,
+              //               child: Center(
+              //                 child: Text(
+              //                   value,
+              //                   maxLines: 1,
+              //                   style: value == "Store"
+              //                       ? TextStyles.textViewRegular16
+              //                           .copyWith(color: purple50)
+              //                       : (value == storeDropdownValue
+              //                           ? TextStyles.textViewRegular10
+              //                               .copyWith(color: mainPurple)
+              //                           : TextStyles.textViewRegular10
+              //                               .copyWith(color: black2)),
+              //                 ),
+              //               ),
+              //             );
+              //           }).toList(),
+              //         ),
+              //       ),
+              //     ),
+              //   ]),
+              // ),
               15.ph,
               Text(
                 widget.subCategory,

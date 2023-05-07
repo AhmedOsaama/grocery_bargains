@@ -106,6 +106,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       comparisonItems.add(GestureDetector(
         onTap: widget.storeName == "Jumbo" ? (){} : () => goToStoreProductPage(productsProvider,context,"Jumbo",productComparison.jumboLink),
         child: PriceComparisonItem(
+            isSameStore: widget.storeName == "Jumbo",
             price: productComparison.jumboPrice,
             size: productComparison.jumboSize ?? "N/A",
             storeImagePath: jumbo),
@@ -113,6 +114,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       comparisonItems.add(GestureDetector(
         onTap: widget.storeName == "Albert" ? (){} : () => goToStoreProductPage(productsProvider,context,"Albert",productComparison.albertLink),
         child: PriceComparisonItem(
+            isSameStore: widget.storeName == "Albert",
             price: productComparison.albertPrice,
             size: productComparison.albertSize,
             storeImagePath: albert),
@@ -120,6 +122,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       comparisonItems.add(GestureDetector(
         onTap: widget.storeName == "Hoogvliet" ? (){} : () => goToStoreProductPage(productsProvider,context,"Hoogvliet",productComparison.hoogvlietLink),
         child: PriceComparisonItem(
+          isSameStore: widget.storeName == "Hoogvliet",
             price: productComparison.hoogvlietPrice,
             size: productComparison.hoogvlietSize,
             storeImagePath: hoogLogo),
@@ -349,47 +352,47 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               SizedBox(
                 height: 25.h,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Quantity",
-                    style: TextStyles.textViewMedium12
-                        .copyWith(color: Colors.grey),
-                  ),
-                  Container(
-                    child: Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            if (quantity > 0) {
-                              setState(() {
-                                quantity--;
-                              });
-                            }
-                          },
-                          icon: Icon(Icons.remove),
-                          color: verdigris,
-                        ),
-                        VerticalDivider(),
-                        Text(
-                          quantity.toString(),
-                          style: TextStyles.textViewMedium18,
-                        ),
-                        VerticalDivider(),
-                        IconButton(
-                            onPressed: () {
-                              setState(() {
-                                ++quantity;
-                              });
-                            },
-                            icon: Icon(Icons.add),
-                            color: verdigris),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     Text(
+              //       "Quantity",
+              //       style: TextStyles.textViewMedium12
+              //           .copyWith(color: Colors.grey),
+              //     ),
+              //     Container(
+              //       child: Row(
+              //         children: [
+              //           IconButton(
+              //             onPressed: () {
+              //               if (quantity > 0) {
+              //                 setState(() {
+              //                   quantity--;
+              //                 });
+              //               }
+              //             },
+              //             icon: Icon(Icons.remove),
+              //             color: verdigris,
+              //           ),
+              //           VerticalDivider(),
+              //           Text(
+              //             quantity.toString(),
+              //             style: TextStyles.textViewMedium18,
+              //           ),
+              //           VerticalDivider(),
+              //           IconButton(
+              //               onPressed: () {
+              //                 setState(() {
+              //                   ++quantity;
+              //                 });
+              //               },
+              //               icon: Icon(Icons.add),
+              //               color: verdigris),
+              //         ],
+              //       ),
+              //     ),
+              //   ],
+              // ),
               SizedBox(
                 height: 30.h,
               ),

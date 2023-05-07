@@ -71,9 +71,19 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
   @override
   void initState() {
-    chatList = Provider.of<ChatlistsProvider>(context, listen: false)
-        .chatlists
-        .firstWhere((chatList) => chatList.id == widget.listId);
+    if(widget.isNotificationOpened){
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+        await Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlists();
+        chatList = Provider.of<ChatlistsProvider>(context, listen: false)
+            .chatlists
+            .firstWhere((chatList) => chatList.id == widget.listId);
+      });
+    }else {
+      chatList = Provider
+          .of<ChatlistsProvider>(context, listen: false)
+          .chatlists
+          .firstWhere((chatList) => chatList.id == widget.listId);
+    }
     if (widget.isUsingDynamicLink) {
       var currentUserId = FirebaseAuth.instance.currentUser?.uid;
       FirebaseFirestore.instance
