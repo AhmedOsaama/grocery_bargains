@@ -57,6 +57,22 @@ class NetworkServices {
     return response;
   }
 
+  static Future<http.Response> getLimitedAlbertProductsByCategory(String category) async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/getLimitedAlbertCategoryProducts?category=$category');
+    var response = await http.get(
+        url, headers: {'Content-Type': 'application/json',});
+    return response;
+  }
+
+  static Future<http.Response> getLimitedAlbertProductsBySubCategory(String subCategory) async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/getLimitedAlbertSubCategoryProducts?sub=$subCategory');
+    var response = await http.get(
+        url, headers: {'Content-Type': 'application/json',});
+    return response;
+  }
+
   static Future<http.Response> getLimitedPriceComparisons(int startingIndex) async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/getLimitedPriceComparisons?startingIndex=$startingIndex');

@@ -29,7 +29,7 @@ class SubCategoriesScreen extends StatefulWidget {
 }
 
 class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
-  Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
+  late Future getProductsBySubCategoryFuture;
 
   var isLoading = false;
   TextStyle textButtonStyle =
@@ -43,6 +43,9 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
 
   @override
   void initState() {
+    getProductsBySubCategoryFuture = Provider.of<ProductsProvider>(context,listen: false)
+        .getProductsBySubCategory(
+        widget.subCategory, "Store", "Brand");
     super.initState();
   }
 
@@ -181,20 +184,22 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                         style: TextStyle(color: purple50, fontSize: 16.sp),
                         borderRadius: BorderRadius.circular(4.r),
                         onChanged: (String? newValue) {
-                          var v;
+                          // var v;
                           setState(() {
                             products = [];
                             brandDropdownValue = newValue!;
                           });
 
-                          v = Provider.of<ProductsProvider>(context,
-                                  listen: false)
-                              .getProductsBySubCategory(widget.subCategory,
-                                  storeDropdownValue, brandDropdownValue);
-
                           setState(() {
-                            products = v;
+                            getProductsBySubCategoryFuture = Provider.of<ProductsProvider>(context,
+                                    listen: false)
+                                .getProductsBySubCategory(widget.subCategory,
+                                    storeDropdownValue, brandDropdownValue);
                           });
+
+                          // setState(() {
+                          //   products = v;
+                          // });
                         },
                         items: <String>[
                           'Brand',
@@ -273,17 +278,19 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                             storeDropdownValue = newValue!;
                           });
                           try {
-                            v = Provider.of<ProductsProvider>(context,
-                                    listen: false)
-                                .getProductsBySubCategory(widget.subCategory,
-                                    storeDropdownValue, brandDropdownValue);
+                            setState(() {
+                              getProductsBySubCategoryFuture = Provider.of<ProductsProvider>(context,
+                                      listen: false)
+                                  .getProductsBySubCategory(widget.subCategory,
+                                      storeDropdownValue, brandDropdownValue);
+                            });
                           } catch (e) {
                             log(e.toString());
                           }
                           log(v.length.toString());
-                          setState(() {
-                            products = v;
-                          });
+                          // setState(() {
+                          //   products = v;
+                          // });
                         },
                         items: <String>['Store', 'Albert', 'Jumbo', 'Hoogvliet']
                             .map<DropdownMenuItem<String>>((String value) {
@@ -320,19 +327,19 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
               SingleChildScrollView(
                 child: Container(
                   //  height: ScreenUtil().screenHeight,
-                  child: Consumer<ProductsProvider>(
-                    builder: (ctx, provider, _) {
+                  child: FutureBuilder(
+                    future: getProductsBySubCategoryFuture,
+                    builder: (ctx, snapshot) {
+                      products = snapshot.data ?? [];
                       if (sortDropdownValue == "Sort" &&
                           brandDropdownValue == "Brand" &&
                           storeDropdownValue == "Store") {
-                        products = provider.getProductsBySubCategory(
-                            widget.subCategory,
-                            storeDropdownValue,
-                            brandDropdownValue);
+                        // products = provider.getProductsBySubCategory(
+                        //     widget.subCategory,
+                        //     storeDropdownValue,
+                        //     brandDropdownValue);
                       }
-                      if (provider.albertProducts.isEmpty &&
-                          provider.jumboProducts.isEmpty &&
-                          provider.hoogvlietProducts.isEmpty) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
@@ -398,10 +405,12 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                     products.elementAt(index).description,
                                 size2: products.elementAt(index).size2 ?? "");
                             return GestureDetector(
-                              onTap: () => AppNavigator.push(
+                              onTap: () async {
+                                int comparisonId = await Provider.of<ProductsProvider>(context,listen: false).getComparisonId(products.elementAt(index).storeName, products.elementAt(index).url);
+                                AppNavigator.push(
                                   context: context,
                                   screen: ProductDetailScreen(
-                                    comparisonId: -1,
+                                    comparisonId: comparisonId,
                                     productId: p.id,
                                     oldPrice: p.oldPrice ?? "",
                                     storeName: p.storeName,
@@ -414,7 +423,8 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                         double.tryParse(p.price ?? "") ?? 0.0,
                                     price2:
                                         double.tryParse(p.price2 ?? "") ?? 0.0,
-                                  )),
+                                  ));
+                              },
                               child: Container(
                                 height: 250.h,
                                 width: 175.w,

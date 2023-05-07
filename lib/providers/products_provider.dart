@@ -194,10 +194,10 @@ class ProductsProvider with ChangeNotifier {
             category: category,
             url: productURL);
         productList.add(productObj);
-        // populateBestValueBargains(productObj);
+        populateBestValueBargains(productObj);
       }
     } catch (e) {
-      print("SDAOIJDIUWAHIUEHUIWQHEUIWHQIUEHOIUQWHE");
+      print("Error converting to products list from json");
       print(e);
     }
     print("PRODUCTS LENGTH: " + productList.length.toString());
@@ -493,18 +493,21 @@ class ProductsProvider with ChangeNotifier {
     return response.statusCode;
   }
 
-  List<Product> getProductsByCategory(
-      String category, String store, String brand) {
+  Future<List<Product>> getProductsByCategory(
+      String category, String store, String brand) async {
     List<Product> products = [];
 
     if (store == "Store" && brand == "Brand") {
-      albertProducts.forEach((element) {
-        if (element.category != "") {
-          if (element.category.toLowerCase() == category.toLowerCase()) {
-            products.add(element);
-          }
-        }
-      });
+      var response = await NetworkServices.getLimitedAlbertProductsByCategory(category);
+      if(response != null)
+        products = convertToProductListFromJson(jsonDecode(response.body));
+      // albertProducts.forEach((element) {
+      //   if (element.category != "") {
+      //     if (element.category.toLowerCase() == category.toLowerCase()) {
+      //       products.add(element);
+      //     }
+      //   }
+      // });
       jumboProducts.forEach((element) {
         if (element.category != "") {
           if (element.category.toLowerCase() == category.toLowerCase()) {
@@ -634,18 +637,21 @@ class ProductsProvider with ChangeNotifier {
     return pro;
   }
 
-  List<Product> getProductsBySubCategory(
-      String category, String store, String brand) {
+  Future<List<Product>> getProductsBySubCategory(
+      String category, String store, String brand) async {
     List<Product> products = [];
 
     if (store == "Store" && brand == "Brand") {
-      albertProducts.forEach((element) {
-        if (element.subCategory != null) {
-          if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
-            products.add(element);
-          }
-        }
-      });
+      var response = await NetworkServices.getLimitedAlbertProductsBySubCategory(category);
+      if(response != null)
+        products = convertToProductListFromJson(jsonDecode(response.body));
+      // albertProducts.forEach((element) {
+      //   if (element.subCategory != null) {
+      //     if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
+      //       products.add(element);
+      //     }
+      //   }
+      // });
       jumboProducts.forEach((element) {
         if (element.subCategory != null) {
           if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
@@ -793,6 +799,7 @@ class ProductsProvider with ChangeNotifier {
       var oldPrice = product.oldPrice ?? "";
       String size1 = product.size;
       String size2 = product.size2 ?? "";
+      if(bestValueBargains.indexWhere((bargain) => bargain.itemId == product.id) != -1) return;
 
       // if (size2.contains("stuk") || size2.contains("stuks")) continue;
 
@@ -929,7 +936,7 @@ class ProductsProvider with ChangeNotifier {
       comparisonId = comparisons.first.id;
     } catch (e) {
       print(
-          "Error in search: couldn't find comparison for the selected product");
+          "Error in comparison search: couldn't find comparison for the selected product");
       print(e);
     }
     return comparisonId;

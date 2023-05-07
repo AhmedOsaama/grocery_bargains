@@ -53,7 +53,6 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   // final productImages = [milk, peach, spar];
   List<ItemSize> productSizes = [];
-  Mixpanel mixpanel = Mixpanel('752b3abf782a7347499ccb3ebb504194');
   var defaultPrice = 0.0;
   bool isLoading = false;
   final comparisonItems = [];
@@ -75,10 +74,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     defaultPrice = widget.price1 == null
         ? widget.price2 as double
         : widget.price1 as double;
-    mixpanel.track("view_product", properties: {
-      "product_id": widget.productId,
-      "store_name": widget.storeName
-    });
+    // mixpanel.track("view_product", properties: {
+    //   "product_id": widget.productId,
+    //   "store_name": widget.storeName
+    // });
 
     super.initState();
   }
@@ -91,12 +90,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           .firstWhere((bargain) => bargain.itemId == widget.productId)
           .bestValueSize;
     } catch (e) {
+      print("Error in product page: couldn't find best value size");
+      print(e);
       bestValueSize = "";
     }
-    print(bestValueSize);
+    print("BEST VALUE SIZE: $bestValueSize");
     ComparisonProduct productComparison;
 
-    // try {
+    try {
       var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
       productComparison = productsProvider
           .comparisonProducts
@@ -123,10 +124,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             size: productComparison.hoogvlietSize,
             storeImagePath: hoogLogo),
       ));
-    // } catch (e) {
-    //   print("Failed to get price comparisons in product detail");
-    //   print(e);
-    // }
+    } catch (e) {
+      print("Failed to get price comparisons in product detail");
+      print(e);
+    }
 
     super.didChangeDependencies();
   }
@@ -442,7 +443,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   physics: NeverScrollableScrollPhysics(),
                   children: productSizes.map((size) {
                     var index = productSizes.indexOf(size);
-                    print(size.price);
+                    print("SIZE: " + size.size);
+                    print("PRICE: " + size.price);
                     if (size.size.isEmpty ||
                         size.size == "None" ||
                         size.price == '0.0') {
@@ -459,7 +461,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         decoration: BoxDecoration(
                           border: Border.all(
                               width: 2.0,
-                              color: selectedSizeIndex == index
+                              color: bestValueSize == size.size
                                   ? mainPurple
                                   : Colors.transparent),
                           borderRadius: BorderRadius.circular(10),

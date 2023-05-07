@@ -27,7 +27,7 @@ class CategoriesScreen extends StatefulWidget {
 }
 
 class _CategoriesScreenState extends State<CategoriesScreen> {
-  Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
+  late Future getProductsByCategoryFuture;
 
   var isLoading = false;
   TextStyle textButtonStyle =
@@ -44,6 +44,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   int maxChipsToShow = 6;
   @override
   void initState() {
+    getProductsByCategoryFuture = Provider.of<ProductsProvider>(context,listen: false)
+        .getProductsByCategory(
+        widget.category, "Store", "Brand");
     Provider.of<ProductsProvider>(context, listen: false)
         .categories
         .forEach((element) {
@@ -305,21 +308,23 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                         underline: Container(),
                         style: TextStyle(color: purple50, fontSize: 16.sp),
                         borderRadius: BorderRadius.circular(4.r),
-                        onChanged: (String? newValue) {
-                          var v;
+                        onChanged: (String? newValue) async {
+                          // var v;
                           setState(() {
                             products = [];
                             brandDropdownValue = newValue!;
                           });
 
-                          v = Provider.of<ProductsProvider>(context,
-                                  listen: false)
-                              .getProductsByCategory(widget.category,
-                                  storeDropdownValue, brandDropdownValue);
-
                           setState(() {
-                            products = v;
+                            getProductsByCategoryFuture = Provider.of<ProductsProvider>(context,
+                                    listen: false)
+                                .getProductsByCategory(widget.category,
+                                    storeDropdownValue, brandDropdownValue);
                           });
+
+                          // setState(() {
+                          //   products = v;
+                          // });
                         },
                         items: <String>[
                           'Brand',
@@ -391,21 +396,23 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                         underline: Container(),
                         style: TextStyle(color: purple50, fontSize: 16.sp),
                         borderRadius: BorderRadius.circular(4.r),
-                        onChanged: (String? newValue) {
-                          var v;
+                        onChanged: (String? newValue) async {
+                          // var v;
                           setState(() {
                             products = [];
                             storeDropdownValue = newValue!;
                           });
 
-                          v = Provider.of<ProductsProvider>(context,
-                                  listen: false)
-                              .getProductsByCategory(widget.category,
-                                  storeDropdownValue, brandDropdownValue);
-
                           setState(() {
-                            products = v;
+                            getProductsByCategoryFuture = Provider.of<ProductsProvider>(context,
+                                    listen: false)
+                                .getProductsByCategory(widget.category,
+                                    storeDropdownValue, brandDropdownValue);
                           });
+
+                          // setState(() {
+                          //   products = v;
+                          // });
                         },
                         items: <String>['Store', 'Albert', 'Jumbo', 'Hoogvliet']
                             .map<DropdownMenuItem<String>>((String value) {
@@ -441,27 +448,30 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 SingleChildScrollView(
                   child: Container(
                     //  height: ScreenUtil().screenHeight,
-                    child: Builder(
-                      builder: (ctx) {
+                    child: FutureBuilder(
+                      future: getProductsByCategoryFuture,
+                      builder: (ctx,snapshot) {
+                        products = snapshot.data ?? [];
                         if (sortDropdownValue == "Sort" &&
                             brandDropdownValue == "Brand" &&
                             storeDropdownValue == "Store") {
-                          products = Provider.of<ProductsProvider>(context)
-                              .getProductsByCategory(
-                                  widget.category, "Store", "Brand");
+                          // products = Provider.of<ProductsProvider>(context)
+                          //     .getProductsByCategory(
+                          //         widget.category, "Store", "Brand");
                         }
-                        if (Provider.of<ProductsProvider>(context,
-                                    listen: false)
-                                .albertProducts
-                                .isEmpty &&
-                            Provider.of<ProductsProvider>(context,
-                                    listen: false)
-                                .jumboProducts
-                                .isEmpty &&
-                            Provider.of<ProductsProvider>(context,
-                                    listen: false)
-                                .hoogvlietProducts
-                                .isEmpty) {
+                        if(snapshot.connectionState == ConnectionState.waiting){
+                        // if (Provider.of<ProductsProvider>(context,
+                        //             listen: false)
+                        //         .albertProducts
+                        //         .isEmpty &&
+                        //     Provider.of<ProductsProvider>(context,
+                        //             listen: false)
+                        //         .jumboProducts
+                        //         .isEmpty &&
+                        //     Provider.of<ProductsProvider>(context,
+                        //             listen: false)
+                        //         .hoogvlietProducts
+                        //         .isEmpty) {
                           return Center(
                             child: CircularProgressIndicator(),
                           );
