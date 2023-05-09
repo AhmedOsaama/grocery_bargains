@@ -813,7 +813,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   }
 
   shareListViaDeepLink() async {
-    print(":soakdjioiwqje");
     BranchUniversalObject buo = BranchUniversalObject(
       canonicalIdentifier: 'invite_to_list',
       //canonicalUrl: '',

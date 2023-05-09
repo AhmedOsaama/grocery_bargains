@@ -52,6 +52,8 @@ class _MainScreenState extends State<MainScreen> {
           data["+clicked_branch_link"] == true) {
         //Link clicked. Add logic to get link data and route user to correct screen
         var listId = data["list_id"];
+        // var listId = data["route"];
+        // if(route == '/home_screen')
         print('Custom string: ${listId}');
         if(listId != null){
           var currentUserId = FirebaseAuth.instance.currentUser?.uid;
@@ -63,10 +65,15 @@ class _MainScreenState extends State<MainScreen> {
             final List userIds = listSnapshot.data()!['userIds'];
             if (!userIds.contains(currentUserId)) {
               userIds.add(currentUserId);
+              var userData = await FirebaseFirestore.instance.collection('users').doc(currentUserId).get();
               await FirebaseFirestore.instance
                   .collection('/lists')
                   .doc(listId)
-                  .update({"userIds": userIds});
+                  .update({
+                "userIds": userIds,
+                // "user_num": FieldValue.increment(1),
+                "new_participant_username": userData['username'],
+              });
               await Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlists();
               var chatList = Provider.of<ChatlistsProvider>(context, listen: false)
                   .chatlists
