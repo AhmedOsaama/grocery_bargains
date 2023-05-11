@@ -36,7 +36,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
 
     return AlertDialog(
       contentPadding: EdgeInsets.zero,
-      alignment: Alignment.bottomCenter,
+      alignment: Alignment.center,
       backgroundColor: Colors.white,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       content: SizedBox(
@@ -188,7 +188,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                                 screen: ChatListViewScreen(
                                   // updateList: updateList,
                                   listId: selectedListId,
-                                  isListView: false,
+                                  isListView: !widget.isSharing,
                                 ),
                                 withNavBar: false);
                             NavigatorController.jumpToTab(1);

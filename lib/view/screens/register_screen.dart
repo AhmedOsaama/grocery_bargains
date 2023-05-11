@@ -90,7 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await saveUserData(userCredential);
 
         saveRememberMePref();
-        saveFirstTimePref();
+        //saveFirstTimePref();
         AppNavigator.pushReplacement(
             context: context, screen: OnBoardingScreen());
       } else {
@@ -115,7 +115,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
         print("logged in");
         saveRememberMePref();
-        saveFirstTimePref();
+        //saveFirstTimePref();
         AppNavigator.pushReplacement(context: context, screen: MainScreen());
       }
     } on FirebaseAuthException catch (error) {
@@ -252,7 +252,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             borderRadius: BorderRadius.circular(10)),
                         fillColor: Colors.white,
                         filled: true,
-                        hintText: "+91 90001 90001",
+                        hintText: "789 123 456",
                         hintStyle: TextStylesInter.textViewRegular16),
                     // inputFormatters: [],
                     onSaved: (phone) {
@@ -561,7 +561,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       var isFirstTime = pref.getBool("firstTime") ?? true;
       print("IS FIRST TIME:" + isFirstTime.toString());
       if (isFirstTime) {
-        pref.setBool("firstTime", false);
+        // pref.setBool("firstTime", false);
 
         AppNavigator.pushReplacement(
             context: context, screen: OnBoardingScreen());

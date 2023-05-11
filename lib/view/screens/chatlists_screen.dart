@@ -16,6 +16,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
@@ -214,14 +215,13 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                           children: allLists.map(
                             (chatlist) {
                               return GestureDetector(
-                                  onTap: () => Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                        builder: (ctx) => ChatListViewScreen(
-                                          // updateList: updateList,
-                                          listId: chatlist.id,
-                                          isListView: true,
-                                        ),
-                                      )),
+                                  onTap: () => pushNewScreen(context,
+                                      screen: ChatListViewScreen(
+                                        // updateList: updateList,
+                                        listId: chatlist.id,
+                                        isListView: true,
+                                      ),
+                                      withNavBar: false),
                                   child: StoreListWidget(
                                       listId: chatlist.id,
                                       storeImagePath: chatlist.storeImageUrl,

@@ -110,15 +110,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   void finishOnBoarding(BuildContext context) {
-    saveFirstTimePref();
-    Platform.isIOS ?
-                         AppNavigator.pushReplacement(
-                             context: context, screen: LocationAccessScreen())
-                             :
-                         AppNavigator.pushReplacement(
-                             context: context, screen: MainScreen());
-                       }
-
+    Platform.isIOS
+        ? AppNavigator.pushReplacement(
+            context: context, screen: LocationAccessScreen())
+        : AppNavigator.pushReplacement(context: context, screen: MainScreen());
+  }
 
   var slide1 = Column(
     children: [

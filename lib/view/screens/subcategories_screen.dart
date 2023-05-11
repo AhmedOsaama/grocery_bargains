@@ -629,6 +629,18 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                                                 onTap:
                                                                     () async {
                                                                   await Provider.of<ChatlistsProvider>(context, listen: false).shareItemAsMessage(
+                                                                      itemDescription: products
+                                                                          .elementAt(
+                                                                              index)
+                                                                          .description,
+                                                                      storeName: products
+                                                                          .elementAt(
+                                                                              index)
+                                                                          .storeName,
+                                                                      itemId: products
+                                                                          .elementAt(
+                                                                              index)
+                                                                          .id,
                                                                       itemName:
                                                                           products[index]
                                                                               .name,

@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:bargainb/models/chatlist.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:bargainb/models/list_item.dart';
@@ -105,7 +106,7 @@ class ChatlistsProvider with ChangeNotifier {
     return list;
   }
 
-  Future<List> getAllFriends() async {
+  Future<List<FriendChatLists>> getAllFriends() async {
     List<QueryDocumentSnapshot> allLists = [];
     var allUserIds = [];
     var allListsSnapshot = await chatlistsFuture;
@@ -213,8 +214,8 @@ class ChatlistsProvider with ChangeNotifier {
       return AppNavigator.pop(context: context);
     }).onError((error, stackTrace) {
       print(error);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text("Couldn't delete list. Please try again later")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("couldntDeleteList".tr())));
     });
   }
 
@@ -333,6 +334,7 @@ class ChatlistsProvider with ChangeNotifier {
       "item_size": item.size,
       "item_price": item.price,
       "item_image": item.imageURL,
+      'store_name': item.storeName,
       "item_isChecked": false,
       "text": item.text,
       "owner": userData['username'],
@@ -344,12 +346,14 @@ class ChatlistsProvider with ChangeNotifier {
     return done;
   }
 
-  Future<void> shareItemAsMessage(
-      {itemName,
+  Future<bool> shareItemAsMessage(
+      {itemId,
+      itemName,
       itemImage,
       itemSize,
       itemPrice,
       itemOldPrice,
+      itemDescription,
       storeName,
       listId}) async {
     final userData = await FirebaseFirestore.instance
@@ -357,9 +361,11 @@ class ChatlistsProvider with ChangeNotifier {
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
     await FirebaseFirestore.instance.collection('/lists/$listId/messages').add({
+      'item_id': itemId,
       'item_name': itemName,
       'item_image': itemImage,
-      'item_description': itemSize,
+      'item_description': itemDescription,
+      'item_size': itemSize,
       'store_name': storeName,
       'isAddedToList': false,
       'item_price': itemPrice,
@@ -377,6 +383,7 @@ class ChatlistsProvider with ChangeNotifier {
       "last_message_userName": userData['username'],
     });
     updateChatList(listId, 'Shared $itemName', userData);
+    return true;
   }
 
   Future<void> addMessageToList({
@@ -408,6 +415,7 @@ class ChatlistsProvider with ChangeNotifier {
     required String itemName,
     required String itemSize,
     required String itemPrice,
+    required String storeName,
     required String itemImage,
     required DocumentReference messageDocPath,
     required String userName,
@@ -420,6 +428,7 @@ class ChatlistsProvider with ChangeNotifier {
       "item_size": itemSize,
       "item_price": itemPrice,
       "item_image": itemImage,
+      "store_name": storeName,
       "item_isChecked": false,
       "text": "",
       "chat_reference": messageDocPath.path,

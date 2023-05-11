@@ -6,8 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
-import '../../config/routes/app_navigator.dart';
 import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/assets_manager.dart';
@@ -23,12 +23,12 @@ class ChatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => AppNavigator.push(
-          context: context,
+      onTap: () => pushNewScreen(context,
           screen: ChatListViewScreen(
             // updateList: updateList,
-            listId: allLists[i].id,
-          )),
+            listId: allLists.elementAt(i).id,
+          ),
+          withNavBar: false),
       child: Row(
         children: [
           Image.asset(
@@ -141,6 +141,11 @@ class ChatCard extends StatelessWidget {
 
     if (userIds.isEmpty) return SvgPicture.asset(peopleIcon);
     String imageUrl = "";
+    bool moreThan3 = false;
+    if (userIds.length > 3) {
+      moreThan3 = true;
+      userIds = userIds.getRange(0, 3).toList();
+    }
     for (var userId in userIds) {
       final userSnapshot = await FirebaseFirestore.instance
           .collection('/users')
@@ -158,14 +163,22 @@ class ChatCard extends StatelessWidget {
         ));
       }
     }
-
+    if (moreThan3) {
+      imageWidgets.add(Text(
+        "...",
+        style: TextStyles.textViewBold12.copyWith(color: black),
+      ));
+    }
     return GestureDetector(
       onTap: () {
         print(imageWidgets.length);
       },
       child: Container(
         height: 50.h,
-        child: Row(children: imageWidgets.map((image) => image).toList()),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: imageWidgets.map((image) => image).toList()),
       ),
     );
   }

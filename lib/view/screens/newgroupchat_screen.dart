@@ -11,6 +11,7 @@ import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
@@ -72,11 +73,12 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
                     await Provider.of<ChatlistsProvider>(context, listen: false)
                         .createChatList(ids);
 
-                AppNavigator.pushReplacement(
-                    context: context,
+                pushNewScreen(context,
                     screen: ChatListViewScreen(
+                      // updateList: updateList,
                       listId: listId,
-                    ));
+                    ),
+                    withNavBar: false);
               },
               child: Text(
                 "Next",

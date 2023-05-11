@@ -57,10 +57,12 @@ class ProductsProvider with ChangeNotifier {
           category: category,
           url: productURL);
     } catch (e) {
+      log(e.toString());
       print(decodedProduct['name']);
       print("Error in converting Albert json to product");
       print(e);
     }
+
     return albertProduct;
   }
 
@@ -152,6 +154,7 @@ class ProductsProvider with ChangeNotifier {
     List<Product> productList = [];
     try {
       for (var product in decodedProductsList) {
+        log("done");
         var id = product['id'];
         var productName = product['name'];
         var imageURL = product['image_url'];

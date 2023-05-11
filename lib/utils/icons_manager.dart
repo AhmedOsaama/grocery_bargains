@@ -34,3 +34,6 @@ const String bee1 = "$imgPath/bee.png";
 const String addmsg = "$imgPath/addmsg.svg";
 const String newperson = "$imgPath/newperson.svg";
 const String closeIcon = "$imgPath/closeIcon.svg";
+const String personAvatar = "$imgPath/personAvatar.svg";
+const String whiteAdd = "$imgPath/whiteAdd.svg";
+const String closeCircle = "$imgPath/closeCircle.svg";

@@ -73,13 +73,13 @@ class MySearchDelegate extends SearchDelegate {
               child: CircularProgressIndicator(),
             );
           if (!snapshot.hasData || snapshot.hasError)
-            return const Center(
-              child: Text("Something went wrong please try again"),
+            return Center(
+              child: Text("tryAgain".tr()),
             );
           var searchResults = snapshot.data ?? [];
           if (searchResults.isEmpty)
-            return const Center(
-              child: Text("No matches found :("),
+            return Center(
+              child: Text("noMatchesFound".tr()),
             );
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),

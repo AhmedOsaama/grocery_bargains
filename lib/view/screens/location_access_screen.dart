@@ -79,12 +79,12 @@ class LocationAccessScreen extends StatelessWidget {
               width: double.infinity,
               onPressed: () async {
                 if (await AppTrackingTransparency.trackingAuthorizationStatus ==
-                TrackingStatus.notDetermined) {
+                    TrackingStatus.notDetermined) {
                   // Request system's tracking authorization dialog
                   await AppTrackingTransparency.requestTrackingAuthorization();
                 }
                 AppNavigator.pushReplacement(
-                  context: context, screen: MainScreen());
+                    context: context, screen: MainScreen());
               },
               child: Text(
                 "Accept",
@@ -100,12 +100,12 @@ class LocationAccessScreen extends StatelessWidget {
               width: double.infinity,
               onPressed: () async {
                 if (await AppTrackingTransparency.trackingAuthorizationStatus ==
-                TrackingStatus.notDetermined) {
+                    TrackingStatus.notDetermined) {
                   // Request system's tracking authorization dialog
                   await AppTrackingTransparency.requestTrackingAuthorization();
                 }
                 AppNavigator.pushReplacement(
-                  context: context, screen: MainScreen());
+                    context: context, screen: MainScreen());
               },
               child: Text(
                 "Not Now",
