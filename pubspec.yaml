@@ -38,7 +38,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_screenutil: ^5.6.0
   sign_in_with_apple: ^4.3.0
-  intl: ^0.17.0
+  intl: ^0.18.0
   flutter_svg: ^1.1.6
   firebase_core: ^2.4.0
   cloud_firestore: ^4.2.0
@@ -66,7 +66,7 @@ dependencies:
   flutter_contacts: ^1.1.6
   intl_phone_field: ^3.1.0
   firebase_app_check: ^0.1.1+14
-  pinput: ^2.2.21
+  pinput: ^2.2.31
   mixpanel_flutter: ^2.1.1
   app_tracking_transparency: ^2.0.3
   cached_network_image: ^3.2.3

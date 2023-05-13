@@ -10,6 +10,7 @@ import 'package:bargainb/view/widgets/store_list_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -43,18 +44,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final PagingController<int, ComparisonProduct> _pagingController =
-      PagingController(firstPageKey: 0);
+  PagingController(firstPageKey: 0);
   static const _pageSize = 5;
 
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
+
   // late Future<int> getAllProductsFuture;
   late Future<QuerySnapshot> getAllListsFuture;
+
   // late Future<List<BestValueItem>> getAllValueBargainsFuture;
   List allProducts = [];
 
   var isLoading = false;
   TextStyle textButtonStyle =
-      TextStylesInter.textViewRegular16.copyWith(color: mainPurple);
+  TextStylesInter.textViewRegular16.copyWith(color: mainPurple);
 
   List<BestValueItem> bestValueBargains = [];
   int startingIndex = 0;
@@ -88,7 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
         await Provider.of<ProductsProvider>(context, listen: false)
             .getLimitedPriceComparisons(pageKey);
       }
-      final newProducts = Provider.of<ProductsProvider>(context, listen: false)
+      final newProducts = Provider
+          .of<ProductsProvider>(context, listen: false)
           .comparisonProducts;
 
       final isLastPage = newProducts.length < _pageSize;
@@ -151,7 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   .update({
                                 'language': 'en',
                                 'status':
-                                    "Hello! I'm using BargainB. Join the app",
+                                "Hello! I'm using BargainB. Join the app",
                                 'privacy': {
                                   'connectContacts': true,
                                   'locationServices': false,
@@ -180,27 +184,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         future: getUserDataFuture,
                         builder: (context, snapshot) {
                           if (snapshot.connectionState ==
-                                  ConnectionState.waiting ||
+                              ConnectionState.waiting ||
                               !snapshot.hasData) {
                             return Container();
                           }
 
                           return snapshot.data!['imageURL'] != ""
                               ? GestureDetector(
-                                  onTap: () async {
-                                    NavigatorController.jumpToTab(2);
-                                  },
-                                  child: CircleAvatar(
-                                    backgroundImage: NetworkImage(
-                                        snapshot.data!['imageURL']),
-                                    radius: 30,
-                                  ),
-                                )
+                            onTap: () async {
+                              NavigatorController.jumpToTab(2);
+                            },
+                            child: CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                  snapshot.data!['imageURL']),
+                              radius: 30,
+                            ),
+                          )
                               : GestureDetector(
-                                  onTap: () async {
-                                    NavigatorController.jumpToTab(2);
-                                  },
-                                  child: SvgPicture.asset(bee));
+                              onTap: () async {
+                                NavigatorController.jumpToTab(2);
+                              },
+                              child: SvgPicture.asset(bee));
                         }),
                   ],
                 ),
@@ -211,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   isFilled: true,
                   onTap: () async {
                     SharedPreferences pref =
-                        await SharedPreferences.getInstance();
+                    await SharedPreferences.getInstance();
                     return showSearch(
                         context: context,
                         delegate: MySearchDelegate(pref, true));
@@ -220,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   borderRaduis: 999,
                   hintText: LocaleKeys.whatAreYouLookingFor.tr(),
                   hintStyle:
-                      TextStyles.textViewSemiBold14.copyWith(color: gunmetal),
+                  TextStyles.textViewSemiBold14.copyWith(color: gunmetal),
                 ),
                 SizedBox(
                   height: 10.h,
@@ -235,7 +239,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     TextButton(
                         onPressed: () {
-                          Provider.of<ChatlistsProvider>(context, listen: false)
+                          Provider
+                              .of<ChatlistsProvider>(context, listen: false)
                               .chatlistsView = ChatlistsView.LISTVIEW;
                           Provider.of<ChatlistsProvider>(context, listen: false)
                               .notifyListeners();
@@ -273,7 +278,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       List<String> ids = [];
                       allLists.forEach(
-                        (element) {
+                            (element) {
                           log(element.data().toString());
                           ids.add(element.id);
                         },
@@ -294,11 +299,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           widgetBuilder: (index) {
                             return Container(
                               child: StoreListWidget(
-                                  listId: allLists.elementAt(index).id,
+                                  listId: allLists
+                                      .elementAt(index)
+                                      .id,
                                   storeImagePath: allLists
                                       .elementAt(index)['storeImageUrl'],
                                   listName:
-                                      allLists.elementAt(index)['list_name']),
+                                  allLists.elementAt(index)['list_name']),
                             );
                           },
                         ),
@@ -316,8 +323,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           .copyWith(color: prussian),
                     ),
                     TextButton(
-                        onPressed: () => AppNavigator.push(
-                            context: context, screen: LatestBargainsScreen()),
+                        onPressed: () =>
+                            AppNavigator.push(
+                                context: context, screen: LatestBargainsScreen()),
                         child: Text(
                           'See all',
                           style: textButtonStyle,
@@ -345,8 +353,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 scrollDirection: Axis.horizontal,
                                 pagingController: _pagingController,
                                 builderDelegate: PagedChildBuilderDelegate<
-                                        ComparisonProduct>(
-                                    itemBuilder: (context, item, index) => Row(
+                                    ComparisonProduct>(
+                                    itemBuilder: (context, item, index) =>
+                                        Row(
                                           children: [
                                             DiscountItem(
                                               inGridView: false,
@@ -358,7 +367,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             }
 
-                                /*    return ListView.builder(
+                            /*    return ListView.builder(
                                   itemCount: comparisonProducts.length,
                                   scrollDirection: Axis.horizontal,
                                   itemBuilder: (ctx, i) {
@@ -422,32 +431,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                     );
                                   },
                                 ); */
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Latest Value Bargains",
-                          style: TextStylesDMSans.textViewBold16
-                              .copyWith(color: prussian),
+                          },
                         ),
-                        // TextButton(
-                        //     onPressed: () {},
-                        //     child: Text(
-                        //       'See all',
-                        //       style: textButtonStyle,
-                        //     ))
-                      ],
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Latest Value Bargains",
+                      style: TextStylesDMSans.textViewBold16
+                          .copyWith(color: prussian),
                     ),
-                    Container(
-                      height: 150.h,
-                      child: Consumer<ProductsProvider>(
-                          builder: (context, provider, _) {
+                    // TextButton(
+                    //     onPressed: () {},
+                    //     child: Text(
+                    //       'See all',
+                    //       style: textButtonStyle,
+                    //     ))
+                  ],
+                ),
+                Container(
+                  height: 150.h,
+                  child: Consumer<ProductsProvider>(
+                      builder: (context, provider, _) {
                         bestValueBargains = provider.bestValueBargains;
                         print(bestValueBargains.length);
                         // print(bestValueBargains.length);
@@ -457,28 +466,28 @@ class _HomeScreenState extends State<HomeScreen> {
                               return GestureDetector(
                                 onTap: () {
                                   var comparisonId = -1;
-                              if(bargain.store == "Albert") {
-                                comparisonId = Provider
-                                    .of<ProductsProvider>(context, listen: false)
-                                    .comparisonProducts
-                                    .firstWhere((comparison) =>
-                                comparison.albertName == bargain.itemName).id;
-                              }
-                              AppNavigator.push(
-                                  context: context,
-                                  screen: ProductDetailScreen(
-                                    comparisonId: comparisonId,
+                                  if (bargain.store == "Albert") {
+                                    comparisonId = Provider
+                                        .of<ProductsProvider>(context, listen: false)
+                                        .comparisonProducts
+                                        .firstWhere((comparison) =>
+                                    comparison.albertName == bargain.itemName).id;
+                                  }
+                                  AppNavigator.push(
+                                      context: context,
+                                      screen: ProductDetailScreen(
+                                        comparisonId: comparisonId,
                                         productId: bargain.itemId,
                                         storeName: bargain.store,
                                         productName: bargain.itemName,
                                         imageURL: bargain.itemImage,
                                         description: bargain.description,
                                         price1:
-                                            double.tryParse(bargain.price1) ??
-                                                0,
+                                        double.tryParse(bargain.price1) ??
+                                            0,
                                         price2:
-                                            double.tryParse(bargain.price2) ??
-                                                0,
+                                        double.tryParse(bargain.price2) ??
+                                            0,
                                         oldPrice: bargain.oldPrice,
                                         size1: bargain.size1,
                                         size2: bargain.size2,
@@ -505,12 +514,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Column(
                                         mainAxisSize: MainAxisSize.min,
                                         crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             bargain.bestValueSize,
                                             style:
-                                                TextStyles.textViewSemiBold16,
+                                            TextStyles.textViewSemiBold16,
                                           ),
                                           SizedBox(
                                             height: 10.h,
@@ -518,14 +527,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                           Text(
                                             "\€" +
                                                 (bargain.bestValueSize ==
-                                                        bargain.size1
+                                                    bargain.size1
                                                     ? bargain.price1
                                                     : bargain
-                                                        .price2), //should be the best price
+                                                    .price2), //should be the best price
                                             style: TextStyles.textViewMedium12
                                                 .copyWith(
-                                                    color: const Color.fromRGBO(
-                                                        108, 197, 29, 1)),
+                                                color: const Color.fromRGBO(
+                                                    108, 197, 29, 1)),
                                           ),
                                           SizedBox(
                                             height: 5.w,
@@ -543,24 +552,23 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             }).toList());
                       }),
-                    ),
-                    10.ph,
-                  ],
                 ),
-              ),
+                10.ph,
+              ],
             ),
           ),
-        );
-      }),
+        ),
+      ),
     );
-  }
+    // }),
+    // );
 
-  @override
-  void dispose() {
-    _pagingController.dispose();
-    super.dispose();
   }
-
+    @override
+    void dispose() {
+      _pagingController.dispose();
+      super.dispose();
+    }
 /*   Future fetch(int startingIndex) {
     return Provider.of<ProductsProvider>(context, listen: false)
         .getProducts(startingIndex);
