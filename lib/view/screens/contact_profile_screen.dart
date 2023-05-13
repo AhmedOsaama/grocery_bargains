@@ -16,6 +16,7 @@ import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:bargainb/models/user_info.dart' as UserInfo;
 
@@ -109,7 +110,7 @@ class _ContactProfileScreenState extends State<ContactProfileScreen> {
                         });
                       },
                       child: Text(
-                        "Cancel",
+                        "Cancel".tr(),
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 17.sp,
@@ -135,7 +136,7 @@ class _ContactProfileScreenState extends State<ContactProfileScreen> {
                                 });
                               },
                               child: Text(
-                                "List removal",
+                                "ListRemoval".tr(),
                                 style: TextStyles.textViewSemiBold12
                                     .copyWith(color: black2),
                               ),
@@ -172,7 +173,7 @@ class _ContactProfileScreenState extends State<ContactProfileScreen> {
                                 }
                               },
                               child: Text(
-                                "Delete",
+                                "Delete".tr(),
                                 style: TextStyles.textViewSemiBold12
                                     .copyWith(color: black2),
                               ),
@@ -249,7 +250,7 @@ class _ContactProfileScreenState extends State<ContactProfileScreen> {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            'GENERAL CHATS',
+                            'GENERALCHATS'.tr(),
                             style: TextStylesInter.textViewRegular12
                                 .copyWith(color: mainPurple),
                           ),
@@ -257,7 +258,7 @@ class _ContactProfileScreenState extends State<ContactProfileScreen> {
                         15.ph,
                         widget.lists.isEmpty
                             ? Text(
-                                'No chatlists found :(',
+                                'NoChatListFound'.tr(),
                                 style: TextStylesInter.textViewRegular12
                                     .copyWith(color: black),
                               )
@@ -273,12 +274,13 @@ class _ContactProfileScreenState extends State<ContactProfileScreen> {
                                   return GestureDetector(
                                     behavior: HitTestBehavior.translucent,
                                     onTap: () {
-                                      AppNavigator.push(
-                                          context: context,
+                                      pushNewScreen(context,
                                           screen: ChatListViewScreen(
+                                            // updateList: updateList,
                                             listId:
                                                 widget.lists.elementAt(i).id,
-                                          ));
+                                          ),
+                                          withNavBar: false);
                                     },
                                     child: Row(
                                       mainAxisAlignment:

@@ -152,7 +152,7 @@ class DiscountItem extends StatelessWidget {
         ),
         margin:
             EdgeInsets.symmetric(vertical: inGridView ? 0 : 10, horizontal: 0),
-        padding: EdgeInsets.symmetric(horizontal: inGridView ? 0 : 15.w),
+        padding: EdgeInsets.symmetric(horizontal: inGridView ? 10 : 15.w),
         child: Column(
           children: [
             Row(
@@ -358,38 +358,42 @@ class DiscountItem extends StatelessWidget {
   }
 
   Future<void> shareDiscountItem(BuildContext context, productName, oldPrice,
-      price1, price2, imageURL, size1) {
+      price1, price2, imageURL, size1, id, storeName) {
     return Provider.of<ChatlistsProvider>(context, listen: false)
         .showChooseListDialog(
       context: context,
       isSharing: true,
       listItem: ListItem(
-          text: '',
-          name: productName,
-          oldPrice: oldPrice,
-          price: price1 ?? price2,
-          isChecked: false,
-          quantity: 0,
-          imageURL: imageURL,
-          size: size1),
+        storeName: storeName,
+        text: '',
+        name: productName,
+        oldPrice: oldPrice,
+        price: price1 ?? price2,
+        isChecked: false,
+        quantity: 0,
+        imageURL: imageURL,
+        size: size1,
+      ),
     );
   }
 
   Future<void> addDiscountItem(BuildContext context, productName, oldPrice,
-      price1, price2, imageURL, size1) {
+      price1, price2, imageURL, size1, id, storeName) {
     return Provider.of<ChatlistsProvider>(context, listen: false)
         .showChooseListDialog(
       context: context,
       isSharing: false,
       listItem: ListItem(
-          text: '',
-          name: productName,
-          oldPrice: oldPrice,
-          price: price1 ?? price2,
-          isChecked: false,
-          quantity: 1,
-          imageURL: imageURL,
-          size: size1),
+        storeName: storeName,
+        text: '',
+        name: productName,
+        oldPrice: oldPrice,
+        price: price1 ?? price2,
+        isChecked: false,
+        quantity: 1,
+        imageURL: imageURL,
+        size: size1,
+      ),
     );
   }
 }

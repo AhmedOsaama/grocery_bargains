@@ -1,6 +1,8 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/product_category.dart';
 import 'package:bargainb/utils/assets_manager.dart';
+import 'package:bargainb/utils/down_triangle_painter.dart';
+import 'package:bargainb/utils/tooltips_keys.dart';
 import 'package:bargainb/view/components/draggable_list.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/screens/categories_screen.dart';
@@ -13,6 +15,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
@@ -30,6 +33,7 @@ import 'message_bubble.dart';
 
 class ChatView extends StatefulWidget {
   final String listId;
+
   ChatView({Key? key, required this.listId}) : super(key: key);
 
   @override
@@ -45,9 +49,10 @@ class _ChatViewState extends State<ChatView> {
   var isLoading = false;
   var isCollapsed = true;
   var isExpandingChatlist = false;
-
+  bool isFirstTime = false;
   @override
   void initState() {
+    getFirstTime();
     final fbm = FirebaseMessaging.instance;
     fbm.requestPermission();
     // FirebaseMessaging.onMessage.listen((message) {
@@ -60,7 +65,23 @@ class _ChatViewState extends State<ChatView> {
     //   print("onBackgroundMessage: " + message.toString());
     // });
     fbm.subscribeToTopic(widget.listId);
+
     super.initState();
+  }
+
+  Future<Null> getFirstTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isFirstTime = prefs.getBool("firstTime") ?? true;
+    });
+  }
+
+  Future<Null> turnOffFirstTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      prefs.setBool("firstTime", false);
+      isFirstTime = false;
+    });
   }
 
   String getTotalListPrice(List items) {
@@ -79,157 +100,462 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
-    return SlidingUpPanel(
-      controller: panelController,
-      body: Container(
-        decoration: BoxDecoration(
-            image: DecorationImage(image: AssetImage(chatlistBackground))),
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: Stack(
-          children: [
-            StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection("/lists/${widget.listId}/messages")
-                    .orderBy('createdAt', descending: true)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  final messages = snapshot.data?.docs ?? [];
-                  if (messages.isEmpty || !snapshot.hasData) {
-                    return Container(
-                      margin: EdgeInsets.only(top: 100.h),
-                      alignment: Alignment.topCenter,
-                      child: DottedContainer(
-                        text: LocaleKeys.startChatting.tr(),
-                      ),
-                    );
-                  }
-                  return ListView.builder(
-                      padding: EdgeInsets.only(bottom: 300, top: 50),
-                      reverse: true,
-                      itemCount: messages.length,
-                      itemBuilder: (ctx, index) => Container(
-                            padding: const EdgeInsets.all(8.0),
-                            child: MessageBubble(
-                              itemName: messages[index]['item_name'],
-                              itemSize: messages[index]['item_description'],
-                              itemPrice:
-                                  messages[index]['item_price'].toString(),
-                              itemOldPrice:
-                                  messages[index]['item_oldPrice'] ?? "0.0",
-                              itemImage: messages[index]['item_image'],
-                              storeName: messages[index]['store_name'] ?? "",
-                              isMe: messages[index]['userId'] ==
-                                  FirebaseAuth.instance.currentUser!.uid,
-                              message: messages[index]['message'],
-                              messageDocPath: messages[index].reference,
-                              userName: messages[index]['username'],
-                              userId: messages[index]['userId'],
-                              userImage: messages[index]['userImageURL'],
-                              key: ValueKey(messages[index].id),
-                              isAddedToList: messages[index]['isAddedToList'],
-                            ),
-                          ));
-                }),
-            StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection("/lists/${widget.listId}/items")
-                    .orderBy('time')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  final items = snapshot.data?.docs ?? [];
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Container();
-                  }
-                  if (items.isEmpty) {
-                    return Container();
-                  }
-                  return Container(
-                    height: isExpandingChatlist ? 400.h : 60.h,
-                    padding: EdgeInsets.symmetric(horizontal: 15),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white,
-                      boxShadow: Utils.boxShadow,
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
+    return ShowCaseWidget(
+      builder: Builder(builder: (builder) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          if (isFirstTime) {
+            ShowCaseWidget.of(builder)
+                .startShowCase([TooltipKeys.showCase4, TooltipKeys.showCase5]);
+          }
+        });
+        return SlidingUpPanel(
+          controller: panelController,
+          body: Container(
+            decoration: BoxDecoration(
+                image: DecorationImage(image: AssetImage(chatlistBackground))),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Stack(
+              children: [
+                StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection("/lists/${widget.listId}/messages")
+                        .orderBy('createdAt', descending: true)
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      final messages = snapshot.data?.docs ?? [];
+                      if (messages.isEmpty || !snapshot.hasData) {
+                        return Container(
+                          margin: EdgeInsets.only(top: 100.h),
+                          alignment: Alignment.topCenter,
+                          child: DottedContainer(
+                            text: LocaleKeys.startChatting.tr(),
+                          ),
+                        );
+                      }
+                      return ListView.builder(
+                          padding: EdgeInsets.only(bottom: 300, top: 50),
+                          reverse: true,
+                          itemCount: messages.length,
+                          itemBuilder: (ctx, index) => Showcase.withWidget(
+                                key: isFirstTime
+                                    ? TooltipKeys.showCase5
+                                    : new GlobalKey<State<StatefulWidget>>(),
+                                onTargetClick: () async =>
+                                    await turnOffFirstTime(),
+                                onBarrierClick: () async =>
+                                    await turnOffFirstTime(),
+                                onTargetDoubleTap: () async =>
+                                    await turnOffFirstTime(),
+                                tooltipPosition: TooltipPosition.top,
+                                targetBorderRadius: BorderRadius.circular(8),
+                                container: Container(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.all(15),
+                                        width: 180.w,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(8.r),
+                                          color: purple70,
+                                        ),
+                                        child: Column(children: [
+                                          Text(
+                                            "Share groceries to chat, add them to list at the same place.",
+                                            maxLines: 4,
+                                            style: TextStyles.textViewRegular13
+                                                .copyWith(color: white),
+                                          ),
+                                          GestureDetector(
+                                            onTap: () async {
+                                              await turnOffFirstTime();
+                                              ShowCaseWidget.of(builder).next();
+                                            },
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Text(
+                                                  "Next",
+                                                  style: TextStyles
+                                                      .textViewSemiBold14
+                                                      .copyWith(color: white),
+                                                ),
+                                                Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  color: white,
+                                                  size: 15.sp,
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ]),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          15.pw,
+                                          Container(
+                                            height: 11,
+                                            width: 13,
+                                            child: CustomPaint(
+                                              painter: DownTrianglePainter(
+                                                strokeColor: purple70,
+                                                strokeWidth: 1,
+                                                paintingStyle:
+                                                    PaintingStyle.fill,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                height: 110.h,
+                                width: 190.h,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: MessageBubble(
+                                    itemName: messages[index]['item_name'],
+                                    itemSize: messages[index]
+                                        ['item_description'],
+                                    itemPrice: messages[index]['item_price']
+                                        .toString(),
+                                    itemOldPrice: messages[index]
+                                            ['item_oldPrice'] ??
+                                        "0.0",
+                                    itemImage: messages[index]['item_image'],
+                                    storeName:
+                                        messages[index]['store_name'] ?? "",
+                                    isMe: messages[index]['userId'] ==
+                                        FirebaseAuth.instance.currentUser!.uid,
+                                    message: messages[index]['message'],
+                                    messageDocPath: messages[index].reference,
+                                    userName: messages[index]['username'],
+                                    userId: messages[index]['userId'],
+                                    userImage: messages[index]['userImageURL'],
+                                    key: ValueKey(messages[index].id),
+                                    isAddedToList: messages[index]
+                                        ['isAddedToList'],
+                                  ),
+                                ),
+                              ));
+                    }),
+                StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection("/lists/${widget.listId}/items")
+                        .orderBy('time')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      final items = snapshot.data?.docs ?? [];
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container();
+                      }
+                      if (items.isEmpty) {
+                        return Container();
+                      }
+                      int height = 400;
+                      switch (items.length) {
+                        case 1:
+                          height = 120;
+                          break;
+                        case 2:
+                          height = 200;
+                          break;
+                        case 3:
+                          height = 270;
+                          break;
+                        case 4:
+                          height = 350;
+                          break;
+                        default:
+                          height = 400;
+                      }
+                      return Container(
+                        height: isExpandingChatlist ? height.h : 60.h,
+                        padding: EdgeInsets.symmetric(horizontal: 15),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white,
+                          boxShadow: Utils.boxShadow,
+                        ),
+                        child: Column(
                           children: [
-                            Text(
-                              LocaleKeys.chatlist.tr(),
-                              style: TextStylesInter.textViewBold12
-                                  .copyWith(color: black2),
+                            Row(
+                              children: [
+                                Text(
+                                  LocaleKeys.chatlist.tr(),
+                                  style: TextStylesInter.textViewBold12
+                                      .copyWith(color: black2),
+                                ),
+                                Spacer(),
+                                Text(
+                                  "${items.length} items",
+                                  style: TextStyles.textViewMedium10.copyWith(
+                                      color: Color.fromRGBO(204, 204, 203, 1)),
+                                ),
+                                SizedBox(
+                                  width: 10.w,
+                                ),
+                                Text(
+                                  LocaleKeys.total.tr(),
+                                  style: TextStyles.textViewMedium15
+                                      .copyWith(color: black2),
+                                ),
+                                10.pw,
+                                Text(
+                                  "€ " + getTotalListPrice(items),
+                                  style: TextStyles.textViewBold15
+                                      .copyWith(color: prussian),
+                                ),
+                                SizedBox(
+                                  width: 10.w,
+                                ),
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isExpandingChatlist =
+                                            !isExpandingChatlist;
+                                      });
+                                    },
+                                    icon: isExpandingChatlist
+                                        ? Icon(
+                                            Icons.keyboard_arrow_up,
+                                            color: mainPurple,
+                                            size: 30.sp,
+                                          )
+                                        : Icon(
+                                            Icons.keyboard_arrow_down,
+                                            color: mainPurple,
+                                            size: 30.sp,
+                                          )),
+                              ],
                             ),
-                            Spacer(),
-                            Text(
-                              "${items.length} items",
-                              style: TextStyles.textViewMedium10.copyWith(
-                                  color: Color.fromRGBO(204, 204, 203, 1)),
-                            ),
-                            SizedBox(
-                              width: 10.w,
-                            ),
-                            Text(
-                              LocaleKeys.total.tr(),
-                              style: TextStyles.textViewMedium15
-                                  .copyWith(color: black2),
-                            ),
-                            10.pw,
-                            Text(
-                              "€ " + getTotalListPrice(items),
-                              style: TextStyles.textViewBold15
-                                  .copyWith(color: prussian),
-                            ),
-                            SizedBox(
-                              width: 10.w,
-                            ),
-                            IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    isExpandingChatlist = !isExpandingChatlist;
-                                  });
-                                },
-                                icon: isExpandingChatlist
-                                    ? Icon(
-                                        Icons.keyboard_arrow_up,
-                                        color: mainPurple,
-                                        size: 30.sp,
-                                      )
-                                    : Icon(
-                                        Icons.keyboard_arrow_down,
-                                        color: mainPurple,
-                                        size: 30.sp,
-                                      )),
+                            if (isExpandingChatlist)
+                              Flexible(
+                                child: DraggableList(
+                                  items: items,
+                                  listId: widget.listId,
+                                  inChatView: true,
+                                ),
+                              ),
                           ],
                         ),
-                        if (isExpandingChatlist)
-                          Flexible(
-                            child: DraggableList(
-                              items: items,
-                              listId: widget.listId,
-                              inChatView: true,
-                            ),
-                          ),
-                      ],
+                      );
+                    }),
+              ],
+            ),
+          ),
+          header: Container(
+            margin: EdgeInsets.only(left: 170.w, top: 5),
+            width: 50.w,
+            height: 5.h,
+            decoration: BoxDecoration(
+              color: Color.fromRGBO(121, 116, 126, 0.4),
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          collapsed: tooltipWidget(builder, context),
+          onPanelOpened: () {
+            setState(() {
+              isCollapsed = false;
+            });
+          },
+          onPanelClosed: () {
+            setState(() {
+              isCollapsed = true;
+            });
+          },
+          maxHeight: ScreenUtil().screenHeight * 0.60,
+          panel: Container(
+            padding: const EdgeInsets.only(
+              left: 15,
+              right: 15,
+            ),
+            child: SingleChildScrollView(
+              physics: NeverScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  20.ph,
+                  Opacity(
+                    opacity: isCollapsed ? 0 : 1,
+                    child: GenericField(
+                      isFilled: true,
+                      onTap: () async {
+                        SharedPreferences pref =
+                            await SharedPreferences.getInstance();
+                        return showSearch(
+                            context: context,
+                            delegate: MySearchDelegate(pref, true));
+                      },
+                      prefixIcon: Icon(Icons.search),
+                      borderRaduis: 999,
+                      hintText: LocaleKeys.whatAreYouLookingFor.tr(),
+                      hintStyle: TextStyles.textViewSemiBold14
+                          .copyWith(color: gunmetal),
                     ),
-                  );
-                }),
+                  ),
+                  10.ph,
+                  Consumer<ProductsProvider>(builder: (c, provider, _) {
+                    List<ProductCategory> categories = [];
+                    categories = provider.categories;
+                    return SizedBox(
+                      height: ScreenUtil().screenHeight / 6,
+                      child: categories.isEmpty
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: categories.map((element) {
+                                return GestureDetector(
+                                  onTap: () => AppNavigator.pushReplacement(
+                                      context: context,
+                                      screen: CategoriesScreen(
+                                        category: element.category,
+                                      )),
+                                  child: SizedBox(
+                                    width: 80.w,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          element.image,
+                                          width: 70.w,
+                                          height: 70.h,
+                                        ),
+                                        Text(
+                                          element.category,
+                                          style: TextStyles.textViewMedium11
+                                              .copyWith(color: gunmetal),
+                                          textAlign: TextAlign.center,
+                                          maxLines: 3,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }).toList()),
+                    );
+                  }),
+                  5.ph,
+                  Text(
+                    LocaleKeys.latestBargains.tr(),
+                    style: TextStylesInter.textViewRegular13
+                        .copyWith(color: mainPurple),
+                  ),
+                  6.ph,
+                  Container(
+                    height: 250.h,
+                    child: Consumer<ProductsProvider>(
+                      builder: (ctx, provider, _) {
+                        var comparisonProducts = provider.comparisonProducts;
+                        if (comparisonProducts.isEmpty)
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        return ListView.builder(
+                          itemCount: comparisonProducts.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (ctx, i) {
+                            return DiscountItem(
+                              inGridView: false,
+                              comparisonProduct: comparisonProducts[i],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  50.ph,
+                ],
+              ),
+            ),
+          ),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        );
+      }),
+    );
+  }
+
+  Showcase tooltipWidget(BuildContext builder, BuildContext context) {
+    return Showcase.withWidget(
+      targetPadding: EdgeInsets.only(left: 100.w),
+      key: isFirstTime
+          ? TooltipKeys.showCase4
+          : new GlobalKey<State<StatefulWidget>>(),
+      container: Container(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: EdgeInsets.all(15),
+              width: 180.w,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.r),
+                color: purple70,
+              ),
+              child: Column(children: [
+                Text(
+                  "Press a card icon to search groceries from chatlist.",
+                  maxLines: 4,
+                  style: TextStyles.textViewRegular13.copyWith(color: white),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    ShowCaseWidget.of(builder).next();
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        "Next",
+                        style: TextStyles.textViewSemiBold14
+                            .copyWith(color: white),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: white,
+                        size: 15.sp,
+                      )
+                    ],
+                  ),
+                )
+              ]),
+            ),
+            Row(
+              children: [
+                15.pw,
+                Container(
+                  height: 11,
+                  width: 13,
+                  child: CustomPaint(
+                    painter: DownTrianglePainter(
+                      strokeColor: purple70,
+                      strokeWidth: 1,
+                      paintingStyle: PaintingStyle.fill,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
-      header: Container(
-        margin: EdgeInsets.only(left: 170.w, top: 5),
-        width: 50.w,
-        height: 5.h,
-        decoration: BoxDecoration(
-          color: Color.fromRGBO(121, 116, 126, 0.4),
-          borderRadius: BorderRadius.circular(20),
-        ),
-      ),
-      collapsed: Container(
+      height: 110.h,
+      width: 190.h,
+      child: Container(
         padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15.w),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -282,125 +608,6 @@ class _ChatViewState extends State<ChatView> {
           ],
         ),
       ),
-      onPanelOpened: () {
-        setState(() {
-          isCollapsed = false;
-        });
-      },
-      onPanelClosed: () {
-        setState(() {
-          isCollapsed = true;
-        });
-      },
-      maxHeight: ScreenUtil().screenHeight * 0.60,
-      panel: Container(
-        padding: const EdgeInsets.only(
-          left: 15,
-          right: 15,
-        ),
-        child: SingleChildScrollView(
-          physics: NeverScrollableScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              20.ph,
-              Opacity(
-                opacity: isCollapsed ? 0 : 1,
-                child: GenericField(
-                  isFilled: true,
-                  onTap: () async {
-                    SharedPreferences pref =
-                        await SharedPreferences.getInstance();
-                    return showSearch(
-                        context: context,
-                        delegate: MySearchDelegate(pref, true));
-                  },
-                  prefixIcon: Icon(Icons.search),
-                  borderRaduis: 999,
-                  hintText: LocaleKeys.whatAreYouLookingFor.tr(),
-                  hintStyle:
-                      TextStyles.textViewSemiBold14.copyWith(color: gunmetal),
-                ),
-              ),
-              10.ph,
-              Consumer<ProductsProvider>(builder: (c, provider, _) {
-                List<ProductCategory> categories = [];
-                categories = provider.categories;
-                return SizedBox(
-                  height: ScreenUtil().screenHeight / 6,
-                  child: categories.isEmpty
-                      ? const Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: categories.map((element) {
-                            return GestureDetector(
-                              onTap: () => AppNavigator.pushReplacement(
-                                  context: context,
-                                  screen: CategoriesScreen(
-                                    category: element.category,
-                                  )),
-                              child: SizedBox(
-                                width: 80.w,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Image.asset(
-                                      element.image,
-                                      width: 70.w,
-                                      height: 70.h,
-                                    ),
-                                    Text(
-                                      element.category,
-                                      style: TextStyles.textViewMedium11
-                                          .copyWith(color: gunmetal),
-                                      textAlign: TextAlign.center,
-                                      maxLines: 3,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          }).toList()),
-                );
-              }),
-              5.ph,
-              Text(
-                LocaleKeys.latestBargains.tr(),
-                style: TextStylesInter.textViewRegular13
-                    .copyWith(color: mainPurple),
-              ),
-              6.ph,
-              Container(
-                height: 220.h,
-                child: Consumer<ProductsProvider>(
-                  builder: (ctx, provider, _) {
-                    var comparisonProducts = provider.comparisonProducts;
-                    if (comparisonProducts.isEmpty)
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    return ListView.builder(
-                      itemCount: comparisonProducts.length,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (ctx, i) {
-                        return DiscountItem(
-                          inGridView: false,
-                          comparisonProduct: comparisonProducts[i],
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-              50.ph,
-            ],
-          ),
-        ),
-      ),
-      borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
     );
   }
 }

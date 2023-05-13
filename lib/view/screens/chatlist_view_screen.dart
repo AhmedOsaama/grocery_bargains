@@ -5,6 +5,8 @@ import 'package:bargainb/models/chatlist.dart';
 import 'package:bargainb/models/user_info.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/components/draggable_list.dart';
+import 'package:bargainb/view/screens/chatlists_screen.dart';
+import 'package:bargainb/view/screens/contact_profile_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -137,7 +139,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
           .get()
           .timeout(Duration(seconds: 10));
       userIds = list['userIds'];
-      log(userIds.length.toString());
     } catch (e) {
       print(e);
       return SvgPicture.asset(
@@ -151,8 +152,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     String userName = "";
     String email = "";
     String phoneNumber = "";
+    String id = "";
     for (var userId in userIds) {
-      log(userId);
       //for every userId in the chatlist
       final userSnapshot = await FirebaseFirestore.instance
           .collection('/users')
@@ -162,8 +163,9 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       email = userSnapshot.data()!['email'];
       userName = userSnapshot.data()!['username'];
       phoneNumber = userSnapshot.data()!['phoneNumber'];
+      id = userSnapshot.id;
       listUsers.add(UserContactInfo(
-        id: '',
+          id: id,
           phoneNumber: phoneNumber,
           imageURL: imageUrl,
           name: userName,
@@ -211,11 +213,9 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
               var phoneNumber = user.get('phoneNumber');
 
               var contactIndex = contacts.indexWhere((contact) {
-                log(contact.phones.toString());
-
                 return (contact.phones.first.normalizedNumber == phoneNumber);
               });
-              //   log("i:" + contactIndex.toString());
+
               if (contactIndex != -1) {
                 //match found
                 var contact = contacts.elementAt(contactIndex);
@@ -227,8 +227,9 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                   var name = user.get('username');
                   var email = user.get('email');
                   var imageURL = user.get('imageURL');
+                  var id = user.id;
                   contactsList.add(UserContactInfo(
-                    id: '',
+                      id: id,
                       phoneNumber: phoneNumber,
                       imageURL: imageURL,
                       name: name,
@@ -476,9 +477,14 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                               var total = 0.0;
                               items.forEach(
                                 (element) {
-                                  if (element["text"].toString().isEmpty)
-                                    total +=
-                                        double.parse(element["item_price"]);
+                                  if (element["text"].toString().isEmpty) {
+                                    if (element["item_price"] != null &&
+                                        element["item_price"] != "null" &&
+                                        element["item_price"] != "") {
+                                      total +=
+                                          double.parse(element["item_price"]);
+                                    }
+                                  }
                                 },
                               );
                               return Column(
@@ -551,7 +557,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                               )
                                             : Container();
                                       }),
-                                  items.isEmpty
+                                  itemsState.value.isEmpty
                                       ? Column(
                                           children: [
                                             40.ph,
@@ -620,29 +626,87 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                   ListView(
                                       shrinkWrap: true,
                                       children: listUsers.map((userInfo) {
-                                        return Row(
-                                          children: [
-                                            userInfo.imageURL.isEmpty
-                                                ? SvgPicture.asset(
-                                                    peopleIcon,
-                                                    width: 35.w,
-                                                    height: 35.h,
-                                                  )
-                                                : CircleAvatar(
-                                                    backgroundImage:
-                                                        NetworkImage(
-                                                      userInfo.imageURL,
+                                        return GestureDetector(
+                                          onTap: () async {
+                                            if (userInfo.id ==
+                                                FirebaseAuth.instance
+                                                    .currentUser?.uid) {
+                                              AppNavigator.pop(
+                                                  context: context);
+                                              NavigatorController.jumpToTab(2);
+                                            } else {
+                                              List<ChatList> lists = [];
+                                              var friends = await Provider.of<
+                                                          ChatlistsProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .getAllFriends();
+
+                                              friends.forEach((element) {
+                                                if (element.id == userInfo.id) {
+                                                  element.chatlists
+                                                      .forEach((element) {
+                                                    lists.add(ChatList(
+                                                        id: element.id,
+                                                        name: element
+                                                            .get("list_name"),
+                                                        storeName: element
+                                                            .get("storeName"),
+                                                        userIds: element
+                                                            .get("userIds"),
+                                                        totalPrice: element
+                                                            .get("total_price"),
+                                                        storeImageUrl:
+                                                            element.get(
+                                                                "storeImageUrl"),
+                                                        itemLength:
+                                                            element.get("size"),
+                                                        lastMessage: element.get(
+                                                            "last_message"),
+                                                        lastMessageDate: element.get(
+                                                            "last_message_date"),
+                                                        lastMessageUserId:
+                                                            element.get(
+                                                                "last_message_userId"),
+                                                        lastMessageUserName:
+                                                            element.get(
+                                                                "last_message_userName")));
+                                                  });
+                                                }
+                                              });
+
+                                              AppNavigator.push(
+                                                  context: context,
+                                                  screen: ContactProfileScreen(
+                                                    lists: lists,
+                                                    user: userInfo,
+                                                  ));
+                                            }
+                                          },
+                                          child: Row(
+                                            children: [
+                                              userInfo.imageURL.isEmpty
+                                                  ? SvgPicture.asset(
+                                                      peopleIcon,
+                                                      width: 35.w,
+                                                      height: 35.h,
+                                                    )
+                                                  : CircleAvatar(
+                                                      backgroundImage:
+                                                          NetworkImage(
+                                                        userInfo.imageURL,
+                                                      ),
+                                                      radius: 20,
                                                     ),
-                                                    radius: 20,
-                                                  ),
-                                            20.pw,
-                                            Text(
-                                              userInfo.name,
-                                              style: TextStylesInter
-                                                  .textViewRegular16
-                                                  .copyWith(color: black2),
-                                            )
-                                          ],
+                                              20.pw,
+                                              Text(
+                                                userInfo.name,
+                                                style: TextStylesInter
+                                                    .textViewRegular16
+                                                    .copyWith(color: black2),
+                                              )
+                                            ],
+                                          ),
                                         );
                                       }).toList()),
                                 ],
@@ -665,52 +729,104 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                       children: contactsList.map((userInfo) {
                                         return Padding(
                                           padding: EdgeInsets.only(top: 10),
-                                          child: Row(
-                                            children: [
-                                              userInfo.imageURL.isEmpty
-                                                  ? SvgPicture.asset(
-                                                      peopleIcon,
-                                                      width: 35.w,
-                                                      height: 35.h,
-                                                    )
-                                                  : CircleAvatar(
-                                                      backgroundImage:
-                                                          NetworkImage(
-                                                        userInfo.imageURL,
+                                          child: GestureDetector(
+                                            onTap: () async {
+                                              List<ChatList> lists = [];
+                                              var friends = await Provider.of<
+                                                          ChatlistsProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .getAllFriends();
+
+                                              friends.forEach((element) {
+                                                if (element.id == userInfo.id) {
+                                                  element.chatlists
+                                                      .forEach((element) {
+                                                    lists.add(ChatList(
+                                                        id: element.id,
+                                                        name: element
+                                                            .get("list_name"),
+                                                        storeName: element
+                                                            .get("storeName"),
+                                                        userIds: element
+                                                            .get("userIds"),
+                                                        totalPrice: element
+                                                            .get("total_price"),
+                                                        storeImageUrl:
+                                                            element.get(
+                                                                "storeImageUrl"),
+                                                        itemLength:
+                                                            element.get("size"),
+                                                        lastMessage: element.get(
+                                                            "last_message"),
+                                                        lastMessageDate: element.get(
+                                                            "last_message_date"),
+                                                        lastMessageUserId:
+                                                            element.get(
+                                                                "last_message_userId"),
+                                                        lastMessageUserName:
+                                                            element.get(
+                                                                "last_message_userName")));
+                                                  });
+                                                }
+                                              });
+
+                                              AppNavigator.push(
+                                                  context: context,
+                                                  screen: ContactProfileScreen(
+                                                    lists: lists,
+                                                    user: userInfo,
+                                                  ));
+                                            },
+                                            child: Row(
+                                              children: [
+                                                userInfo.imageURL.isEmpty
+                                                    ? SvgPicture.asset(
+                                                        peopleIcon,
+                                                        width: 35.w,
+                                                        height: 35.h,
+                                                      )
+                                                    : CircleAvatar(
+                                                        backgroundImage:
+                                                            NetworkImage(
+                                                          userInfo.imageURL,
+                                                        ),
+                                                        radius: 20,
                                                       ),
-                                                      radius: 20,
+                                                20.pw,
+                                                Text(
+                                                  userInfo.name,
+                                                  style: TextStylesInter
+                                                      .textViewRegular16
+                                                      .copyWith(color: black2),
+                                                ),
+                                                Spacer(),
+                                                InkWell(
+                                                  onTap: () =>
+                                                      addContactToChatlist(
+                                                          userInfo, context),
+                                                  child: Row(children: [
+                                                    Text(
+                                                      "Add",
+                                                      style: TextStylesInter
+                                                          .textViewSemiBold14
+                                                          .copyWith(
+                                                              color:
+                                                                  mainPurple),
                                                     ),
-                                              20.pw,
-                                              Text(
-                                                userInfo.name,
-                                                style: TextStylesInter
-                                                    .textViewRegular16
-                                                    .copyWith(color: black2),
-                                              ),
-                                              Spacer(),
-                                              InkWell(
-                                                onTap: () =>
-                                                    addContactToChatlist(
-                                                        userInfo, context),
-                                                child: Row(children: [
-                                                  Text(
-                                                    "Add",
-                                                    style: TextStylesInter
-                                                        .textViewSemiBold14
-                                                        .copyWith(
-                                                            color: mainPurple),
-                                                  ),
-                                                  10.pw,
-                                                  CircleAvatar(
-                                                    child: Icon(
-                                                      Icons.person_add_alt,
-                                                      color: white,
-                                                    ),
-                                                    backgroundColor: mainPurple,
-                                                  )
-                                                ]),
-                                              )
-                                            ],
+                                                    10.pw,
+                                                    CircleAvatar(
+                                                      child: Icon(
+                                                        Icons.person_add_alt,
+                                                        color: white,
+                                                      ),
+                                                      backgroundColor:
+                                                          mainPurple,
+                                                    )
+                                                  ]),
+                                                )
+                                              ],
+                                            ),
                                           ),
                                         );
                                       }).toList()),

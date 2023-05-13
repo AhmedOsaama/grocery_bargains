@@ -1,13 +1,20 @@
+import 'dart:convert';
 import 'dart:developer';
 
+import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/list_item.dart';
+import 'package:bargainb/models/product.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
+import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/services/network_services.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
+import 'package:bargainb/view/screens/product_detail_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart' hide ReorderableList;
 import 'package:flutter_reorderable_list/flutter_reorderable_list.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -30,15 +37,30 @@ class DraggableList extends StatefulWidget {
 }
 
 class ItemData {
-  ItemData(this.text, this.key, this.name, this.img, this.size, this.price,
-      this.isChecked, this.id, this.parentId, this.owner);
+  ItemData(
+    this.text,
+    this.key,
+    this.name,
+    this.img,
+    this.size,
+    this.price,
+    this.isChecked,
+    this.id,
+    this.parentId,
+    this.owner,
+    this.storeName,
+  );
 
   final String text;
   final String name;
   final String img;
   final String size;
+
   final String price;
+  final String storeName;
+
   final String owner;
+
   bool isChecked;
   final String id;
   final String? parentId;
@@ -71,24 +93,35 @@ class _DraggableListState extends State<DraggableList> {
             element["item_isChecked"] ?? false,
             element.id,
             element.reference.parent.parent?.id ?? "",
-            element["owner"]));
+            element["owner"],
+            ""));
       } else {
+        String price = "0.0";
+        if (element['item_price'] != "" &&
+            element['item_price'] != null &&
+            element['item_price'] != "null") {
+          price = element['item_price'];
+        }
+
         _items.add(ItemData(
             element["text"] ?? "",
             ValueKey(element),
             element["item_name"] ?? "",
             element["item_image"] ?? "",
             element["item_size"] ?? "",
-            element['item_price'] ?? "",
+            price,
             element["item_isChecked"] ?? false,
             element.id,
             element.reference.parent.parent?.id ?? "",
-            element["owner"] ?? ""));
+            element["owner"] ?? "",
+            element.data().toString().contains("store_name")
+                ? element["store_name"]
+                : ""));
       }
     });
     if (!widget.inChatView) {
-      _items.add(
-          ItemData("ç", ValueKey("ç"), "", "", "", "0.0", false, "", "", ""));
+      _items.add(ItemData(
+          "ç", ValueKey("ç"), "", "", "", "0.0", false, "", "", "", ""));
     }
     itemsState.value = _items;
     itemsState.notifyListeners();
@@ -251,7 +284,54 @@ class _ItemState extends State<Item> {
                   ? ((widget.data.text == "ç")
                       ? ((GestureDetector(
                           onTap: () async {
-                            await addItemManually(context);
+                            if (isAdding) {
+                              if (!formisEmpty) {
+                                try {
+                                  await Provider.of<ChatlistsProvider>(context,
+                                          listen: false)
+                                      .addItemToList(
+                                          ListItem(
+                                              storeName: "",
+                                              imageURL: '',
+                                              isChecked: false,
+                                              name: '',
+                                              price: "0.0",
+                                              quantity: 0,
+                                              size: '',
+                                              text: newItem),
+                                          widget.listId);
+                                  var r = itemsState.value.last;
+                                  itemsState.value.last = (ItemData(
+                                      newItem,
+                                      ValueKey(newItem),
+                                      "",
+                                      "",
+                                      "",
+                                      "0.0",
+                                      false,
+                                      "",
+                                      "",
+                                      "",
+                                      ""));
+                                  itemsState.value.add(r);
+
+                                  itemsState.notifyListeners();
+                                } catch (e) {
+                                  log(e.toString());
+                                }
+                                setState(() {
+                                  isAdding = !isAdding;
+                                });
+                              } else {
+                                setState(() {
+                                  isAdding = !isAdding;
+                                });
+                              }
+                            } else {
+                              setState(() {
+                                isAdding = !isAdding;
+                              });
+                            }
                           },
                           child: Row(
                             children: [
@@ -293,7 +373,6 @@ class _ItemState extends State<Item> {
                                                     : grey),
                                           ),
                                         ),
-                                        onFieldSubmitted: (_) => addItemManually(context),
                                         onChanged: (value) {
                                           if (value.isEmpty) {
                                             setState(() {
@@ -309,7 +388,7 @@ class _ItemState extends State<Item> {
                                       ),
                                     )
                                   : Text(
-                                      "Quick add",
+                                      "QuickAdd".tr(),
                                       style: TextStyles.textViewSemiBold16
                                           .copyWith(
                                               color: Color.fromRGBO(
@@ -340,9 +419,9 @@ class _ItemState extends State<Item> {
                                   }).catchError((e) {
                                     print(e);
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                            content: Text(
-                                                "This operation couldn't be done please try again")));
+                                        SnackBar(
+                                            content:
+                                                Text("OperationNotDone".tr())));
                                   });
                                   // updateList();
                                 },
@@ -407,17 +486,82 @@ class _ItemState extends State<Item> {
                                     }).catchError((e) {
                                       print(e);
                                       ScaffoldMessenger.of(context)
-                                          .showSnackBar(const SnackBar(
+                                          .showSnackBar(SnackBar(
                                               content: Text(
-                                                  "This operation couldn't be done please try again")));
+                                                  "OperationNotDone".tr())));
                                     });
                                     // updateList();
                                   },
                                 ),
-                                Image.network(
-                                  widget.data.img,
-                                  width: 55,
-                                  height: 55,
+                                GestureDetector(
+                                  onTap: () async {
+                                    late Product product;
+
+                                    switch (widget.data.storeName) {
+                                      case 'Hoogvliet':
+                                        var response = await NetworkServices
+                                            .searchHoogvlietProducts(
+                                                widget.data.name);
+                                        product = Provider.of<ProductsProvider>(
+                                                context,
+                                                listen: false)
+                                            .convertToProductListFromJson(
+                                                jsonDecode(response.body))
+                                            .first;
+
+                                        break;
+                                      case 'Jumbo':
+                                        var response = await NetworkServices
+                                            .searchJumboProducts(
+                                                widget.data.name);
+                                        product = Provider.of<ProductsProvider>(
+                                                context,
+                                                listen: false)
+                                            .convertToProductListFromJson(
+                                                jsonDecode(response.body))
+                                            .first;
+
+                                        break;
+                                      case 'Albert':
+                                        var response = await NetworkServices
+                                            .searchAlbertProducts(
+                                                widget.data.name);
+
+                                        product = Provider.of<ProductsProvider>(
+                                                context,
+                                                listen: false)
+                                            .convertToProductListFromJson(
+                                                jsonDecode(response.body))
+                                            .first;
+
+                                        break;
+                                    }
+
+                                    AppNavigator.push(
+                                        context: context,
+                                        screen: ProductDetailScreen(
+                                          comparisonId: -1,
+                                          productId: product.id,
+                                          oldPrice: product.oldPrice,
+                                          storeName: product.storeName,
+                                          productName: product.name,
+                                          imageURL: product.imageURL,
+                                          description: product.description,
+                                          size1: product.size,
+                                          size2: product.size2 ?? "",
+                                          price1: double.tryParse(
+                                                  product.price ?? "") ??
+                                              0.0,
+                                          price2: double.tryParse(
+                                                  product.price2 ?? "") ??
+                                              0.0,
+                                        ));
+                                  },
+                                  child: Image.network(
+                                    widget.data.img,
+                                    width: 55,
+                                    height: 55,
+                                  ),
                                 ),
                                 SizedBox(
                                   width: 12.w,
@@ -506,55 +650,6 @@ class _ItemState extends State<Item> {
     );
 
     return content;
-  }
-
-  Future<void> addItemManually(BuildContext context) async {
-     if (isAdding) {
-      if (!formisEmpty) {
-        try {
-          await Provider.of<ChatlistsProvider>(context,
-                  listen: false)
-              .addItemToList(
-                  ListItem(
-                      imageURL: '',
-                      isChecked: false,
-                      name: '',
-                      price: "0.0",
-                      quantity: 0,
-                      size: '',
-                      text: newItem),
-                  widget.listId);
-          var r = itemsState.value.last;
-          itemsState.value.last = (ItemData(
-              newItem,
-              ValueKey(newItem),
-              "",
-              "",
-              "",
-              "0.0",
-              false,
-              "",
-              "",
-              ""));
-          itemsState.value.add(r);
-
-          itemsState.notifyListeners();
-        } catch (e) {
-          log(e.toString());
-        }
-        setState(() {
-          isAdding = !isAdding;
-        });
-      } else {
-        setState(() {
-          isAdding = !isAdding;
-        });
-      }
-    } else {
-      setState(() {
-        isAdding = !isAdding;
-      });
-    }
   }
 
   void updateStoreImages(var storeItems) {

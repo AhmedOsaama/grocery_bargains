@@ -11,11 +11,13 @@ import 'package:bargainb/view/screens/contact_profile_screen.dart';
 import 'package:bargainb/view/screens/newgroupchat_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
@@ -47,7 +49,7 @@ class _NewChatlistScreenState extends State<NewChatlistScreen> {
         foregroundColor: Colors.black,
         // leading: backButt,
         title: Text(
-          "New chatlist",
+          "Newchatlist".tr(),
           style: TextStyles.textViewSemiBold16.copyWith(color: black1),
         ),
       ),
@@ -83,11 +85,12 @@ class _NewChatlistScreenState extends State<NewChatlistScreen> {
                       var id = await Provider.of<ChatlistsProvider>(context,
                               listen: false)
                           .createChatList([]);
-                      AppNavigator.push(
-                          context: context,
+                      pushNewScreen(context,
                           screen: ChatListViewScreen(
+                            // updateList: updateList,
                             listId: id,
-                          ));
+                          ),
+                          withNavBar: false);
                     } else {
                       AppNavigator.push(
                           context: context,
@@ -105,7 +108,7 @@ class _NewChatlistScreenState extends State<NewChatlistScreen> {
                       ),
                       15.pw,
                       Text(
-                        "New group chatlist",
+                        "NewGroupChatlist".tr(),
                         style: TextStyles.textViewSemiBold16
                             .copyWith(color: black),
                       )

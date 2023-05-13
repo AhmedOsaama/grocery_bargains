@@ -25,3 +25,4 @@ const String onboarding2 = "$imgPath/onboarding2.png";
 const String onboarding3 = "$imgPath/onboarding3.png";
 const String onboarding4 = "$imgPath/onboarding4.png";
 const String signinDialog = "$imgPath/signindialog.png";
+const String personAva = "$imgPath/personAva.png";

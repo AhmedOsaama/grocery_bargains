@@ -358,105 +358,105 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             }
 
-                            /*    return ListView.builder(
-                              itemCount: comparisonProducts.length,
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (ctx, i) {
-                                // if (i >= comparisonProducts.length) {
-                                //   var productId = comparisonProducts[i-1].id;
-                                //   return Padding(
-                                //     padding: EdgeInsets.symmetric(horizontal: 32),
-                                //     child: isLoading
-                                //         ? Center(
-                                //         child: CircularProgressIndicator(
-                                //           color: verdigris,
-                                //         ))
-                                //         : Center(
-                                //       child: Container(
-                                //         decoration: BoxDecoration(
-                                //           border:
-                                //           Border.all(color: Colors.grey),
-                                //           borderRadius:
-                                //           BorderRadius.circular(12),
-                                //         ),
-                                //         child: InkWell(
-                                //           onTap: () async {
-                                //             setState(() {
-                                //               isLoading = true;
-                                //             });
-                                //             print(productId);
-                                //             await fetch(productId + 1);
-                                //             setState(() {
-                                //               isLoading = false;
-                                //             });
-                                //           },
-                                //           borderRadius:
-                                //           BorderRadius.circular(12),
-                                //           child: Padding(
-                                //             padding: const EdgeInsets.all(5),
-                                //             child: Row(
-                                //               mainAxisSize: MainAxisSize.min,
-                                //               children: [
-                                //                 Text(
-                                //                   "See more",
-                                //                   style: TextStyles
-                                //                       .textViewMedium10
-                                //                       .copyWith(
-                                //                       color: prussian),
-                                //                 ),
-                                //                 Icon(
-                                //                   Icons.arrow_forward_ios,
-                                //                   size: 18,
-                                //                   color: Colors.grey,
-                                //                 ),
-                                //               ],
-                                //             ),
-                                //           ),
-                                //         ),
-                                //       ),
-                                //     ),
-                                //   );
-                                // } // see more case
-                                return DiscountItem(
-                                  comparisonProduct: comparisonProducts[i],
-                                );
+                                /*    return ListView.builder(
+                                  itemCount: comparisonProducts.length,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (ctx, i) {
+                                    // if (i >= comparisonProducts.length) {
+                                    //   var productId = comparisonProducts[i-1].id;
+                                    //   return Padding(
+                                    //     padding: EdgeInsets.symmetric(horizontal: 32),
+                                    //     child: isLoading
+                                    //         ? Center(
+                                    //         child: CircularProgressIndicator(
+                                    //           color: verdigris,
+                                    //         ))
+                                    //         : Center(
+                                    //       child: Container(
+                                    //         decoration: BoxDecoration(
+                                    //           border:
+                                    //           Border.all(color: Colors.grey),
+                                    //           borderRadius:
+                                    //           BorderRadius.circular(12),
+                                    //         ),
+                                    //         child: InkWell(
+                                    //           onTap: () async {
+                                    //             setState(() {
+                                    //               isLoading = true;
+                                    //             });
+                                    //             print(productId);
+                                    //             await fetch(productId + 1);
+                                    //             setState(() {
+                                    //               isLoading = false;
+                                    //             });
+                                    //           },
+                                    //           borderRadius:
+                                    //           BorderRadius.circular(12),
+                                    //           child: Padding(
+                                    //             padding: const EdgeInsets.all(5),
+                                    //             child: Row(
+                                    //               mainAxisSize: MainAxisSize.min,
+                                    //               children: [
+                                    //                 Text(
+                                    //                   "See more",
+                                    //                   style: TextStyles
+                                    //                       .textViewMedium10
+                                    //                       .copyWith(
+                                    //                       color: prussian),
+                                    //                 ),
+                                    //                 Icon(
+                                    //                   Icons.arrow_forward_ios,
+                                    //                   size: 18,
+                                    //                   color: Colors.grey,
+                                    //                 ),
+                                    //               ],
+                                    //             ),
+                                    //           ),
+                                    //         ),
+                                    //       ),
+                                    //     ),
+                                    //   );
+                                    // } // see more case
+                                    return DiscountItem(
+                                      comparisonProduct: comparisonProducts[i],
+                                    );
+                                  },
+                                ); */
                               },
-                            ); */
-                          },
-                        ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "Latest Value Bargains",
-                      style: TextStylesDMSans.textViewBold16
-                          .copyWith(color: prussian),
                     ),
-                    // TextButton(
-                    //     onPressed: () {},
-                    //     child: Text(
-                    //       'See all',
-                    //       style: textButtonStyle,
-                    //     ))
-                  ],
-                ),
-                Container(
-                  height: 150.h,
-                  child: Consumer<ProductsProvider>(
-                      builder: (context, provider, _) {
-                    bestValueBargains = provider.bestValueBargains;
-                    print(bestValueBargains.length);
-                    // print(bestValueBargains.length);
-                    return ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: bestValueBargains.map((bargain) {
-                          return GestureDetector(
-                            onTap: () {
-                              var comparisonId = -1;
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Latest Value Bargains",
+                          style: TextStylesDMSans.textViewBold16
+                              .copyWith(color: prussian),
+                        ),
+                        // TextButton(
+                        //     onPressed: () {},
+                        //     child: Text(
+                        //       'See all',
+                        //       style: textButtonStyle,
+                        //     ))
+                      ],
+                    ),
+                    Container(
+                      height: 150.h,
+                      child: Consumer<ProductsProvider>(
+                          builder: (context, provider, _) {
+                        bestValueBargains = provider.bestValueBargains;
+                        print(bestValueBargains.length);
+                        // print(bestValueBargains.length);
+                        return ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: bestValueBargains.map((bargain) {
+                              return GestureDetector(
+                                onTap: () {
+                                  var comparisonId = -1;
                               if(bargain.store == "Albert") {
                                 comparisonId = Provider
                                     .of<ProductsProvider>(context, listen: false)
@@ -468,85 +468,90 @@ class _HomeScreenState extends State<HomeScreen> {
                                   context: context,
                                   screen: ProductDetailScreen(
                                     comparisonId: comparisonId,
-                                    productId: bargain.itemId,
-                                    storeName: bargain.store,
-                                    productName: bargain.itemName,
-                                    imageURL: bargain.itemImage,
-                                    description: bargain.description,
-                                    price1:
-                                        double.tryParse(bargain.price1) ?? 0,
-                                    price2:
-                                        double.tryParse(bargain.price2) ?? 0,
-                                    oldPrice: bargain.oldPrice,
-                                    size1: bargain.size1,
-                                    size2: bargain.size2,
-                                  ));
-                            },
-                            child: Container(
-                              padding: EdgeInsets.all(10),
-                              margin: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                boxShadow: Utils.boxShadow,
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Row(
-                                children: [
-                                  Image.network(
-                                    bargain.itemImage,
-                                    width: 50,
-                                    height: 50,
+                                        productId: bargain.itemId,
+                                        storeName: bargain.store,
+                                        productName: bargain.itemName,
+                                        imageURL: bargain.itemImage,
+                                        description: bargain.description,
+                                        price1:
+                                            double.tryParse(bargain.price1) ??
+                                                0,
+                                        price2:
+                                            double.tryParse(bargain.price2) ??
+                                                0,
+                                        oldPrice: bargain.oldPrice,
+                                        size1: bargain.size1,
+                                        size2: bargain.size2,
+                                      ));
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(10),
+                                  margin: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    boxShadow: Utils.boxShadow,
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
                                   ),
-                                  SizedBox(
-                                    width: 15.w,
-                                  ),
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                  child: Row(
                                     children: [
-                                      Text(
-                                        bargain.bestValueSize,
-                                        style: TextStyles.textViewSemiBold16,
+                                      Image.network(
+                                        bargain.itemImage,
+                                        width: 50,
+                                        height: 50,
                                       ),
                                       SizedBox(
-                                        height: 10.h,
+                                        width: 15.w,
                                       ),
-                                      Text(
-                                        "\€" +
-                                            (bargain.bestValueSize ==
-                                                    bargain.size1
-                                                ? bargain.price1
-                                                : bargain
-                                                    .price2), //should be the best price
-                                        style: TextStyles.textViewMedium12
-                                            .copyWith(
-                                                color: const Color.fromRGBO(
-                                                    108, 197, 29, 1)),
-                                      ),
-                                      SizedBox(
-                                        height: 5.w,
-                                      ),
-                                      Text(
-                                        bargain.subCategory,
-                                        style: TextStyles.textViewRegular12
-                                            .copyWith(color: Colors.grey),
-                                      ),
+                                      Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            bargain.bestValueSize,
+                                            style:
+                                                TextStyles.textViewSemiBold16,
+                                          ),
+                                          SizedBox(
+                                            height: 10.h,
+                                          ),
+                                          Text(
+                                            "\€" +
+                                                (bargain.bestValueSize ==
+                                                        bargain.size1
+                                                    ? bargain.price1
+                                                    : bargain
+                                                        .price2), //should be the best price
+                                            style: TextStyles.textViewMedium12
+                                                .copyWith(
+                                                    color: const Color.fromRGBO(
+                                                        108, 197, 29, 1)),
+                                          ),
+                                          SizedBox(
+                                            height: 5.w,
+                                          ),
+                                          Text(
+                                            bargain.subCategory,
+                                            style: TextStyles.textViewRegular12
+                                                .copyWith(color: Colors.grey),
+                                          ),
+                                        ],
+                                      )
                                     ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList());
-                  }),
+                                  ),
+                                ),
+                              );
+                            }).toList());
+                      }),
+                    ),
+                    10.ph,
+                  ],
                 ),
-                10.ph,
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 

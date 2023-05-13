@@ -4,6 +4,7 @@ import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/screens/subcategories_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -79,7 +80,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
         chipsToShow.add(
           ChoiceChip(
-            label: Text("Show more..."),
+            label: Text("ShowMore".tr()),
             labelStyle: const TextStyle(color: black2),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(6)),
@@ -91,7 +92,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 chipsToShow.clear();
                 chipsToShow.addAll(chips);
                 chipsToShow.add(ChoiceChip(
-                  label: Text("Show less..."),
+                  label: Text("ShowLess".tr()),
                   labelStyle: const TextStyle(color: black2),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(6)),
@@ -119,7 +120,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   Widget showMoreButton() {
     return ChoiceChip(
-      label: Text("Show more..."),
+      label: Text("ShowMore".tr()),
       labelStyle: const TextStyle(color: black2),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(6)),
@@ -131,7 +132,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           chipsToShow.clear();
           chipsToShow.addAll(chips);
           chipsToShow.add(ChoiceChip(
-            label: Text("Show less..."),
+            label: Text("ShowLess".tr()),
             labelStyle: const TextStyle(color: black2),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(6)),
@@ -161,7 +162,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         centerTitle: true,
         backgroundColor: white,
         title: Text(
-          "Search result",
+          "SearchResult".tr(),
           style: TextStylesInter.textViewSemiBold17.copyWith(color: black2),
         ),
         leading: IconButton(
@@ -210,7 +211,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   height: 10.h,
                 ),
                 Text(
-                  "Subcategories",
+                  "Subcategories".tr(),
                   style: TextStylesInter.textViewSemiBold16
                       .copyWith(color: black2),
                 ),
@@ -218,7 +219,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     ? choiceChips()
                     : Center(
                         child: Text(
-                          "No subcategories found",
+                          "NoSubcategoriesFound".tr(),
                           style: TextStylesInter.textViewMedium10
                               .copyWith(color: black),
                         ),
@@ -479,7 +480,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                           return Column(
                             children: [
                               30.ph,
-                              Center(child: Text("No products found !"))
+                              Center(child: Text("NoProductsFound".tr()))
                             ],
                           );
                         return GridView.builder(
@@ -717,9 +718,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                                                       0
                                                                   ? Text(
                                                                       " €" +
-                                                                          (double.parse(products.elementAt(index).oldPrice!) - double.parse(products.elementAt(index).price ?? products[index].price2!))
-                                                                              .toStringAsFixed(2) +
-                                                                          " less",
+                                                                          (double.parse(products.elementAt(index).oldPrice!) - double.parse(products.elementAt(index).price ?? products[index].price2!)).toStringAsFixed(
+                                                                              2) +
+                                                                          "Less"
+                                                                              .tr(),
                                                                       style: TextStylesInter
                                                                           .textViewMedium10
                                                                           .copyWith(
@@ -780,6 +782,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                                                             .elementAt(
                                                                                 index)
                                                                             .imageURL,
+                                                                        storeName: products
+                                                                            .elementAt(
+                                                                                index)
+                                                                            .storeName,
                                                                         itemSize: products
                                                                             .elementAt(
                                                                                 index)
@@ -788,6 +794,14 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                                                             .elementAt(
                                                                                 index)
                                                                             .price,
+                                                                        itemDescription: products
+                                                                            .elementAt(
+                                                                                index)
+                                                                            .description,
+                                                                        itemId: products
+                                                                            .elementAt(
+                                                                                index)
+                                                                            .id,
                                                                         itemOldPrice: products
                                                                             .elementAt(
                                                                                 index)
@@ -890,73 +904,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       children: chipsToShow,
     );
   }
-
-  /*  List<Widget> getChips() {
-    if (subCategories.length > 6 && subs.length < subCategories.length) {
-      subs = subCategories.getRange(0, 6).toList();
-    }
-
-    for (int i = 0; i < subs.length; i++) {
-      Widget item = Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: ChoiceChip(
-          label: Text(subs[i]),
-          labelStyle: const TextStyle(color: mainPurple),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(6))),
-          backgroundColor: purple10,
-          selected: false,
-          onSelected: (bool value) {
-            AppNavigator.push(
-                context: context,
-                screen: SubCategoriesScreen(subCategory: subs[i]));
-          },
-        ),
-      );
-      chips.add(item);
-    }
-
-    if (subCategories.length > 6 && subs.length < subCategories.length) {
-      chips.add(
-        ChoiceChip(
-          label: Text("Show more..."),
-          labelStyle: const TextStyle(color: black2),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(6)),
-          ),
-          selected: false,
-          backgroundColor: Colors.transparent,
-          onSelected: (bool value) {
-            setState(() {
-              subs.addAll(subCategories.skip(6));
-
-              chips = getChips();
-            });
-          },
-        ),
-      );
-    } else {
-      chips.add(
-        ChoiceChip(
-          label: Text("Show less..."),
-          labelStyle: const TextStyle(color: black2),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(6)),
-          ),
-          selected: false,
-          backgroundColor: Colors.transparent,
-          onSelected: (bool value) {
-            setState(() {
-              chips.clear();
-              subs = subCategories.getRange(0, 6).toList();
-              //chips = getChips();
-            });
-          },
-        ),
-      );
-    }
-    return chips;
-  } */
 
   Future fetch(int startingIndex) {
     return Provider.of<ProductsProvider>(context, listen: false)

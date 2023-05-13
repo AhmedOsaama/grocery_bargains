@@ -73,7 +73,8 @@ class NetworkServices {
     return response;
   }
 
-  static Future<http.Response> getLimitedPriceComparisons(int startingIndex) async {
+  static Future<http.Response> getLimitedPriceComparisons(
+      int startingIndex) async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/getLimitedPriceComparisons?startingIndex=$startingIndex');
     var response = await http.get(

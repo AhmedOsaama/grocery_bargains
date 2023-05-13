@@ -98,13 +98,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     ComparisonProduct productComparison;
 
     try {
-      var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
-      productComparison = productsProvider
-          .comparisonProducts
-          .firstWhere((comparisonProduct) =>
-              comparisonProduct.id == widget.comparisonId);
+      var productsProvider =
+          Provider.of<ProductsProvider>(context, listen: false);
+      productComparison = productsProvider.comparisonProducts.firstWhere(
+          (comparisonProduct) => comparisonProduct.id == widget.comparisonId);
       comparisonItems.add(GestureDetector(
-        onTap: widget.storeName == "Jumbo" ? (){} : () => goToStoreProductPage(productsProvider,context,"Jumbo",productComparison.jumboLink),
+        onTap: widget.storeName == "Jumbo"
+            ? () {}
+            : () => goToStoreProductPage(productsProvider, context, "Jumbo",
+                productComparison.jumboLink),
         child: PriceComparisonItem(
             isSameStore: widget.storeName == "Jumbo",
             price: productComparison.jumboPrice,
@@ -112,7 +114,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             storeImagePath: jumbo),
       ));
       comparisonItems.add(GestureDetector(
-        onTap: widget.storeName == "Albert" ? (){} : () => goToStoreProductPage(productsProvider,context,"Albert",productComparison.albertLink),
+        onTap: widget.storeName == "Albert"
+            ? () {}
+            : () => goToStoreProductPage(productsProvider, context, "Albert",
+                productComparison.albertLink),
         child: PriceComparisonItem(
             isSameStore: widget.storeName == "Albert",
             price: productComparison.albertPrice,
@@ -120,7 +125,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             storeImagePath: albert),
       ));
       comparisonItems.add(GestureDetector(
-        onTap: widget.storeName == "Hoogvliet" ? (){} : () => goToStoreProductPage(productsProvider,context,"Hoogvliet",productComparison.hoogvlietLink),
+        onTap: widget.storeName == "Hoogvliet"
+            ? () {}
+            : () => goToStoreProductPage(productsProvider, context, "Hoogvliet",
+                productComparison.hoogvlietLink),
         child: PriceComparisonItem(
           isSameStore: widget.storeName == "Hoogvliet",
             price: productComparison.hoogvlietPrice,
@@ -175,8 +183,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           ));
     }
     if (selectedStore == "Hoogvliet") {
-      var product = productsProvider.hoogvlietProducts.firstWhere(
-          (product) => product.url == productLink);
+      var product = productsProvider.hoogvlietProducts
+          .firstWhere((product) => product.url == productLink);
       AppNavigator.push(
           context: context,
           screen: ProductDetailScreen(
@@ -256,6 +264,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               context: context,
                               isSharing: false,
                               listItem: ListItem(
+                                  storeName: widget.storeName,
                                   name: widget.productName,
                                   oldPrice: widget.oldPrice,
                                   price: defaultPrice.toString(),
@@ -310,6 +319,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           context: context,
                           isSharing: true,
                           listItem: ListItem(
+                              storeName: widget.storeName,
                               name: widget.productName,
                               oldPrice: widget.oldPrice,
                               price: defaultPrice.toString(),

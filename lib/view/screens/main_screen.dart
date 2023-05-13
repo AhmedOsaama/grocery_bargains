@@ -19,8 +19,8 @@ import '../../config/routes/app_navigator.dart';
 import '../../providers/chatlists_provider.dart';
 import 'chatlist_view_screen.dart';
 
-PersistentTabController NavigatorController =
-    PersistentTabController(initialIndex: 0);
+Key tabKey = UniqueKey();
+PersistentTabController NavigatorController = PersistentTabController();
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -30,9 +30,6 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-// class _MainScreenState extends State<MainScreen> {
-  var selectedIndex = 0;
-
   final selectedColor = mainPurple;
   final unSelectedColor = purple30;
 
@@ -45,7 +42,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-
+    NavigatorController.index = 0;
     FlutterBranchSdk.initSession().listen((data) {
       print("branch data: " + data.entries.toList().toString());
       if (data.containsKey("+clicked_branch_link") &&
@@ -101,15 +98,15 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PersistentTabView(
-        context,
-        controller: NavigatorController,
-        items: _navBarsItems(),
-        screens: _buildScreens(),
-        navBarStyle: NavBarStyle.simple,
-        stateManagement: true,
-      ),
-    );
+        body: PersistentTabView(
+      key: tabKey,
+      context,
+      controller: NavigatorController,
+      items: _navBarsItems(),
+      screens: _buildScreens(),
+      navBarStyle: NavBarStyle.simple,
+      stateManagement: true,
+    ));
     // }
     // );
   }

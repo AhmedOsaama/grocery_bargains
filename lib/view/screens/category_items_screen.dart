@@ -1,4 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+/* import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -130,7 +131,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
                       }
                     : null,
                 child: Text(
-                  "Done",
+                  "Done".tr(),
                   style: TextStyles.textViewBold15,
                 ),
                 borderRadius: BorderRadius.circular(6),
@@ -143,7 +144,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
               GenericButton(
                 onPressed: () {},
                 child: Text(
-                  "Filter",
+                  "Filter".tr(),
                   style: TextStyles.textViewBold15,
                 ),
                 borderRadius: BorderRadius.circular(6),
@@ -167,7 +168,7 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
                     child: Text(
                   candidItems.isNotEmpty
                       ? candidItems.first!.name
-                      : "Drop your items to create a list",
+                      : "DropYourItems".tr(),
                   style: TextStyles.textViewBold20
                       .copyWith(color: Color.fromRGBO(81, 82, 80, 1)),
                 )),
@@ -220,3 +221,4 @@ class _CategoryItemsScreenState extends State<CategoryItemsScreen> {
     );
   }
 }
+ */

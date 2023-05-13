@@ -70,16 +70,6 @@ class _ChatlistSwiperState extends State<ChatlistSwiper> {
                       withNavBar: false);
 
                   NavigatorController.jumpToTab(1);
-                  /*  pushNewScreen(context,
-                      screen: ChatListViewScreen(
-                        listId: widget.ids.elementAt(index),
-                        isListView: false,
-                      )); */
-                  /*      Navigator.of(context).push(MaterialPageRoute(
-                      builder: (ctx) => ChatListViewScreen(
-                            listId: widget.ids.elementAt(index),
-                            isListView: false,
-                          ))); */
                 } else if (details.localPosition.dx > 223) {
                   _pageController.animateToPage(++index,
                       duration: const Duration(milliseconds: 400),

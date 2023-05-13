@@ -1,4 +1,3 @@
-import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/models/chatlist.dart';
 import 'package:bargainb/utils/icons_manager.dart';
@@ -10,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
@@ -36,12 +36,12 @@ class ChatSearchItem extends StatelessWidget {
           ],
         ),
         child: InkWell(
-          onTap: () => AppNavigator.push(
-              context: context,
+          onTap: () => pushNewScreen(context,
               screen: ChatListViewScreen(
                 // updateList: updateList,
                 listId: list.id,
-              )),
+              ),
+              withNavBar: false),
           child: Row(
             children: [
               Image.asset(
@@ -50,77 +50,83 @@ class ChatSearchItem extends StatelessWidget {
                 height: 45,
               ),
               18.pw,
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    list.name,
-                    style: TextStylesInter.textViewSemiBold16
-                        .copyWith(color: black2),
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        "${list.itemLength} items",
-                        style: TextStylesInter.textViewMedium10
-                            .copyWith(color: purple50),
-                      ),
-                      5.pw,
-                      Text(
-                        "€${list.totalPrice.toStringAsFixed(2)}",
-                        style: TextStylesInter.textViewMedium10
-                            .copyWith(color: black2),
-                      ),
-                    ],
-                  ),
-                  list.lastMessage.isEmpty
-                      ? Text("")
-                      : Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '${list.lastMessageUserId == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : list.lastMessageUserName}: ',
-                              style: TextStylesInter.textViewRegular14
-                                  .copyWith(color: black2),
-                            ),
-                            Container(
-                              width: 150.w,
-                              child: Text(
-                                list.lastMessage,
-                                overflow: TextOverflow.ellipsis,
+              Expanded(
+                flex: 2,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      list.name,
+                      style: TextStylesInter.textViewSemiBold16
+                          .copyWith(color: black2),
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          "${list.itemLength} items",
+                          style: TextStylesInter.textViewMedium10
+                              .copyWith(color: purple50),
+                        ),
+                        5.pw,
+                        Text(
+                          "€${list.totalPrice.toStringAsFixed(2)}",
+                          style: TextStylesInter.textViewMedium10
+                              .copyWith(color: black2),
+                        ),
+                      ],
+                    ),
+                    list.lastMessage.isEmpty
+                        ? Text("")
+                        : Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '${list.lastMessageUserId == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : list.lastMessageUserName}: ',
                                 style: TextStylesInter.textViewRegular14
                                     .copyWith(color: black2),
                               ),
-                            ),
-                          ],
-                        ),
-                ],
+                              Container(
+                                child: Flexible(
+                                  child: Text(
+                                    list.lastMessage,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStylesInter.textViewRegular14
+                                        .copyWith(color: black2),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                  ],
+                ),
               ),
-              Spacer(),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text(
-                    (list.lastMessageDate.toDate()).toString().split(' ')[0],
-                    style: TextStylesInter.textViewRegular14
-                        .copyWith(color: Color.fromRGBO(72, 72, 74, 1)),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  FutureBuilder(
-                      future: getUserImages(list.id),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator(
-                            color: verdigris,
-                          ));
-                        }
-                        return snapshot.data ?? SvgPicture.asset(peopleIcon);
-                      }),
-                ],
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      (list.lastMessageDate.toDate()).toString().split(' ')[0],
+                      style: TextStylesInter.textViewRegular14
+                          .copyWith(color: Color.fromRGBO(72, 72, 74, 1)),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    FutureBuilder(
+                        future: getUserImages(list.id),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator(
+                              color: verdigris,
+                            ));
+                          }
+                          return snapshot.data ?? SvgPicture.asset(peopleIcon);
+                        }),
+                  ],
+                ),
               )
             ],
           ),
@@ -168,7 +174,10 @@ Future<Widget> getUserImages(String docId) async {
     },
     child: Container(
       height: 50.h,
-      child: Row(children: imageWidgets.map((image) => image).toList()),
+      child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: imageWidgets.map((image) => image).toList()),
     ),
   );
 }

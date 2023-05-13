@@ -188,7 +188,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                                 screen: ChatListViewScreen(
                                   // updateList: updateList,
                                   listId: selectedListId,
-                                  isListView: false,
+                                  isListView: !widget.isSharing,
                                 ),
                                 withNavBar: false);
                             NavigatorController.jumpToTab(1);

@@ -10,7 +10,7 @@ class ListItem {
   String text;
   ListItem(
       {this.oldPrice,
-      this.storeName = "Albert Heijn",
+      required this.storeName,
       required this.name,
       required this.price,
       required this.text,

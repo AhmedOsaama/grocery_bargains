@@ -1,4 +1,3 @@
-import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/chatlist.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
@@ -6,6 +5,7 @@ import 'package:bargainb/view/widgets/chat_search_item.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
@@ -67,13 +67,13 @@ class ChatSearchDelegate extends SearchDelegate {
               child: CircularProgressIndicator(),
             );
           if (!snapshot.hasData || snapshot.hasError)
-            return const Center(
-              child: Text("Something went wrong please try again"),
+            return Center(
+              child: Text("tryAgain".tr()),
             );
           var searchResults = snapshot.data ?? [];
           if (searchResults.isEmpty)
-            return const Center(
-              child: Text("No matches found :("),
+            return Center(
+              child: Text("noMatchesFound".tr()),
             );
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -82,10 +82,12 @@ class ChatSearchDelegate extends SearchDelegate {
               itemBuilder: (ctx, i) {
                 return GestureDetector(
                   onTap: () async {
-                    AppNavigator.push(
-                        context: context,
-                        screen:
-                            ChatListViewScreen(listId: searchResults[i].id));
+                    pushNewScreen(context,
+                        screen: ChatListViewScreen(
+                          // updateList: updateList,
+                          listId: searchResults[i].id,
+                        ),
+                        withNavBar: false);
                   },
                   child: ChatSearchItem(
                     list: searchResults[i],

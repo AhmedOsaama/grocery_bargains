@@ -37,8 +37,12 @@ class _StoreListWidgetState extends State<StoreListWidget> {
     for (var item in storeItems) {
       if (item.data().containsKey('item_price') &&
           item['item_price'].runtimeType == String) {
-        if (item['item_price'] != "") {
+        if (item['item_price'] != null &&
+            item['item_price'] != "null" &&
+            item['item_price'] != "") {
           total += double.parse(item['item_price']);
+        } else {
+          total += 0;
         }
       } else if (item.data().containsKey('item_price') &&
           item['item_price'].runtimeType == double) {
@@ -104,7 +108,11 @@ class _StoreListWidgetState extends State<StoreListWidget> {
                 switch (key) {
                   case "jumbo":
                     imagesWidgets.add(SizedBox(
-                        height: 30.h, width: 30.w, child: Image.asset(jumbo)));
+                        height: 30.h,
+                        width: 30.w,
+                        child: Image.asset(
+                          jumbo,
+                        )));
                     break;
                   case "albert":
                     imagesWidgets.add(SizedBox(
@@ -127,16 +135,14 @@ class _StoreListWidgetState extends State<StoreListWidget> {
               children: [
                 Flexible(
                   child: Row(
-                      mainAxisAlignment: imagesWidgets.length < 4
-                          ? MainAxisAlignment.end
-                          : MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: isProductExist
                           ? imagesWidgets
                           : [
                               Image.asset(
                                 widget.storeImagePath,
-                                width: 30,
-                                height: 30,
+                                width: 30.w,
+                                height: 30.h,
                               ),
                             ]),
                 ),
@@ -162,7 +168,9 @@ class _StoreListWidgetState extends State<StoreListWidget> {
                               : storeItems[i]['text'];
                       var itemPrice =
                           storeItems[i].data().toString().contains('item_price')
-                              ? (storeItems[i]['item_price'] == ""
+                              ? (storeItems[i]['item_price'] == "" ||
+                                      storeItems[i]['item_price'] == null ||
+                                      storeItems[i]['item_price'] == "null"
                                   ? 0.0
                                   : storeItems[i]['item_price'])
                               : "0.0";
@@ -171,32 +179,29 @@ class _StoreListWidgetState extends State<StoreListWidget> {
                         return const Text("    ...");
                       }
                       return Row(
-                        // mainAxisSize: MainAxisSize.min,
+                        //   mainAxisSize: MainAxisSize.max,
                         children: [
-                          Flexible(
-                            flex: 3,
-                            child: Checkbox(
-                              value: isChecked,
-                              onChanged: (value) {
-                                setState(() {
-                                  FirebaseFirestore.instance
-                                      .collection(
-                                          "/lists/${doc.reference.parent.parent?.id}/items")
-                                      .doc(doc.id)
-                                      .update({
-                                    "item_isChecked": !isChecked,
-                                  }).catchError((e) {
-                                    print(e);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            content: Text(
-                                                "This operation couldn't be done please try again")));
-                                  });
-                                  isChecked = !isChecked;
+                          Checkbox(
+                            value: isChecked,
+                            onChanged: (value) {
+                              setState(() {
+                                FirebaseFirestore.instance
+                                    .collection(
+                                        "/lists/${doc.reference.parent.parent?.id}/items")
+                                    .doc(doc.id)
+                                    .update({
+                                  "item_isChecked": !isChecked,
+                                }).catchError((e) {
+                                  print(e);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text(
+                                              "This operation couldn't be done please try again")));
                                 });
-                              },
-                              visualDensity: VisualDensity.compact,
-                            ),
+                                isChecked = !isChecked;
+                              });
+                            },
+                            visualDensity: VisualDensity.compact,
                           ),
                           SizedBox(
                             width: 70.w,
