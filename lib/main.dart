@@ -224,7 +224,7 @@ class _MyAppState extends State<MyApp> {
                           ? OnBoardingScreen()
                           : MainScreen();
                     }
-                    return RegisterScreen();
+                    return MainScreen();
                   });
             }),
         localizationsDelegates: context.localizationDelegates,

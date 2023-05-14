@@ -168,8 +168,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                             color: mainYellow,
                             height: 60.h,
                             width: 158.w,
-                            onPressed: () => AppNavigator.pushReplacement(
-                                context: context, screen: RegisterScreen()),
+                            onPressed: () => pushNewScreen(context, screen: RegisterScreen(),withNavBar: false),
                             child: Text(
                               "Sign in",
                               style: TextStyles.textViewSemiBold16

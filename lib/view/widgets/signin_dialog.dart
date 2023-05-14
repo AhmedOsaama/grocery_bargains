@@ -4,6 +4,7 @@ import 'package:bargainb/utils/assets_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../utils/app_colors.dart';
@@ -74,8 +75,9 @@ class SigninDialog extends StatelessWidget {
                         height: 60.h,
                         borderRadius: BorderRadius.circular(6),
                         onPressed: () {
-                          AppNavigator.pushReplacement(
-                              context: context, screen: RegisterScreen());
+                          // AppNavigator.pushReplacement(
+                          //     context: context, screen: RegisterScreen());
+                          pushNewScreen(context, screen: RegisterScreen(),withNavBar: false);
                         },
                         child: Text(
                           buttonText,
