@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/register_screen.dart';
@@ -164,13 +165,19 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+      statusBarColor: white,
+      //or set color with: Color(0xFF0000FF)
+    ));
     return ScreenUtilInit(
       designSize: Size(390, 844),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, _) => MaterialApp(
         title: 'BargainB',
-        theme: ThemeData(canvasColor: Colors.white),
+        theme: ThemeData(
+          canvasColor: Colors.white,
+        ),
         debugShowCheckedModeBanner: false,
         home: FutureBuilder(
             future: getAllProductsFuture,

@@ -1,8 +1,10 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/providers/google_sign_in_provider.dart';
 import 'package:bargainb/view/screens/subscription_screen.dart';
+import 'package:bargainb/view/widgets/otp_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -49,6 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   bool isEditing = false;
   bool isEdited = false;
+  bool isPhoneEdited = false;
   String name = "";
   String phone = "";
   String status = "";
@@ -77,23 +80,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     if (status.isNotEmpty) {
                       data.addAll({'status': status});
                     }
-
-                    if (phone.isNotEmpty) {
-                      data.addAll({'phoneNumber': phone});
+                    log(phone);
+                    if (phone.isNotEmpty && isPhoneEdited) {
+                      await verifyPhoneNumber(phone);
                     }
-
-                    await FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(FirebaseAuth.instance.currentUser!.uid)
-                        .update(data);
-                    setState(() {
-                      updateUserDataFuture();
-                    });
+                    if (!isPhoneEdited) {
+                      await FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(FirebaseAuth.instance.currentUser!.uid)
+                          .update(data);
+                      setState(() {
+                        updateUserDataFuture();
+                      });
+                    }
                   }
-                  setState(() {
-                    isEditing = !isEditing;
-                    isEdited = !isEdited;
-                  });
+                  if (!isPhoneEdited || !isEditing)
+                    setState(() {
+                      isEditing = !isEditing;
+                      isEdited = !isEdited;
+                    });
                 },
                 child: Text(
                   isEditing ? "Save" : LocaleKeys.edit.tr(),
@@ -291,7 +296,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             onChanged: (value) {
                               setState(() {
                                 phone = value;
-                                isEdited = true;
+                                isPhoneEdited = true;
                               });
                             },
                             initialValue: snapshot.data!['phoneNumber'],
@@ -333,6 +338,74 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return snapshot.data!['imageURL'] != ""
         ? NetworkImage(snapshot.data!['imageURL'])
         : AssetImage(personImage);
+  }
+
+  Future<void> verifyPhoneNumber(String phone) async {
+    var result = await FirebaseFirestore.instance
+        .collection('users')
+        .where('phoneNumber', isEqualTo: phone)
+        .get();
+    if (result.docs.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          backgroundColor: Theme.of(context).colorScheme.error,
+          content: Text(
+              "Phone number is already registered with another account. Please enter a different phone number")));
+      return;
+    }
+    await FirebaseAuth.instance.verifyPhoneNumber(
+        phoneNumber: phone,
+        verificationCompleted: (phoneCredential) {},
+        verificationFailed: (e) {
+          log("failed");
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(e.message.toString())));
+        },
+        codeSent: (String verificationId, int? resendToken) async {
+          var otp = await showOtpDialog();
+
+          String smsCode = otp;
+          log(smsCode);
+          PhoneAuthCredential credential = PhoneAuthProvider.credential(
+              verificationId: verificationId, smsCode: smsCode);
+          try {
+            await FirebaseAuth.instance.signInWithCredential(credential);
+            Map<String, Object?> data = {};
+
+            data.addAll({'phoneNumber': phone});
+            if (name.isNotEmpty) {
+              data.addAll({'username': name});
+            }
+            if (status.isNotEmpty) {
+              data.addAll({'status': status});
+            }
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .update(data);
+            setState(() {
+              updateUserDataFuture();
+              isEditing = !isEditing;
+              isEdited = !isEdited;
+            });
+          } on FirebaseAuthException catch (e) {
+            log(e.message!);
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                backgroundColor: Theme.of(context).colorScheme.error,
+                content: Text(e.message ??
+                    "The verification code from SMS/TOTP is invalid. Please check and enter the correct verification code again.")));
+          }
+        },
+        codeAutoRetrievalTimeout: (message) {});
+  }
+
+  Future showOtpDialog() async {
+    return await showDialog(
+        context: context,
+        builder: (ctx) => OtpDialog(
+              phoneNumber: phone,
+              resendOtp: () => verifyPhoneNumber(phone),
+              isSignUp: false,
+            ));
   }
 }
 

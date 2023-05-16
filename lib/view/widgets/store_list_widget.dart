@@ -71,8 +71,8 @@ class _StoreListWidgetState extends State<StoreListWidget> {
               .get(),
           builder: (context, snapshot) {
             if (!snapshot.hasData)
-              return const Center(
-                child: CircularProgressIndicator(),
+              return Center(
+                child: Container(),
               );
             var isProductExist = false;
             var storeItems = snapshot.data?.docs ?? [];

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bargainb/utils/mixpanel_utils.dart';
@@ -460,13 +461,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           completer.complete(userCredential);
         },
         verificationFailed: (e) {
-          print("Verification failed");
-          print(e.toString());
-          print(e.message);
-          print(e.code);
-          if (e.code == 'invalid-phone-number') {
-            print('The provided phone number is not valid.');
-          }
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(e.message.toString())));
           completer.complete(userCredential);
@@ -482,10 +476,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
           PhoneAuthCredential credential = PhoneAuthProvider.credential(
               verificationId: verificationId, smsCode: smsCode);
+          try {
+            userCredential = await _auth.signInWithCredential(credential);
+            log("completed");
+            log(userCredential.toString());
+          } on FirebaseAuthException catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                backgroundColor: Theme.of(context).colorScheme.error,
+                content: Text(e.message ??
+                    "The verification code from SMS/TOTP is invalid. Please check and enter the correct verification code again.")));
+          }
 
-          userCredential = await _auth.signInWithCredential(credential);
           print("Signed In...");
-          print(userCredential);
+
           completer.complete(userCredential);
         },
         timeout: const Duration(seconds: 30),
@@ -500,9 +503,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return await showDialog(
         context: context,
         builder: (ctx) => OtpDialog(
-            phoneNumber: phoneNumber,
-            resendOtp: () =>
-                _submitAuthForm(email, username, phoneNumber, context)));
+              phoneNumber: phoneNumber,
+              resendOtp: () =>
+                  _submitAuthForm(email, username, phoneNumber, context),
+              isSignUp: true,
+            ));
   }
 
   Future<void> loginWithSocial(BuildContext context, bool isApple) async {

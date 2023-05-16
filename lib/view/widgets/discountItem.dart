@@ -144,14 +144,20 @@ class DiscountItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           color: white,
           boxShadow: [
-            new BoxShadow(
-              color: shadowColor,
-              blurRadius: 20.0,
-            ),
+            BoxShadow(
+                color: shadowColor,
+                blurRadius: 10,
+                offset: Offset(0, -1),
+                blurStyle: BlurStyle.solid),
+            BoxShadow(
+                color: shadowColor,
+                blurRadius: 10,
+                offset: Offset(0, 5),
+                blurStyle: BlurStyle.solid),
           ],
         ),
-        margin:
-            EdgeInsets.symmetric(vertical: inGridView ? 0 : 10, horizontal: 0),
+        margin: EdgeInsets.symmetric(
+            vertical: inGridView ? 0 : 10, horizontal: inGridView ? 0 : 5),
         padding: EdgeInsets.symmetric(horizontal: inGridView ? 10 : 15.w),
         child: Column(
           children: [

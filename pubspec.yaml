@@ -77,6 +77,7 @@ dependencies:
   country_picker: ^2.0.20
   overlay_tooltip: ^0.2.1
   showcaseview: ^2.0.3
+  shimmer_animation: ^2.1.0+1
  
 
 

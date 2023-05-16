@@ -10,8 +10,13 @@ import '../../utils/style_utils.dart';
 
 class OtpDialog extends StatelessWidget {
   final String phoneNumber;
+  final bool isSignUp;
   final Function resendOtp;
-  OtpDialog({Key? key, required this.phoneNumber, required this.resendOtp})
+  OtpDialog(
+      {Key? key,
+      required this.phoneNumber,
+      required this.resendOtp,
+      required this.isSignUp})
       : super(key: key);
 
   var pin = '';
@@ -28,7 +33,7 @@ class OtpDialog extends StatelessWidget {
           children: [
             10.ph,
             Text(
-              "Last step",
+              isSignUp ? "Last step" : "",
               style: TextStylesInter.textViewBold44,
             ),
             30.ph,

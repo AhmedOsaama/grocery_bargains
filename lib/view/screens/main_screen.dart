@@ -59,16 +59,18 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: PersistentTabView(
-      key: tabKey,
-      context,
-      controller: NavigatorController,
-      items: _navBarsItems(),
-      screens: _buildScreens(),
-      navBarStyle: NavBarStyle.simple,
-      stateManagement: true,
-    ));
+    return SafeArea(
+      child: Scaffold(
+          body: PersistentTabView(
+        key: tabKey,
+        context,
+        controller: NavigatorController,
+        items: _navBarsItems(),
+        screens: _buildScreens(),
+        navBarStyle: NavBarStyle.simple,
+        stateManagement: true,
+      )),
+    );
     // }
     // );
   }

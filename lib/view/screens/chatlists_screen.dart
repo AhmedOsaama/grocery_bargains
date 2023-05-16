@@ -54,11 +54,11 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
     // Provider.of<ChatlistsProvider>(context);
     return Scaffold(
       floatingActionButton: getFab(),
-      appBar: AppBar(
+      /*  appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         elevation: 0.2,
-      ),
+      ), */
       body: RefreshIndicator(
         onRefresh: () {
           chatlistsProvider.notifyListeners();
@@ -249,8 +249,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                       return Center(
                         child: CircularProgressIndicator(),
                       );
-                    List<FriendChatLists> friendsList =
-                        (snapshot.data ?? []) as List<FriendChatLists>;
+                    List<FriendChatLists> friendsList = (snapshot.data ?? []);
                     return ListView.separated(
                         itemCount: friendsList.length,
                         separatorBuilder: (ctx, i) => Divider(),
