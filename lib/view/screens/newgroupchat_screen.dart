@@ -7,6 +7,7 @@ import 'package:bargainb/models/user_info.dart' as UserInfo;
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/contact_profile_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -58,7 +59,7 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
         foregroundColor: Colors.black,
         // leading: backButt,
         title: Text(
-          "Add",
+          "Add".tr(),
           style: TextStyles.textViewSemiBold16.copyWith(color: black1),
         ),
         actions: [
@@ -81,7 +82,7 @@ class _NewGroupChatScreenState extends State<NewGroupChatScreen> {
                     withNavBar: false);
               },
               child: Text(
-                "Next",
+                "Next".tr(),
                 style:
                     TextStyles.textViewSemiBold16.copyWith(color: mainPurple),
               ))

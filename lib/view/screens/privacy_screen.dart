@@ -69,7 +69,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                           children: [
                             12.ph,
                             Text(
-                              "Privacy",
+                              "Privacy".tr(),
                               style: TextStyles.textViewSemiBold26
                                   .copyWith(color: black2),
                             ),
@@ -78,7 +78,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "Location services",
+                                  "LocationServices".tr(),
                                   style: TextStyles.textViewMedium16
                                       .copyWith(color: black2),
                                 ),
@@ -106,7 +106,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                             ),
                             Divider(),
                             Text(
-                              "Location services helps us to offer persionalized reccomendations. It uses GPS, Bluetooth and crowd sources WI-FI hotspot and mobile phone locations to determine your approximate location. You can disconnect at any time and request for data to be deleted in support.",
+                              "LocationServicesHelps2".tr(),
                               style: TextStyles.textViewMedium13
                                   .copyWith(color: Colors.grey),
                             ),
@@ -114,7 +114,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "Connect contacts",
+                                  "ConnectContacts".tr(),
                                   style: TextStyles.textViewMedium16
                                       .copyWith(color: black2),
                                 ),
@@ -142,7 +142,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                             ),
                             Divider(),
                             Text(
-                              "To help you connect to friends who also have accounts you can choose to have your contacts be synced and stored on your servers. You can disconnect it anytime.",
+                              "ToHelpYouConnect".tr(),
                               style: TextStyles.textViewMedium13
                                   .copyWith(color: Colors.grey),
                             ),
@@ -159,7 +159,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                                     }
                                   },
                                   child: Text(
-                                    "Privacy Policy  |  Terms of Service",
+                                    "PrivacyPolicy".tr(),
                                     style: TextStyles.textViewMedium10
                                         .copyWith(color: Colors.grey),
                                   )),

@@ -2,12 +2,11 @@ import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/view/widgets/signin_dialog.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
@@ -130,7 +129,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             : () => goToStoreProductPage(productsProvider, context, "Hoogvliet",
                 productComparison.hoogvlietLink),
         child: PriceComparisonItem(
-          isSameStore: widget.storeName == "Hoogvliet",
+            isSameStore: widget.storeName == "Hoogvliet",
             price: productComparison.hoogvlietPrice,
             size: productComparison.hoogvlietSize,
             storeImagePath: hoogLogo),
@@ -295,7 +294,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         height: 10.h,
                       ),
                       Text(
-                        "Add to list",
+                        "addToList".tr(),
                         style: TextStyles.textViewMedium12
                             .copyWith(color: prussian),
                       )
@@ -349,7 +348,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           height: 10.h,
                         ),
                         Text(
-                          "Share",
+                          "share".tr(),
                           style: TextStyles.textViewMedium12
                               .copyWith(color: prussian),
                         )
@@ -408,7 +407,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
               if (comparisonItems.isNotEmpty) ...[
                 Text(
-                  "Price Comparison",
+                  "PriceComparison".tr(),
                   style:
                       TextStyles.textViewSemiBold18.copyWith(color: prussian),
                 ),
@@ -437,7 +436,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                     Flexible(
                         child: Text(
-                      "The prices shown are available online and may not reflect in store. Confirm prices before visiting the store",
+                      "ThePricesShown".tr(),
                       style: TextStyles.textViewLight12
                           .copyWith(color: const Color.fromRGBO(62, 62, 62, 1)),
                     )),
@@ -448,7 +447,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 height: 30.h,
               ),
               Text(
-                "Sizes",
+                "Sizes".tr(),
                 style: TextStyles.textViewSemiBold18,
               ),
               ListView(
@@ -524,7 +523,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     borderRadius: BorderRadius.circular(10),
                                     color: purple70),
                                 child: Text(
-                                  "BEST VALUE",
+                                  "BESTVALUE".tr(),
                                   style: TextStyles.textViewRegular12
                                       .copyWith(color: Colors.white),
                                 ),
@@ -538,7 +537,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               SizedBox(
                 height: 20.h,
               ),
-              Text("Description",
+              Text("Description".tr(),
                   style:
                       TextStyles.textViewSemiBold18.copyWith(color: prussian)),
               SizedBox(

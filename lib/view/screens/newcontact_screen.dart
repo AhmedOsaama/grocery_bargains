@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:country_picker/country_picker.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
@@ -41,7 +42,7 @@ class _NewContactScreenState extends State<NewContactScreen> {
         foregroundColor: Colors.black,
         // leading: backButt,
         title: Text(
-          "New contact",
+          "NewContact".tr(),
           style: TextStyles.textViewSemiBold16.copyWith(color: black1),
         ),
         actions: [
@@ -61,7 +62,7 @@ class _NewContactScreenState extends State<NewContactScreen> {
                 }
               },
               child: Text(
-                "Save",
+                "save".tr(),
                 style:
                     TextStyles.textViewSemiBold16.copyWith(color: mainPurple),
               ))
@@ -138,7 +139,7 @@ class _NewContactScreenState extends State<NewContactScreen> {
                         Row(
                           children: [
                             Text(
-                              "Phone",
+                              "phone".tr(),
                               style: TextStyles.textViewSemiBold16
                                   .copyWith(color: black1),
                             ),
@@ -165,7 +166,7 @@ class _NewContactScreenState extends State<NewContactScreen> {
                   Row(
                     children: [
                       Text(
-                        "Mobile",
+                        "Mobile".tr(),
                         style: TextStyles.textViewSemiBold16
                             .copyWith(color: black1),
                       ),
@@ -217,7 +218,7 @@ class _NewContactScreenState extends State<NewContactScreen> {
                 child: TextButton(
                     onPressed: () {},
                     child: Text(
-                      "Add field",
+                      "AddField".tr(),
                       style: TextStyles.textViewRegular16
                           .copyWith(color: mainPurple),
                     )),

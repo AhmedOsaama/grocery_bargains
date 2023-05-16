@@ -66,7 +66,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Privacy",
+                    "Privacy".tr(),
                     style: TextStyles.textViewMedium16.copyWith(color: black2),
                   ),
                   Icon(
@@ -89,7 +89,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Preferences",
+                    "Preferences".tr(),
                     style: TextStyles.textViewMedium16.copyWith(color: black2),
                   ),
                   Icon(

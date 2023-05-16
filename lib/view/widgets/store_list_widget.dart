@@ -195,8 +195,8 @@ class _StoreListWidgetState extends State<StoreListWidget> {
                                   print(e);
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
-                                          content: Text(
-                                              "This operation couldn't be done please try again")));
+                                          content:
+                                              Text("operationNotDone".tr())));
                                 });
                                 isChecked = !isChecked;
                               });

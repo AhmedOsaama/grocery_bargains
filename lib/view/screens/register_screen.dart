@@ -78,8 +78,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (result.docs.isNotEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,
-              content: Text(
-                  "Phone number is already registered with another account. Please enter a different phone number")));
+              content: Text("PhoneNumberAlready".tr())));
           return;
         }
         var userCredential = await loginWithPhoneNumber(phoneNumber);
@@ -106,8 +105,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           //phone number doesn't exist
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,
-              content: Text(
-                  "This phone number doesn't appear to be associated with any account. Please enter a different phone number")));
+              content: Text("ThisPhoneNumber".tr())));
           return;
         }
         var userCredential = await loginWithPhoneNumber(phoneNumber);
@@ -483,8 +481,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           } on FirebaseAuthException catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 backgroundColor: Theme.of(context).colorScheme.error,
-                content: Text(e.message ??
-                    "The verification code from SMS/TOTP is invalid. Please check and enter the correct verification code again.")));
+                content: Text(e.message ?? "invalidOTP".tr())));
           }
 
           print("Signed In...");

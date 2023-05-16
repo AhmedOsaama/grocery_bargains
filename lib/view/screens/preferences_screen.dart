@@ -68,7 +68,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                           children: [
                             12.ph,
                             Text(
-                              "Preferences",
+                              "Preferences".tr(),
                               style: TextStyles.textViewSemiBold26
                                   .copyWith(color: black2),
                             ),
@@ -77,7 +77,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "Email marketing",
+                                  "EmailMarketing".tr(),
                                   style: TextStyles.textViewMedium16
                                       .copyWith(color: black2),
                                 ),
@@ -108,7 +108,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                             ),
                             Divider(),
                             Text(
-                              "Location services helps us to offer persionalized reccomendations",
+                              "LocationServicesHelps".tr(),
                               style: TextStyles.textViewMedium13
                                   .copyWith(color: Colors.grey),
                             ),
@@ -116,7 +116,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "Daily",
+                                  "Daily".tr(),
                                   style: TextStyles.textViewMedium16
                                       .copyWith(color: black2),
                                 ),
@@ -152,7 +152,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "Weekly",
+                                  "Weekly".tr(),
                                   style: TextStyles.textViewMedium16
                                       .copyWith(color: black2),
                                 ),
@@ -185,7 +185,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                             ),
                             Divider(),
                             Text(
-                              "Change the frequency of your emails",
+                              "ChangeFrequency".tr(),
                               style: TextStyles.textViewMedium13
                                   .copyWith(color: Colors.grey),
                             ),
@@ -202,7 +202,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                                       }
                                     },
                                     child: Text(
-                                      "Privacy Policy  |  Terms of Service",
+                                      "PrivacyPolicy".tr(),
                                       style: TextStyles.textViewMedium10
                                           .copyWith(color: Colors.grey),
                                     ))),

@@ -174,6 +174,32 @@
   "LocationServices"                  : "Location services",
   "LocationServicesHelps2"                  : "Location services helps us to offer persionalized reccomendations. It uses GPS, Bluetooth and crowd sources WI-FI hotspot and mobile phone locations to determine your approximate location. You can disconnect at any time and request for data to be deleted in support.",
   "ConnectContacts"                  : "Connect contacts",
-  "ToHelpYouConnect"                  : "To help you connect to friends who also have accounts you can choose to have your contacts be synced and stored on your servers. You can disconnect it anytime."
- 
+  "ToHelpYouConnect"                  : "To help you connect to friends who also have accounts you can choose to have your contacts be synced and stored on your servers. You can disconnect it anytime.",
+  
+  "Mobile"                  : "Mobile",
+  "AddField"                  : "Add field",
+  "Add"                  : "Add",
+  "PrivacyPolicy"                  : "Privacy Policy  |  Terms of Service",
+  "BESTVALUE"                  : "BEST VALUE",
+  "Description"                  : "Description",
+  "PriceComparison"                  : "Price Comparison",
+  "ThePricesShown"                  : "The prices shown are available online and may not reflect in store. Confirm prices before visiting the store",
+  "Sizes"                  : "Sizes",
+  "Name"                  : "Name",
+  "YourStatus"                  : "Your Status",
+  "PhoneNumberAlready"                  : "Phone number is already registered with another account. Please enter a different phone number",
+  "invalidOTP"                  : "The verification code from SMS/TOTP is invalid. Please check and enter the correct verification code again.",
+  "Change"                  : "Change",
+  "ThisPhoneNumber"                  : "This phone number doesn't appear to be associated with any account. Please enter a different phone number",
+  "UnlimitedProduct"                  : "Unlimited Product searches per month",
+  "UnlimitedLists"                  : "Unlimited lists",
+  "UnlimitedShared"                  : "Unlimited Shared chats",
+  "ConfirmCode"                  : "Confirm code",
+  "CodeIsSent"                  : "Code is sent to ",
+  "LastStep"                  : "Last step",
+  "Back"                  : "Back",
+  "DidntGetCode"                  : "Didn't get the code ?  ",
+  "Resend"                  : "Resend"
+
+  
 }
