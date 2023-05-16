@@ -28,7 +28,7 @@ class ProductsProvider with ChangeNotifier {
       var id = decodedProduct['id'];
       var productName = decodedProduct['name'];
       var imageURL = decodedProduct['image_url'];
-      var storeName = decodedProduct['product_brand'];
+      var storeName = "Albert";
       var description = decodedProduct['product_description'];
       var category = decodedProduct['product_category'] ?? "";
       var subCategory = decodedProduct['type_of_product'];
@@ -197,10 +197,10 @@ class ProductsProvider with ChangeNotifier {
             category: category,
             url: productURL);
         productList.add(productObj);
-        // populateBestValueBargains(productObj);
+        populateBestValueBargains(productObj);
       }
     } catch (e) {
-      print("SDAOIJDIUWAHIUEHUIWQHEUIWHQIUEHOIUQWHE");
+      print("Error converting to products list from json");
       print(e);
     }
     print("PRODUCTS LENGTH: " + productList.length.toString());
@@ -496,18 +496,21 @@ class ProductsProvider with ChangeNotifier {
     return response.statusCode;
   }
 
-  List<Product> getProductsByCategory(
-      String category, String store, String brand) {
+  Future<List<Product>> getProductsByCategory(
+      String category, String store, String brand) async {
     List<Product> products = [];
 
     if (store == "Store" && brand == "Brand") {
-      albertProducts.forEach((element) {
-        if (element.category != "") {
-          if (element.category.toLowerCase() == category.toLowerCase()) {
-            products.add(element);
-          }
-        }
-      });
+      var response = await NetworkServices.getLimitedAlbertProductsByCategory(category);
+      if(response != null)
+        products = convertToProductListFromJson(jsonDecode(response.body));
+      // albertProducts.forEach((element) {
+      //   if (element.category != "") {
+      //     if (element.category.toLowerCase() == category.toLowerCase()) {
+      //       products.add(element);
+      //     }
+      //   }
+      // });
       jumboProducts.forEach((element) {
         if (element.category != "") {
           if (element.category.toLowerCase() == category.toLowerCase()) {
@@ -637,18 +640,21 @@ class ProductsProvider with ChangeNotifier {
     return pro;
   }
 
-  List<Product> getProductsBySubCategory(
-      String category, String store, String brand) {
+  Future<List<Product>> getProductsBySubCategory(
+      String category, String store, String brand) async {
     List<Product> products = [];
 
     if (store == "Store" && brand == "Brand") {
-      albertProducts.forEach((element) {
-        if (element.subCategory != null) {
-          if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
-            products.add(element);
-          }
-        }
-      });
+      var response = await NetworkServices.getLimitedAlbertProductsBySubCategory(category);
+      if(response != null)
+        products = convertToProductListFromJson(jsonDecode(response.body));
+      // albertProducts.forEach((element) {
+      //   if (element.subCategory != null) {
+      //     if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
+      //       products.add(element);
+      //     }
+      //   }
+      // });
       jumboProducts.forEach((element) {
         if (element.subCategory != null) {
           if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
@@ -796,6 +802,7 @@ class ProductsProvider with ChangeNotifier {
       var oldPrice = product.oldPrice ?? "";
       String size1 = product.size;
       String size2 = product.size2 ?? "";
+      if(bestValueBargains.indexWhere((bargain) => bargain.itemId == product.id) != -1) return;
 
       // if (size2.contains("stuk") || size2.contains("stuks")) continue;
 
@@ -906,6 +913,38 @@ class ProductsProvider with ChangeNotifier {
     ];
     return searchResult;
   }
+
+  Future<int> getComparisonId(String storeName, String productLink) async {
+    var comparisonId = -1;
+    var comparisonResponse;
+    print("StoreName: " + storeName);
+    try {
+      if (storeName == "Albert") {
+        comparisonResponse =
+        await NetworkServices.searchComparisonByAlbertLink(
+            productLink);
+      }
+      if (storeName == "Jumbo") {
+        comparisonResponse =
+        await NetworkServices.searchComparisonByJumboLink(
+            productLink);
+      }
+      if (storeName == "Hoogvliet") {
+        comparisonResponse = await NetworkServices
+            .searchComparisonByHoogvlietLink(productLink);
+      }
+      var comparisons = await convertToComparisonProductListFromJson(
+          jsonDecode(comparisonResponse.body));
+      comparisonProducts.add(comparisons.first);
+      comparisonId = comparisons.first.id;
+    } catch (e) {
+      print(
+          "Error in comparison search: couldn't find comparison for the selected product");
+      print(e);
+    }
+    return comparisonId;
+  }
+
 
   String getImage(String storeName) {
     if (storeName == 'AH') return albert;

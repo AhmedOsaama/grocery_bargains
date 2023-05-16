@@ -2,6 +2,7 @@ import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/view/widgets/signin_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -52,7 +53,6 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   // final productImages = [milk, peach, spar];
   List<ItemSize> productSizes = [];
-  Mixpanel mixpanel = Mixpanel('752b3abf782a7347499ccb3ebb504194');
   var defaultPrice = 0.0;
   bool isLoading = false;
   final comparisonItems = [];
@@ -74,10 +74,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     defaultPrice = widget.price1 == null
         ? widget.price2 as double
         : widget.price1 as double;
-    mixpanel.track("view_product", properties: {
-      "product_id": widget.productId,
-      "store_name": widget.storeName
-    });
+    // mixpanel.track("view_product", properties: {
+    //   "product_id": widget.productId,
+    //   "store_name": widget.storeName
+    // });
 
     super.initState();
   }
@@ -90,9 +90,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           .firstWhere((bargain) => bargain.itemId == widget.productId)
           .bestValueSize;
     } catch (e) {
+      print("Error in product page: couldn't find best value size");
+      print(e);
       bestValueSize = "";
     }
-    print(bestValueSize);
+    print("BEST VALUE SIZE: $bestValueSize");
     ComparisonProduct productComparison;
 
     try {
@@ -106,6 +108,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             : () => goToStoreProductPage(productsProvider, context, "Jumbo",
                 productComparison.jumboLink),
         child: PriceComparisonItem(
+            isSameStore: widget.storeName == "Jumbo",
             price: productComparison.jumboPrice,
             size: productComparison.jumboSize ?? "N/A",
             storeImagePath: jumbo),
@@ -116,6 +119,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             : () => goToStoreProductPage(productsProvider, context, "Albert",
                 productComparison.albertLink),
         child: PriceComparisonItem(
+            isSameStore: widget.storeName == "Albert",
             price: productComparison.albertPrice,
             size: productComparison.albertSize,
             storeImagePath: albert),
@@ -126,6 +130,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             : () => goToStoreProductPage(productsProvider, context, "Hoogvliet",
                 productComparison.hoogvlietLink),
         child: PriceComparisonItem(
+          isSameStore: widget.storeName == "Hoogvliet",
             price: productComparison.hoogvlietPrice,
             size: productComparison.hoogvlietSize,
             storeImagePath: hoogLogo),
@@ -357,47 +362,47 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               SizedBox(
                 height: 25.h,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Quantity",
-                    style: TextStyles.textViewMedium12
-                        .copyWith(color: Colors.grey),
-                  ),
-                  Container(
-                    child: Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            if (quantity > 0) {
-                              setState(() {
-                                quantity--;
-                              });
-                            }
-                          },
-                          icon: Icon(Icons.remove),
-                          color: verdigris,
-                        ),
-                        VerticalDivider(),
-                        Text(
-                          quantity.toString(),
-                          style: TextStyles.textViewMedium18,
-                        ),
-                        VerticalDivider(),
-                        IconButton(
-                            onPressed: () {
-                              setState(() {
-                                ++quantity;
-                              });
-                            },
-                            icon: Icon(Icons.add),
-                            color: verdigris),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     Text(
+              //       "Quantity",
+              //       style: TextStyles.textViewMedium12
+              //           .copyWith(color: Colors.grey),
+              //     ),
+              //     Container(
+              //       child: Row(
+              //         children: [
+              //           IconButton(
+              //             onPressed: () {
+              //               if (quantity > 0) {
+              //                 setState(() {
+              //                   quantity--;
+              //                 });
+              //               }
+              //             },
+              //             icon: Icon(Icons.remove),
+              //             color: verdigris,
+              //           ),
+              //           VerticalDivider(),
+              //           Text(
+              //             quantity.toString(),
+              //             style: TextStyles.textViewMedium18,
+              //           ),
+              //           VerticalDivider(),
+              //           IconButton(
+              //               onPressed: () {
+              //                 setState(() {
+              //                   ++quantity;
+              //                 });
+              //               },
+              //               icon: Icon(Icons.add),
+              //               color: verdigris),
+              //         ],
+              //       ),
+              //     ),
+              //   ],
+              // ),
               SizedBox(
                 height: 30.h,
               ),
@@ -451,7 +456,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   physics: NeverScrollableScrollPhysics(),
                   children: productSizes.map((size) {
                     var index = productSizes.indexOf(size);
-                    print(size.price);
+                    print("SIZE: " + size.size);
+                    print("PRICE: " + size.price);
                     if (size.size.isEmpty ||
                         size.size == "None" ||
                         size.price == '0.0') {
@@ -468,7 +474,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         decoration: BoxDecoration(
                           border: Border.all(
                               width: 2.0,
-                              color: selectedSizeIndex == index
+                              color: bestValueSize == size.size
                                   ? mainPurple
                                   : Colors.transparent),
                           borderRadius: BorderRadius.circular(10),

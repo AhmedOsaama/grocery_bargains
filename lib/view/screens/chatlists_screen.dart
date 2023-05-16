@@ -5,7 +5,7 @@ import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/components/chats_search_delegate.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/contact_profile_screen.dart';
-import 'package:bargainb/models/userinfo.dart' as UserInfo;
+import 'package:bargainb/models/user_info.dart' as UserInfo;
 import 'package:bargainb/view/screens/newchatlist_screen.dart';
 import 'package:bargainb/view/screens/register_screen.dart';
 import 'package:bargainb/view/widgets/chat_card.dart';
@@ -168,8 +168,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                             color: mainYellow,
                             height: 60.h,
                             width: 158.w,
-                            onPressed: () => AppNavigator.pushReplacement(
-                                context: context, screen: RegisterScreen()),
+                            onPressed: () => pushNewScreen(context, screen: RegisterScreen(),withNavBar: false),
                             child: Text(
                               "Sign in",
                               style: TextStyles.textViewSemiBold16
@@ -277,7 +276,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                                     lastMessageUserName:
                                         element.get("last_message_userName")));
                               });
-                              var user = UserInfo.UserInfo(
+                              var user = UserInfo.UserContactInfo(
                                   phoneNumber: friendsList[i].phone,
                                   imageURL: friendsList[i].imageURL,
                                   name: friendsList[i].name,

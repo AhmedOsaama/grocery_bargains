@@ -228,7 +228,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Container(
                   decoration: BoxDecoration(boxShadow: Utils.boxShadow),
                   child: IntlPhoneField(
-                    disableLengthCheck: false,
+                    disableLengthCheck: true,
                     initialCountryCode: "NL",
                     decoration: InputDecoration(
                         border: OutlineInputBorder(

@@ -123,7 +123,7 @@ class _NewContactScreenState extends State<NewContactScreen> {
                       showCountryPicker(
                         context: context,
                         showPhoneCode: true,
-                        useSafeArea: false,
+                        // useSafeArea: false,
                         onSelect: (Country c) {
                           setState(() {
                             countryCode = c.phoneCode;

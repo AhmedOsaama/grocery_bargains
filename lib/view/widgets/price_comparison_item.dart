@@ -8,11 +8,12 @@ class PriceComparisonItem extends StatelessWidget {
   final String price;
   final String size;
   final String storeImagePath;
+  final bool isSameStore;                                         //to show the arrow button or not
   const PriceComparisonItem(
       {Key? key,
       required this.price,
       required this.size,
-      required this.storeImagePath})
+      required this.storeImagePath, required this.isSameStore})
       : super(key: key);
 
   @override
@@ -75,7 +76,8 @@ class PriceComparisonItem extends StatelessWidget {
           Spacer(),
           // PlusButton(onTap: (){}),
           // SizedBox(width: 20.w,),
-          // Icon(Icons.arrow_forward_ios,)
+          if(!isSameStore)
+          Icon(Icons.arrow_forward_ios,color: mainPurple,)
         ],
       ),
     );

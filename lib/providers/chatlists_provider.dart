@@ -176,7 +176,7 @@ class ChatlistsProvider with ChangeNotifier {
     userIds.add(FirebaseAuth.instance.currentUser!.uid);
     var docRef = await FirebaseFirestore.instance.collection('/lists').add({
       "last_message": "",
-      "last_message_date": Timestamp.now(),
+      "last_message_date": Timestamp.fromDate(DateTime.now().toUtc()),
       "last_message_userId": "",
       "last_message_userName": "",
       "list_name": "Name...",
@@ -195,7 +195,7 @@ class ChatlistsProvider with ChangeNotifier {
         storeImageUrl: storePlaceholder,
         itemLength: 0,
         lastMessage: '',
-        lastMessageDate: Timestamp.now(),
+        lastMessageDate: Timestamp.fromDate(DateTime.now().toUtc()),
         lastMessageUserId: '',
         lastMessageUserName: ''));
     notifyListeners();
@@ -275,14 +275,14 @@ class ChatlistsProvider with ChangeNotifier {
         'item_oldPrice': "",
         'message': message,
         // 'list_name': listId,
-        'createdAt': Timestamp.now(),
+        'createdAt': Timestamp.fromDate(DateTime.now().toUtc()),
         'userId': FirebaseAuth.instance.currentUser!.uid,
         'username': userData['username'],
         'userImageURL': userData['imageURL'],
       });
       FirebaseFirestore.instance.collection('/lists').doc(listId).update({
         "last_message": message,
-        "last_message_date": Timestamp.now(),
+        "last_message_date": Timestamp.fromDate(DateTime.now().toUtc()),
         "last_message_userId": FirebaseAuth.instance.currentUser?.uid,
         "last_message_userName": userData['username'],
       });
@@ -306,14 +306,14 @@ class ChatlistsProvider with ChangeNotifier {
       'item_price': item.price,
       'item_oldPrice': item.oldPrice,
       'message': "",
-      'createdAt': Timestamp.now(),
+      'createdAt': Timestamp.fromDate(DateTime.now().toUtc()),
       'userId': FirebaseAuth.instance.currentUser!.uid,
       'username': userData['username'],
       'userImageURL': userData['imageURL'],
     });
     FirebaseFirestore.instance.collection('/lists').doc(docId).update({
       "last_message": "Shared ${item.name}",
-      "last_message_date": Timestamp.now(),
+      "last_message_date": Timestamp.fromDate(DateTime.now().toUtc()),
       "last_message_userId": FirebaseAuth.instance.currentUser?.uid,
       "last_message_userName": userData['username'],
     }).onError((error, stackTrace) => () {
@@ -338,7 +338,7 @@ class ChatlistsProvider with ChangeNotifier {
       "item_isChecked": false,
       "text": item.text,
       "owner": userData['username'],
-      "time": Timestamp.now(),
+      "time": Timestamp.fromDate(DateTime.now().toUtc()),
     }).catchError((e) {
       done = false;
     });
@@ -371,14 +371,14 @@ class ChatlistsProvider with ChangeNotifier {
       'item_price': itemPrice,
       'item_oldPrice': itemOldPrice,
       'message': "",
-      'createdAt': Timestamp.now(),
+      'createdAt': Timestamp.fromDate(DateTime.now().toUtc()),
       'userId': FirebaseAuth.instance.currentUser!.uid,
       'username': userData['username'],
       'userImageURL': userData['imageURL'],
     });
     FirebaseFirestore.instance.collection('/lists').doc(listId).update({
       "last_message": "Shared $itemName",
-      "last_message_date": Timestamp.now(),
+      "last_message_date": Timestamp.fromDate(DateTime.now().toUtc()),
       "last_message_userId": FirebaseAuth.instance.currentUser?.uid,
       "last_message_userName": userData['username'],
     });
@@ -399,7 +399,7 @@ class ChatlistsProvider with ChangeNotifier {
       "chat_reference": messageDocPath.path,
       "item_isChecked": false,
       "owner": userName,
-      "time": Timestamp.now(),
+      "time": Timestamp.fromDate(DateTime.now().toUtc()),
     });
     await updateListInfo(
         itemName: "",
@@ -433,7 +433,7 @@ class ChatlistsProvider with ChangeNotifier {
       "text": "",
       "chat_reference": messageDocPath.path,
       "owner": userName,
-      "time": Timestamp.now(),
+      "time": Timestamp.fromDate(DateTime.now().toUtc()),
     });
     await updateListInfo(
         itemName: itemName,
@@ -459,7 +459,7 @@ class ChatlistsProvider with ChangeNotifier {
       "size": FieldValue.increment(1),
       "total_price": FieldValue.increment(double.tryParse(itemPrice) ?? 0),
       "last_message": "Added $lastMessage",
-      "last_message_date": Timestamp.now(),
+      "last_message_date": Timestamp.fromDate(DateTime.now().toUtc()),
       "last_message_userId": userId,
       "last_message_userName": userName,
     });
@@ -468,7 +468,7 @@ class ChatlistsProvider with ChangeNotifier {
     chatlist.itemLength += 1;
     chatlist.totalPrice += double.tryParse(itemPrice) ?? 0;
     chatlist.lastMessage = "Added $lastMessage";
-    chatlist.lastMessageDate = Timestamp.now();
+    chatlist.lastMessageDate = Timestamp.fromDate(DateTime.now().toUtc());
     chatlist.lastMessageUserId = FirebaseAuth.instance.currentUser?.uid ?? "";
     chatlist.lastMessageUserName = userName;
     notifyListeners();
@@ -485,7 +485,7 @@ class ChatlistsProvider with ChangeNotifier {
       DocumentSnapshot<Map<String, dynamic>> userData) {
     var chatlist = chatlists.firstWhere((chatlist) => chatlist.id == listId);
     chatlist.lastMessage = message;
-    chatlist.lastMessageDate = Timestamp.now();
+    chatlist.lastMessageDate = Timestamp.fromDate(DateTime.now().toUtc());
     chatlist.lastMessageUserId = FirebaseAuth.instance.currentUser?.uid ?? "";
     chatlist.lastMessageUserName = userData['username'];
     notifyListeners();

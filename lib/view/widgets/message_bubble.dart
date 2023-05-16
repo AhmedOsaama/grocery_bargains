@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/chatlist.dart';
 import 'package:bargainb/models/product.dart';
-import 'package:bargainb/models/userinfo.dart';
+import 'package:bargainb/models/user_info.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/services/network_services.dart';
 import 'package:bargainb/view/screens/contact_profile_screen.dart';
@@ -114,7 +114,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                     context: context,
                     screen: ContactProfileScreen(
                       lists: lists,
-                      user: UserInfo(
+                      user: UserContactInfo(
                           email: "",
                           id: widget.userId,
                           imageURL: widget.userImage,

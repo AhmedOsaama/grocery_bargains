@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:bargainb/models/chatlist.dart';
-import 'package:bargainb/models/userinfo.dart' as UserInfo;
+import 'package:bargainb/models/user_info.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/components/draggable_list.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
@@ -12,6 +12,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -23,10 +24,12 @@ import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/chat_view_widget.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
 import '../components/dotted_container.dart';
+import 'chatlists_screen.dart';
 
 var imagesWidgets = ValueNotifier(<Widget>[]);
 
@@ -38,12 +41,10 @@ class ChatListViewScreen extends StatefulWidget {
   final bool isUsingDynamicLink;
   final bool isNotificationOpened;
   bool isListView;
-
   // final Function? updateList;
   ChatListViewScreen({
     Key? key,
     required this.listId,
-
     // required this.listName,
     this.isUsingDynamicLink = false,
     // this.storeName,
@@ -62,8 +63,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   late Future<Widget> getUserImagesFuture;
   late Future<QuerySnapshot> getListItemsFuture;
   bool isEditingName = false;
-  List<UserInfo.UserInfo> listUsers = [];
-  List<UserInfo.UserInfo> contactsList = [];
+  List<UserContactInfo> listUsers = [];
+  List<UserContactInfo> contactsList = [];
   var inviteFriendController = TextEditingController();
   bool isContactsPermissionGranted = false;
 
@@ -72,9 +73,19 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
   @override
   void initState() {
-    chatList = Provider.of<ChatlistsProvider>(context, listen: false)
-        .chatlists
-        .firstWhere((chatList) => chatList.id == widget.listId);
+    if(widget.isNotificationOpened){
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+        await Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlists();
+        chatList = Provider.of<ChatlistsProvider>(context, listen: false)
+            .chatlists
+            .firstWhere((chatList) => chatList.id == widget.listId);
+      });
+    }else {
+      chatList = Provider
+          .of<ChatlistsProvider>(context, listen: false)
+          .chatlists
+          .firstWhere((chatList) => chatList.id == widget.listId);
+    }
     if (widget.isUsingDynamicLink) {
       var currentUserId = FirebaseAuth.instance.currentUser?.uid;
       FirebaseFirestore.instance
@@ -153,7 +164,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       userName = userSnapshot.data()!['username'];
       phoneNumber = userSnapshot.data()!['phoneNumber'];
       id = userSnapshot.id;
-      listUsers.add(UserInfo.UserInfo(
+      listUsers.add(UserContactInfo(
           id: id,
           phoneNumber: phoneNumber,
           imageURL: imageUrl,
@@ -217,7 +228,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                   var email = user.get('email');
                   var imageURL = user.get('imageURL');
                   var id = user.id;
-                  contactsList.add(UserInfo.UserInfo(
+                  contactsList.add(UserContactInfo(
                       id: id,
                       phoneNumber: phoneNumber,
                       imageURL: imageURL,
@@ -371,16 +382,9 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                               value: 'rename', child: Text("Rename")),
                           DropdownMenuItem(
                               value: 'remove', child: Text("Remove")),
-                          DropdownMenuItem(
-                            value: 'copy',
-                            enabled: false,
-                            child: Text("Copy"),
-                          ),
                         ],
                         onChanged: (option) {
                           if (option == 'rename') {
-                            // Share.share("text");
-
                             setState(() {
                               isEditingName = true;
                             });
@@ -841,7 +845,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                     style: TextStylesInter.textViewRegular15
                                         .copyWith(color: black),
                                   ),
-                                10.ph
+                                10.ph,
+                                TextButton(onPressed: () => shareListViaDeepLink(), child: Text("Invite people via link"))
                               ],
                             ),
                           ),
@@ -857,7 +862,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   }
 
   Future<void> addContactToChatlist(
-      UserInfo.UserInfo userInfo, BuildContext context) async {
+      UserContactInfo userInfo, BuildContext context) async {
     try {
       var userData = await FirebaseFirestore.instance
           .collection('/users')
@@ -921,5 +926,36 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     Provider.of<ChatlistsProvider>(context, listen: false)
         .deleteList(context, widget.listId);
     await pushDynamicScreen(context, screen: ChatlistsScreen());
+  }
+
+  shareListViaDeepLink() async {
+    BranchUniversalObject buo = BranchUniversalObject(
+      canonicalIdentifier: 'invite_to_list',
+      //canonicalUrl: '',
+      title: chatList.name,
+      imageUrl: 'https://play-lh.googleusercontent.com/u6LMBvrIXH6r1LFQftqjSzebxflasn-nhcoZUlP6DjWHV6fmrwgNFyjJeFwFmckrySHF=w240-h480-rw',
+      contentDescription: 'Hey, I would like to invite you to ${chatList.name} in BargainB',
+      // keywords: ['Plugin', 'Branch', 'Flutter'],
+      publiclyIndex: true,
+      locallyIndex: true,
+      contentMetadata: BranchContentMetaData()..addCustomMetadata('list_id', chatList.id)
+
+    );
+    BranchLinkProperties lp = BranchLinkProperties(
+      //alias: 'flutterplugin', //define link url,
+        channel: 'facebook',
+        feature: 'sharing',
+        stage: 'new share',
+        tags: ['one', 'two', 'three']
+    );
+    BranchResponse response =
+        await FlutterBranchSdk.getShortUrl(buo: buo, linkProperties: lp);
+
+    if (response.success) {
+      print('Link generated: ${response.result}');
+    } else {
+      print('Error : ${response.errorCode} - ${response.errorMessage}');
+    }
+    Share.share(response.result);
   }
 }

@@ -99,49 +99,7 @@ class MySearchDelegate extends SearchDelegate {
                 var size2 = searchResults[i].size2 ?? "";
                 return GestureDetector(
                   onTap: () async {
-                    var comparisonId = -1;
-                    var comparisonResponse;
-                    print("StoreName: " + storeName);
-                    try {
-                      if (storeName == "Albert") {
-                        // comparisonId = Provider
-                        //     .of<ProductsProvider>(context, listen: false)
-                        //     .comparisonProducts
-                        //     .firstWhere((comparison) =>
-                        // comparison.albertLink == productLink).id;
-                        comparisonResponse =
-                            await NetworkServices.searchComparisonByAlbertLink(
-                                productLink);
-                      }
-                      if (storeName == "Jumbo") {
-                        // comparisonId = Provider
-                        //     .of<ProductsProvider>(context, listen: false)
-                        //     .comparisonProducts
-                        //     .firstWhere((comparison) =>
-                        // comparison.jumboLink == productLink).id;
-                        comparisonResponse =
-                            await NetworkServices.searchComparisonByJumboLink(
-                                productLink);
-                      }
-                      if (storeName == "Hoogvliet") {
-                        // comparisonId = Provider
-                        //     .of<ProductsProvider>(context, listen: false)
-                        //     .comparisonProducts
-                        //     .firstWhere((comparison) =>
-                        // comparison.hoogvlietLink == productLink).id;
-                        comparisonResponse = await NetworkServices
-                            .searchComparisonByHoogvlietLink(productLink);
-                      }
-                      var comparisons = await productProvider
-                          .convertToComparisonProductListFromJson(
-                              jsonDecode(comparisonResponse.body));
-                      productProvider.comparisonProducts.add(comparisons.first);
-                      comparisonId = comparisons.first.id;
-                    } catch (e) {
-                      print(
-                          "Error in search: couldn't find comparison for the selected product");
-                      print(e);
-                    }
+                    int comparisonId = await productProvider.getComparisonId(storeName, productLink);
                     AppNavigator.push(
                         context: context,
                         screen: ProductDetailScreen(
@@ -171,6 +129,7 @@ class MySearchDelegate extends SearchDelegate {
           );
         });
   }
+
 
   void saveRecentSearches() {
     var recentSearches = pref.getStringList('recentSearches') ?? [];
