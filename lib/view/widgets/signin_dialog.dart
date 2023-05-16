@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:bargainb/utils/assets_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
@@ -64,7 +65,7 @@ class SigninDialog extends StatelessWidget {
                         borderRadius: BorderRadius.circular(6),
                         onPressed: () => AppNavigator.pop(context: context),
                         child: Text(
-                          "Back",
+                          "Back".tr(),
                           style: TextStyles.textViewSemiBold16
                               .copyWith(color: darkGrey),
                         ))),
@@ -77,7 +78,8 @@ class SigninDialog extends StatelessWidget {
                         onPressed: () {
                           // AppNavigator.pushReplacement(
                           //     context: context, screen: RegisterScreen());
-                          pushNewScreen(context, screen: RegisterScreen(),withNavBar: false);
+                          pushNewScreen(context,
+                              screen: RegisterScreen(), withNavBar: false);
                         },
                         child: Text(
                           buttonText,

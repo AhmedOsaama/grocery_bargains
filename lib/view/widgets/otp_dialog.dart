@@ -1,6 +1,7 @@
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pinput/pinput.dart';
@@ -33,7 +34,7 @@ class OtpDialog extends StatelessWidget {
           children: [
             10.ph,
             Text(
-              isSignUp ? "Last step" : "",
+              isSignUp ? "LastStep".tr() : "",
               style: TextStylesInter.textViewBold44,
             ),
             30.ph,
@@ -42,11 +43,11 @@ class OtpDialog extends StatelessWidget {
             ),
             30.ph,
             Text(
-              "Confirm code",
+              "ConfirmCode".tr(),
               style: TextStylesInter.textViewMedium25,
             ),
             8.ph,
-            Text("Code is sent to ${phoneNumber}"),
+            Text("${"CodeIsSent".tr()}${phoneNumber}"),
             30.ph,
             Pinput(
                 validator: (s) {
@@ -72,7 +73,7 @@ class OtpDialog extends StatelessWidget {
                         borderRadius: BorderRadius.circular(6)),
                     foregroundColor: Colors.white),
                 child: Text(
-                  "Submit",
+                  "submit".tr(),
                   style: TextStylesInter.textViewSemiBold15,
                 )),
             30.ph,
@@ -84,11 +85,11 @@ class OtpDialog extends StatelessWidget {
               },
               child: Text.rich(
                 TextSpan(
-                    text: "Didn't get the code ?  ",
+                    text: "DidntGetCode".tr(),
                     style: TextStylesInter.textViewRegular18,
                     children: [
                       TextSpan(
-                        text: "Resend",
+                        text: "Resend".tr(),
                         style: TextStylesInter.textViewRegular18.copyWith(
                             decoration: TextDecoration.underline,
                             color: mainPurple),

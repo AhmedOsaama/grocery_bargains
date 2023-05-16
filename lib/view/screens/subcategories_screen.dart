@@ -57,7 +57,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
         backgroundColor: white,
         elevation: 0,
         title: Text(
-          "Search result",
+          "SearchResult".tr(),
           style: TextStylesInter.textViewSemiBold17.copyWith(color: black2),
         ),
         leading: IconButton(
@@ -586,10 +586,10 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                                                     0
                                                                 ? Text(
                                                                     " €" +
-                                                                        (double.parse(products.elementAt(index).oldPrice!) -
-                                                                                double.parse(products.elementAt(index).price ?? products[index].price2!))
-                                                                            .toStringAsFixed(2) +
-                                                                        " less",
+                                                                        (double.parse(products.elementAt(index).oldPrice!) - double.parse(products.elementAt(index).price ?? products[index].price2!)).toStringAsFixed(
+                                                                            2) +
+                                                                        "Less"
+                                                                            .tr(),
                                                                     style: TextStylesInter
                                                                         .textViewMedium10
                                                                         .copyWith(

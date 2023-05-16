@@ -101,7 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     });
                 },
                 child: Text(
-                  isEditing ? "Save" : LocaleKeys.edit.tr(),
+                  isEditing ? "save".tr() : LocaleKeys.edit.tr(),
                   style:
                       TextStyle(fontWeight: FontWeight.w600, fontSize: 17.sp),
                 ))
@@ -195,7 +195,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       // }
                                     },
                                     child: Text(
-                                      "Change",
+                                      "Change".tr(),
                                       style: TextStyle(
                                           fontWeight: FontWeight.w400,
                                           fontSize: 17.sp,
@@ -273,7 +273,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                         if (isEditing) ...[
                           Text(
-                            "Name",
+                            "Name".tr(),
                             style: TextStylesDMSans.textViewMedium13
                                 .copyWith(color: Colors.grey),
                           ),
@@ -305,7 +305,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           20.ph,
                           Text(
-                            "Your Status",
+                            "YourStatus".tr(),
                             style: TextStylesDMSans.textViewMedium13
                                 .copyWith(color: Colors.grey),
                           ),
@@ -341,6 +341,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> verifyPhoneNumber(String phone) async {
+    setState(() {
+      if (isEditing) isPhoneEdited = false;
+    });
     var result = await FirebaseFirestore.instance
         .collection('users')
         .where('phoneNumber', isEqualTo: phone)
@@ -348,8 +351,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (result.docs.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           backgroundColor: Theme.of(context).colorScheme.error,
-          content: Text(
-              "Phone number is already registered with another account. Please enter a different phone number")));
+          content: Text("PhoneNumberAlready".tr())));
       return;
     }
     await FirebaseAuth.instance.verifyPhoneNumber(
@@ -391,8 +393,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             log(e.message!);
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 backgroundColor: Theme.of(context).colorScheme.error,
-                content: Text(e.message ??
-                    "The verification code from SMS/TOTP is invalid. Please check and enter the correct verification code again.")));
+                content: Text(e.message ?? "invalidOTP".tr())));
           }
         },
         codeAutoRetrievalTimeout: (message) {});
