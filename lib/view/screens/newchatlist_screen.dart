@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/components/chats_search_delegate.dart';
@@ -131,7 +132,7 @@ class _NewChatlistScreenState extends State<NewChatlistScreen> {
                       ),
                       15.pw,
                       Text(
-                        "New contact",
+                        LocaleKeys.newContact.tr(),
                         style: TextStyles.textViewSemiBold16
                             .copyWith(color: black),
                       )
@@ -153,7 +154,7 @@ class _NewChatlistScreenState extends State<NewChatlistScreen> {
                       ),
                       15.pw,
                       Text(
-                        "Invite to BargainB",
+                        "InviteToBargain".tr(),
                         style: TextStyles.textViewSemiBold16
                             .copyWith(color: black),
                       )
@@ -164,7 +165,7 @@ class _NewChatlistScreenState extends State<NewChatlistScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    'CONTACTS ON BARGAINB',
+                    LocaleKeys.contactsOnBargainB.tr(),
                     style: TextStylesInter.textViewRegular12
                         .copyWith(color: mainPurple),
                   ),
@@ -179,12 +180,12 @@ class _NewChatlistScreenState extends State<NewChatlistScreen> {
                       return snapshot.data!.isEmpty
                           ? (isContactsPermissionGranted
                               ? Text(
-                                  'No contacts found :(',
+                        LocaleKeys.noContactsFound.tr(),
                                   style: TextStylesInter.textViewRegular12
                                       .copyWith(color: black),
                                 )
                               : Text(
-                                  'Please add your number to see your friends on BargainB',
+                        LocaleKeys.pleaseAddYourNumber.tr(),
                                   maxLines: 2,
                                   style: TextStylesInter.textViewRegular12
                                       .copyWith(color: black),

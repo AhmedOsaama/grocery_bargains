@@ -311,7 +311,7 @@ class _ContactProfileScreenState extends State<ContactProfileScreen> {
                                                 RichText(
                                                     text: TextSpan(
                                                         text:
-                                                            "${widget.lists.elementAt(i).itemLength} items",
+                                                            "${widget.lists.elementAt(i).itemLength} ${LocaleKeys.items.tr()}",
                                                         style: TextStyles
                                                             .textViewRegular10
                                                             .copyWith(

@@ -170,7 +170,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                             width: 158.w,
                             onPressed: () => pushNewScreen(context, screen: RegisterScreen(),withNavBar: false),
                             child: Text(
-                              "Sign in",
+                              LocaleKeys.signIn.tr(),
                               style: TextStyles.textViewSemiBold16
                                   .copyWith(color: white),
                             ),
@@ -317,12 +317,12 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                                       ),
                                       5.ph,
                                       Text(
-                                        "On " +
+                                        "${LocaleKeys.on.tr()}" +
                                             friendsList[i]
                                                 .chatlists
                                                 .length
                                                 .toString() +
-                                            " lists",
+                                            " ${LocaleKeys.lists.tr()}",
                                         style: TextStylesInter.textViewMedium10
                                             .copyWith(color: purple50),
                                       ),

@@ -61,7 +61,7 @@ class ChatTile extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "${size} items",
+                    "${size} ${LocaleKeys.items.tr()}",
                     style: TextStylesInter.textViewMedium10
                         .copyWith(color: purple50),
                   ),

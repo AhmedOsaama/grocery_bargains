@@ -167,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
-                            "Next",
+                            LocaleKeys.next.tr(),
                             style: TextStyles.textViewSemiBold14
                                 .copyWith(color: white),
                           ),
@@ -265,13 +265,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   return Text(
                                     style: TextStylesInter.textViewSemiBold24
                                         .copyWith(color: mainPurple),
-                                    '${'Hello, ' + snapshot.data!['username']}!',
+                                    '${'${LocaleKeys.hello.tr()}, ' + snapshot.data!['username']}!',
                                   );
                                 } else {
                                   return Text(
                                     style: TextStylesInter.textViewSemiBold24
                                         .copyWith(color: mainPurple),
-                                    'Hello, Guest!',
+                                    LocaleKeys.helloGuest.tr(),
                                   );
                                 }
                               }),
@@ -351,7 +351,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Text(
-                                        "Next",
+                                        LocaleKeys.next.tr(),
                                         style: TextStyles.textViewSemiBold14
                                             .copyWith(color: white),
                                       ),
@@ -407,7 +407,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 NavigatorController.jumpToTab(1);
                               },
                               child: Text(
-                                'See all',
+                                LocaleKeys.seeAll.tr(),
                                 style: textButtonStyle,
                               ))
                         ],
@@ -634,7 +634,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 233, 233, 235, 1),
                                           ),
                                           child: Text(
-                                            "Got any ideas for the plan",
+                                            LocaleKeys.gotAnyIdeas.tr(),
                                             style: TextStyles.textViewRegular16
                                                 .copyWith(color: Colors.black),
                                             textAlign: TextAlign.left,
@@ -642,14 +642,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                         SvgPicture.asset(whiteAdd),
                                         Text(
-                                          "  Add to list",
+                                          LocaleKeys.addToList.tr(),
                                           style: TextStyles.textViewRegular10
                                               .copyWith(color: white),
                                         ),
                                       ],
                                     ),
                                     Text(
-                                      "Read 10:02",
+                                      LocaleKeys.readTimeStamp.tr(),
                                       style: TextStyles.textViewRegular10
                                           .copyWith(color: white),
                                     ),
@@ -715,7 +715,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Text(
-                                        "Next",
+                                        LocaleKeys.next.tr(),
                                         style: TextStyles.textViewSemiBold14
                                             .copyWith(color: white),
                                       ),
@@ -823,7 +823,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     screen: LatestBargainsScreen());
                               },
                               child: Text(
-                                'See all',
+                                LocaleKeys.seeAll.tr(),
                                 style: textButtonStyle,
                               ))
                         ],
@@ -967,7 +967,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "Latest Value Bargains",
+                            LocaleKeys.latestValueBargains.tr(),
                             style: TextStylesDMSans.textViewBold16
                                 .copyWith(color: prussian),
                           ),
@@ -1154,7 +1154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Welcome!",
+                        LocaleKeys.welcome.tr() + "!",
                         style: TextStyles.textViewSemiBold24
                             .copyWith(color: white),
                       ),
@@ -1191,7 +1191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        "Next",
+                        LocaleKeys.next.tr(),
                         style: TextStyles.textViewSemiBold14
                             .copyWith(color: white),
                       ),

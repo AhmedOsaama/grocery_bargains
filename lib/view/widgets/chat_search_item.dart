@@ -65,7 +65,7 @@ class ChatSearchItem extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          "${list.itemLength} items",
+                          "${list.itemLength} ${LocaleKeys.items.tr()}",
                           style: TextStylesInter.textViewMedium10
                               .copyWith(color: purple50),
                         ),

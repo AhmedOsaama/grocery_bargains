@@ -1,3 +1,4 @@
+import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/view/widgets/signin_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -78,10 +79,10 @@ class _MainScreenState extends State<MainScreen> {
               AppNavigator.push(context: context, screen: ChatListViewScreen(listId: listId));
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content:
-                  Text("User added successfully to list ${chatList.name}")));
+                  Text("${LocaleKeys.userAddedToChatlist.tr()} ${chatList.name}")));
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("User Already Exists in the list")));
+                  SnackBar(content: Text(LocaleKeys.userAlreadyExists.tr())));
             }
           });
         }      }
@@ -157,9 +158,9 @@ class _MainScreenState extends State<MainScreen> {
               showDialog(
                   context: context,
                   builder: (ctx) => SigninDialog(
-                        body: 'You have to be signed in to use this feature.',
-                        buttonText: 'Sign in',
-                        title: 'Sign In',
+                        body: LocaleKeys.youHaveToBeSignedIn.tr(),
+                        buttonText: LocaleKeys.signIn.tr(),
+                        title: LocaleKeys.signIn.tr(),
                       ));
             } else {
               NavigatorController.jumpToTab(2);

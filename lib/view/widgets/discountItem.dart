@@ -1,4 +1,6 @@
+import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/providers/products_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bargainb/utils/app_colors.dart';
@@ -205,7 +207,7 @@ class DiscountItem extends StatelessWidget {
                         5.ph,
                         if (getDiscountValue(productsProvider) != null)
                           Text(
-                            "Save €${getDiscountValue(productsProvider)}",
+                            "${LocaleKeys.save.tr()} €${getDiscountValue(productsProvider)}",
                             style: TextStylesInter.textViewMedium10.copyWith(
                                 color: Color.fromRGBO(24, 195, 54, 1)),
                           ),

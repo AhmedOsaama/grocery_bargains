@@ -1,6 +1,6 @@
 // DO NOT EDIT. This is code generated via package:easy_localization/generate.dart
 
-abstract class LocaleKeys {
+abstract class  LocaleKeys {
   static const welcome = 'welcome';
   static const letsList = 'letsList';
   static const changeLang = 'changeLang';
@@ -59,6 +59,7 @@ abstract class LocaleKeys {
   static const dozen = 'dozen';
   static const addToCart = 'addToCart';
   static const latestBargains = 'latestBargains';
+  static const latestDeals = 'latestDeals';
   static const addToList = 'addToList';
   static const share = 'share';
   static const priceAlert = 'priceAlert';
@@ -88,6 +89,7 @@ abstract class LocaleKeys {
   static const chooseList = 'chooseList';
   static const createNewList = 'createNewList';
   static const profile = 'profile';
+  static const home = 'home';
   static const edit = 'edit';
   static const settings = 'settings';
   static const support = 'support';
@@ -120,4 +122,81 @@ abstract class LocaleKeys {
   static const inputEmail = 'inputEmail';
   static const addToListFirstItem = 'addToListFirstItem';
   static const you = 'you';
+  static const subcategories = 'subcategories';
+  static const couldntDeleteList = 'couldntDeleteList';
+  static const tryAgain = 'tryAgain';
+  static const noMatchesFound = 'noMatchesFound';
+  static const QuickAdd = 'QuickAdd';
+  static const operationNotDone = 'operationNotDone';
+  static const ShowMore = 'ShowMore';
+  static const ShowLess = 'ShowLess';
+  static const SearchResult = 'SearchResult';
+  static const Subcategories = 'Subcategories';
+  static const NoSubcategoriesFound = 'NoSubcategoriesFound';
+  static const NoProductsFound = 'NoProductsFound';
+  static const Less = 'Less';
+  static const Done = 'Done';
+  static const Filter = 'Filter';
+  static const DropYourItems = 'DropYourItems';
+  static const Cancel = 'Cancel';
+  static const ListRemoval = 'ListRemoval';
+  static const Delete = 'Delete';
+  static const GENERALCHATS = 'GENERALCHATS';
+  static const NoChatListFound = 'NoChatListFound';
+  static const QuickTuto = 'QuickTuto';
+  static const Next = 'Next';
+  static const UseOurNavigation = 'UseOurNavigation';
+  static const ItIsSmartSearch = 'ItIsSmartSearch';
+  static const StartHereTo = 'StartHereTo';
+  static const Newchatlist = 'Newchatlist';
+  static const NewGroupChatlist = 'NewGroupChatlist';
+  static const NewContact = 'NewContact';
+  static const InviteToBargain = 'InviteToBargain';
+  static const Preferences = 'Preferences';
+  static const EmailMarketing = 'EmailMarketing';
+  static const LocationServicesHelps = 'LocationServicesHelps';
+  static const Weekly = 'Weekly';
+  static const Daily = 'Daily';
+  static const ChangeFrequency = 'ChangeFrequency';
+  static const Privacy = 'Privacy';
+  static const LocationServices = 'LocationServices';
+  static const LocationServicesHelps2 = 'LocationServicesHelps2';
+  static const ConnectContacts = 'ConnectContacts';
+  static const ToHelpYouConnect = 'ToHelpYouConnect';
+  static const userAddedToChatlist = 'userAddedToChatlist';
+  static const userAlreadyExists = 'userAlreadyExists';
+  static const rename = 'rename';
+  static const remove = 'remove';
+  static const items = 'items';
+  static const stores = 'stores';
+  static const members = 'members';
+  static const contactsOnBargainB = 'contactsOnBargainB';
+  static const add = 'add';
+  static const pleaseAddYourNumber = 'pleaseAddYourNumber';
+  static const noContactsFound = 'noContactsFound';
+  static const invitePeopleViaLink = 'invitePeopleViaLink';
+  static const couldntFindUserWithEmail = 'couldntFindUserWithEmail';
+  static const on = 'on';
+  static const lists = 'lists';
+  static const next = 'next';
+  static const helloGuest = 'helloGuest';
+  static const gotAnyIdeas = 'gotAnyIdeas';
+  static const readTimeStamp = 'readTimeStamp';
+  static const latestValueBargains = 'latestValueBargains';
+  static const dataAccess = 'dataAccess';
+  static const privacyPolicy = 'privacyPolicy';
+  static const itIsImportantToUnderstandWhy = 'itIsImportantToUnderstandWhy';
+  static const bargainBUsesLocationData = 'bargainBUsesLocationData';
+  static const accept = 'accept';
+  static const notNow = 'notNow';
+  static const youHaveToBeSignedIn = 'youHaveToBeSignedIn';
+  static const newContact = 'newContact';
+  static const shareGroceriesToChat = 'shareGroceriesToChat';
+  static const pressACardIconToSearch = 'pressACardIconToSearch';
+  static const chooseAChatlistOrCreateNew = 'chooseAChatlistOrCreateNew';
+  static const added = 'added';
+  static const viewInTheChatlist = 'viewInTheChatlist';
+  static const camera = 'camera';
+  static const gallery = 'gallery';
+
 }
