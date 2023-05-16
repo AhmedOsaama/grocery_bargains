@@ -740,7 +740,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
                                 return Shimmer(
-                                    duration: Duration(seconds: 1),
+                                    duration: Duration(seconds: 2),
                                     colorOpacity: 0.7,
                                     child: Container(
                                       height: 190.h,
