@@ -52,7 +52,7 @@ class _MainScreenState extends State<MainScreen> {
         // var listId = data["route"];
         // if(route == '/home_screen')
         print('Custom string: ${listId}');
-        if(listId != null){
+        if (listId != null) {
           var currentUserId = FirebaseAuth.instance.currentUser?.uid;
           FirebaseFirestore.instance
               .collection('/lists')
@@ -62,7 +62,10 @@ class _MainScreenState extends State<MainScreen> {
             final List userIds = listSnapshot.data()!['userIds'];
             if (!userIds.contains(currentUserId)) {
               userIds.add(currentUserId);
-              var userData = await FirebaseFirestore.instance.collection('users').doc(currentUserId).get();
+              var userData = await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(currentUserId)
+                  .get();
               await FirebaseFirestore.instance
                   .collection('/lists')
                   .doc(listId)
@@ -71,20 +74,24 @@ class _MainScreenState extends State<MainScreen> {
                 // "user_num": FieldValue.increment(1),
                 "new_participant_username": userData['username'],
               });
-              await Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlists();
-              var chatList = Provider.of<ChatlistsProvider>(context, listen: false)
-                  .chatlists
-                  .firstWhere((chatList) => chatList.id == listId);
-              AppNavigator.push(context: context, screen: ChatListViewScreen(listId: listId));
+              await Provider.of<ChatlistsProvider>(context, listen: false)
+                  .getAllChatlists();
+              var chatList =
+                  Provider.of<ChatlistsProvider>(context, listen: false)
+                      .chatlists
+                      .firstWhere((chatList) => chatList.id == listId);
+              AppNavigator.push(
+                  context: context, screen: ChatListViewScreen(listId: listId));
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content:
-                  Text("User added successfully to list ${chatList.name}")));
+                  content: Text(
+                      "User added successfully to list ${chatList.name}")));
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("User Already Exists in the list")));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text("User Already Exists in the list")));
             }
           });
-        }      }
+        }
+      }
     }, onError: (error) {
       PlatformException platformException = error as PlatformException;
       print(
@@ -99,15 +106,16 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+          resizeToAvoidBottomInset: true,
           body: PersistentTabView(
-        key: tabKey,
-        context,
-        controller: NavigatorController,
-        items: _navBarsItems(),
-        screens: _buildScreens(),
-        navBarStyle: NavBarStyle.simple,
-        stateManagement: true,
-      )),
+            key: tabKey,
+            context,
+            controller: NavigatorController,
+            items: _navBarsItems(),
+            screens: _buildScreens(),
+            navBarStyle: NavBarStyle.simple,
+            stateManagement: true,
+          )),
     );
     // }
     // );
