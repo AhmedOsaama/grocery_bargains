@@ -204,7 +204,7 @@ class _StoreListWidgetState extends State<StoreListWidget> {
                             visualDensity: VisualDensity.compact,
                           ),
                           SizedBox(
-                            width: 70.w,
+                            width: 65.w,
                             child: Text(
                               itemName,
                               style: TextStyles.textViewLight10

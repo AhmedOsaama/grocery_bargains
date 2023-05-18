@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+/* import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/utils/assets_manager.dart';
@@ -34,3 +34,4 @@ class _SplashScreenState extends State<SplashScreen> {
         )));
   }
 }
+ */

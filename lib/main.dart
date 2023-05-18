@@ -167,7 +167,6 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
       statusBarColor: white,
-      //or set color with: Color(0xFF0000FF)
     ));
     return ScreenUtilInit(
       designSize: Size(390, 844),
@@ -182,12 +181,14 @@ class _MyAppState extends State<MyApp> {
         home: FutureBuilder(
             future: getAllProductsFuture,
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting)
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+                    overlays: []);
                 return Stack(
                   children: [
                     Container(
-                      width: double.infinity,
-                      height: double.infinity,
+                      /*  width: double.infinity,
+                      height: double.infinity, */
                       decoration: BoxDecoration(
                         image: DecorationImage(
                             image: AssetImage(splashImage), fit: BoxFit.fill),
@@ -200,15 +201,25 @@ class _MyAppState extends State<MyApp> {
                     )
                   ],
                 );
+              }
+
               return StreamBuilder(
                   stream: authStateChangesStream,
                   builder: (context, snapshot) {
-                    if (!widget.isRemembered && Platform.isAndroid)
+                    if (!widget.isRemembered && Platform.isAndroid) {
+                      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+                          overlays: [
+                            SystemUiOverlay.top,
+                            SystemUiOverlay.bottom
+                          ]);
                       return RegisterScreen();
+                    }
                     if (snapshot.connectionState == ConnectionState.waiting) {
+                      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+                          overlays: []);
                       return Container(
-                        width: double.infinity,
-                        height: double.infinity,
+                        /* width: double.infinity,
+                        height: double.infinity, */
                         decoration: BoxDecoration(
                           image: DecorationImage(
                               image: AssetImage(splashImage), fit: BoxFit.fill),
@@ -216,6 +227,12 @@ class _MyAppState extends State<MyApp> {
                       );
                     }
                     if (snapshot.hasData) {
+                      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+                          overlays: [
+                            SystemUiOverlay.top,
+                            SystemUiOverlay.bottom
+                          ]);
+
                       if (widget.notificationMessage != null) {
                         return ChatListViewScreen(
                             listId: widget.notificationMessage?.data['listId'],
