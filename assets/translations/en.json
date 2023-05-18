@@ -185,7 +185,7 @@
   "members"                                     : "Members",
   "contactsOnBargainB"                          : "CONTACTS ON BARGAINB",
   "add"                                          : "Add",
-  "pleaseAddYourNumber"                           : "Please add your number to see your friends on BargainB",
+  "pleaseAddYourNumber"                           : "You need to give permission to see contacts on BargainB",
   "noContactsFound"                                 : "No contacts found on BargainB",
   "invitePeopleViaLink"                             : "Invite people via link",
   "couldntFindUserWithEmail"                        : "Couldn't find a user with that email",

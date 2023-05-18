@@ -37,3 +37,4 @@ const String closeIcon = "$imgPath/closeIcon.svg";
 const String personAvatar = "$imgPath/personAvatar.svg";
 const String whiteAdd = "$imgPath/whiteAdd.svg";
 const String closeCircle = "$imgPath/closeCircle.svg";
+const String imageError = "$imgPath/image_error.svg";

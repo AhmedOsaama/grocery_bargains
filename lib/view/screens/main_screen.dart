@@ -49,7 +49,6 @@ class _MainScreenState extends State<MainScreen> {
           data["+clicked_branch_link"] == true) {
         //Link clicked. Add logic to get link data and route user to correct screen
         var listId = data["list_id"];
-        // var listId = data["route"];
         // if(route == '/home_screen')
         print('Custom string: ${listId}');
         if (listId != null) {

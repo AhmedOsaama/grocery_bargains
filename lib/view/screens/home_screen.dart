@@ -279,11 +279,15 @@ class _HomeScreenState extends State<HomeScreen> {
                               future: getUserDataFuture,
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
-                                        ConnectionState.waiting ||
-                                    !snapshot.hasData) {
+                                        ConnectionState.waiting) {
                                   return Container();
                                 }
-
+                                if(!snapshot.hasData)
+                                  return GestureDetector(
+                                    onTap: () async {
+                                      NavigatorController.jumpToTab(2);
+                                    },
+                                    child: SvgPicture.asset(bee));
                                 return snapshot.data!['imageURL'] != ""
                                     ? GestureDetector(
                                         onTap: () async {
