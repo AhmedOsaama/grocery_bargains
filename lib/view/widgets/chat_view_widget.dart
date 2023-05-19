@@ -297,7 +297,7 @@ class _ChatViewState extends State<ChatView> {
                                 ),
                                 Spacer(),
                                 Text(
-                                  "${items.length} ${items}",
+                                  "${items.length} ${LocaleKeys.items.tr()}",
                                   style: TextStyles.textViewMedium10.copyWith(
                                       color: Color.fromRGBO(204, 204, 203, 1)),
                                 ),
