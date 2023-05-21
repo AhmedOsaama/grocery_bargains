@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/icons_manager.dart';
@@ -9,6 +10,7 @@ import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/button.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -34,7 +36,7 @@ class LocationAccessScreen extends StatelessWidget {
             Image.asset(onboarding4),
             30.ph,
             Text(
-              "Data access",
+              LocaleKeys.dataAccess.tr(),
               style: TextStyles.textViewSemiBold30.copyWith(color: prussian),
               textAlign: TextAlign.center,
             ),
@@ -56,17 +58,17 @@ class LocationAccessScreen extends StatelessWidget {
                               log(e.toString());
                             }
                           },
-                        text: "Privacy Policy.",
+                        text: LocaleKeys.privacyPolicy.tr(),
                         style: TextStyles.textViewRegular14
                             .copyWith(color: mainPurple))
                   ],
                   style: TextStyles.textViewRegular14.copyWith(color: gunmetal),
                   text:
-                      "It is important to understand why BargainB requests to collect and use your location data. We explain this in details in our "),
+                  LocaleKeys.itIsImportantToUnderstandWhy.tr()),
             ),
             16.ph,
             Text(
-              "BargainB uses location data to help you navigate to our nearest lacations. Additionally, your location data helps us provide you with relevant promotions for your area. We will never sell your personal information to third parties.",
+                LocaleKeys.bargainBUsesLocationData.tr(),
               style: TextStyles.textViewRegular14.copyWith(color: gunmetal),
               textAlign: TextAlign.center,
             ),
@@ -87,7 +89,7 @@ class LocationAccessScreen extends StatelessWidget {
                     context: context, screen: MainScreen());
               },
               child: Text(
-                "Accept",
+                  LocaleKeys.accept.tr(),
                 style: TextStyles.textViewSemiBold16.copyWith(color: white),
               ),
             ),
@@ -108,7 +110,7 @@ class LocationAccessScreen extends StatelessWidget {
                     context: context, screen: MainScreen());
               },
               child: Text(
-                "Not Now",
+                LocaleKeys.notNow.tr(),
                 style: TextStyles.textViewSemiBold16.copyWith(color: black),
               ),
             ),

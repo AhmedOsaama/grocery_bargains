@@ -102,10 +102,10 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
               .update({"userIds": userIds});
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content:
-                  Text("User added successfully to list ${chatList.name}")));
+                  Text("${LocaleKeys.userAddedToChatlist.tr()} ${chatList.name}")));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("User Already Exists in the list")));
+               SnackBar(content: Text(LocaleKeys.userAlreadyExists.tr())));
         }
       });
     }
@@ -377,11 +377,11 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                           Icons.more_vert,
                           color: Colors.black,
                         ),
-                        items: const [
+                        items: [
                           DropdownMenuItem(
-                              value: 'rename', child: Text("Rename")),
+                              value: 'rename', child: Text(LocaleKeys.rename.tr())),
                           DropdownMenuItem(
-                              value: 'remove', child: Text("Remove")),
+                              value: 'remove', child: Text(LocaleKeys.remove.tr())),
                         ],
                         onChanged: (option) {
                           if (option == 'rename') {
@@ -493,7 +493,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                     children: [
                                       Spacer(),
                                       Text(
-                                        "${items.length} items",
+                                        "${items.length} ${LocaleKeys.items.tr()}",
                                         style: TextStyles.textViewMedium10
                                             .copyWith(
                                                 color: Color.fromRGBO(
@@ -533,7 +533,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                                             .spaceBetween,
                                                     children: [
                                                       Text(
-                                                        "Stores",
+                                                        LocaleKeys.stores.tr(),
                                                         style: TextStyles
                                                             .textViewMedium10
                                                             .copyWith(
@@ -618,7 +618,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                               children: [
                                 if (listUsers.isNotEmpty) ...[
                                   Text(
-                                    'Members',
+                                    LocaleKeys.members.tr(),
                                     style: TextStylesInter.textViewSemiBold26
                                         .copyWith(color: black),
                                   ),
@@ -713,13 +713,13 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                 50.ph,
                                 if (contactsList.isNotEmpty) ...[
                                   Text(
-                                    'Add to list',
+                                    LocaleKeys.addToList.tr(),
                                     style: TextStylesInter.textViewSemiBold26
                                         .copyWith(color: black),
                                   ),
                                   15.ph,
                                   Text(
-                                    'CONTACTS ON BARGAINB',
+                                    LocaleKeys.contactsOnBargainB.tr(),
                                     style: TextStylesInter.textViewRegular12
                                         .copyWith(color: mainPurple),
                                   ),
@@ -807,7 +807,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                                           userInfo, context),
                                                   child: Row(children: [
                                                     Text(
-                                                      "Add",
+                                                      LocaleKeys.add.tr(),
                                                       style: TextStylesInter
                                                           .textViewSemiBold14
                                                           .copyWith(
@@ -834,19 +834,19 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                 if (contactsList.isEmpty &&
                                     !isContactsPermissionGranted)
                                   Text(
-                                    "Please add your number to see your friends on BargainB",
+                                    LocaleKeys.pleaseAddYourNumber.tr(),
                                     style: TextStylesInter.textViewRegular15
                                         .copyWith(color: black),
                                   ),
                                 if (contactsList.isEmpty &&
                                     isContactsPermissionGranted)
                                   Text(
-                                    "No contacts found on BargainB",
+                                    LocaleKeys.noContactsFound.tr(),
                                     style: TextStylesInter.textViewRegular15
                                         .copyWith(color: black),
                                   ),
                                 10.ph,
-                                TextButton(onPressed: () => shareListViaDeepLink(), child: Text("Invite people via link"))
+                                TextButton(onPressed: () => shareListViaDeepLink(), child: Text(LocaleKeys.invitePeopleViaLink.tr()))
                               ],
                             ),
                           ),
@@ -885,7 +885,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       print("ERROR: $e");
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(
-          "Couldn't find a user with that email",
+          LocaleKeys.couldntFindUserWithEmail.tr(),
         ),
       ));
     }

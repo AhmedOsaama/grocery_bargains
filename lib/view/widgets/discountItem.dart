@@ -1,8 +1,12 @@
+import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/utils/icons_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/routes/app_navigator.dart';
@@ -140,6 +144,8 @@ class DiscountItem extends StatelessWidget {
         goToStoreProductPage(productsProvider, context);
       },
       child: Container(
+        // height: 250.h,
+        width: 174.w,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: white,
@@ -159,145 +165,79 @@ class DiscountItem extends StatelessWidget {
         margin: EdgeInsets.symmetric(
             vertical: inGridView ? 0 : 10, horizontal: inGridView ? 0 : 5),
         padding: EdgeInsets.symmetric(horizontal: inGridView ? 10 : 15.w),
-        child: Column(
+        child: Stack(
+          alignment: Alignment.bottomRight,
           children: [
-            Row(
+            Container(
+              margin: EdgeInsets.only(bottom: 10.h),
+              padding: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: purple30),
+              ),
+              child: Icon(
+                Icons.arrow_forward_ios,
+                color: mainPurple,
+                // size: 18,
+              ),
+            ),
+            Container(
+              alignment: Alignment.topRight,
+              margin: EdgeInsets.only(top: 10),
+              child: Image.asset(
+                productsProvider.getImage(selectedStore),
+                width: 22,
+                height: 21,
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(vertical: 10.h),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Image.network(
-                        getProductImage(),
-                        errorBuilder: (context, _, s) {
-                          return Icon(Icons.image_not_supported);
-                        },
-                        height: 90.h,
-                        width: 100.w,
-                      ),
+                Center(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 10.h),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          width: 105.w,
-                          child: Text(
-                            getProductName(),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyles.textViewSemiBold14,
-                          ),
-                        ),
-                        Text(
-                          getProductSize(),
-                          style: TextStyles.textViewMedium12.copyWith(
-                              color: Color.fromRGBO(204, 204, 204, 1)),
-                        ),
-                        10.ph,
-                        Text(
-                          "€${getPrice(productsProvider)}",
-                          style: TextStylesInter.textViewBold18,
-                        ),
-                        5.ph,
-                        if (getDiscountValue(productsProvider) != null)
-                          Text(
-                            "Save €${getDiscountValue(productsProvider)}",
-                            style: TextStylesInter.textViewMedium10.copyWith(
-                                color: Color.fromRGBO(24, 195, 54, 1)),
-                          ),
-                      ],
+                    child: Image.network(
+                      getProductImage(),
+                      errorBuilder: (context, _, s) {
+                        return SvgPicture.asset(imageError);
+                      },
+                      height: 90.h,
+                      width: 100.w,
                     ),
-                  ],
-                ),
-                // 10.pw,
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Image.asset(
-                        productsProvider.getImage(selectedStore),
-                        width: 22,
-                        height: 21,
-                      ),
-                      100.ph,
-                      Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: borderColor),
-                        ),
-                        child: Icon(
-                          Icons.arrow_forward_ios,
-                          color: mainPurple,
-                        ),
-                      )
-                      // IconButton(
-                      //     onPressed: () {
-                      //       if(selectedStore == "Albert") {
-                      //         var product = productsProvider.albertProducts.firstWhere((product) => product.url == comparisonProduct.albertLink);
-                      //         shareDiscountItem(context, product.name,
-                      //             product.oldPrice, product.price, product.price2, product.imageURL, product.size);
-                      //       }
-                      //       if(selectedStore == "Jumbo") {
-                      //         var product = productsProvider.jumboProducts.firstWhere((product) => product.url == comparisonProduct.jumboLink);
-                      //         shareDiscountItem(context, product.name,
-                      //             product.oldPrice, product.price, product.price2, product.imageURL, product.size);
-                      //       }
-                      //
-                      //     },
-                      //     icon: SvgPicture.asset(chatShare)),
-                      // 20.ph,
-                      // PlusButton(onTap: () {
-                      //   if(selectedStore == "Albert") {
-                      //     var product = productsProvider.albertProducts.firstWhere((product) => product.url == comparisonProduct.albertLink);
-                      //     addDiscountItem(context, product.name,
-                      //         product.oldPrice, product.price, product.price2, product.imageURL, product.size);
-                      //   }
-                      //   if(selectedStore == "Jumbo") {
-                      //     var product = productsProvider.jumboProducts.firstWhere((product) => product.url == comparisonProduct.jumboLink);
-                      //     addDiscountItem(context, product.name,
-                      //         product.oldPrice, product.price, product.price2, product.imageURL, product.size);
-                      //   }
-                      // }),
-                    ],
                   ),
                 ),
+                SizedBox(
+                  width: 105.w,
+                  child: Text(
+                    getProductName(),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyles.textViewSemiBold14,
+                  ),
+                ),
+                Text(
+                  getProductSize(),
+                  style: TextStyles.textViewMedium12.copyWith(
+                      color: Color.fromRGBO(204, 204, 204, 1)),
+                ),
+                5.ph,
+                Text(
+                  "€${getPrice(productsProvider)}",
+                  style: TextStylesInter.textViewBold18,
+                ),
+                3.ph,
+                if (getDiscountValue(productsProvider) != null)
+                  Text(
+                    "${LocaleKeys.save.tr()} €${getDiscountValue(productsProvider)}",
+                    style: TextStylesInter.textViewMedium10.copyWith(
+                        color: Color.fromRGBO(24, 195, 54, 1)),
+                  ),
               ],
             ),
-            // Row(
-            //   children: [
-            //     Container(
-            //       padding: EdgeInsets.all(5),
-            //       decoration: selectedStore == "Albert" ? BoxDecoration(
-            //           borderRadius: BorderRadius.circular(10),
-            //           border: Border.all(color: mainPurple)
-            //       ) : null,
-            //       child: StorePrice(
-            //         currentPrice: comparisonProduct.albertPrice,
-            //         // oldPrice: widget.albertPriceBefore,
-            //         storeImagePath: albert,
-            //       ),
-            //     ),
-            //     30.pw,
-            //     Container(
-            //       padding: EdgeInsets.all(5),
-            //       decoration: selectedStore == "Jumbo" ? BoxDecoration(
-            //           borderRadius: BorderRadius.circular(10),
-            //           border: Border.all(color: mainPurple)
-            //       ) : null,
-            //       child: StorePrice(
-            //         currentPrice: comparisonProduct.jumboPrice,
-            //         // oldPrice: widget.jumboPriceBefore,
-            //         storeImagePath: jumbo,
-            //       ),
-            //     ),
-            //   ],
-            // )
           ],
         ),
       ),

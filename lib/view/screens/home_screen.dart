@@ -168,7 +168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
-                            "Next",
+                            LocaleKeys.next.tr(),
                             style: TextStyles.textViewSemiBold14
                                 .copyWith(color: white),
                           ),
@@ -1169,7 +1169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Welcome!",
+                        LocaleKeys.welcome.tr() + "!",
                         style: TextStyles.textViewSemiBold24
                             .copyWith(color: white),
                       ),
@@ -1206,7 +1206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        "Next",
+                        LocaleKeys.next.tr(),
                         style: TextStyles.textViewSemiBold14
                             .copyWith(color: white),
                       ),

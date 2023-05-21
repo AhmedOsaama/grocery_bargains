@@ -166,7 +166,7 @@ class _ChatViewState extends State<ChatView> {
                                         ),
                                         child: Column(children: [
                                           Text(
-                                            "Share groceries to chat, add them to list at the same place.",
+                                            LocaleKeys.shareGroceriesToChat.tr(),
                                             maxLines: 4,
                                             style: TextStyles.textViewRegular13
                                                 .copyWith(color: white),
@@ -181,7 +181,7 @@ class _ChatViewState extends State<ChatView> {
                                                   MainAxisAlignment.end,
                                               children: [
                                                 Text(
-                                                  "Next",
+                                                  LocaleKeys.next.tr(),
                                                   style: TextStyles
                                                       .textViewSemiBold14
                                                       .copyWith(color: white),
@@ -297,7 +297,7 @@ class _ChatViewState extends State<ChatView> {
                                 ),
                                 Spacer(),
                                 Text(
-                                  "${items.length} items",
+                                  "${items.length} ${LocaleKeys.items.tr()}",
                                   style: TextStyles.textViewMedium10.copyWith(
                                       color: Color.fromRGBO(204, 204, 203, 1)),
                                 ),
@@ -508,7 +508,7 @@ class _ChatViewState extends State<ChatView> {
               ),
               child: Column(children: [
                 Text(
-                  "Press a card icon to search groceries from chatlist.",
+                  LocaleKeys.pressACardIconToSearch.tr(),
                   maxLines: 4,
                   style: TextStyles.textViewRegular13.copyWith(color: white),
                 ),
@@ -520,7 +520,7 @@ class _ChatViewState extends State<ChatView> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        "Next",
+                        LocaleKeys.next.tr(),
                         style: TextStyles.textViewSemiBold14
                             .copyWith(color: white),
                       ),

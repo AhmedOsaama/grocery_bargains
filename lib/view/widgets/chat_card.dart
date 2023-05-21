@@ -51,7 +51,7 @@ class ChatCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "${allLists[i].itemLength} items",
+                      "${allLists[i].itemLength} ${LocaleKeys.items.tr()}",
                       style: TextStylesInter.textViewMedium10
                           .copyWith(color: purple50),
                     ),

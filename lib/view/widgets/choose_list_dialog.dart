@@ -52,7 +52,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                 height: 24.h,
               ),
               Text(
-                done ? widget.item.storeName : "Add to list",
+                done ? widget.item.storeName : LocaleKeys.addToList.tr(),
                 style: TextStyles.textViewSemiBold26.copyWith(color: black2),
               ),
               done
@@ -67,7 +67,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                           child: Text(
                             done
                                 ? widget.item.name
-                                : "Choose a chatlist or create new",
+                                : LocaleKeys.chooseAChatlistOrCreateNew.tr(),
                             style: TextStyles.textViewRegular14
                                 .copyWith(color: black),
                           ),
@@ -82,7 +82,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                   : Text(
                       done
                           ? widget.item.name
-                          : "Choose a chatlist or create new",
+                          : LocaleKeys.chooseAChatlistOrCreateNew.tr(),
                       style:
                           TextStyles.textViewRegular14.copyWith(color: black),
                     ),
@@ -162,7 +162,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    "Added  ",
+                                    LocaleKeys.added.tr(),
                                     style: TextStylesInter.textViewSemiBold16
                                         .copyWith(color: white),
                                   ),
