@@ -39,9 +39,9 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+/*   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent, // transparent status bar
-  ));
+  )); */
   await SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp],
   );
@@ -175,8 +175,13 @@ class _MyAppState extends State<MyApp> {
       builder: (context, _) => MaterialApp(
         title: 'BargainB',
         theme: ThemeData(
+          // brightness: Brightness.light,
           canvasColor: Colors.white,
         ),
+        /* darkTheme: ThemeData(
+          // brightness: Brightness.light,
+          canvasColor: black,
+        ), */
         debugShowCheckedModeBanner: false,
         home: FutureBuilder(
             future: getAllProductsFuture,

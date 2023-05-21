@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:bargainb/view/screens/home_screen.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../providers/chatlists_provider.dart';
@@ -32,6 +33,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final selectedColor = mainPurple;
   final unSelectedColor = purple30;
+  late bool isFirstTime;
 
   // void initState() {
   //   getUserDataFuture = FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
@@ -39,9 +41,18 @@ class _MainScreenState extends State<MainScreen> {
   //   super.initState();
   // }
 
+  Future<Null> getSharedPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      isFirstTime = prefs.getBool("firstTime") ?? true;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    getSharedPrefs();
     NavigatorController.index = 0;
     FlutterBranchSdk.initSession().listen((data) {
       print("branch data: " + data.entries.toList().toString());
@@ -104,19 +115,17 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-          resizeToAvoidBottomInset: true,
-          body: PersistentTabView(
-            key: tabKey,
-            context,
-            controller: NavigatorController,
-            items: _navBarsItems(),
-            screens: _buildScreens(),
-            navBarStyle: NavBarStyle.simple,
-            stateManagement: true,
-          )),
-    );
+    return Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: PersistentTabView(
+          key: tabKey,
+          context,
+          controller: NavigatorController,
+          items: _navBarsItems(),
+          screens: _buildScreens(),
+          navBarStyle: NavBarStyle.simple,
+          stateManagement: true,
+        ));
     // }
     // );
   }

@@ -80,6 +80,8 @@ class ProductItemWidget extends StatelessWidget {
                   width: 130.w,
                   child: Text(
                     size,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyles.textViewSemiBold14
                         .copyWith(color: Colors.grey),
                   )),

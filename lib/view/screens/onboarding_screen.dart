@@ -159,10 +159,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
         style: TextStyles.textViewRegular14.copyWith(color: gunmetal),
       ),
       SizedBox(
-        height: 70.h,
+        height: 40.h,
       ),
       Image.asset(onboarding2),
-      Spacer(),
     ],
   );
   var slide3 = Column(
