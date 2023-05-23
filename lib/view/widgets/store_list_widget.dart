@@ -1,13 +1,16 @@
+import 'package:bargainb/utils/assets_manager.dart';
+import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/utils/app_colors.dart';
 
 import '../../utils/style_utils.dart';
 import '../../utils/utils.dart';
+/* 
+*/
 
 class StoreListWidget extends StatefulWidget {
   final String listName;
@@ -34,7 +37,13 @@ class _StoreListWidgetState extends State<StoreListWidget> {
     for (var item in storeItems) {
       if (item.data().containsKey('item_price') &&
           item['item_price'].runtimeType == String) {
-        total += double.parse(item['item_price']);
+        if (item['item_price'] != null &&
+            item['item_price'] != "null" &&
+            item['item_price'] != "") {
+          total += double.parse(item['item_price']);
+        } else {
+          total += 0;
+        }
       } else if (item.data().containsKey('item_price') &&
           item['item_price'].runtimeType == double) {
         total += item['item_price'] ?? 0;
@@ -42,6 +51,7 @@ class _StoreListWidgetState extends State<StoreListWidget> {
         total += 0;
       }
     }
+
     return total.toStringAsFixed(2);
   }
 
@@ -61,26 +71,80 @@ class _StoreListWidgetState extends State<StoreListWidget> {
               .get(),
           builder: (context, snapshot) {
             if (!snapshot.hasData)
-              return const Center(
-                child: CircularProgressIndicator(),
+              return Center(
+                child: Container(),
               );
+            var isProductExist = false;
             var storeItems = snapshot.data?.docs ?? [];
+            var storeImages = {
+              "jumbo": false,
+              "hoogvliet": false,
+              "albert": false
+            };
+            if (storeItems.isNotEmpty) {
+              storeItems.forEach((element) {
+                if (element["text"] == "") {
+                  if (element["item_image"].toString().contains("jumbo")) {
+                    storeImages["jumbo"] = true;
+                    isProductExist = true;
+                  } else if (element["item_image"]
+                      .toString()
+                      .contains(".ah.")) {
+                    isProductExist = true;
+                    storeImages["albert"] = true;
+                  } else if (element["item_image"]
+                      .toString()
+                      .contains("hoogvliet")) {
+                    isProductExist = true;
+                    storeImages["hoogvliet"] = true;
+                  }
+                }
+              });
+            }
+            List<Widget> imagesWidgets = [];
+            storeImages.forEach((key, value) {
+              if (value) {
+                imagesWidgets.add(0.pw);
+                switch (key) {
+                  case "jumbo":
+                    imagesWidgets.add(SizedBox(
+                        height: 30.h,
+                        width: 30.w,
+                        child: Image.asset(
+                          jumbo,
+                        )));
+                    break;
+                  case "albert":
+                    imagesWidgets.add(SizedBox(
+                        height: 30.h, width: 30.w, child: Image.asset(albert)));
+
+                    break;
+                  case "hoogvliet":
+                    imagesWidgets.add(SizedBox(
+                        height: 30.h,
+                        width: 30.w,
+                        child: Image.asset(hoogLogo)));
+                    break;
+                }
+                imagesWidgets.add(0.pw);
+              }
+            });
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    widget.userImages != null
-                        ? SvgPicture.asset(widget.userImages!)
-                        : Container(),
-                    Image.asset(
-                      widget.storeImagePath,
-                      width: 30,
-                      height: 30,
-                    ),
-                  ],
+                Flexible(
+                  child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: isProductExist
+                          ? imagesWidgets
+                          : [
+                              Image.asset(
+                                widget.storeImagePath,
+                                width: 30.w,
+                                height: 30.h,
+                              ),
+                            ]),
                 ),
                 Text(
                   widget.listName,
@@ -91,50 +155,56 @@ class _StoreListWidgetState extends State<StoreListWidget> {
                 ListView.builder(
                     padding: const EdgeInsets.only(top: 10),
                     shrinkWrap: true,
+                    itemExtent: 25,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: storeItems.length > 4 ? 4 : storeItems.length,
+                    itemCount: storeItems.length > 3 ? 4 : storeItems.length,
                     itemBuilder: (ctx, i) {
                       var isChecked = storeItems[i]['item_isChecked'];
                       var itemName =
                           storeItems[i].data().toString().contains('item_name')
-                              ? storeItems[i]['item_name']
+                              ? (storeItems[i]['text'] != ""
+                                  ? storeItems[i]['text']
+                                  : storeItems[i]['item_name'])
                               : storeItems[i]['text'];
                       var itemPrice =
                           storeItems[i].data().toString().contains('item_price')
-                              ? storeItems[i]['item_price']
+                              ? (storeItems[i]['item_price'] == "" ||
+                                      storeItems[i]['item_price'] == null ||
+                                      storeItems[i]['item_price'] == "null"
+                                  ? 0.0
+                                  : storeItems[i]['item_price'])
                               : "0.0";
                       var doc = storeItems[i];
-                      if (i > 2) return const Text("...");
+                      if (i > 2) {
+                        return const Text("    ...");
+                      }
                       return Row(
-                        // mainAxisSize: MainAxisSize.min,
+                        //   mainAxisSize: MainAxisSize.max,
                         children: [
-                          Flexible(
-                            flex: 3,
-                            child: Checkbox(
-                              value: isChecked,
-                              onChanged: (value) {
-                                setState(() {
-                                  FirebaseFirestore.instance
-                                      .collection(
-                                          "/lists/${doc.reference.parent.parent?.id}/items")
-                                      .doc(doc.id)
-                                      .update({
-                                    "item_isChecked": !isChecked,
-                                  }).catchError((e) {
-                                    print(e);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                            content: Text(
-                                                "This operation couldn't be done please try again")));
-                                  });
-                                  isChecked = !isChecked;
+                          Checkbox(
+                            value: isChecked,
+                            onChanged: (value) {
+                              setState(() {
+                                FirebaseFirestore.instance
+                                    .collection(
+                                        "/lists/${doc.reference.parent.parent?.id}/items")
+                                    .doc(doc.id)
+                                    .update({
+                                  "item_isChecked": !isChecked,
+                                }).catchError((e) {
+                                  print(e);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                          content:
+                                              Text("operationNotDone".tr())));
                                 });
-                              },
-                              visualDensity: VisualDensity.compact,
-                            ),
+                                isChecked = !isChecked;
+                              });
+                            },
+                            visualDensity: VisualDensity.compact,
                           ),
                           SizedBox(
-                            width: 70.w,
+                            width: 65.w,
                             child: Text(
                               itemName,
                               style: TextStyles.textViewLight10

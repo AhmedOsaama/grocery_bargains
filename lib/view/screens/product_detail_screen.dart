@@ -1,5 +1,9 @@
+import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/view/widgets/signin_dialog.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -69,6 +73,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     defaultPrice = widget.price1 == null
         ? widget.price2 as double
         : widget.price1 as double;
+    // mixpanel.track("view_product", properties: {
+    //   "product_id": widget.productId,
+    //   "store_name": widget.storeName
+    // });
+
     super.initState();
   }
 
@@ -80,34 +89,116 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           .firstWhere((bargain) => bargain.itemId == widget.productId)
           .bestValueSize;
     } catch (e) {
+      print("Error in product page: couldn't find best value size");
+      print(e);
       bestValueSize = "";
     }
-    print(bestValueSize);
+    print("BEST VALUE SIZE: $bestValueSize");
     ComparisonProduct productComparison;
 
     try {
-      productComparison = Provider
-              .of<ProductsProvider>(context, listen: false)
-          .comparisonProducts
-          .firstWhere((comparisonProduct) =>
-              comparisonProduct.id == widget.comparisonId);
-        comparisonItems.add(PriceComparisonItem(
+      var productsProvider =
+          Provider.of<ProductsProvider>(context, listen: false);
+      productComparison = productsProvider.comparisonProducts.firstWhere(
+          (comparisonProduct) => comparisonProduct.id == widget.comparisonId);
+      comparisonItems.add(GestureDetector(
+        onTap: widget.storeName == "Jumbo"
+            ? () {}
+            : () => goToStoreProductPage(productsProvider, context, "Jumbo",
+                productComparison.jumboLink),
+        child: PriceComparisonItem(
+            isSameStore: widget.storeName == "Jumbo",
             price: productComparison.jumboPrice,
             size: productComparison.jumboSize ?? "N/A",
-            storeImagePath: jumbo));
-        comparisonItems.add(PriceComparisonItem(
+            storeImagePath: jumbo),
+      ));
+      comparisonItems.add(GestureDetector(
+        onTap: widget.storeName == "Albert"
+            ? () {}
+            : () => goToStoreProductPage(productsProvider, context, "Albert",
+                productComparison.albertLink),
+        child: PriceComparisonItem(
+            isSameStore: widget.storeName == "Albert",
             price: productComparison.albertPrice,
-            size: productComparison.albertPrice,
-            storeImagePath: albert));
-        comparisonItems.add(PriceComparisonItem(
+            size: productComparison.albertSize,
+            storeImagePath: albert),
+      ));
+      comparisonItems.add(GestureDetector(
+        onTap: widget.storeName == "Hoogvliet"
+            ? () {}
+            : () => goToStoreProductPage(productsProvider, context, "Hoogvliet",
+                productComparison.hoogvlietLink),
+        child: PriceComparisonItem(
+            isSameStore: widget.storeName == "Hoogvliet",
             price: productComparison.hoogvlietPrice,
             size: productComparison.hoogvlietSize,
-            storeImagePath: hoogLogo));
+            storeImagePath: hoogLogo),
+      ));
     } catch (e) {
       print("Failed to get price comparisons in product detail");
+      print(e);
     }
 
     super.didChangeDependencies();
+  }
+
+  void goToStoreProductPage(ProductsProvider productsProvider,
+      BuildContext context, String selectedStore, String productLink) {
+    if (selectedStore == "Albert") {
+      var product = productsProvider.albertProducts.firstWhere((product) {
+        return product.url == productLink;
+      });
+      AppNavigator.push(
+          context: context,
+          screen: ProductDetailScreen(
+            comparisonId: widget.comparisonId,
+            productId: product.id,
+            storeName: selectedStore,
+            productName: product.name,
+            imageURL: product.imageURL,
+            description: product.description,
+            price1: double.tryParse(product.price ?? "") ?? 0.0,
+            price2: double.tryParse(product.price2 ?? "") ?? 0.0,
+            size1: product.size,
+            size2: product.size2 ?? "",
+          ));
+    }
+    if (selectedStore == "Jumbo") {
+      var product = productsProvider.jumboProducts
+          .firstWhere((product) => product.url == productLink);
+      AppNavigator.push(
+          context: context,
+          screen: ProductDetailScreen(
+            comparisonId: widget.comparisonId,
+            productId: product.id,
+            storeName: selectedStore,
+            productName: product.name,
+            imageURL: product.imageURL,
+            description: product.description,
+            price1: double.tryParse(product.price ?? "") ?? 0.0,
+            price2: null,
+            size1: product.size,
+            size2: product.size2 ?? "",
+          ));
+    }
+    if (selectedStore == "Hoogvliet") {
+      var product = productsProvider.hoogvlietProducts
+          .firstWhere((product) => product.url == productLink);
+      AppNavigator.push(
+          context: context,
+          screen: ProductDetailScreen(
+            comparisonId: widget.comparisonId,
+            productId: product.id,
+            storeName: selectedStore,
+            productName: product.name,
+            imageURL: product.imageURL,
+            description: product.description,
+            price1: double.tryParse(product.price ?? "") ?? 0.0,
+            price2: null,
+            size1: product.size,
+            size2: product.size2 ?? "",
+          ));
+    }
   }
 
   @override
@@ -156,19 +247,33 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       GestureDetector(
                         //adding
                         onTap: () async {
-                          Provider.of<ChatlistsProvider>(context, listen: false)
-                              .showChooseListDialog(
-                            context: context,
-                            isSharing: false,
-                            listItem: ListItem(
-                                name: widget.productName,
-                                oldPrice: widget.oldPrice,
-                                price: defaultPrice.toString(),
-                                isChecked: false,
-                                quantity: quantity,
-                                imageURL: widget.imageURL,
-                                size: widget.size1),
-                          );
+                          if (FirebaseAuth.instance.currentUser == null) {
+                            showDialog(
+                                context: context,
+                                builder: (ctx) => SigninDialog(
+                                      body:
+                                          'You have to be signed in to use this feature.',
+                                      buttonText: 'Sign in',
+                                      title: 'Sign In',
+                                    ));
+                          } else {
+                            Provider.of<ChatlistsProvider>(context,
+                                    listen: false)
+                                .showChooseListDialog(
+                              context: context,
+                              isSharing: false,
+                              listItem: ListItem(
+                                  storeName: widget.storeName,
+                                  name: widget.productName,
+                                  oldPrice: widget.oldPrice,
+                                  price: defaultPrice.toString(),
+                                  isChecked: false,
+                                  quantity: quantity,
+                                  imageURL: widget.imageURL,
+                                  size: widget.size1,
+                                  text: ''),
+                            );
+                          }
                         },
                         child: Container(
                           padding: EdgeInsets.all(21),
@@ -189,7 +294,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         height: 10.h,
                       ),
                       Text(
-                        "Add to list",
+                        "addToList".tr(),
                         style: TextStyles.textViewMedium12
                             .copyWith(color: prussian),
                       )
@@ -198,19 +303,32 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   GestureDetector(
                     //sharing
                     onTap: () async {
-                      Provider.of<ChatlistsProvider>(context, listen: false)
-                          .showChooseListDialog(
-                        context: context,
-                        isSharing: true,
-                        listItem: ListItem(
-                            name: widget.productName,
-                            oldPrice: widget.oldPrice,
-                            price: defaultPrice.toString(),
-                            isChecked: false,
-                            quantity: quantity,
-                            imageURL: widget.imageURL,
-                            size: widget.size1),
-                      );
+                      if (FirebaseAuth.instance.currentUser == null) {
+                        showDialog(
+                            context: context,
+                            builder: (ctx) => SigninDialog(
+                                  body:
+                                      'You have to be signed in to use this feature.',
+                                  buttonText: 'Sign in',
+                                  title: 'Sign In',
+                                ));
+                      } else {
+                        Provider.of<ChatlistsProvider>(context, listen: false)
+                            .showChooseListDialog(
+                          context: context,
+                          isSharing: true,
+                          listItem: ListItem(
+                              storeName: widget.storeName,
+                              name: widget.productName,
+                              oldPrice: widget.oldPrice,
+                              price: defaultPrice.toString(),
+                              isChecked: false,
+                              quantity: quantity,
+                              imageURL: widget.imageURL,
+                              size: widget.size1,
+                              text: ''),
+                        );
+                      }
                     },
                     child: Column(
                       children: [
@@ -230,7 +348,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           height: 10.h,
                         ),
                         Text(
-                          "Share",
+                          "share".tr(),
                           style: TextStyles.textViewMedium12
                               .copyWith(color: prussian),
                         )
@@ -243,53 +361,53 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               SizedBox(
                 height: 25.h,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Quantity",
-                    style: TextStyles.textViewMedium12
-                        .copyWith(color: Colors.grey),
-                  ),
-                  Container(
-                    child: Row(
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            if (quantity > 0) {
-                              setState(() {
-                                quantity--;
-                              });
-                            }
-                          },
-                          icon: Icon(Icons.remove),
-                          color: verdigris,
-                        ),
-                        VerticalDivider(),
-                        Text(
-                          quantity.toString(),
-                          style: TextStyles.textViewMedium18,
-                        ),
-                        VerticalDivider(),
-                        IconButton(
-                            onPressed: () {
-                              setState(() {
-                                ++quantity;
-                              });
-                            },
-                            icon: Icon(Icons.add),
-                            color: verdigris),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //   children: [
+              //     Text(
+              //       "Quantity",
+              //       style: TextStyles.textViewMedium12
+              //           .copyWith(color: Colors.grey),
+              //     ),
+              //     Container(
+              //       child: Row(
+              //         children: [
+              //           IconButton(
+              //             onPressed: () {
+              //               if (quantity > 0) {
+              //                 setState(() {
+              //                   quantity--;
+              //                 });
+              //               }
+              //             },
+              //             icon: Icon(Icons.remove),
+              //             color: verdigris,
+              //           ),
+              //           VerticalDivider(),
+              //           Text(
+              //             quantity.toString(),
+              //             style: TextStyles.textViewMedium18,
+              //           ),
+              //           VerticalDivider(),
+              //           IconButton(
+              //               onPressed: () {
+              //                 setState(() {
+              //                   ++quantity;
+              //                 });
+              //               },
+              //               icon: Icon(Icons.add),
+              //               color: verdigris),
+              //         ],
+              //       ),
+              //     ),
+              //   ],
+              // ),
               SizedBox(
                 height: 30.h,
               ),
               if (comparisonItems.isNotEmpty) ...[
                 Text(
-                  "Price Comparison",
+                  "PriceComparison".tr(),
                   style:
                       TextStyles.textViewSemiBold18.copyWith(color: prussian),
                 ),
@@ -298,59 +416,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: comparisonItems.length,
                   itemBuilder: (context, index) {
-                    // if (index < comparisonItems.length) {
                     return comparisonItems[index];
-                    // }
-                    // else
-                    // {
-                    //   return Padding(
-                    //     padding: EdgeInsets.symmetric(vertical: 32),
-                    //     child: isLoading
-                    //         ? Center(
-                    //             child: CircularProgressIndicator(
-                    //             color: verdigris,
-                    //           ))
-                    //         : Center(
-                    //             child: Container(
-                    //               decoration: BoxDecoration(
-                    //                 border: Border.all(color: Colors.grey),
-                    //                 borderRadius: BorderRadius.circular(12),
-                    //               ),
-                    //               child: InkWell(
-                    //                 onTap: () async {
-                    //                   setState(() {
-                    //                     isLoading = true;
-                    //                   });
-                    //                   await Future.delayed(Duration(seconds: 1));
-                    //                   await fetch();
-                    //                   setState(() {
-                    //                     isLoading = false;
-                    //                   });
-                    //                 },
-                    //                 borderRadius: BorderRadius.circular(12),
-                    //                 child: Padding(
-                    //                   padding: const EdgeInsets.all(5),
-                    //                   child: Row(
-                    //                     mainAxisSize: MainAxisSize.min,
-                    //                     children: [
-                    //                       Text(
-                    //                         "See more",
-                    //                         style: TextStyles.textViewMedium10
-                    //                             .copyWith(color: prussian),
-                    //                       ),
-                    //                       Icon(
-                    //                         Icons.keyboard_arrow_down,
-                    //                         size: 18,
-                    //                         color: Colors.grey,
-                    //                       ),
-                    //                     ],
-                    //                   ),
-                    //                 ),
-                    //               ),
-                    //             ),
-                    //           ),
-                    //   );
-                    // }
                   },
                 ),
               ],
@@ -370,7 +436,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                     Flexible(
                         child: Text(
-                      "The prices shown are available online and may not reflect in store. Confirm prices before visiting the store",
+                      "ThePricesShown".tr(),
                       style: TextStyles.textViewLight12
                           .copyWith(color: const Color.fromRGBO(62, 62, 62, 1)),
                     )),
@@ -381,7 +447,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 height: 30.h,
               ),
               Text(
-                "Sizes",
+                "Sizes".tr(),
                 style: TextStyles.textViewSemiBold18,
               ),
               ListView(
@@ -389,7 +455,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   physics: NeverScrollableScrollPhysics(),
                   children: productSizes.map((size) {
                     var index = productSizes.indexOf(size);
-                    if (size.size.isEmpty) {
+                    print("SIZE: " + size.size);
+                    print("PRICE: " + size.price);
+                    if (size.size.isEmpty ||
+                        size.size == "None" ||
+                        size.price == '0.0') {
                       return Container();
                     }
                     return GestureDetector(
@@ -403,7 +473,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         decoration: BoxDecoration(
                           border: Border.all(
                               width: 2.0,
-                              color: selectedSizeIndex == index
+                              color: bestValueSize == size.size
                                   ? mainPurple
                                   : Colors.transparent),
                           borderRadius: BorderRadius.circular(10),
@@ -412,6 +482,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           children: [
                             Image.network(
                               widget.imageURL,
+                              errorBuilder: (ctx, _, s) =>
+                                  Icon(Icons.no_photography),
                               width: 64,
                               height: 64,
                             ),
@@ -451,7 +523,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     borderRadius: BorderRadius.circular(10),
                                     color: purple70),
                                 child: Text(
-                                  "BEST VALUE",
+                                  "BESTVALUE".tr(),
                                   style: TextStyles.textViewRegular12
                                       .copyWith(color: Colors.white),
                                 ),
@@ -465,7 +537,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               SizedBox(
                 height: 20.h,
               ),
-              Text("Description",
+              Text("Description".tr(),
                   style:
                       TextStyles.textViewSemiBold18.copyWith(color: prussian)),
               SizedBox(

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -79,6 +80,8 @@ class ProductItemWidget extends StatelessWidget {
                   width: 130.w,
                   child: Text(
                     size,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyles.textViewSemiBold14
                         .copyWith(color: Colors.grey),
                   )),
@@ -110,7 +113,7 @@ class ProductItemWidget extends StatelessWidget {
                                   width: 5.w,
                                 ),
                                 Text(
-                                  "€${(double.tryParse(oldPrice) ?? 0 - double.tryParse(price)!).toStringAsFixed(2)} less",
+                                  "€${(double.tryParse(oldPrice) ?? 0 - double.tryParse(price)!).toStringAsFixed(2)}${"Less".tr()}",
                                   style: TextStyles.textViewMedium10
                                       .copyWith(color: verdigris),
                                 ),

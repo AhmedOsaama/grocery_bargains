@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:bargainb/models/product_category.dart';
+import 'package:bargainb/services/network_services.dart';
 import 'package:bargainb/view/screens/categories_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +20,8 @@ import '../../models/product.dart';
 
 class MySearchDelegate extends SearchDelegate {
   final SharedPreferences pref;
-
-  MySearchDelegate(this.pref);
+  final bool showCategories;
+  MySearchDelegate(this.pref, this.showCategories);
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -27,15 +30,17 @@ class MySearchDelegate extends SearchDelegate {
         onTap: () {
           query = '';
         },
-        child: Container(
-            margin: EdgeInsets.only(right: 10.w),
-            padding: EdgeInsets.all(5),
-            decoration: BoxDecoration(
-                shape: BoxShape.circle, border: Border.all(color: grey)),
-            child: Icon(
-              Icons.close,
-              color: Colors.black,
-            )),
+        child: query.isNotEmpty
+            ? Container(
+                margin: EdgeInsets.only(right: 10.w),
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle, border: Border.all(color: grey)),
+                child: Icon(
+                  Icons.close,
+                  color: Colors.black,
+                ))
+            : Container(),
       ),
     ];
   }
@@ -52,6 +57,7 @@ class MySearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
+    var productProvider = Provider.of<ProductsProvider>(context, listen: false);
     if (query.isNotEmpty) saveRecentSearches();
     // List allProducts =
     //     Provider.of<ProductsProvider>(context, listen: false).allProducts;
@@ -67,13 +73,13 @@ class MySearchDelegate extends SearchDelegate {
               child: CircularProgressIndicator(),
             );
           if (!snapshot.hasData || snapshot.hasError)
-            return const Center(
-              child: Text("Something went wrong please try again"),
+            return Center(
+              child: Text("tryAgain".tr()),
             );
           var searchResults = snapshot.data ?? [];
           if (searchResults.isEmpty)
-            return const Center(
-              child: Text("No matches found :("),
+            return Center(
+              child: Text("noMatchesFound".tr()),
             );
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -82,30 +88,34 @@ class MySearchDelegate extends SearchDelegate {
               itemBuilder: (ctx, i) {
                 var id = searchResults[i].id;
                 var productName = searchResults[i].name;
+                var productLink = searchResults[i].url;
                 var imageURL = searchResults[i].imageURL;
                 var storeName = searchResults[i].storeName;
                 var description = searchResults[i].description;
-                var price1 = searchResults[i].price;
+                var price1 = searchResults[i].price ?? '';
                 var price2 = searchResults[i].price2 ?? '';
                 var oldPrice = searchResults[i].oldPrice ?? "";
                 var size1 = searchResults[i].size;
                 var size2 = searchResults[i].size2 ?? "";
                 return GestureDetector(
-                  onTap: () => AppNavigator.push(
-                      context: context,
-                      screen: ProductDetailScreen(
-                        comparisonId: -1,
-                        productId: id,
-                        oldPrice: oldPrice,
-                        storeName: storeName,
-                        productName: productName,
-                        imageURL: imageURL,
-                        description: description,
-                        size1: size1,
-                        size2: size2,
-                        price1: double.tryParse(price1) ?? 0.0,
-                        price2: double.tryParse(price2) ?? 0.0,
-                      )),
+                  onTap: () async {
+                    int comparisonId = await productProvider.getComparisonId(storeName, productLink);
+                    AppNavigator.push(
+                        context: context,
+                        screen: ProductDetailScreen(
+                          comparisonId: comparisonId,
+                          productId: id,
+                          oldPrice: oldPrice,
+                          storeName: storeName,
+                          productName: productName,
+                          imageURL: imageURL,
+                          description: description,
+                          size1: size1,
+                          size2: size2,
+                          price1: double.tryParse(price1) ?? 0.0,
+                          price2: double.tryParse(price2) ?? 0.0,
+                        ));
+                  },
                   child: SearchItem(
                     name: productName,
                     imageURL: imageURL,
@@ -119,6 +129,7 @@ class MySearchDelegate extends SearchDelegate {
           );
         });
   }
+
 
   void saveRecentSearches() {
     var recentSearches = pref.getStringList('recentSearches') ?? [];
@@ -143,45 +154,54 @@ class MySearchDelegate extends SearchDelegate {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              flex: 3,
-              child: categories.isEmpty
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: categories.map((element) {
-                        return GestureDetector(
-                          onTap: () => AppNavigator.pushReplacement(
-                              context: context,
-                              screen: CategoriesScreen(
-                                category: element.category,
-                              )),
-                          child: SizedBox(
-                            width: 71.w,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  element.image,
-                                  width: 65.w,
-                                  height: 65.h,
+            !showCategories
+                ? Container()
+                : Expanded(
+                    flex: 4,
+                    child: categories.isEmpty
+                        ? const Center(
+                            child: CircularProgressIndicator(),
+                          )
+                        : ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: categories.map((element) {
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                  left: categories.first == element ? 0 : 10.0,
                                 ),
-                                Text(
-                                  element.category,
-                                  style: TextStyles.textViewMedium10
-                                      .copyWith(color: gunmetal),
-                                  textAlign: TextAlign.center,
-                                  maxLines: 3,
-                                )
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList()),
-            ),
+                                child: GestureDetector(
+                                  onTap: () => AppNavigator.pushReplacement(
+                                      context: context,
+                                      screen: CategoriesScreen(
+                                        category: element.category,
+                                      )),
+                                  child: SizedBox(
+                                    width: 71.w,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Image.asset(
+                                          element.image,
+                                          width: 65.w,
+                                          height: 65.h,
+                                        ),
+                                        Text(
+                                          element.category,
+                                          style: TextStyles.textViewMedium10
+                                              .copyWith(color: gunmetal),
+                                          textAlign: TextAlign.center,
+                                          maxLines: 3,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList()),
+                  ),
             Text(
               LocaleKeys.recentSearches.tr(),
               style: TextStyles.textViewMedium20.copyWith(color: gunmetal),

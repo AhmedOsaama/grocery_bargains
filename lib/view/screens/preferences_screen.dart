@@ -53,146 +53,165 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
       body: FutureBuilder(
           future: getUserDataFuture,
           builder: (context, snap) {
-            if (snap.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
-            return Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  12.ph,
-                  Text(
-                    "Preferences",
-                    style:
-                        TextStyles.textViewSemiBold26.copyWith(color: black2),
-                  ),
-                  23.ph,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Email marketing",
-                        style:
-                            TextStyles.textViewMedium16.copyWith(color: black2),
-                      ),
-                      Switch.adaptive(
-                          value: snap.data!["preferences"]["emailMarketing"],
-                          onChanged: (value) async {
-                            await FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(FirebaseAuth.instance.currentUser!.uid)
-                                .update({
-                              "preferences": {
-                                "emailMarketing": value,
-                                "weekly": snap.data!["preferences"]["weekly"],
-                                "daily": snap.data!["preferences"]["daily"]
-                              }
-                            });
-                            setState(() {
-                              updateUserDataFuture();
-                            });
-                          })
-                    ],
-                  ),
-                  Divider(),
-                  Text(
-                    "Location services helps us to offer persionalized reccomendations",
-                    style: TextStyles.textViewMedium13
-                        .copyWith(color: Colors.grey),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Daily",
-                        style:
-                            TextStyles.textViewMedium16.copyWith(color: black2),
-                      ),
-                      Switch.adaptive(
-                          value: snap.data!["preferences"]["daily"] &&
-                              snap.data!["preferences"]["emailMarketing"],
-                          onChanged: (value) async {
-                            if (snap.data!["preferences"]["emailMarketing"]) {
-                              await FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(FirebaseAuth.instance.currentUser!.uid)
-                                  .update({
-                                "preferences": {
-                                  "emailMarketing": snap.data!["preferences"]
-                                      ["emailMarketing"],
-                                  "weekly": snap.data!["preferences"]["weekly"],
-                                  "daily": value
-                                }
-                              });
-                              setState(() {
-                                updateUserDataFuture();
-                              });
-                            }
-                          })
-                    ],
-                  ),
-                  Divider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Weekly",
-                        style:
-                            TextStyles.textViewMedium16.copyWith(color: black2),
-                      ),
-                      Switch.adaptive(
-                          value: snap.data!["preferences"]["weekly"] &&
-                              snap.data!["preferences"]["emailMarketing"],
-                          onChanged: (value) async {
-                            if (snap.data!["preferences"]["emailMarketing"]) {
-                              await FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(FirebaseAuth.instance.currentUser!.uid)
-                                  .update({
-                                "preferences": {
-                                  "emailMarketing": snap.data!["preferences"]
-                                      ["emailMarketing"],
-                                  "weekly": value,
-                                  "daily": snap.data!["preferences"]["daily"]
-                                }
-                              });
-                              setState(() {
-                                updateUserDataFuture();
-                              });
-                            }
-                          })
-                    ],
-                  ),
-                  Divider(),
-                  Text(
-                    "Change the frequency of your emails",
-                    style: TextStyles.textViewMedium13
-                        .copyWith(color: Colors.grey),
-                  ),
-                  Spacer(),
-                  Center(
-                      child: TextButton(
-                          onPressed: () async {
-                            final url = Uri.parse(
-                                'https://thebargainb.com/privacy-policy');
-                            try {
-                              await launchUrl(url);
-                            } catch (e) {
-                              log(e.toString());
-                            }
-                          },
-                          child: Text(
-                            "Privacy Policy  |  Terms of Service",
-                            style: TextStyles.textViewMedium10
-                                .copyWith(color: Colors.grey),
-                          ))),
-                  100.ph
-                ],
-              ),
+            return Stack(
+              children: [
+                (snap.connectionState == ConnectionState.waiting)
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : Container(),
+                snap.hasData
+                    ? Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.w),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            12.ph,
+                            Text(
+                              "Preferences".tr(),
+                              style: TextStyles.textViewSemiBold26
+                                  .copyWith(color: black2),
+                            ),
+                            23.ph,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "EmailMarketing".tr(),
+                                  style: TextStyles.textViewMedium16
+                                      .copyWith(color: black2),
+                                ),
+                                Switch.adaptive(
+                                    thumbColor:
+                                        MaterialStateProperty.all(mainPurple),
+                                    value: snap.data!["preferences"]
+                                        ["emailMarketing"],
+                                    onChanged: (value) async {
+                                      await FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(FirebaseAuth
+                                              .instance.currentUser!.uid)
+                                          .update({
+                                        "preferences": {
+                                          "emailMarketing": value,
+                                          "weekly": snap.data!["preferences"]
+                                              ["weekly"],
+                                          "daily": snap.data!["preferences"]
+                                              ["daily"]
+                                        }
+                                      });
+                                      setState(() {
+                                        updateUserDataFuture();
+                                      });
+                                    })
+                              ],
+                            ),
+                            Divider(),
+                            Text(
+                              "LocationServicesHelps".tr(),
+                              style: TextStyles.textViewMedium13
+                                  .copyWith(color: Colors.grey),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Daily".tr(),
+                                  style: TextStyles.textViewMedium16
+                                      .copyWith(color: black2),
+                                ),
+                                Switch.adaptive(
+                                    thumbColor: !snap.data!["preferences"]
+                                            ["emailMarketing"]
+                                        ? MaterialStateProperty.all(grey)
+                                        : MaterialStateProperty.all(mainPurple),
+                                    value: snap.data!["preferences"]["daily"],
+                                    onChanged: (value) async {
+                                      await FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(FirebaseAuth
+                                              .instance.currentUser!.uid)
+                                          .update({
+                                        "preferences": {
+                                          "emailMarketing":
+                                              snap.data!["preferences"]
+                                                  ["emailMarketing"],
+                                          "weekly": snap.data!["preferences"]
+                                              ["weekly"],
+                                          "daily": value
+                                        }
+                                      });
+                                      setState(() {
+                                        updateUserDataFuture();
+                                      });
+                                    })
+                              ],
+                            ),
+                            Divider(),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  "Weekly".tr(),
+                                  style: TextStyles.textViewMedium16
+                                      .copyWith(color: black2),
+                                ),
+                                Switch.adaptive(
+                                    value: snap.data!["preferences"]["weekly"],
+                                    thumbColor: !snap.data!["preferences"]
+                                            ["emailMarketing"]
+                                        ? MaterialStateProperty.all(grey)
+                                        : MaterialStateProperty.all(mainPurple),
+                                    onChanged: (value) async {
+                                      await FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(FirebaseAuth
+                                              .instance.currentUser!.uid)
+                                          .update({
+                                        "preferences": {
+                                          "emailMarketing":
+                                              snap.data!["preferences"]
+                                                  ["emailMarketing"],
+                                          "weekly": value,
+                                          "daily": snap.data!["preferences"]
+                                              ["daily"]
+                                        }
+                                      });
+                                      setState(() {
+                                        updateUserDataFuture();
+                                      });
+                                    })
+                              ],
+                            ),
+                            Divider(),
+                            Text(
+                              "ChangeFrequency".tr(),
+                              style: TextStyles.textViewMedium13
+                                  .copyWith(color: Colors.grey),
+                            ),
+                            Spacer(),
+                            Center(
+                                child: TextButton(
+                                    onPressed: () async {
+                                      final url = Uri.parse(
+                                          'https://thebargainb.com/privacy-policy');
+                                      try {
+                                        await launchUrl(url);
+                                      } catch (e) {
+                                        log(e.toString());
+                                      }
+                                    },
+                                    child: Text(
+                                      "PrivacyPolicy".tr(),
+                                      style: TextStyles.textViewMedium10
+                                          .copyWith(color: Colors.grey),
+                                    ))),
+                            100.ph
+                          ],
+                        ),
+                      )
+                    : Container(),
+              ],
             );
           }),
     );

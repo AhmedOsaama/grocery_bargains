@@ -3,8 +3,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
-import '../../config/routes/app_navigator.dart';
 import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/assets_manager.dart';
@@ -35,12 +35,12 @@ class ChatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => AppNavigator.push(
-          context: context,
+      onTap: () => pushNewScreen(context,
           screen: ChatListViewScreen(
             // updateList: updateList,
             listId: listId,
-          )),
+          ),
+          withNavBar: false),
       child: Row(
         children: [
           Image.asset(
@@ -61,7 +61,7 @@ class ChatTile extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "${size} items",
+                    "${size} ${LocaleKeys.items.tr()}",
                     style: TextStylesInter.textViewMedium10
                         .copyWith(color: purple50),
                   ),

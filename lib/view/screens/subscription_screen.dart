@@ -30,7 +30,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         foregroundColor: Colors.black,
         // leading: backButt,
         title: Text(
-          "Subscription",
+          "subscription".tr(),
           style: TextStyles.textViewSemiBold16.copyWith(color: black1),
         ),
       ),
@@ -75,7 +75,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   ),
                   5.pw,
                   Text(
-                    'Unlimited lists',
+                    'UnlimitedLists'.tr(),
                     style: TextStyles.textViewRegular16.copyWith(color: black1),
                   )
                 ],
@@ -89,7 +89,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   ),
                   5.pw,
                   Text(
-                    'Unlimited Shared chats',
+                    'UnlimitedShared'.tr(),
                     style: TextStyles.textViewRegular16.copyWith(color: black1),
                   )
                 ],
@@ -105,7 +105,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   5.pw,
                   Flexible(
                     child: Text(
-                      'Unlimited Product searches per month',
+                      'UnlimitedProduct'.tr(),
                       style:
                           TextStyles.textViewRegular16.copyWith(color: black1),
                     ),

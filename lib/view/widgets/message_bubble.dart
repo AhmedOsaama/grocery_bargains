@@ -1,6 +1,17 @@
+import 'dart:convert';
+import 'dart:developer';
+
+import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/models/chatlist.dart';
+import 'package:bargainb/models/product.dart';
+import 'package:bargainb/models/user_info.dart';
+import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/services/network_services.dart';
+import 'package:bargainb/view/screens/contact_profile_screen.dart';
+import 'package:bargainb/view/screens/main_screen.dart';
+import 'package:bargainb/view/screens/product_detail_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:bargainb/utils/app_colors.dart';
 
@@ -24,6 +35,7 @@ class MessageBubble extends StatefulWidget {
   final String userId;
   final String userImage;
   final String message;
+
   final bool isAddedToList;
   final DocumentReference messageDocPath;
   final bool isMe;
@@ -71,35 +83,130 @@ class _MessageBubbleState extends State<MessageBubble> {
             widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (!widget.isMe)
-            widget.userImage.isNotEmpty
-                ? CircleAvatar(
-                    backgroundImage: NetworkImage(widget.userImage),
-                    radius: 20,
-                  )
-                : SvgPicture.asset(personIcon),
+            GestureDetector(
+              onTap: () async {
+                List<ChatList> lists = [];
+                var friends =
+                    await Provider.of<ChatlistsProvider>(context, listen: false)
+                        .getAllFriends();
+
+                friends.forEach((element) {
+                  if (element.id == widget.userId) {
+                    element.chatlists.forEach((element) {
+                      lists.add(ChatList(
+                          id: element.id,
+                          name: element.get("list_name"),
+                          storeName: element.get("storeName"),
+                          userIds: element.get("userIds"),
+                          totalPrice: element.get("total_price"),
+                          storeImageUrl: element.get("storeImageUrl"),
+                          itemLength: element.get("size"),
+                          lastMessage: element.get("last_message"),
+                          lastMessageDate: element.get("last_message_date"),
+                          lastMessageUserId: element.get("last_message_userId"),
+                          lastMessageUserName:
+                              element.get("last_message_userName")));
+                    });
+                  }
+                });
+
+                AppNavigator.push(
+                    context: context,
+                    screen: ContactProfileScreen(
+                      lists: lists,
+                      user: UserContactInfo(
+                          email: "",
+                          id: widget.userId,
+                          imageURL: widget.userImage,
+                          name: widget.userName,
+                          phoneNumber: ''),
+                    ));
+              },
+              child: widget.userImage.isNotEmpty
+                  ? CircleAvatar(
+                      backgroundImage: NetworkImage(widget.userImage),
+                      radius: 20,
+                    )
+                  : SvgPicture.asset(personIcon),
+            ),
           if (widget.message.isEmpty)
-            Container(
-              key: widget.key,
-              // width: ,
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              margin: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-              child: ProductItemWidget(
-                onTap: () => chatlistProvider.addItemMessageToList(
-                  itemName: widget.itemName,
-                  itemSize: widget.itemSize,
-                  itemPrice: widget.itemPrice,
-                  itemImage: widget.itemImage,
-                  messageDocPath: widget.messageDocPath,
-                  userName: widget.userName,
-                  userId: widget.userId,
+            GestureDetector(
+              onTap: () async {
+                late Product product;
+
+                switch (widget.storeName) {
+                  case 'Hoogvliet':
+                    var response =
+                        await NetworkServices.searchHoogvlietProducts(
+                            widget.itemName);
+                    product = Provider.of<ProductsProvider>(context,
+                            listen: false)
+                        .convertToProductListFromJson(jsonDecode(response.body))
+                        .first;
+
+                    break;
+                  case 'Jumbo':
+                    var response = await NetworkServices.searchJumboProducts(
+                        widget.itemName);
+                    product = Provider.of<ProductsProvider>(context,
+                            listen: false)
+                        .convertToProductListFromJson(jsonDecode(response.body))
+                        .first;
+
+                    break;
+                  case 'Albert':
+                    log(widget.itemName);
+                    var response = await NetworkServices.searchAlbertProducts(
+                        widget.itemName);
+                    log(response.body);
+                    product = Provider.of<ProductsProvider>(context,
+                            listen: false)
+                        .convertToProductListFromJson(jsonDecode(response.body))
+                        .first;
+
+                    break;
+                }
+
+                AppNavigator.push(
+                    context: context,
+                    screen: ProductDetailScreen(
+                      comparisonId: -1,
+                      productId: product.id,
+                      oldPrice: product.oldPrice,
+                      storeName: product.storeName,
+                      productName: product.name,
+                      imageURL: product.imageURL,
+                      description: product.description,
+                      size1: product.size,
+                      size2: product.size2 ?? "",
+                      price1: double.tryParse(product.price ?? "") ?? 0.0,
+                      price2: double.tryParse(product.price2 ?? "") ?? 0.0,
+                    ));
+              },
+              child: Container(
+                key: widget.key,
+                // width: ,
+                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                margin: EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                child: ProductItemWidget(
+                  onTap: () => chatlistProvider.addItemMessageToList(
+                    storeName: widget.storeName,
+                    itemName: widget.itemName,
+                    itemSize: widget.itemSize,
+                    itemPrice: widget.itemPrice,
+                    itemImage: widget.itemImage,
+                    messageDocPath: widget.messageDocPath,
+                    userName: widget.userName,
+                    userId: widget.userId,
+                  ),
+                  price: widget.itemPrice,
+                  name: widget.itemName,
+                  size: widget.itemSize,
+                  imagePath: widget.itemImage,
+                  oldPrice: widget.itemOldPrice,
+                  isAddedToList: widget.isAddedToList,
+                  storeName: widget.storeName,
                 ),
-                price: widget.itemPrice,
-                name: widget.itemName,
-                size: widget.itemSize,
-                imagePath: widget.itemImage,
-                oldPrice: widget.itemOldPrice,
-                isAddedToList: widget.isAddedToList,
-                storeName: widget.storeName,
               ),
             ),
           if (widget.message.isNotEmpty)
@@ -122,8 +229,9 @@ class _MessageBubbleState extends State<MessageBubble> {
                               : SvgPicture.asset(add)),
                       5.pw,
                       Container(
-                        // width: 10,
-                        width: widget.message.length > 40 ? 220.w : null,
+                        width: widget.message.length > 30
+                            ? MediaQuery.of(context).size.width * 0.6
+                            : null,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 5),
                         margin: const EdgeInsets.symmetric(
@@ -148,8 +256,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                           style: TextStyles.textViewRegular16.copyWith(
                               color: widget.isMe ? Colors.white : Colors.black),
                           softWrap: true,
-                          textAlign:
-                              widget.isMe ? TextAlign.right : TextAlign.left,
+                          textAlign: TextAlign.left,
                         ),
                       ),
                     ]
@@ -170,6 +277,9 @@ class _MessageBubbleState extends State<MessageBubble> {
                               : SvgPicture.asset(add)),
                       5.pw,
                       Container(
+                        width: widget.message.length > 30
+                            ? MediaQuery.of(context).size.width * 0.6
+                            : null,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 5),
                         margin: const EdgeInsets.symmetric(
@@ -193,19 +303,24 @@ class _MessageBubbleState extends State<MessageBubble> {
                           widget.message,
                           style: TextStyles.textViewRegular16.copyWith(
                               color: widget.isMe ? Colors.white : Colors.black),
-                          textAlign:
-                              widget.isMe ? TextAlign.right : TextAlign.left,
+                          textAlign: TextAlign.left,
                         ),
                       ),
                     ].reversed.toList(),
             ),
           if (widget.isMe)
-            widget.userImage.isNotEmpty
-                ? CircleAvatar(
-                    backgroundImage: NetworkImage(widget.userImage),
-                    radius: 20,
-                  )
-                : SvgPicture.asset(personIcon),
+            GestureDetector(
+              onTap: () {
+                AppNavigator.pop(context: context);
+                NavigatorController.jumpToTab(2);
+              },
+              child: widget.userImage.isNotEmpty
+                  ? CircleAvatar(
+                      backgroundImage: NetworkImage(widget.userImage),
+                      radius: 20,
+                    )
+                  : SvgPicture.asset(personIcon),
+            ),
           // if (isDisplayingOptions) ...[
           //   Spacer(),
           //   SizedBox(

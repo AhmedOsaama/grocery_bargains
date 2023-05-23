@@ -1,14 +1,27 @@
+import 'dart:developer';
+
 import 'package:bargainb/models/bestValue_item.dart';
 import 'package:bargainb/models/comparison_product.dart';
-import 'package:bargainb/models/product.dart';
+import 'package:bargainb/utils/down_triangle_painter.dart';
+import 'package:bargainb/utils/tooltips_keys.dart';
+import 'package:bargainb/utils/triangle_painter.dart';
+import 'package:bargainb/view/components/chatlist_swiper.dart';
+import 'package:bargainb/view/components/generic_field.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
+import 'package:bargainb/view/screens/chatlist_view_screen.dart';
+import 'package:bargainb/view/screens/chatlists_screen.dart';
+import 'package:bargainb/view/screens/latest_bargains_screen.dart';
+import 'package:bargainb/view/screens/main_screen.dart';
+import 'package:bargainb/view/widgets/store_list_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
@@ -16,22 +29,19 @@ import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/style_utils.dart';
-import 'package:bargainb/utils/utils.dart';
-import 'package:bargainb/view/components/generic_field.dart';
-import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/screens/product_detail_screen.dart';
+import 'package:shimmer_animation/shimmer_animation.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../services/dynamic_link_service.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/icons_manager.dart';
 import '../widgets/discountItem.dart';
-import '../widgets/store_list_widget.dart';
-import 'latest_bargains_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -40,7 +50,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PagingController<int, ComparisonProduct> _pagingController =
       PagingController(firstPageKey: 0);
-  static const _pageSize = 50;
+  static const _pageSize = 5;
 
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
   // late Future<int> getAllProductsFuture;
@@ -54,6 +64,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<BestValueItem> bestValueBargains = [];
   int startingIndex = 0;
+  bool isHomeFirstTime = false;
+
+  Future<Null> getFirstTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isHomeFirstTime = prefs.getBool("firstTime") ?? true;
+    });
+  }
+
+  Future<Null> turnOffFirstTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      prefs.setBool("firstTime", false);
+      isHomeFirstTime = false;
+    });
+  }
 
   @override
   void initState() {
@@ -66,22 +92,27 @@ class _HomeScreenState extends State<HomeScreen> {
     // getAllValueBargainsFuture =
     //     Provider.of<ProductsProvider>(context, listen: false)
     //         .populateBestValueBargains();
-    getUserDataFuture = FirebaseFirestore.instance
-        .collection('/users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
+    if (FirebaseAuth.instance.currentUser != null) {
+      getUserDataFuture = FirebaseFirestore.instance
+          .collection('/users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get();
+    }
     DynamicLinkService().listenToDynamicLinks(
         context); //case 2 the app is open but in background and opened again via deep link
-    // WidgetsBinding.instance.addObserver(this);
+
+    getFirstTime();
   }
 
   Future<void> _fetchPage(int pageKey) async {
     try {
       print("PAGE KEY: " + pageKey.toString());
-      await Provider.of<ProductsProvider>(context, listen: false)
-          .getLimitedPriceComparisons(pageKey);
-      final newProducts =
-          Provider.of<ProductsProvider>(context, listen: false).comparisonProducts;
+      if (pageKey > 0) {
+        await Provider.of<ProductsProvider>(context, listen: false)
+            .getLimitedPriceComparisons(pageKey);
+      }
+      final newProducts = Provider.of<ProductsProvider>(context, listen: false)
+          .comparisonProducts;
 
       final isLastPage = newProducts.length < _pageSize;
       if (isLastPage) {
@@ -96,526 +127,1101 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   if(state == AppLifecycleState.resumed){
-  //     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-  //       print(message);
-  //       print("onMessageOpenedApp: " + message.data['listId']);
-  //       print("onMessageOpenedApp title: " + message.notification!.title!);
-  //       print("onMessageOpenedApp body: " + message.notification!.body!);
-  //       print('PUSHING A PAGE');
-  //       AppNavigator.push(context: context, screen: ChatListViewScreen(listId: message.data['listId'], listName: message.notification!.title!));
-  //     });
-  //   }
-  //   if(state == AppLifecycleState.paused){
-  //     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  //   }
-  //   super.didChangeAppLifecycleState(state);
-  // }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 50.h,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  FutureBuilder(
-                      future: getUserDataFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
-                        // if(googleProvider.isGoogleSignedIn){
-                        //   return Text(
-                        //     style: TextStylesInter.textViewSemiBold24
-                        //         .copyWith(color: mainPurple),
-                        //     '${'Hello, ' + (googleProvider.user.displayName ?? "Google user")}!',
-                        //   );
-                        // }
-                        else {
-                          return Text(
-                            style: TextStylesInter.textViewSemiBold24
-                                .copyWith(color: mainPurple),
-                            '${'Hello, ' + snapshot.data!['username']}!',
-                          );
-                        }
-                      }),
-                  FutureBuilder(
-                      future: getUserDataFuture,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Container();
-                        }
-                        // if(googleProvider.isGoogleSignedIn){
-                        //   return googleProvider.user.photoUrl != "" && googleProvider.user.photoUrl != null
-                        //       ? CircleAvatar(
-                        //     backgroundImage:
-                        //     NetworkImage(googleProvider.user.photoUrl!),
-                        //     radius: 30,
-                        //   )
-                        //       : SvgPicture.asset(personIcon);
-                        // }
-                        return snapshot.data!['imageURL'] != ""
-                            ? CircleAvatar(
-                                backgroundImage:
-                                    NetworkImage(snapshot.data!['imageURL']),
-                                radius: 30,
-                              )
-                            : SvgPicture.asset(bee);
-                      }),
-                ],
-              ),
-              SizedBox(
-                height: 15.h,
-              ),
-              GenericField(
-                isFilled: true,
-                onTap: () async {
-                  SharedPreferences pref =
-                      await SharedPreferences.getInstance();
-                  return showSearch(
-                      context: context, delegate: MySearchDelegate(pref));
-                },
-                prefixIcon: Icon(Icons.search),
-                borderRaduis: 999,
-                hintText: LocaleKeys.whatAreYouLookingFor.tr(),
-                hintStyle:
-                    TextStyles.textViewSemiBold14.copyWith(color: gunmetal),
-              ),
-              SizedBox(
-                height: 10.h,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    LocaleKeys.chatlists.tr(),
-                    style: TextStylesInter.textViewSemiBold16
-                        .copyWith(color: black2),
+    return ShowCaseWidget(
+      builder: Builder(builder: (builder) {
+        if (isHomeFirstTime) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            showWelcomeDialog(context, builder);
+          });
+        }
+        return Scaffold(
+          resizeToAvoidBottomInset: true,
+          backgroundColor: white,
+          bottomSheet: Showcase.withWidget(
+            key: isHomeFirstTime
+                ? TooltipKeys.showCase1
+                : new GlobalKey<State<StatefulWidget>>(),
+            container: Column(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(15),
+                  //margin: EdgeInsets.symmetric(vertical: 30.w),
+                  width: 180.w,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.r),
+                    color: purple70,
                   ),
-                  TextButton(
-                      onPressed: () => AppNavigator.push(
-                          context: context, screen: ChatlistsScreen()),
-                      child: Text(
-                        'See all',
-                        style: textButtonStyle,
-                      ))
-                ],
-              ),
-              // Consumer<ChatlistsProvider>(builder: (ctx, provider, _) {
-              //   var chatlists = provider.chatlists;
-              //   if (chatlists.isEmpty) {
-              //           return GestureDetector(
-              //             onTap: (){
-              //               AppNavigator.push(context: context, screen: ChatlistsScreen());
-              //             },
-              //             child: Image.asset(
-              //               newChatList,
-              //             ),
-              //           );
-              //         }
-              //   return SizedBox(
-              //     height: 260.h,
-              //     child: Stack(
-              //         alignment: Alignment.topCenter,
-              //         children: chatlists.map(
-              //           (list) {
-              //             return Positioned(
-              //               right: chatlists.indexOf(list) * 90.w,
-              //               child: Container(
-              //                 width: 170.w,
-              //                 child: StoreListWidget(
-              //                     listId: list.id,
-              //                     storeImagePath: list['storeImageUrl'],
-              //                     listName: list['list_name']),
-              //               ),
-              //             );
-              //           },
-              //         ).toList()),
-              //   );
-              // }),
-              FutureBuilder(
-                  future: getAllListsFuture,
-                  builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
-                    var allLists = snapshot.data?.docs ?? [];
-                    if (!snapshot.hasData || allLists.isEmpty) {
-                      return GestureDetector(
-                        onTap: () {
-                          AppNavigator.push(
-                              context: context, screen: ChatlistsScreen());
-                        },
-                        child: Image.asset(
-                          newChatList,
-                          // width: 358.w,
-                          // height: 154.h,
-                        ),
-                      );
-                    }
-                    return SizedBox(
-                      height: 170.h,
-                      child: Stack(
-                          alignment: Alignment.topCenter,
-                          children: allLists.map(
-                            (list) {
-                              return Positioned(
-                                right: allLists.indexOf(list) * 90.w,
-                                child: Container(
-                                  width: 170.w,
-                                  child: StoreListWidget(
-                                      listId: list.id,
-                                      storeImagePath: list['storeImageUrl'],
-                                      listName: list['list_name']),
-                                ),
-                              );
-                            },
-                          ).toList()),
-                    );
-                  }),
-              SizedBox(
-                height: 10.h,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    LocaleKeys.latestBargains.tr(),
-                    style: TextStylesDMSans.textViewBold16
-                        .copyWith(color: prussian),
-                  ),
-                  TextButton(
-                      onPressed: () => AppNavigator.push(context: context, screen: LatestBargainsScreen()),
-                      child: Text(
-                        'See all',
-                        style: textButtonStyle,
-                      ))
-                ],
-              ),
-              // Container(
-              //   height: 200.h,
-              //   child: FutureBuilder<int>(
-              //       future: getAllProductsFuture,
-              //       builder: (context, snapshot) {
-              //         if (snapshot.connectionState == ConnectionState.waiting) {
-              //           return const Center(
-              //             child: CircularProgressIndicator(),
-              //           );
-              //         }
-              //         if (snapshot.data != 200) {
-              //           return const Center(
-              //             child: Text(
-              //                 "Something went wrong. Please try again later"),
-              //           );
-              //         }
-              //         allProducts =
-              //             Provider.of<ProductsProvider>(context, listen: false)
-              //                 .allProducts;
-              //         print("\n RESPONSE: ${allProducts.length}");
-              //         return ListView.builder(
-              //           itemCount: allProducts.length + 1,
-              //           scrollDirection: Axis.horizontal,
-              //           itemBuilder: (ctx, i) {
-              //             if (i >= allProducts.length) {
-              //               var productId = allProducts[i - 1]['id'];
-              //               return Padding(
-              //                 padding: EdgeInsets.symmetric(horizontal: 32),
-              //                 child: isLoading
-              //                     ? Center(
-              //                         child: CircularProgressIndicator(
-              //                         color: verdigris,
-              //                       ))
-              //                     : Center(
-              //                         child: Container(
-              //                           decoration: BoxDecoration(
-              //                             border:
-              //                                 Border.all(color: Colors.grey),
-              //                             borderRadius:
-              //                                 BorderRadius.circular(12),
-              //                           ),
-              //                           child: InkWell(
-              //                             onTap: () async {
-              //                               setState(() {
-              //                                 isLoading = true;
-              //                               });
-              //                               print(productId);
-              //                               await fetch(productId + 1);
-              //                               setState(() {
-              //                                 isLoading = false;
-              //                               });
-              //                             },
-              //                             borderRadius:
-              //                                 BorderRadius.circular(12),
-              //                             child: Padding(
-              //                               padding: const EdgeInsets.all(5),
-              //                               child: Row(
-              //                                 mainAxisSize: MainAxisSize.min,
-              //                                 children: [
-              //                                   Text(
-              //                                     "See more",
-              //                                     style: TextStyles
-              //                                         .textViewMedium10
-              //                                         .copyWith(
-              //                                             color: prussian),
-              //                                   ),
-              //                                   Icon(
-              //                                     Icons.arrow_forward_ios,
-              //                                     size: 18,
-              //                                     color: Colors.grey,
-              //                                   ),
-              //                                 ],
-              //                               ),
-              //                             ),
-              //                           ),
-              //                         ),
-              //                       ),
-              //               );
-              //             } // see more case
-              //             var id = allProducts[i]['id'];
-              //             var productName = allProducts[i]['name'];
-              //             var imageURL = allProducts[i]['image_url'];
-              //             var storeName = allProducts[i]['product_brand'];
-              //             var description =
-              //                 allProducts[i]['product_description'];
-              //             var price1 = allProducts[i]['price_1'];
-              //             var price2 = allProducts[i]['price_2'];
-              //             var oldPrice = allProducts[i]['befor_offer'];
-              //             var size1 = allProducts[i]['unit_size_1'] ?? "";
-              //             var size2 = allProducts[i]['unit_size_2'];
-              //             return DiscountItem(
-              //               onAdd: () => addDiscountItem(context, productName,
-              //                   oldPrice, price1, price2, imageURL, size1),
-              //               onShare: () => shareDiscountItem(
-              //                   context,
-              //                   productName,
-              //                   oldPrice,
-              //                   price1,
-              //                   price2,
-              //                   imageURL,
-              //                   size1),
-              //               name: productName,
-              //               imageURL: imageURL,
-              //               albertPriceAfter: price1 ?? price2,
-              //               measurement: size1 ?? size2,
-              //               jumboPriceAfter: '0.0',
-              //             );
-              //           },
-              //         );
-              //       }),
-              // ),
-              Container(
-                height: 220.h,
-                child: Consumer<ProductsProvider>(
-                  builder: (ctx, provider, _) {
-                    var comparisonProducts = provider.comparisonProducts;
-                    if (comparisonProducts.isEmpty) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else {
-                      return PagedListView<int, ComparisonProduct>(
-                        scrollDirection: Axis.horizontal,
-                        pagingController: _pagingController,
-                        builderDelegate: PagedChildBuilderDelegate<ComparisonProduct>(
-                            itemBuilder: (context, item, index) => Row(
-                                  children: [DiscountItem(
-                              comparisonProduct: item,
-                            ), 10.pw],
-                                )),
-                      );
-                    }
-
-                    /*    return ListView.builder(
-                      itemCount: comparisonProducts.length,
-                      scrollDirection: Axis.horizontal,
-                      itemBuilder: (ctx, i) {
-                        // if (i >= comparisonProducts.length) {
-                        //   var productId = comparisonProducts[i-1].id;
-                        //   return Padding(
-                        //     padding: EdgeInsets.symmetric(horizontal: 32),
-                        //     child: isLoading
-                        //         ? Center(
-                        //         child: CircularProgressIndicator(
-                        //           color: verdigris,
-                        //         ))
-                        //         : Center(
-                        //       child: Container(
-                        //         decoration: BoxDecoration(
-                        //           border:
-                        //           Border.all(color: Colors.grey),
-                        //           borderRadius:
-                        //           BorderRadius.circular(12),
-                        //         ),
-                        //         child: InkWell(
-                        //           onTap: () async {
-                        //             setState(() {
-                        //               isLoading = true;
-                        //             });
-                        //             print(productId);
-                        //             await fetch(productId + 1);
-                        //             setState(() {
-                        //               isLoading = false;
-                        //             });
-                        //           },
-                        //           borderRadius:
-                        //           BorderRadius.circular(12),
-                        //           child: Padding(
-                        //             padding: const EdgeInsets.all(5),
-                        //             child: Row(
-                        //               mainAxisSize: MainAxisSize.min,
-                        //               children: [
-                        //                 Text(
-                        //                   "See more",
-                        //                   style: TextStyles
-                        //                       .textViewMedium10
-                        //                       .copyWith(
-                        //                       color: prussian),
-                        //                 ),
-                        //                 Icon(
-                        //                   Icons.arrow_forward_ios,
-                        //                   size: 18,
-                        //                   color: Colors.grey,
-                        //                 ),
-                        //               ],
-                        //             ),
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     ),
-                        //   );
-                        // } // see more case
-                        return DiscountItem(
-                          comparisonProduct: comparisonProducts[i],
-                        );
+                  child: Column(children: [
+                    Text(
+                      "UseOurNavigation".tr(),
+                      maxLines: 4,
+                      style:
+                          TextStyles.textViewRegular13.copyWith(color: white),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        ShowCaseWidget.of(builder).next();
                       },
-                    ); */
-                  },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            LocaleKeys.next.tr(),
+                            style: TextStyles.textViewSemiBold14
+                                .copyWith(color: white),
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            color: white,
+                            size: 15.sp,
+                          )
+                        ],
+                      ),
+                    )
+                  ]),
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Latest Value Bargains",
-                    style: TextStylesDMSans.textViewBold16
-                        .copyWith(color: prussian),
+                Container(
+                  height: 11,
+                  width: 13,
+                  child: CustomPaint(
+                    painter: DownTrianglePainter(
+                      strokeColor: purple70,
+                      strokeWidth: 1,
+                      paintingStyle: PaintingStyle.fill,
+                    ),
                   ),
-                  // TextButton(
-                  //     onPressed: () {},
-                  //     child: Text(
-                  //       'See all',
-                  //       style: textButtonStyle,
-                  //     ))
-                ],
-              ),
-              Container(
-                height: 150.h,
-                child:
-                    Consumer<ProductsProvider>(builder: (context, provider, _) {
-                  bestValueBargains = provider.bestValueBargains;
-                  print(bestValueBargains.length);
-                  // print(bestValueBargains.length);
-                  return ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: bestValueBargains.map((bargain) {
-                        return GestureDetector(
-                          onTap: () {
-                            AppNavigator.push(
-                                context: context,
-                                screen: ProductDetailScreen(
-                                  comparisonId: -1,
-                                  productId: bargain.itemId,
-                                  storeName: bargain.store,
-                                  productName: bargain.itemName,
-                                  imageURL: bargain.itemImage,
-                                  description: bargain.description,
-                                  price1: double.tryParse(bargain.price1) ?? 0,
-                                  price2: double.tryParse(bargain.price2) ?? 0,
-                                  oldPrice: bargain.oldPrice,
-                                  size1: bargain.size1,
-                                  size2: bargain.size2,
-                                ));
-                          },
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            margin: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              boxShadow: Utils.boxShadow,
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Row(
+                ),
+              ],
+            ),
+            height: 110.h,
+            width: 190.h,
+            child: Container(
+              height: 0,
+              color: Colors.transparent,
+            ),
+          ),
+          body: SafeArea(
+            child: Container(
+              /*  decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                begin: Alignment(0, 0.2),
+                end: Alignment.bottomCenter,
+                //stops: [0.5, 0.7, 0.9, 1],
+                colors: [white, shadowColor, shadowColor],
+              )), */
+              child: RefreshIndicator(
+                onRefresh: () {
+                  setState(() {
+                    getAllListsFuture =
+                        Provider.of<ChatlistsProvider>(context, listen: false)
+                            .getAllChatlistsFuture();
+                    if (FirebaseAuth.instance.currentUser != null) {
+                      getUserDataFuture = FirebaseFirestore.instance
+                          .collection('/users')
+                          .doc(FirebaseAuth.instance.currentUser!.uid)
+                          .get();
+                    }
+                  });
+                  return Future.value();
+                },
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15.w),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            FutureBuilder(
+                                future: getUserDataFuture,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Center(child: Container());
+                                  } else if (snapshot.hasData) {
+                                    if (!snapshot.data!
+                                        .data()!
+                                        .containsKey("privacy")) {
+                                      FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(FirebaseAuth
+                                              .instance.currentUser!.uid)
+                                          .update({
+                                        'language': 'en',
+                                        'status':
+                                            "Hello! I'm using BargainB. Join the app",
+                                        'privacy': {
+                                          'connectContacts': true,
+                                          'locationServices': false,
+                                        },
+                                        'preferences': {
+                                          'emailMarketing': true,
+                                          'weekly': true,
+                                          'daily': false,
+                                        },
+                                      });
+                                    }
+                                    return Text(
+                                      style: TextStylesInter.textViewSemiBold24
+                                          .copyWith(color: mainPurple),
+                                      '${'Hello, ' + snapshot.data!['username']}!',
+                                    );
+                                  } else {
+                                    return Text(
+                                      style: TextStylesInter.textViewSemiBold24
+                                          .copyWith(color: mainPurple),
+                                      'Hello, Guest!',
+                                    );
+                                  }
+                                }),
+                            FutureBuilder(
+                                future: getUserDataFuture,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                          ConnectionState.waiting ||
+                                      !snapshot.hasData) {
+                                    return Container();
+                                  }
+
+                                  return snapshot.data!['imageURL'] != ""
+                                      ? GestureDetector(
+                                          onTap: () async {
+                                            SharedPreferences.getInstance()
+                                                .then((value) {
+                                              value.remove("firstTime"); //TODO
+                                            });
+                                            NavigatorController.jumpToTab(2);
+                                          },
+                                          child: CircleAvatar(
+                                            backgroundImage: NetworkImage(
+                                                snapshot.data!['imageURL']),
+                                            radius: 30,
+                                          ),
+                                        )
+                                      : GestureDetector(
+                                          onTap: () async {
+                                            NavigatorController.jumpToTab(2);
+                                          },
+                                          child: SvgPicture.asset(bee));
+                                }),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 15.h,
+                        ),
+                        Showcase.withWidget(
+                          targetBorderRadius: BorderRadius.circular(999),
+                          key: isHomeFirstTime
+                              ? TooltipKeys.showCase2
+                              : new GlobalKey<State<StatefulWidget>>(),
+                          container: Container(
+                            child: Column(
                               children: [
-                                Image.network(
-                                  bargain.itemImage,
-                                  width: 50,
-                                  height: 50,
+                                Container(
+                                  height: 11,
+                                  width: 13,
+                                  child: CustomPaint(
+                                    painter: TrianglePainter(
+                                      strokeColor: purple70,
+                                      strokeWidth: 1,
+                                      paintingStyle: PaintingStyle.fill,
+                                    ),
+                                  ),
                                 ),
-                                SizedBox(
-                                  width: 15.w,
+                                Container(
+                                  padding: EdgeInsets.all(15),
+                                  width: 180.w,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8.r),
+                                    color: purple70,
+                                  ),
+                                  child: Column(children: [
+                                    Text(
+                                      "ItIsSmartSearch".tr(),
+                                      maxLines: 4,
+                                      style: TextStyles.textViewRegular13
+                                          .copyWith(color: white),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        ShowCaseWidget.of(builder).next();
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            "Next",
+                                            style: TextStyles.textViewSemiBold14
+                                                .copyWith(color: white),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: white,
+                                            size: 15.sp,
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ]),
                                 ),
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      bargain.bestValueSize,
-                                      style: TextStyles.textViewSemiBold16,
-                                    ),
-                                    SizedBox(
-                                      height: 10.h,
-                                    ),
-                                    Text(
-                                      "\€" +
-                                          (bargain.bestValueSize ==
-                                                  bargain.size1
-                                              ? bargain.price1
-                                              : bargain
-                                                  .price2), //should be the best price
-                                      style: TextStyles.textViewMedium12
-                                          .copyWith(
-                                              color: const Color.fromRGBO(
-                                                  108, 197, 29, 1)),
-                                    ),
-                                    SizedBox(
-                                      height: 5.w,
-                                    ),
-                                    Text(
-                                      bargain.subCategory,
-                                      style: TextStyles.textViewRegular12
-                                          .copyWith(color: Colors.grey),
-                                    ),
-                                  ],
-                                )
                               ],
                             ),
                           ),
-                        );
-                      }).toList());
-                }),
+                          height: 50,
+                          width: 50,
+                          child: GenericField(
+                            isFilled: true,
+                            onTap: () async {
+                              SharedPreferences pref =
+                                  await SharedPreferences.getInstance();
+                              return showSearch(
+                                  context: context,
+                                  delegate: MySearchDelegate(pref, true));
+                            },
+                            prefixIcon: Icon(Icons.search),
+                            borderRaduis: 999,
+                            hintText: LocaleKeys.whatAreYouLookingFor.tr(),
+                            hintStyle: TextStyles.textViewSemiBold14
+                                .copyWith(color: gunmetal),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              LocaleKeys.chatlists.tr(),
+                              style: TextStylesInter.textViewSemiBold16
+                                  .copyWith(color: black2),
+                            ),
+                            TextButton(
+                                onPressed: () {
+                                  Provider.of<ChatlistsProvider>(context,
+                                          listen: false)
+                                      .chatlistsView = ChatlistsView.LISTVIEW;
+                                  Provider.of<ChatlistsProvider>(context,
+                                          listen: false)
+                                      .notifyListeners();
+                                  NavigatorController.jumpToTab(1);
+                                },
+                                child: Text(
+                                  'See all',
+                                  style: textButtonStyle,
+                                ))
+                          ],
+                        ),
+                        Showcase.withWidget(
+                          key: isHomeFirstTime
+                              ? TooltipKeys.showCase3
+                              : new GlobalKey<State<StatefulWidget>>(),
+                          targetBorderRadius: BorderRadius.circular(8.r),
+                          /*       onBarrierClick: () => turnOffFirstTime(),
+                          onTargetClick: () => turnOffFirstTime(),
+                          onTargetDoubleTap: () => turnOffFirstTime(), */
+                          onBarrierClick: () async {
+                            var id = await Provider.of<ChatlistsProvider>(
+                                    context,
+                                    listen: false)
+                                .createChatList([]);
+                            await Provider.of<ChatlistsProvider>(context, listen: false).shareItemAsMessage(
+                                itemDescription:
+                                    Provider.of<ProductsProvider>(context, listen: false)
+                                        .hoogvlietProducts
+                                        .elementAt(20)
+                                        .description,
+                                storeName: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .storeName,
+                                itemId: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .id,
+                                itemName: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .name,
+                                itemImage: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .imageURL,
+                                itemSize: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .size,
+                                itemPrice: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .price,
+                                itemOldPrice: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .oldPrice,
+                                listId: id);
+                            setState(() {
+                              isHomeFirstTime = false;
+                            });
+                            await pushNewScreen(context,
+                                screen: ChatListViewScreen(
+                                  // updateList: updateList,
+                                  listId: id,
+                                  isListView: false,
+                                ),
+                                withNavBar: false);
+
+                            NavigatorController.jumpToTab(1);
+                            ShowCaseWidget.of(builder).next();
+                          },
+                          onTargetClick: () async {
+                            var id = await Provider.of<ChatlistsProvider>(
+                                    context,
+                                    listen: false)
+                                .createChatList([]);
+                            await Provider.of<ChatlistsProvider>(context, listen: false).shareItemAsMessage(
+                                itemDescription:
+                                    Provider.of<ProductsProvider>(context, listen: false)
+                                        .hoogvlietProducts
+                                        .elementAt(20)
+                                        .description,
+                                storeName: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .storeName,
+                                itemId: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .id,
+                                itemName: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .name,
+                                itemImage: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .imageURL,
+                                itemSize: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .size,
+                                itemPrice: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .price,
+                                itemOldPrice: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .oldPrice,
+                                listId: id);
+                            setState(() {
+                              isHomeFirstTime = false;
+                            });
+                            await pushNewScreen(context,
+                                screen: ChatListViewScreen(
+                                  // updateList: updateList,
+                                  listId: id,
+                                  isListView: false,
+                                ),
+                                withNavBar: false);
+
+                            NavigatorController.jumpToTab(1);
+
+                            ShowCaseWidget.of(builder).next();
+                          },
+                          onTargetDoubleTap: () async {
+                            var id = await Provider.of<ChatlistsProvider>(
+                                    context,
+                                    listen: false)
+                                .createChatList([]);
+                            await Provider.of<ChatlistsProvider>(context, listen: false).shareItemAsMessage(
+                                itemDescription:
+                                    Provider.of<ProductsProvider>(context, listen: false)
+                                        .hoogvlietProducts
+                                        .elementAt(20)
+                                        .description,
+                                storeName: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .storeName,
+                                itemId: Provider.of<ProductsProvider>(context, listen: false)
+                                    .hoogvlietProducts
+                                    .elementAt(20)
+                                    .id,
+                                itemName: Provider.of<ProductsProvider>(context, listen: false)
+                                    .albertProducts
+                                    .elementAt(20)
+                                    .name,
+                                itemImage: Provider.of<ProductsProvider>(context, listen: false)
+                                    .albertProducts
+                                    .elementAt(20)
+                                    .imageURL,
+                                itemSize: Provider.of<ProductsProvider>(context, listen: false)
+                                    .albertProducts
+                                    .elementAt(20)
+                                    .size,
+                                itemPrice: Provider.of<ProductsProvider>(context, listen: false)
+                                    .albertProducts
+                                    .elementAt(20)
+                                    .price,
+                                itemOldPrice: Provider.of<ProductsProvider>(context, listen: false)
+                                    .albertProducts
+                                    .elementAt(20)
+                                    .oldPrice,
+                                listId: id);
+                            setState(() {
+                              isHomeFirstTime = false;
+                            });
+                            await pushNewScreen(context,
+                                screen: ChatListViewScreen(
+                                  // updateList: updateList,
+                                  listId: id,
+                                  isListView: false,
+                                ),
+                                withNavBar: false);
+
+                            NavigatorController.jumpToTab(1);
+                            ShowCaseWidget.of(builder).next();
+                          },
+                          container: Column(
+                            children: [
+                              Container(
+                                height: 11,
+                                width: 13,
+                                child: CustomPaint(
+                                  painter: TrianglePainter(
+                                    strokeColor: purple70,
+                                    strokeWidth: 1,
+                                    paintingStyle: PaintingStyle.fill,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 15),
+                                width: ScreenUtil().screenWidth * 0.95,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8.r),
+                                  color: purple70,
+                                ),
+                                child: Column(children: [
+                                  Text(
+                                    "StartHereTo".tr(),
+                                    maxLines: 4,
+                                    style: TextStyles.textViewRegular13
+                                        .copyWith(color: white),
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Image.asset(personAva),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 5),
+                                            margin: const EdgeInsets.symmetric(
+                                                vertical: 15, horizontal: 8),
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.only(
+                                                topRight:
+                                                    const Radius.circular(18),
+                                                topLeft:
+                                                    const Radius.circular(18),
+                                                bottomLeft:
+                                                    const Radius.circular(0),
+                                                bottomRight:
+                                                    const Radius.circular(18),
+                                              ),
+                                              color: const Color.fromRGBO(
+                                                  233, 233, 235, 1),
+                                            ),
+                                            child: Text(
+                                              "Got any ideas for the plan",
+                                              style: TextStyles
+                                                  .textViewRegular16
+                                                  .copyWith(
+                                                      color: Colors.black),
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ),
+                                          SvgPicture.asset(whiteAdd),
+                                          Text(
+                                            "  Add to list",
+                                            style: TextStyles.textViewRegular10
+                                                .copyWith(color: white),
+                                          ),
+                                        ],
+                                      ),
+                                      Text(
+                                        "Read 10:02",
+                                        style: TextStyles.textViewRegular10
+                                            .copyWith(color: white),
+                                      ),
+                                    ],
+                                  ),
+                                  GestureDetector(
+                                    onTap: () async {
+                                      var id =
+                                          await Provider.of<ChatlistsProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .createChatList([]);
+                                      await Provider.of<ChatlistsProvider>(context, listen: false).shareItemAsMessage(
+                                          itemDescription:
+                                              Provider.of<ProductsProvider>(context, listen: false)
+                                                  .hoogvlietProducts
+                                                  .elementAt(20)
+                                                  .description,
+                                          storeName: Provider.of<ProductsProvider>(context, listen: false)
+                                              .hoogvlietProducts
+                                              .elementAt(20)
+                                              .storeName,
+                                          itemId: Provider.of<ProductsProvider>(context, listen: false)
+                                              .hoogvlietProducts
+                                              .elementAt(20)
+                                              .id,
+                                          itemName: Provider.of<ProductsProvider>(context, listen: false)
+                                              .hoogvlietProducts
+                                              .elementAt(20)
+                                              .name,
+                                          itemImage: Provider.of<ProductsProvider>(context, listen: false)
+                                              .hoogvlietProducts
+                                              .elementAt(20)
+                                              .imageURL,
+                                          itemSize: Provider.of<ProductsProvider>(context, listen: false)
+                                              .hoogvlietProducts
+                                              .elementAt(20)
+                                              .size,
+                                          itemPrice: Provider.of<ProductsProvider>(context, listen: false)
+                                              .hoogvlietProducts
+                                              .elementAt(20)
+                                              .price,
+                                          itemOldPrice: Provider.of<ProductsProvider>(context, listen: false)
+                                              .hoogvlietProducts
+                                              .elementAt(20)
+                                              .oldPrice,
+                                          listId: id);
+                                      setState(() {
+                                        isHomeFirstTime = false;
+                                      });
+                                      await pushNewScreen(context,
+                                          screen: ChatListViewScreen(
+                                            // updateList: updateList,
+                                            listId: id,
+                                            isListView: false,
+                                          ),
+                                          withNavBar: false);
+
+                                      NavigatorController.jumpToTab(1);
+                                      ShowCaseWidget.of(builder).next();
+                                    },
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        Text(
+                                          "Next",
+                                          style: TextStyles.textViewSemiBold14
+                                              .copyWith(color: white),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_forward_ios,
+                                          color: white,
+                                          size: 15.sp,
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ]),
+                              ),
+                            ],
+                          ),
+                          height: 110.h,
+                          width: ScreenUtil().screenWidth * 0.95,
+                          child: FutureBuilder(
+                              future: getAllListsFuture,
+                              builder:
+                                  (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Shimmer(
+                                      duration: Duration(seconds: 2),
+                                      colorOpacity: 0.7,
+                                      child: Container(
+                                        height: 190.h,
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          color: purple10,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                              color: Color.fromRGBO(
+                                                  222, 222, 222, 1),
+                                              width: 0.5),
+                                        ),
+                                      ));
+                                }
+                                var allLists = snapshot.data?.docs ?? [];
+                                if (!snapshot.hasData ||
+                                    allLists.isEmpty ||
+                                    FirebaseAuth.instance.currentUser == null) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      NavigatorController.jumpToTab(1);
+                                    },
+                                    child: Image.asset(
+                                      newChatList,
+                                      // width: 358.w,
+                                      // height: 154.h,
+                                    ),
+                                  );
+                                }
+
+                                List<String> ids = [];
+                                allLists.forEach(
+                                  (element) {
+                                    log(element.data().toString());
+                                    ids.add(element.id);
+                                  },
+                                );
+                                return SizedBox(
+                                  height: 190.h,
+                                  width: double.infinity,
+                                  child: ChatlistSwiper.builder(
+                                    itemCount: allLists.length,
+                                    ids: ids,
+                                    aspectRatio: 1,
+                                    depthFactor: 0.7,
+                                    dx: 130,
+                                    dy: 0,
+                                    paddingStart: 0,
+                                    verticalPadding: 0,
+                                    visiblePageCount: allLists.length,
+                                    widgetBuilder: (index) {
+                                      return Container(
+                                        child: StoreListWidget(
+                                            listId:
+                                                allLists.elementAt(index).id,
+                                            storeImagePath: allLists.elementAt(
+                                                index)['storeImageUrl'],
+                                            listName: allLists
+                                                .elementAt(index)['list_name']),
+                                      );
+                                    },
+                                  ),
+                                );
+                              }),
+                        ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              LocaleKeys.latestBargains.tr(),
+                              style: TextStylesDMSans.textViewBold16
+                                  .copyWith(color: prussian),
+                            ),
+                            TextButton(
+                                onPressed: () {
+                                  AppNavigator.push(
+                                      context: context,
+                                      screen: LatestBargainsScreen());
+                                },
+                                child: Text(
+                                  'See all',
+                                  style: textButtonStyle,
+                                ))
+                          ],
+                        ),
+                        Container(
+                          width: double.infinity,
+                          height: 250.h,
+                          child: Row(
+                            children: [
+                              5.pw,
+                              Flexible(
+                                child: Consumer<ProductsProvider>(
+                                  builder: (ctx, provider, _) {
+                                    var comparisonProducts =
+                                        provider.comparisonProducts;
+                                    if (comparisonProducts.isEmpty) {
+                                      return Container(
+                                        child: ListView(
+                                          shrinkWrap: true,
+                                          scrollDirection: Axis.horizontal,
+                                          children: List<Widget>.generate(
+                                              20,
+                                              (index) => Shimmer(
+                                                    duration:
+                                                        Duration(seconds: 2),
+                                                    colorOpacity: 0.7,
+                                                    child: Container(
+                                                      height: 253.h,
+                                                      width: 174.w,
+                                                      margin:
+                                                          EdgeInsets.symmetric(
+                                                              vertical: 10,
+                                                              horizontal: 5),
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                              horizontal: 15.w),
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        color: purple10,
+                                                      ),
+                                                    ),
+                                                  )),
+                                        ),
+                                      );
+                                    } else {
+                                      return PagedListView<int,
+                                          ComparisonProduct>(
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.horizontal,
+                                        pagingController: _pagingController,
+                                        builderDelegate:
+                                            PagedChildBuilderDelegate<
+                                                    ComparisonProduct>(
+                                                itemBuilder:
+                                                    (context, item, index) =>
+                                                        Row(
+                                                          children: [
+                                                            DiscountItem(
+                                                              inGridView: false,
+                                                              comparisonProduct:
+                                                                  item,
+                                                            ),
+                                                            10.pw
+                                                          ],
+                                                        )),
+                                      );
+                                    }
+
+                                    /*    return ListView.builder(
+                                      itemCount: comparisonProducts.length,
+                                      scrollDirection: Axis.horizontal,
+                                      itemBuilder: (ctx, i) {
+                                        // if (i >= comparisonProducts.length) {
+                                        //   var productId = comparisonProducts[i-1].id;
+                                        //   return Padding(
+                                        //     padding: EdgeInsets.symmetric(horizontal: 32),
+                                        //     child: isLoading
+                                        //         ? Center(
+                                        //         child: CircularProgressIndicator(
+                                        //           color: verdigris,
+                                        //         ))
+                                        //         : Center(
+                                        //       child: Container(
+                                        //         decoration: BoxDecoration(
+                                        //           border:
+                                        //           Border.all(color: Colors.grey),
+                                        //           borderRadius:
+                                        //           BorderRadius.circular(12),
+                                        //         ),
+                                        //         child: InkWell(
+                                        //           onTap: () async {
+                                        //             setState(() {
+                                        //               isLoading = true;
+                                        //             });
+                                        //             print(productId);
+                                        //             await fetch(productId + 1);
+                                        //             setState(() {
+                                        //               isLoading = false;
+                                        //             });
+                                        //           },
+                                        //           borderRadius:
+                                        //           BorderRadius.circular(12),
+                                        //           child: Padding(
+                                        //             padding: const EdgeInsets.all(5),
+                                        //             child: Row(
+                                        //               mainAxisSize: MainAxisSize.min,
+                                        //               children: [
+                                        //                 Text(
+                                        //                   "See more",
+                                        //                   style: TextStyles
+                                        //                       .textViewMedium10
+                                        //                       .copyWith(
+                                        //                       color: prussian),
+                                        //                 ),
+                                        //                 Icon(
+                                        //                   Icons.arrow_forward_ios,
+                                        //                   size: 18,
+                                        //                   color: Colors.grey,
+                                        //                 ),
+                                        //               ],
+                                        //             ),
+                                        //           ),
+                                        //         ),
+                                        //       ),
+                                        //     ),
+                                        //   );
+                                        // } // see more case
+                                        return DiscountItem(
+                                          comparisonProduct: comparisonProducts[i],
+                                        );
+                                      },
+                                    ); */
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Latest Value Bargains",
+                              style: TextStylesDMSans.textViewBold16
+                                  .copyWith(color: prussian),
+                            ),
+                            // TextButton(
+                            //     onPressed: () {},
+                            //     child: Text(
+                            //       'See all',
+                            //       style: textButtonStyle,
+                            //     ))
+                          ],
+                        ),
+                        Container(
+                          height: 150.h,
+                          child: Consumer<ProductsProvider>(
+                              builder: (context, provider, _) {
+                            bestValueBargains = provider.bestValueBargains;
+                            print(bestValueBargains.length);
+                            // print(bestValueBargains.length);
+                            if (bestValueBargains.isEmpty) {
+                              return Container(
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  children: List<Widget>.generate(
+                                      20,
+                                      (index) => Shimmer(
+                                            duration: Duration(seconds: 2),
+                                            colorOpacity: 0.7,
+                                            child: Container(
+                                              height: 87.h,
+                                              width: 172.w,
+                                              margin: EdgeInsets.symmetric(
+                                                  vertical: 10, horizontal: 5),
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 15.w),
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                color: purple10,
+                                              ),
+                                            ),
+                                          )),
+                                ),
+                              );
+                            }
+                            return Container(
+                              child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: bestValueBargains.map((bargain) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        AppNavigator.push(
+                                            context: context,
+                                            screen: ProductDetailScreen(
+                                              comparisonId: -1,
+                                              productId: bargain.itemId,
+                                              storeName: bargain.store,
+                                              productName: bargain.itemName,
+                                              imageURL: bargain.itemImage,
+                                              description: bargain.description,
+                                              price1: double.tryParse(
+                                                      bargain.price1) ??
+                                                  0,
+                                              price2: double.tryParse(
+                                                      bargain.price2) ??
+                                                  0,
+                                              oldPrice: bargain.oldPrice,
+                                              size1: bargain.size1,
+                                              size2: bargain.size2,
+                                            ));
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.all(10),
+                                        margin: EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                                color: shadowColor,
+                                                blurRadius: 10,
+                                                offset: Offset(0, -1),
+                                                blurStyle: BlurStyle.solid),
+                                            BoxShadow(
+                                                color: shadowColor,
+                                                blurRadius: 10,
+                                                offset: Offset(0, 5),
+                                                blurStyle: BlurStyle.solid),
+                                          ],
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Image.network(
+                                              bargain.itemImage,
+                                              width: 50,
+                                              height: 50,
+                                            ),
+                                            SizedBox(
+                                              width: 15.w,
+                                            ),
+                                            Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  bargain.bestValueSize,
+                                                  style: TextStyles
+                                                      .textViewSemiBold16,
+                                                ),
+                                                SizedBox(
+                                                  height: 10.h,
+                                                ),
+                                                Text(
+                                                  "\€" +
+                                                      (bargain.bestValueSize ==
+                                                              bargain.size1
+                                                          ? bargain.price1
+                                                          : bargain
+                                                              .price2), //should be the best price
+                                                  style: TextStyles
+                                                      .textViewMedium12
+                                                      .copyWith(
+                                                          color: const Color
+                                                                  .fromRGBO(
+                                                              108, 197, 29, 1)),
+                                                ),
+                                                SizedBox(
+                                                  height: 5.w,
+                                                ),
+                                                Text(
+                                                  bargain.subCategory,
+                                                  style: TextStyles
+                                                      .textViewRegular12
+                                                      .copyWith(
+                                                          color: Colors.grey),
+                                                ),
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }).toList()),
+                            );
+                          }),
+                        ),
+                        10.ph,
+                      ],
+                    ),
+                  ),
+                ),
               ),
-              10.ph,
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      }),
     );
+  }
+
+  Future<dynamic> showWelcomeDialog(
+      BuildContext context, BuildContext builder) {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          return Dialog(
+            alignment: Alignment.center,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            child: Container(
+              padding: EdgeInsets.all(15),
+              width: ScreenUtil().screenWidth * 0.95,
+              height: 200.h,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.r),
+                color: purple70,
+              ),
+              child: Column(children: [
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        LocaleKeys.welcome.tr() + "!",
+                        style: TextStyles.textViewSemiBold24
+                            .copyWith(color: white),
+                      ),
+                      GestureDetector(
+                          onTap: () {
+                            AppNavigator.pop(context: context);
+                            turnOffFirstTime();
+                          },
+                          child: SvgPicture.asset(closeCircle))
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Text(
+                    "QuickTuto".tr(),
+                    maxLines: 4,
+                    style: TextStyles.textViewRegular13.copyWith(color: white),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    AppNavigator.pop(context: context);
+                    try {
+                      ShowCaseWidget.of(builder).startShowCase([
+                        TooltipKeys.showCase1,
+                        TooltipKeys.showCase2,
+                        TooltipKeys.showCase3
+                      ]);
+                    } catch (e) {
+                      log(e.toString());
+                    }
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        LocaleKeys.next.tr(),
+                        style: TextStyles.textViewSemiBold14
+                            .copyWith(color: white),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: white,
+                        size: 15.sp,
+                      )
+                    ],
+                  ),
+                )
+              ]),
+            ),
+          );
+        });
   }
 
   @override
@@ -624,8 +1230,8 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  Future fetch(int startingIndex) {
+/*   Future fetch(int startingIndex) {
     return Provider.of<ProductsProvider>(context, listen: false)
         .getProducts(startingIndex);
-  }
+  } */
 }

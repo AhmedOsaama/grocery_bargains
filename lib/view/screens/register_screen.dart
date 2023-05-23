@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:bargainb/utils/mixpanel_utils.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/otp_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
-import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -41,7 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String username = "";
   String email = "";
   String password = "";
-  bool _isLoading = false;
+
   bool isLogin = true;
   bool isObscured = true;
 
@@ -58,14 +59,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
     pref.setBool("rememberMe", rememberMe);
   }
 
+  Future<void> saveFirstTimePref() async {
+    var pref = await SharedPreferences.getInstance();
+    pref.setBool("firstTime", false);
+  }
+
   Future<void> _submitAuthForm(String email, String username,
       String phoneNumber, BuildContext ctx) async {
-    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
+    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
     try {
       if (!isLogin) {
-        setState(() {
-          _isLoading = true;
-        });
         // userCredential = await _auth.createUserWithEmailAndPassword(
         //     email: email, password: password);
         var result = await FirebaseFirestore.instance
@@ -75,8 +78,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (result.docs.isNotEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,
-              content: Text(
-                  "Phone number is already registered with another account. Please enter a different phone number")));
+              content: Text("PhoneNumberAlready".tr())));
           return;
         }
         var userCredential = await loginWithPhoneNumber(phoneNumber);
@@ -88,12 +90,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await saveUserData(userCredential);
 
         saveRememberMePref();
+        //saveFirstTimePref();
         AppNavigator.pushReplacement(
             context: context, screen: OnBoardingScreen());
       } else {
-        setState(() {
-          _isLoading = true;
-        });
         // userCredential = await _auth.signInWithEmailAndPassword(
         //     email: email, password: phoneNumber);
         print("Logging in...");
@@ -105,8 +105,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           //phone number doesn't exist
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,
-              content: Text(
-                  "This phone number doesn't appear to be associated with any account. Please enter a different phone number")));
+              content: Text("ThisPhoneNumber".tr())));
           return;
         }
         var userCredential = await loginWithPhoneNumber(phoneNumber);
@@ -115,7 +114,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
         print("logged in");
         saveRememberMePref();
-        //   AppNavigator.pushReplacement(context: context, screen: HomeScreen());
+        //saveFirstTimePref();
         AppNavigator.pushReplacement(context: context, screen: MainScreen());
       }
     } on FirebaseAuthException catch (error) {
@@ -129,9 +128,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         content: Text(message),
         backgroundColor: Theme.of(ctx).colorScheme.error,
       ));
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
@@ -231,7 +227,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   decoration: BoxDecoration(boxShadow: Utils.boxShadow),
                   child: IntlPhoneField(
                     disableLengthCheck: true,
-                    initialCountryCode: "EG",
+                    initialCountryCode: "NL",
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
                             borderSide: BorderSide(
@@ -255,7 +251,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             borderRadius: BorderRadius.circular(10)),
                         fillColor: Colors.white,
                         filled: true,
-                        hintText: "+91 90001 90001",
+                        hintText: "789 123 456",
                         hintStyle: TextStylesInter.textViewRegular16),
                     // inputFormatters: [],
                     onSaved: (phone) {
@@ -264,8 +260,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) {
-                      print(value?.number);
-                      return Validator.phoneValidator(value?.number);
+                      return Validator.phoneValidator(value!.number);
                     },
                   ),
                 ),
@@ -440,13 +435,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     FocusScope.of(context).unfocus();
     if (isValid!) {
       _formKey.currentState?.save();
-      await _submitAuthForm(email, username, phoneNumber, context)
-          .timeout(Duration(seconds: 180),
-          // onTimeout: () {
+      await _submitAuthForm(email, username, phoneNumber, context).timeout(
+        Duration(seconds: 180),
+        // onTimeout: () {
         // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         //     content: Text(
         //         "Failed to login or signup, Please check your internet and try again later")));
-      // }
+        // }
       );
     }
   }
@@ -464,14 +459,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           completer.complete(userCredential);
         },
         verificationFailed: (e) {
-          print("Verification failed");
-          print(e.toString());
-          print(e.plugin);
-          print(e.message);
-          print(e.code);
-          if (e.code == 'invalid-phone-number') {
-            print('The provided phone number is not valid.');
-          }
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(e.message.toString())));
           completer.complete(userCredential);
         },
         forceResendingToken: resendToken,
@@ -485,10 +474,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
           PhoneAuthCredential credential = PhoneAuthProvider.credential(
               verificationId: verificationId, smsCode: smsCode);
+          try {
+            userCredential = await _auth.signInWithCredential(credential);
+            log("completed");
+            log(userCredential.toString());
+          } on FirebaseAuthException catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                backgroundColor: Theme.of(context).colorScheme.error,
+                content: Text(e.message ?? "invalidOTP".tr())));
+          }
 
-          userCredential = await _auth.signInWithCredential(credential);
           print("Signed In...");
-          print(userCredential);
+
           completer.complete(userCredential);
         },
         timeout: const Duration(seconds: 30),
@@ -501,12 +498,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future showOtpDialog() async {
     return await showDialog(
-            context: context,
-            builder: (ctx) => OtpDialog(phoneNumber: phoneNumber, resendOtp: () => _submitAuthForm(email, username, phoneNumber, context)));
+        context: context,
+        builder: (ctx) => OtpDialog(
+              phoneNumber: phoneNumber,
+              resendOtp: () =>
+                  _submitAuthForm(email, username, phoneNumber, context),
+              isSignUp: true,
+            ));
   }
 
   Future<void> loginWithSocial(BuildContext context, bool isApple) async {
     late UserCredential userCredential;
+    String providerName;
     if (isApple) {
       final credential = await SignInWithApple.getAppleIDCredential(
         scopes: [
@@ -522,10 +525,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       userCredential =
           await FirebaseAuth.instance.signInWithCredential(appleCredential);
       print(userCredential);
+      providerName = 'Apple';
     } else {
       userCredential =
           await Provider.of<GoogleSignInProvider>(context, listen: false)
               .loginWithGoogle();
+      providerName = "Google";
     }
     if (userCredential.user != null) {
       var userSnapshot = await FirebaseFirestore.instance
@@ -548,11 +553,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await saveUserData(userCredential);
       }
       saveRememberMePref();
+      MixpanelUtils().createUser(
+          userName: "TEST NAME",
+          email: userCredential.user!.email.toString(),
+          id: userCredential.user!.uid);
+      MixpanelUtils().trackSocialLogin(providerName: providerName);
 
       var pref = await SharedPreferences.getInstance();
       var isFirstTime = pref.getBool("firstTime") ?? true;
+      print("IS FIRST TIME:" + isFirstTime.toString());
       if (isFirstTime) {
-        pref.setBool("firstTime", false);
+        // pref.setBool("firstTime", false);
 
         AppNavigator.pushReplacement(
             context: context, screen: OnBoardingScreen());
