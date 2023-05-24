@@ -235,5 +235,11 @@
   "LastStep"                  : "Last step",
   "Back"                  : "Back",
   "DidntGetCode"                  : "Didn't get the code ?  ",
-  "Resend"                  : "Resend"
+  "Resend"                  : "Resend",
+
+
+
+  "allCategories"                  : "All categories",
+  "HelloGuest"                  : "Hello, Guest!",
+  "Tutorial"                  : "Tutorial"
 }

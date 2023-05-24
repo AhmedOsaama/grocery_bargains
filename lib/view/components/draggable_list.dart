@@ -589,6 +589,8 @@ class _ItemState extends State<Item> {
                                           width: 150.w,
                                           child: Text(
                                             "${widget.data.size}",
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                             style: TextStyles.textViewLight12
                                                 .copyWith(
                                                     color: prussian,

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:bargainb/utils/mixpanel_utils.dart';
@@ -476,8 +475,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               verificationId: verificationId, smsCode: smsCode);
           try {
             userCredential = await _auth.signInWithCredential(credential);
-            log("completed");
-            log(userCredential.toString());
           } on FirebaseAuthException catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 backgroundColor: Theme.of(context).colorScheme.error,

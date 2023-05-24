@@ -8,6 +8,8 @@ import 'package:bargainb/utils/triangle_painter.dart';
 import 'package:bargainb/view/components/chatlist_swiper.dart';
 import 'package:bargainb/view/components/generic_field.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
+import 'package:bargainb/view/screens/all_categories_screen.dart';
+import 'package:bargainb/view/screens/categories_screen.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:bargainb/view/screens/latest_bargains_screen.dart';
@@ -65,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
   List<BestValueItem> bestValueBargains = [];
   int startingIndex = 0;
   bool isHomeFirstTime = false;
-
+  bool dialogOpened = false;
   Future<Null> getFirstTime() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -131,10 +133,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return ShowCaseWidget(
       builder: Builder(builder: (builder) {
-        if (isHomeFirstTime) {
+        if (isHomeFirstTime && !dialogOpened) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             showWelcomeDialog(context, builder);
           });
+          dialogOpened = true;
         }
         return Scaffold(
           resizeToAvoidBottomInset: true,
@@ -205,12 +208,12 @@ class _HomeScreenState extends State<HomeScreen> {
           body: SafeArea(
             child: Container(
               /*  decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                begin: Alignment(0, 0.2),
-                end: Alignment.bottomCenter,
-                //stops: [0.5, 0.7, 0.9, 1],
-                colors: [white, shadowColor, shadowColor],
-              )), */
+                      gradient: LinearGradient(
+                    begin: Alignment(0, 0.2),
+                    end: Alignment.bottomCenter,
+                    //stops: [0.5, 0.7, 0.9, 1],
+                    colors: [white, shadowColor, shadowColor],
+                  )), */
               child: RefreshIndicator(
                 onRefresh: () {
                   setState(() {
@@ -273,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     return Text(
                                       style: TextStylesInter.textViewSemiBold24
                                           .copyWith(color: mainPurple),
-                                      'Hello, Guest!',
+                                      'HelloGuest'.tr(),
                                     );
                                   }
                                 }),
@@ -288,11 +291,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                                   return snapshot.data!['imageURL'] != ""
                                       ? GestureDetector(
-                                          onTap: () async {
-                                            SharedPreferences.getInstance()
-                                                .then((value) {
-                                              value.remove("firstTime"); //TODO
-                                            });
+                                          onTap: () {
                                             NavigatorController.jumpToTab(2);
                                           },
                                           child: CircleAvatar(
@@ -354,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             MainAxisAlignment.end,
                                         children: [
                                           Text(
-                                            "Next",
+                                            "Next".tr(),
                                             style: TextStyles.textViewSemiBold14
                                                 .copyWith(color: white),
                                           ),
@@ -396,6 +395,87 @@ class _HomeScreenState extends State<HomeScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
+                              "allCategories".tr(),
+                              style: TextStylesDMSans.textViewBold16
+                                  .copyWith(color: prussian),
+                            ),
+                            TextButton(
+                                onPressed: () {
+                                  pushNewScreen(context,
+                                      screen: AllCategoriesScreen(),
+                                      withNavBar: true);
+                                },
+                                child: Text(
+                                  'seeAll'.tr(),
+                                  style: textButtonStyle,
+                                ))
+                          ],
+                        ),
+                        Provider.of<ProductsProvider>(context, listen: true)
+                                .categories
+                                .isEmpty
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : Container(
+                                height: ScreenUtil().screenHeight * 0.14,
+                                child: ListView(
+                                    scrollDirection: Axis.horizontal,
+                                    children: Provider.of<ProductsProvider>(
+                                            context,
+                                            listen: true)
+                                        .categories
+                                        .map((element) {
+                                      return Padding(
+                                        padding: EdgeInsets.only(
+                                          left: Provider.of<ProductsProvider>(
+                                                          context,
+                                                          listen: true)
+                                                      .categories
+                                                      .first ==
+                                                  element
+                                              ? 0
+                                              : 10.0,
+                                        ),
+                                        child: GestureDetector(
+                                          onTap: () => pushNewScreen(context,
+                                              screen: CategoriesScreen(
+                                                category: element.category,
+                                              ),
+                                              withNavBar: true),
+                                          child: SizedBox(
+                                            width: 71.w,
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Image.asset(
+                                                  element.image,
+                                                  width: 65.w,
+                                                  height: 65.h,
+                                                ),
+                                                Text(
+                                                  element.category,
+                                                  style: TextStyles
+                                                      .textViewMedium10
+                                                      .copyWith(
+                                                          color: gunmetal),
+                                                  textAlign: TextAlign.center,
+                                                  maxLines: 3,
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList()),
+                              ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
                               LocaleKeys.chatlists.tr(),
                               style: TextStylesInter.textViewSemiBold16
                                   .copyWith(color: black2),
@@ -411,7 +491,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   NavigatorController.jumpToTab(1);
                                 },
                                 child: Text(
-                                  'See all',
+                                  'seeAll'.tr(),
                                   style: textButtonStyle,
                                 ))
                           ],
@@ -421,185 +501,18 @@ class _HomeScreenState extends State<HomeScreen> {
                               ? TooltipKeys.showCase3
                               : new GlobalKey<State<StatefulWidget>>(),
                           targetBorderRadius: BorderRadius.circular(8.r),
-                          /*       onBarrierClick: () => turnOffFirstTime(),
-                          onTargetClick: () => turnOffFirstTime(),
-                          onTargetDoubleTap: () => turnOffFirstTime(), */
+                          tooltipPosition: TooltipPosition.top,
                           onBarrierClick: () async {
-                            var id = await Provider.of<ChatlistsProvider>(
-                                    context,
-                                    listen: false)
-                                .createChatList([]);
-                            await Provider.of<ChatlistsProvider>(context, listen: false).shareItemAsMessage(
-                                itemDescription:
-                                    Provider.of<ProductsProvider>(context, listen: false)
-                                        .hoogvlietProducts
-                                        .elementAt(20)
-                                        .description,
-                                storeName: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .storeName,
-                                itemId: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .id,
-                                itemName: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .name,
-                                itemImage: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .imageURL,
-                                itemSize: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .size,
-                                itemPrice: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .price,
-                                itemOldPrice: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .oldPrice,
-                                listId: id);
-                            setState(() {
-                              isHomeFirstTime = false;
-                            });
-                            await pushNewScreen(context,
-                                screen: ChatListViewScreen(
-                                  // updateList: updateList,
-                                  listId: id,
-                                  isListView: false,
-                                ),
-                                withNavBar: false);
-
-                            NavigatorController.jumpToTab(1);
-                            ShowCaseWidget.of(builder).next();
+                            await addRandomProduct(builder);
                           },
                           onTargetClick: () async {
-                            var id = await Provider.of<ChatlistsProvider>(
-                                    context,
-                                    listen: false)
-                                .createChatList([]);
-                            await Provider.of<ChatlistsProvider>(context, listen: false).shareItemAsMessage(
-                                itemDescription:
-                                    Provider.of<ProductsProvider>(context, listen: false)
-                                        .hoogvlietProducts
-                                        .elementAt(20)
-                                        .description,
-                                storeName: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .storeName,
-                                itemId: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .id,
-                                itemName: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .name,
-                                itemImage: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .imageURL,
-                                itemSize: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .size,
-                                itemPrice: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .price,
-                                itemOldPrice: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .oldPrice,
-                                listId: id);
-                            setState(() {
-                              isHomeFirstTime = false;
-                            });
-                            await pushNewScreen(context,
-                                screen: ChatListViewScreen(
-                                  // updateList: updateList,
-                                  listId: id,
-                                  isListView: false,
-                                ),
-                                withNavBar: false);
-
-                            NavigatorController.jumpToTab(1);
-
-                            ShowCaseWidget.of(builder).next();
+                            await addRandomProduct(builder);
                           },
                           onTargetDoubleTap: () async {
-                            var id = await Provider.of<ChatlistsProvider>(
-                                    context,
-                                    listen: false)
-                                .createChatList([]);
-                            await Provider.of<ChatlistsProvider>(context, listen: false).shareItemAsMessage(
-                                itemDescription:
-                                    Provider.of<ProductsProvider>(context, listen: false)
-                                        .hoogvlietProducts
-                                        .elementAt(20)
-                                        .description,
-                                storeName: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .storeName,
-                                itemId: Provider.of<ProductsProvider>(context, listen: false)
-                                    .hoogvlietProducts
-                                    .elementAt(20)
-                                    .id,
-                                itemName: Provider.of<ProductsProvider>(context, listen: false)
-                                    .albertProducts
-                                    .elementAt(20)
-                                    .name,
-                                itemImage: Provider.of<ProductsProvider>(context, listen: false)
-                                    .albertProducts
-                                    .elementAt(20)
-                                    .imageURL,
-                                itemSize: Provider.of<ProductsProvider>(context, listen: false)
-                                    .albertProducts
-                                    .elementAt(20)
-                                    .size,
-                                itemPrice: Provider.of<ProductsProvider>(context, listen: false)
-                                    .albertProducts
-                                    .elementAt(20)
-                                    .price,
-                                itemOldPrice: Provider.of<ProductsProvider>(context, listen: false)
-                                    .albertProducts
-                                    .elementAt(20)
-                                    .oldPrice,
-                                listId: id);
-                            setState(() {
-                              isHomeFirstTime = false;
-                            });
-                            await pushNewScreen(context,
-                                screen: ChatListViewScreen(
-                                  // updateList: updateList,
-                                  listId: id,
-                                  isListView: false,
-                                ),
-                                withNavBar: false);
-
-                            NavigatorController.jumpToTab(1);
-                            ShowCaseWidget.of(builder).next();
+                            await addRandomProduct(builder);
                           },
                           container: Column(
                             children: [
-                              Container(
-                                height: 11,
-                                width: 13,
-                                child: CustomPaint(
-                                  painter: TrianglePainter(
-                                    strokeColor: purple70,
-                                    strokeWidth: 1,
-                                    paintingStyle: PaintingStyle.fill,
-                                  ),
-                                ),
-                              ),
                               Container(
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 15),
@@ -667,59 +580,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   ),
                                   GestureDetector(
                                     onTap: () async {
-                                      var id =
-                                          await Provider.of<ChatlistsProvider>(
-                                                  context,
-                                                  listen: false)
-                                              .createChatList([]);
-                                      await Provider.of<ChatlistsProvider>(context, listen: false).shareItemAsMessage(
-                                          itemDescription:
-                                              Provider.of<ProductsProvider>(context, listen: false)
-                                                  .hoogvlietProducts
-                                                  .elementAt(20)
-                                                  .description,
-                                          storeName: Provider.of<ProductsProvider>(context, listen: false)
-                                              .hoogvlietProducts
-                                              .elementAt(20)
-                                              .storeName,
-                                          itemId: Provider.of<ProductsProvider>(context, listen: false)
-                                              .hoogvlietProducts
-                                              .elementAt(20)
-                                              .id,
-                                          itemName: Provider.of<ProductsProvider>(context, listen: false)
-                                              .hoogvlietProducts
-                                              .elementAt(20)
-                                              .name,
-                                          itemImage: Provider.of<ProductsProvider>(context, listen: false)
-                                              .hoogvlietProducts
-                                              .elementAt(20)
-                                              .imageURL,
-                                          itemSize: Provider.of<ProductsProvider>(context, listen: false)
-                                              .hoogvlietProducts
-                                              .elementAt(20)
-                                              .size,
-                                          itemPrice: Provider.of<ProductsProvider>(context, listen: false)
-                                              .hoogvlietProducts
-                                              .elementAt(20)
-                                              .price,
-                                          itemOldPrice: Provider.of<ProductsProvider>(context, listen: false)
-                                              .hoogvlietProducts
-                                              .elementAt(20)
-                                              .oldPrice,
-                                          listId: id);
-                                      setState(() {
-                                        isHomeFirstTime = false;
-                                      });
-                                      await pushNewScreen(context,
-                                          screen: ChatListViewScreen(
-                                            // updateList: updateList,
-                                            listId: id,
-                                            isListView: false,
-                                          ),
-                                          withNavBar: false);
-
-                                      NavigatorController.jumpToTab(1);
-                                      ShowCaseWidget.of(builder).next();
+                                      await addRandomProduct(builder);
                                     },
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
@@ -738,6 +599,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   )
                                 ]),
+                              ),
+                              Container(
+                                height: 11,
+                                width: 13,
+                                child: CustomPaint(
+                                  painter: DownTrianglePainter(
+                                    strokeColor: purple70,
+                                    strokeWidth: 1,
+                                    paintingStyle: PaintingStyle.fill,
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -785,7 +657,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 List<String> ids = [];
                                 allLists.forEach(
                                   (element) {
-                                    log(element.data().toString());
                                     ids.add(element.id);
                                   },
                                 );
@@ -835,7 +706,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       screen: LatestBargainsScreen());
                                 },
                                 child: Text(
-                                  'See all',
+                                  'seeAll'.tr(),
                                   style: textButtonStyle,
                                 ))
                           ],
@@ -905,82 +776,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         )),
                                       );
                                     }
-
-                                    /*    return ListView.builder(
-                                      itemCount: comparisonProducts.length,
-                                      scrollDirection: Axis.horizontal,
-                                      itemBuilder: (ctx, i) {
-                                        // if (i >= comparisonProducts.length) {
-                                        //   var productId = comparisonProducts[i-1].id;
-                                        //   return Padding(
-                                        //     padding: EdgeInsets.symmetric(horizontal: 32),
-                                        //     child: isLoading
-                                        //         ? Center(
-                                        //         child: CircularProgressIndicator(
-                                        //           color: verdigris,
-                                        //         ))
-                                        //         : Center(
-                                        //       child: Container(
-                                        //         decoration: BoxDecoration(
-                                        //           border:
-                                        //           Border.all(color: Colors.grey),
-                                        //           borderRadius:
-                                        //           BorderRadius.circular(12),
-                                        //         ),
-                                        //         child: InkWell(
-                                        //           onTap: () async {
-                                        //             setState(() {
-                                        //               isLoading = true;
-                                        //             });
-                                        //             print(productId);
-                                        //             await fetch(productId + 1);
-                                        //             setState(() {
-                                        //               isLoading = false;
-                                        //             });
-                                        //           },
-                                        //           borderRadius:
-                                        //           BorderRadius.circular(12),
-                                        //           child: Padding(
-                                        //             padding: const EdgeInsets.all(5),
-                                        //             child: Row(
-                                        //               mainAxisSize: MainAxisSize.min,
-                                        //               children: [
-                                        //                 Text(
-                                        //                   "See more",
-                                        //                   style: TextStyles
-                                        //                       .textViewMedium10
-                                        //                       .copyWith(
-                                        //                       color: prussian),
-                                        //                 ),
-                                        //                 Icon(
-                                        //                   Icons.arrow_forward_ios,
-                                        //                   size: 18,
-                                        //                   color: Colors.grey,
-                                        //                 ),
-                                        //               ],
-                                        //             ),
-                                        //           ),
-                                        //         ),
-                                        //       ),
-                                        //     ),
-                                        //   );
-                                        // } // see more case
-                                        return DiscountItem(
-                                          comparisonProduct: comparisonProducts[i],
-                                        );
-                                      },
-                                    ); */
                                   },
                                 ),
                               ),
                             ],
                           ),
                         ),
+                        SizedBox(
+                          height: 10.h,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              "Latest Value Bargains",
+                              "latestValueBargains".tr(),
                               style: TextStylesDMSans.textViewBold16
                                   .copyWith(color: prussian),
                             ),
@@ -1140,6 +949,73 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       }),
     );
+  }
+
+  Future addRandomProduct(BuildContext builder) async {
+    var id = await Provider.of<ChatlistsProvider>(context, listen: false)
+        .createChatList([]);
+    await Provider.of<ChatlistsProvider>(context, listen: false)
+        .shareItemAsMessage(
+            itemDescription:
+                Provider.of<
+                        ProductsProvider>(context, listen: false)
+                    .hoogvlietProducts
+                    .elementAt(20)
+                    .description,
+            storeName:
+                Provider.of<
+                        ProductsProvider>(context, listen: false)
+                    .hoogvlietProducts
+                    .elementAt(20)
+                    .storeName,
+            itemId:
+                Provider.of<
+                        ProductsProvider>(context, listen: false)
+                    .hoogvlietProducts
+                    .elementAt(20)
+                    .id,
+            itemName:
+                Provider.of<
+                        ProductsProvider>(context, listen: false)
+                    .hoogvlietProducts
+                    .elementAt(20)
+                    .name,
+            itemImage:
+                Provider.of<
+                        ProductsProvider>(context, listen: false)
+                    .hoogvlietProducts
+                    .elementAt(20)
+                    .imageURL,
+            itemSize:
+                Provider.of<
+                        ProductsProvider>(context, listen: false)
+                    .hoogvlietProducts
+                    .elementAt(20)
+                    .size,
+            itemPrice:
+                Provider.of<ProductsProvider>(context, listen: false)
+                    .hoogvlietProducts
+                    .elementAt(20)
+                    .price,
+            itemOldPrice: Provider.of<ProductsProvider>(context, listen: false)
+                .hoogvlietProducts
+                .elementAt(20)
+                .oldPrice,
+            listId: id);
+    setState(() {
+      isHomeFirstTime = false;
+    });
+    await pushNewScreen(context,
+        screen: ChatListViewScreen(
+          // updateList: updateList,
+          listId: id,
+          isListView: false,
+        ),
+        withNavBar: false);
+
+    NavigatorController.jumpToTab(1);
+    ShowCaseWidget.of(builder).next();
+    return Future.value();
   }
 
   Future<dynamic> showWelcomeDialog(

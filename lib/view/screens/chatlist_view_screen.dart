@@ -29,7 +29,6 @@ import 'package:share_plus/share_plus.dart';
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
 import '../components/dotted_container.dart';
-import 'chatlists_screen.dart';
 
 var imagesWidgets = ValueNotifier(<Widget>[]);
 
@@ -73,16 +72,16 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
   @override
   void initState() {
-    if(widget.isNotificationOpened){
+    if (widget.isNotificationOpened) {
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-        await Provider.of<ChatlistsProvider>(context,listen: false).getAllChatlists();
+        await Provider.of<ChatlistsProvider>(context, listen: false)
+            .getAllChatlists();
         chatList = Provider.of<ChatlistsProvider>(context, listen: false)
             .chatlists
             .firstWhere((chatList) => chatList.id == widget.listId);
       });
-    }else {
-      chatList = Provider
-          .of<ChatlistsProvider>(context, listen: false)
+    } else {
+      chatList = Provider.of<ChatlistsProvider>(context, listen: false)
           .chatlists
           .firstWhere((chatList) => chatList.id == widget.listId);
     }
@@ -101,11 +100,11 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
               .doc(widget.listId)
               .update({"userIds": userIds});
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content:
-                  Text("${LocaleKeys.userAddedToChatlist.tr()} ${chatList.name}")));
+              content: Text(
+                  "${LocaleKeys.userAddedToChatlist.tr()} ${chatList.name}")));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-               SnackBar(content: Text(LocaleKeys.userAlreadyExists.tr())));
+              SnackBar(content: Text(LocaleKeys.userAlreadyExists.tr())));
         }
       });
     }
@@ -379,9 +378,11 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                         ),
                         items: [
                           DropdownMenuItem(
-                              value: 'rename', child: Text(LocaleKeys.rename.tr())),
+                              value: 'rename',
+                              child: Text(LocaleKeys.rename.tr())),
                           DropdownMenuItem(
-                              value: 'remove', child: Text(LocaleKeys.remove.tr())),
+                              value: 'remove',
+                              child: Text(LocaleKeys.remove.tr())),
                         ],
                         onChanged: (option) {
                           if (option == 'rename') {
@@ -846,7 +847,10 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                         .copyWith(color: black),
                                   ),
                                 10.ph,
-                                TextButton(onPressed: () => shareListViaDeepLink(), child: Text(LocaleKeys.invitePeopleViaLink.tr()))
+                                TextButton(
+                                    onPressed: () => shareListViaDeepLink(),
+                                    child: Text(
+                                        LocaleKeys.invitePeopleViaLink.tr()))
                               ],
                             ),
                           ),
@@ -930,24 +934,24 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
   shareListViaDeepLink() async {
     BranchUniversalObject buo = BranchUniversalObject(
-      canonicalIdentifier: 'invite_to_list',
-      //canonicalUrl: '',
-      title: chatList.name,
-      imageUrl: 'https://play-lh.googleusercontent.com/u6LMBvrIXH6r1LFQftqjSzebxflasn-nhcoZUlP6DjWHV6fmrwgNFyjJeFwFmckrySHF=w240-h480-rw',
-      contentDescription: 'Hey, I would like to invite you to ${chatList.name} in BargainB',
-      // keywords: ['Plugin', 'Branch', 'Flutter'],
-      publiclyIndex: true,
-      locallyIndex: true,
-      contentMetadata: BranchContentMetaData()..addCustomMetadata('list_id', chatList.id)
-
-    );
+        canonicalIdentifier: 'invite_to_list',
+        //canonicalUrl: '',
+        title: chatList.name,
+        imageUrl:
+            'https://play-lh.googleusercontent.com/u6LMBvrIXH6r1LFQftqjSzebxflasn-nhcoZUlP6DjWHV6fmrwgNFyjJeFwFmckrySHF=w240-h480-rw',
+        contentDescription:
+            'Hey, I would like to invite you to ${chatList.name} in BargainB',
+        // keywords: ['Plugin', 'Branch', 'Flutter'],
+        publiclyIndex: true,
+        locallyIndex: true,
+        contentMetadata: BranchContentMetaData()
+          ..addCustomMetadata('list_id', chatList.id));
     BranchLinkProperties lp = BranchLinkProperties(
-      //alias: 'flutterplugin', //define link url,
+        //alias: 'flutterplugin', //define link url,
         channel: 'facebook',
         feature: 'sharing',
         stage: 'new share',
-        tags: ['one', 'two', 'three']
-    );
+        tags: ['one', 'two', 'three']);
     BranchResponse response =
         await FlutterBranchSdk.getShortUrl(buo: buo, linkProperties: lp);
 

@@ -3,7 +3,9 @@ import 'dart:io';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/providers/google_sign_in_provider.dart';
+import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/subscription_screen.dart';
+import 'package:bargainb/view/screens/support_screen.dart';
 import 'package:bargainb/view/widgets/otp_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -20,9 +22,10 @@ import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/screens/settings_screen.dart';
-import 'package:bargainb/view/screens/support_screen.dart';
 import 'package:bargainb/view/widgets/setting_row.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utils/assets_manager.dart';
 import '../widgets/image_source_picker_dialog.dart';
@@ -80,7 +83,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     if (status.isNotEmpty) {
                       data.addAll({'status': status});
                     }
-                    log(phone);
+
                     if (phone.isNotEmpty && isPhoneEdited) {
                       await verifyPhoneNumber(phone);
                     }
@@ -262,14 +265,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           Divider(),
                           10.ph,
                           SettingRow(
-                            icon: const Icon(
-                              Icons.help_outline_outlined,
-                              color: mainPurple,
-                            ),
-                            settingText: LocaleKeys.support.tr(),
-                            onTap: () => AppNavigator.push(
-                                context: context, screen: SupportScreen()),
-                          ),
+                              icon: SvgPicture.asset(tutorial),
+                              settingText: "Tutorial".tr(),
+                              onTap: () async {
+                                SharedPreferences.getInstance().then((value) {
+                                  value.remove("firstTime");
+                                });
+                                pushNewScreen(context,
+                                    screen: MainScreen(), withNavBar: false);
+                              }),
+                          Divider(),
+                          10.ph,
+                          SettingRow(
+                              icon: const Icon(
+                                Icons.help_outline_outlined,
+                                color: mainPurple,
+                              ),
+                              settingText: LocaleKeys.support.tr(),
+                              onTap: () {
+                                pushNewScreen(context,
+                                    screen: SupportScreen(), withNavBar: true);
+                              }),
+                          10.ph
                         ],
                         if (isEditing) ...[
                           Text(
@@ -358,7 +375,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         phoneNumber: phone,
         verificationCompleted: (phoneCredential) {},
         verificationFailed: (e) {
-          log("failed");
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(e.message.toString())));
         },
@@ -366,7 +382,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           var otp = await showOtpDialog();
 
           String smsCode = otp;
-          log(smsCode);
+
           PhoneAuthCredential credential = PhoneAuthProvider.credential(
               verificationId: verificationId, smsCode: smsCode);
           try {

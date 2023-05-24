@@ -222,6 +222,12 @@
   "LastStep"                  : "Laatste stap",
   "Back"                  : "Terug",
   "DidntGetCode"                  : "Heb je de code niet gekregen ?  ",
-  "Resend"                  : "Opnieuw verzenden"
+  "Resend"                  : "Opnieuw verzenden",
+
+
+
+  "allCategories"                  : "Alle categorieën",
+  "HelloGuest"                  : "Hallo, Gast!",
+  "Tutorial"                  : "Tutorial"
 
 }

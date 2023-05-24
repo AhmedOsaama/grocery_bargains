@@ -149,21 +149,29 @@ class DiscountItem extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: white,
-          boxShadow: [
-            BoxShadow(
-                color: shadowColor,
-                blurRadius: 10,
-                offset: Offset(0, -1),
-                blurStyle: BlurStyle.solid),
-            BoxShadow(
-                color: shadowColor,
-                blurRadius: 10,
-                offset: Offset(0, 5),
-                blurStyle: BlurStyle.solid),
-          ],
+          boxShadow: !inGridView
+              ? [
+                  BoxShadow(
+                      color: shadowColor,
+                      blurRadius: 10,
+                      offset: Offset(0, -1),
+                      blurStyle: BlurStyle.solid),
+                  BoxShadow(
+                      color: shadowColor,
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                      blurStyle: BlurStyle.solid),
+                ]
+              : [
+                  BoxShadow(
+                      color: shadowColor,
+                      blurRadius: 10,
+                      offset: Offset(0, 0),
+                      blurStyle: BlurStyle.solid),
+                ],
         ),
-        margin: EdgeInsets.symmetric(
-            vertical: inGridView ? 0 : 10, horizontal: inGridView ? 0 : 5),
+        margin:
+            EdgeInsets.symmetric(vertical: inGridView ? 5 : 10, horizontal: 5),
         padding: EdgeInsets.symmetric(horizontal: inGridView ? 10 : 15.w),
         child: Stack(
           alignment: Alignment.bottomRight,
@@ -221,8 +229,8 @@ class DiscountItem extends StatelessWidget {
                 ),
                 Text(
                   getProductSize(),
-                  style: TextStyles.textViewMedium12.copyWith(
-                      color: Color.fromRGBO(204, 204, 204, 1)),
+                  style: TextStyles.textViewMedium12
+                      .copyWith(color: Color.fromRGBO(204, 204, 204, 1)),
                 ),
                 5.ph,
                 Text(
@@ -233,8 +241,8 @@ class DiscountItem extends StatelessWidget {
                 if (getDiscountValue(productsProvider) != null)
                   Text(
                     "${LocaleKeys.save.tr()} €${getDiscountValue(productsProvider)}",
-                    style: TextStylesInter.textViewMedium10.copyWith(
-                        color: Color.fromRGBO(24, 195, 54, 1)),
+                    style: TextStylesInter.textViewMedium10
+                        .copyWith(color: Color.fromRGBO(24, 195, 54, 1)),
                   ),
               ],
             ),
