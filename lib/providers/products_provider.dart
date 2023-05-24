@@ -69,8 +69,8 @@ class ProductsProvider with ChangeNotifier {
     Product? jumboProduct;
     try {
       var id = decodedProduct['id'];
-      var productName = decodedProduct['name'];
-      var imageURL = decodedProduct['image_url'];
+      var productName = decodedProduct['name'] ?? "N/A";
+      var imageURL = decodedProduct['image_url'] ?? "";
       var storeName = "Jumbo";
       var description = decodedProduct['product_description'] ?? "";
       var category = decodedProduct['product_category'] ?? "";
@@ -78,7 +78,7 @@ class ProductsProvider with ChangeNotifier {
       var price1 = decodedProduct['price'];
       var price2 = null;
       var oldPrice = decodedProduct['old_price'];
-      var size1 = decodedProduct['unit_size'];
+      var size1 = decodedProduct['unit_size'] ?? "NO SIZE";
       var size2 = null;
       var offer = decodedProduct['offer'];
       var productURL = decodedProduct['product_link'];
@@ -179,6 +179,7 @@ class ProductsProvider with ChangeNotifier {
             ? product['new_offer']
             : product['offer'];
         var productURL = product['product_link'];
+
         var productObj = Product(
             storeName: storeName,
             id: id,
@@ -382,10 +383,16 @@ class ProductsProvider with ChangeNotifier {
 
   Future<int> getAllJumboProducts() async {
     var decodedProductsList = [];
+    jumboProducts.clear();
     var response = await NetworkServices.getAllJumboProducts();
     try {
       decodedProductsList = jsonDecode(response.body);
-      jumboProducts = convertToProductListFromJson(decodedProductsList);
+      decodedProductsList.forEach((decodedProduct) {
+        var jumboProduct = convertToJumboProductFromJson(decodedProduct);
+        if (jumboProduct != null) {
+          jumboProducts.add(jumboProduct);
+        }
+      });
     }catch(e){
       print("Error getting jumbo products");
       print(e);
@@ -395,7 +402,7 @@ class ProductsProvider with ChangeNotifier {
 
   Future<int> getAllHoogvlietProducts() async {
     var decodedProductsList = [];
-    var response = await NetworkServices.getAllJumboProducts();
+    var response = await NetworkServices.getAllHoogvlietProducts();
     try {
       decodedProductsList = jsonDecode(response.body);
       hoogvlietProducts = convertToHoogvlietProductListFromJson(decodedProductsList);

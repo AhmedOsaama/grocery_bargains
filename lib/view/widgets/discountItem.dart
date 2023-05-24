@@ -71,14 +71,20 @@ class DiscountItem extends StatelessWidget {
     var productsProvider =
         Provider.of<ProductsProvider>(context, listen: false);
     late Product product;
-    if(selectedStore == "Albert"){
-      product = productsProvider.albertProducts.firstWhere((product) => product.id == comparisonProduct.albertId);
-    }
-    if(selectedStore == "Jumbo"){
-      product = productsProvider.jumboProducts.firstWhere((product) => product.id == comparisonProduct.jumboId);
-    }
-    if(selectedStore == "Hoogvliet"){
-      product = productsProvider.hoogvlietProducts.firstWhere((product) => product.id == comparisonProduct.hoogvlietId);
+    try {
+      if (selectedStore == "Albert") {
+        product = productsProvider.albertProducts.firstWhere((product) => product.id == comparisonProduct.albertId);
+      }
+      if (selectedStore == "Jumbo") {
+        product = productsProvider.jumboProducts.firstWhere((product) => product.id == comparisonProduct.jumboId);
+      }
+      if (selectedStore == "Hoogvliet") {
+        product =
+            productsProvider.hoogvlietProducts.firstWhere((product) => product.id == comparisonProduct.hoogvlietId);
+      }
+    }catch(e){
+      print(comparisonProduct.hoogvlietId);
+      print("Error in discountItem: $e");
     }
     return GestureDetector(
       onTap: () {

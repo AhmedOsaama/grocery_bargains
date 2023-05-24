@@ -104,25 +104,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       var productsProvider =
           Provider.of<ProductsProvider>(context, listen: false);
       late ComparisonProduct productComparison;
-      late Product albertProduct;
-      late Product jumboProduct;
-      late Product hoogvlietProduct;
+      Product albertProduct;
+      Product jumboProduct;
+      Product hoogvlietProduct;
       if(widget.storeName == "Albert"){
         productComparison = productsProvider.comparisonProducts.firstWhere(
                 (comparisonProduct) => widget.productId == comparisonProduct.albertId);
-        jumboProduct = productsProvider.jumboProducts.firstWhere((product) => product.id == productComparison.jumboId);
-        hoogvlietProduct = productsProvider.hoogvlietProducts.firstWhere((product) => product.id == productComparison.hoogvlietId);
       } if(widget.storeName == "Jumbo"){
         productComparison = productsProvider.comparisonProducts.firstWhere(
-                (comparisonProduct) => widget.productId == comparisonProduct.jumboName);
-        albertProduct = productsProvider.hoogvlietProducts.firstWhere((product) => product.id == productComparison.albertId);
-        hoogvlietProduct = productsProvider.albertProducts.firstWhere((product) => product.id == productComparison.hoogvlietId);
+                (comparisonProduct) => widget.productId == comparisonProduct.jumboId);
       } if(widget.storeName == "Hoogvliet"){
         productComparison = productsProvider.comparisonProducts.firstWhere(
                 (comparisonProduct) => widget.productId == comparisonProduct.hoogvlietId);
-        albertProduct = productsProvider.hoogvlietProducts.firstWhere((product) => product.id == productComparison.albertId);
-        jumboProduct = productsProvider.jumboProducts.firstWhere((product) => product.id == productComparison.jumboId);
       }
+      albertProduct = productsProvider.albertProducts.firstWhere((product) => product.id == productComparison.albertId);
+      jumboProduct = productsProvider.jumboProducts.firstWhere((product) => product.id == productComparison.jumboId);
+      hoogvlietProduct = productsProvider.hoogvlietProducts.firstWhere((product) => product.id == productComparison.hoogvlietId);
 
       comparisonItems.add(GestureDetector(
         onTap: widget.storeName == "Jumbo"
