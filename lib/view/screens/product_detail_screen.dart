@@ -17,11 +17,11 @@ import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/price_comparison_item.dart';
 
 import '../../models/list_item.dart';
+import '../../models/product.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String storeName;
   final int productId;
-  final int comparisonId;
   final String productName;
   final String imageURL;
   final String description;
@@ -42,7 +42,6 @@ class ProductDetailScreen extends StatefulWidget {
     required this.size2,
     required this.productId,
     this.oldPrice,
-    required this.comparisonId,
   }) : super(key: key);
 
   @override
@@ -94,64 +93,78 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       bestValueSize = "";
     }
     print("BEST VALUE SIZE: $bestValueSize");
-    ComparisonProduct productComparison;
 
+    getComparisons();
+
+    super.didChangeDependencies();
+  }
+
+  void getComparisons() {
     try {
       var productsProvider =
           Provider.of<ProductsProvider>(context, listen: false);
-      productComparison = productsProvider.comparisonProducts.firstWhere(
-          (comparisonProduct) => comparisonProduct.id == widget.comparisonId);
+      late ComparisonProduct productComparison;
+      late Product albertProduct;
+      late Product jumboProduct;
+      late Product hoogvlietProduct;
+      if(widget.storeName == "Albert"){
+        productComparison = productsProvider.comparisonProducts.firstWhere(
+                (comparisonProduct) => widget.productId == comparisonProduct.albertId);
+        jumboProduct = productsProvider.jumboProducts.firstWhere((product) => product.id == productComparison.jumboId);
+        hoogvlietProduct = productsProvider.hoogvlietProducts.firstWhere((product) => product.id == productComparison.hoogvlietId);
+      } if(widget.storeName == "Jumbo"){
+        productComparison = productsProvider.comparisonProducts.firstWhere(
+                (comparisonProduct) => widget.productId == comparisonProduct.jumboName);
+        albertProduct = productsProvider.hoogvlietProducts.firstWhere((product) => product.id == productComparison.albertId);
+        hoogvlietProduct = productsProvider.albertProducts.firstWhere((product) => product.id == productComparison.hoogvlietId);
+      } if(widget.storeName == "Hoogvliet"){
+        productComparison = productsProvider.comparisonProducts.firstWhere(
+                (comparisonProduct) => widget.productId == comparisonProduct.hoogvlietId);
+        albertProduct = productsProvider.hoogvlietProducts.firstWhere((product) => product.id == productComparison.albertId);
+        jumboProduct = productsProvider.jumboProducts.firstWhere((product) => product.id == productComparison.jumboId);
+      }
+
       comparisonItems.add(GestureDetector(
         onTap: widget.storeName == "Jumbo"
             ? () {}
-            : () => goToStoreProductPage(productsProvider, context, "Jumbo",
-                productComparison.jumboLink),
+            : () => goToStoreProductPage(context, "Jumbo", jumboProduct),
         child: PriceComparisonItem(
             isSameStore: widget.storeName == "Jumbo",
-            price: productComparison.jumboPrice,
-            size: productComparison.jumboSize ?? "N/A",
+            price: jumboProduct.price ?? "N/A",
+            size: jumboProduct.size,
             storeImagePath: jumbo),
       ));
       comparisonItems.add(GestureDetector(
         onTap: widget.storeName == "Albert"
             ? () {}
-            : () => goToStoreProductPage(productsProvider, context, "Albert",
-                productComparison.albertLink),
+            : () => goToStoreProductPage(context, "Albert", albertProduct),
         child: PriceComparisonItem(
             isSameStore: widget.storeName == "Albert",
-            price: productComparison.albertPrice,
-            size: productComparison.albertSize,
+            price: albertProduct.price ?? "N/A",
+            size: albertProduct.size,
             storeImagePath: albert),
       ));
       comparisonItems.add(GestureDetector(
         onTap: widget.storeName == "Hoogvliet"
             ? () {}
-            : () => goToStoreProductPage(productsProvider, context, "Hoogvliet",
-                productComparison.hoogvlietLink),
+            : () => goToStoreProductPage(context, "Hoogvliet", hoogvlietProduct),
         child: PriceComparisonItem(
             isSameStore: widget.storeName == "Hoogvliet",
-            price: productComparison.hoogvlietPrice,
-            size: productComparison.hoogvlietSize,
+            price: hoogvlietProduct.price ?? "N/A",
+            size: hoogvlietProduct.size,
             storeImagePath: hoogLogo),
       ));
     } catch (e) {
       print("Failed to get price comparisons in product detail");
       print(e);
     }
-
-    super.didChangeDependencies();
   }
 
-  void goToStoreProductPage(ProductsProvider productsProvider,
-      BuildContext context, String selectedStore, String productLink) {
-    if (selectedStore == "Albert") {
-      var product = productsProvider.albertProducts.firstWhere((product) {
-        return product.url == productLink;
-      });
+  void goToStoreProductPage(
+      BuildContext context, String selectedStore, Product product) {
       AppNavigator.push(
           context: context,
           screen: ProductDetailScreen(
-            comparisonId: widget.comparisonId,
             productId: product.id,
             storeName: selectedStore,
             productName: product.name,
@@ -163,43 +176,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             size2: product.size2 ?? "",
           ));
     }
-    if (selectedStore == "Jumbo") {
-      var product = productsProvider.jumboProducts
-          .firstWhere((product) => product.url == productLink);
-      AppNavigator.push(
-          context: context,
-          screen: ProductDetailScreen(
-            comparisonId: widget.comparisonId,
-            productId: product.id,
-            storeName: selectedStore,
-            productName: product.name,
-            imageURL: product.imageURL,
-            description: product.description,
-            price1: double.tryParse(product.price ?? "") ?? 0.0,
-            price2: null,
-            size1: product.size,
-            size2: product.size2 ?? "",
-          ));
-    }
-    if (selectedStore == "Hoogvliet") {
-      var product = productsProvider.hoogvlietProducts
-          .firstWhere((product) => product.url == productLink);
-      AppNavigator.push(
-          context: context,
-          screen: ProductDetailScreen(
-            comparisonId: widget.comparisonId,
-            productId: product.id,
-            storeName: selectedStore,
-            productName: product.name,
-            imageURL: product.imageURL,
-            description: product.description,
-            price1: double.tryParse(product.price ?? "") ?? 0.0,
-            price2: null,
-            size1: product.size,
-            size2: product.size2 ?? "",
-          ));
-    }
-  }
+
 
   @override
   Widget build(BuildContext context) {

@@ -170,7 +170,6 @@ class _MessageBubbleState extends State<MessageBubble> {
                 AppNavigator.push(
                     context: context,
                     screen: ProductDetailScreen(
-                      comparisonId: -1,
                       productId: product.id,
                       oldPrice: product.oldPrice,
                       storeName: product.storeName,

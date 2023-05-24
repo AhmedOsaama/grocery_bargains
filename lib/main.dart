@@ -149,7 +149,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     getAllProductsFuture = Provider.of<ProductsProvider>(context, listen: false)
-        .getAllProducts(0)
+        .getAllProducts()
         .timeout(Duration(seconds: 6), onTimeout: () {});
     Provider.of<ProductsProvider>(context, listen: false).getAllCategories();
     authStateChangesStream = FirebaseAuth.instance.authStateChanges();

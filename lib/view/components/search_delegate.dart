@@ -99,11 +99,9 @@ class MySearchDelegate extends SearchDelegate {
                 var size2 = searchResults[i].size2 ?? "";
                 return GestureDetector(
                   onTap: () async {
-                    int comparisonId = await productProvider.getComparisonId(storeName, productLink);
                     AppNavigator.push(
                         context: context,
                         screen: ProductDetailScreen(
-                          comparisonId: comparisonId,
                           productId: id,
                           oldPrice: oldPrice,
                           storeName: storeName,

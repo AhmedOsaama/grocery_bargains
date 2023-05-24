@@ -50,7 +50,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PagingController<int, ComparisonProduct> _pagingController =
       PagingController(firstPageKey: 0);
-  static const _pageSize = 5;
+  static const _pageSize = 10000000;
 
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
   // late Future<int> getAllProductsFuture;
@@ -89,18 +89,12 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     getAllListsFuture = Provider.of<ChatlistsProvider>(context, listen: false)
         .getAllChatlistsFuture();
-    // getAllValueBargainsFuture =
-    //     Provider.of<ProductsProvider>(context, listen: false)
-    //         .populateBestValueBargains();
     if (FirebaseAuth.instance.currentUser != null) {
       getUserDataFuture = FirebaseFirestore.instance
           .collection('/users')
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .get();
     }
-    DynamicLinkService().listenToDynamicLinks(
-        context); //case 2 the app is open but in background and opened again via deep link
-
     getFirstTime();
   }
 
@@ -108,8 +102,8 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       print("PAGE KEY: " + pageKey.toString());
       if (pageKey > 0) {
-        await Provider.of<ProductsProvider>(context, listen: false)
-            .getLimitedPriceComparisons(pageKey);
+        // await Provider.of<ProductsProvider>(context, listen: false)
+        //     .getLimitedProducts(pageKey);
       }
       final newProducts = Provider.of<ProductsProvider>(context, listen: false)
           .comparisonProducts;
@@ -905,72 +899,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         )),
                                       );
                                     }
-
-                                    /*    return ListView.builder(
-                                      itemCount: comparisonProducts.length,
-                                      scrollDirection: Axis.horizontal,
-                                      itemBuilder: (ctx, i) {
-                                        // if (i >= comparisonProducts.length) {
-                                        //   var productId = comparisonProducts[i-1].id;
-                                        //   return Padding(
-                                        //     padding: EdgeInsets.symmetric(horizontal: 32),
-                                        //     child: isLoading
-                                        //         ? Center(
-                                        //         child: CircularProgressIndicator(
-                                        //           color: verdigris,
-                                        //         ))
-                                        //         : Center(
-                                        //       child: Container(
-                                        //         decoration: BoxDecoration(
-                                        //           border:
-                                        //           Border.all(color: Colors.grey),
-                                        //           borderRadius:
-                                        //           BorderRadius.circular(12),
-                                        //         ),
-                                        //         child: InkWell(
-                                        //           onTap: () async {
-                                        //             setState(() {
-                                        //               isLoading = true;
-                                        //             });
-                                        //             print(productId);
-                                        //             await fetch(productId + 1);
-                                        //             setState(() {
-                                        //               isLoading = false;
-                                        //             });
-                                        //           },
-                                        //           borderRadius:
-                                        //           BorderRadius.circular(12),
-                                        //           child: Padding(
-                                        //             padding: const EdgeInsets.all(5),
-                                        //             child: Row(
-                                        //               mainAxisSize: MainAxisSize.min,
-                                        //               children: [
-                                        //                 Text(
-                                        //                   "See more",
-                                        //                   style: TextStyles
-                                        //                       .textViewMedium10
-                                        //                       .copyWith(
-                                        //                       color: prussian),
-                                        //                 ),
-                                        //                 Icon(
-                                        //                   Icons.arrow_forward_ios,
-                                        //                   size: 18,
-                                        //                   color: Colors.grey,
-                                        //                 ),
-                                        //               ],
-                                        //             ),
-                                        //           ),
-                                        //         ),
-                                        //       ),
-                                        //     ),
-                                        //   );
-                                        // } // see more case
-                                        return DiscountItem(
-                                          comparisonProduct: comparisonProducts[i],
-                                        );
-                                      },
-                                    ); */
-                                  },
+                                    },
                                 ),
                               ),
                             ],
@@ -1035,7 +964,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         AppNavigator.push(
                                             context: context,
                                             screen: ProductDetailScreen(
-                                              comparisonId: -1,
                                               productId: bargain.itemId,
                                               storeName: bargain.store,
                                               productName: bargain.itemName,

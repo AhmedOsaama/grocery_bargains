@@ -512,13 +512,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   size2: products.elementAt(index).size2 ?? "");
                               return GestureDetector(
                                 onTap: () async {
-                                  int comparisonId = await Provider.of<ProductsProvider>(context, listen: false)
-                                      .getComparisonId(
-                                          products.elementAt(index).storeName, products.elementAt(index).url);
                                   AppNavigator.push(
                                       context: context,
                                       screen: ProductDetailScreen(
-                                        comparisonId: comparisonId,
                                         productId: p.id,
                                         oldPrice: p.oldPrice ?? "",
                                         storeName: p.storeName,
@@ -711,7 +707,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                                       AppNavigator.push(
                                                           context: context,
                                                           screen: ProductDetailScreen(
-                                                            comparisonId: -1,
                                                             productId: p.id,
                                                             oldPrice: p.oldPrice ?? "",
                                                             storeName: p.storeName,

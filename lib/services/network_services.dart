@@ -8,7 +8,7 @@ class NetworkServices {
 
   static Future<http.Response> getAllAlbertProducts() async {
     final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/function-1');
+        'https://europe-west1-discountly.cloudfunctions.net/get_all_albert_products');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json'});
     return response;
@@ -16,14 +16,14 @@ class NetworkServices {
 
   static Future<http.Response> getAllJumboProducts() async {
     final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/get_all_products_JUMBO');
+        'https://europe-west1-discountly.cloudfunctions.net/get_all_jumbo_products');
     var response =
         await http.get(url, headers: {'Content-Type': 'application/json'});
     return response;
   }
   static Future<http.Response> getAllHoogvlietProducts() async {
     final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/get_all_products_hoogvliet');
+        'https://europe-west1-discountly.cloudfunctions.net/get_all_hoogvliet_products');
     var response =
         await http.get(url, headers: {'Content-Type': 'application/json'});
     return response;
@@ -38,7 +38,7 @@ class NetworkServices {
     return response;
   }
 
-  static Future<http.Response> getAllPriceComparisons() async {
+  static Future<http.Response> getAllComparisons() async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/get_all_price_comparisons');
     var response =

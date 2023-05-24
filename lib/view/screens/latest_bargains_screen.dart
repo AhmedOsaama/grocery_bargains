@@ -26,7 +26,7 @@ class LatestBargainsScreen extends StatefulWidget {
 class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
   final PagingController<int, ComparisonProduct> _pagingController =
       PagingController(firstPageKey: 0);
-  static const _pageSize = 5;
+  static const _pageSize = 10000000;
   int startingIndex = 0;
 
   @override
@@ -106,8 +106,8 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
       print("PAGE KEY: " + pageKey.toString());
       log("new page $pageKey");
       if (pageKey > 0) {
-        await Provider.of<ProductsProvider>(context, listen: false)
-            .getLimitedPriceComparisons(pageKey);
+        // await Provider.of<ProductsProvider>(context, listen: false)
+        //     .getLimitedPriceComparisons(pageKey);
       }
       final newProducts = Provider.of<ProductsProvider>(context, listen: false)
           .comparisonProducts;
