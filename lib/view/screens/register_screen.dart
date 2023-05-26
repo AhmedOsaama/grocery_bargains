@@ -80,6 +80,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
               content: Text("PhoneNumberAlready".tr())));
           return;
         }
+        var result1 = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', isEqualTo: email)
+            .get();
+        if (result1.docs.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              content: Text("EmailAlready".tr())));
+          return;
+        }
         var userCredential = await loginWithPhoneNumber(phoneNumber);
         if (userCredential == null) {
           throw "credential error";
@@ -225,7 +235,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Container(
                   decoration: BoxDecoration(boxShadow: Utils.boxShadow),
                   child: IntlPhoneField(
-                    disableLengthCheck: true,
+                    disableLengthCheck: false,
                     initialCountryCode: "NL",
                     decoration: InputDecoration(
                         border: OutlineInputBorder(

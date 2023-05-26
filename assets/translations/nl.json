@@ -211,6 +211,7 @@
   "Name"                  : "Naam",
   "YourStatus"                  : "Jouw Status",
   "PhoneNumberAlready"                  : "Telefoonnummer is al geregistreerd bij een ander account. Voer een ander telefoonnummer in",
+  "EmailAlready"                  : "Email is al geregistreerd bij een ander account. Voer een ander email in",
   "invalidOTP"                  : "De verificatiecode van SMS / TOTP is ongeldig. Controleer en voer opnieuw de juiste verificatiecode in.",
   "Change"                  : "Veranderen",
   "ThisPhoneNumber"                  : "Dit telefoonnummer lijkt niet aan een account te zijn gekoppeld. Voer een ander telefoonnummer in",

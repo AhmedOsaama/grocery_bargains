@@ -224,6 +224,7 @@
   "Name"                  : "Name",
   "YourStatus"                  : "Your Status",
   "PhoneNumberAlready"                  : "Phone number is already registered with another account. Please enter a different phone number",
+  "EmailAlready"                  : "Email is already registered with another account. Please enter a different email",
   "invalidOTP"                  : "The verification code from SMS/TOTP is invalid. Please check and enter the correct verification code again.",
   "Change"                  : "Change",
   "ThisPhoneNumber"                  : "This phone number doesn't appear to be associated with any account. Please enter a different phone number",
