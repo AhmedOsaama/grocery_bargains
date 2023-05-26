@@ -497,6 +497,12 @@ class ProductsProvider with ChangeNotifier {
   Future<List<Product>> getProductsByCategory(
       String category, String store, String brand) async {
     List<Product> products = [];
+    if (category == "Baby en kind") {
+      category = "baby-en-kind";
+    }
+    if (category == "Sport- en dieetvoeding") {
+      category = "sport-en-dieetvoeding";
+    }
 
     if (store == "Store" && brand == "Brand") {
       var response =
@@ -509,6 +515,7 @@ class ProductsProvider with ChangeNotifier {
       //     }
       //   }
       // });
+
       jumboProducts.forEach((element) {
         if (element.category != "") {
           if (element.category.toLowerCase() == category.toLowerCase()) {
