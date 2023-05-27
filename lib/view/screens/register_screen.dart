@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:bargainb/utils/mixpanel_utils.dart';
@@ -79,6 +78,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,
               content: Text("PhoneNumberAlready".tr())));
+          return;
+        }
+        var result1 = await FirebaseFirestore.instance
+            .collection('users')
+            .where('email', isEqualTo: email)
+            .get();
+        if (result1.docs.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              content: Text("EmailAlready".tr())));
           return;
         }
         var userCredential = await loginWithPhoneNumber(phoneNumber);
@@ -226,7 +235,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Container(
                   decoration: BoxDecoration(boxShadow: Utils.boxShadow),
                   child: IntlPhoneField(
-                    disableLengthCheck: true,
+                    disableLengthCheck: false,
                     initialCountryCode: "NL",
                     decoration: InputDecoration(
                         border: OutlineInputBorder(
@@ -476,8 +485,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               verificationId: verificationId, smsCode: smsCode);
           try {
             userCredential = await _auth.signInWithCredential(credential);
-            log("completed");
-            log(userCredential.toString());
           } on FirebaseAuthException catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 backgroundColor: Theme.of(context).colorScheme.error,

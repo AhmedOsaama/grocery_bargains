@@ -22,105 +22,116 @@ class ChatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => pushNewScreen(context,
-          screen: ChatListViewScreen(
-            // updateList: updateList,
-            listId: allLists.elementAt(i).id,
-          ),
-          withNavBar: false),
-      child: Row(
-        children: [
-          Image.asset(
-            storePlaceholder,
-            width: 45,
-            height: 45,
-          ),
-          18.pw,
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return FutureBuilder<QuerySnapshot>(
+        future: FirebaseFirestore.instance
+            .collection('/lists/${allLists.elementAt(i).id}/items')
+            .get(),
+        builder: (context, snapshot) {
+          var storeItems = snapshot.data?.docs ?? [];
+          return InkWell(
+            onTap: () => pushNewScreen(context,
+                screen: ChatListViewScreen(
+                  // updateList: updateList,
+                  listId: allLists.elementAt(i).id,
+                ),
+                withNavBar: false),
+            child: Row(
               children: [
-                Text(
-                  allLists[i].name,
-                  style: TextStylesInter.textViewSemiBold16
-                      .copyWith(color: black2),
+                Image.asset(
+                  storePlaceholder,
+                  width: 45,
+                  height: 45,
                 ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      "${allLists[i].itemLength} ${LocaleKeys.items.tr()}",
-                      style: TextStylesInter.textViewMedium10
-                          .copyWith(color: purple50),
-                    ),
-                    5.pw,
-                    Text(
-                      "€${allLists[i].totalPrice.toStringAsFixed(2)}",
-                      style: TextStylesInter.textViewMedium10
-                          .copyWith(color: black2),
-                    ),
-                  ],
+                18.pw,
+                Expanded(
+                  flex: 2,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        allLists[i].name,
+                        style: TextStylesInter.textViewSemiBold16
+                            .copyWith(color: black2),
+                      ),
+                      snapshot.hasData
+                          ? Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  "${storeItems.length} ${LocaleKeys.items.tr()}",
+                                  style: TextStylesInter.textViewMedium10
+                                      .copyWith(color: purple50),
+                                ),
+                                5.pw,
+                                Text(
+                                  "€${getTotalListPrice(storeItems)}",
+                                  style: TextStylesInter.textViewMedium10
+                                      .copyWith(color: black2),
+                                ),
+                              ],
+                            )
+                          : Container(),
+                      allLists[i].lastMessage.isEmpty
+                          ? Text("")
+                          : Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  '${allLists[i].lastMessageUserId == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : allLists[i].lastMessageUserName}: ',
+                                  style: TextStylesInter.textViewRegular14
+                                      .copyWith(color: black2),
+                                ),
+                                Container(
+                                  //width: 100.w,
+                                  child: Flexible(
+                                    child: Text(
+                                      allLists[i].lastMessage,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStylesInter.textViewRegular14
+                                          .copyWith(color: black2),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ],
+                  ),
                 ),
-                allLists[i].lastMessage.isEmpty
-                    ? Text("")
-                    : Row(
-                        mainAxisSize: MainAxisSize.min,
+                Expanded(
+                  child: Column(
+                    children: [
+                      Row(
                         children: [
                           Text(
-                            '${allLists[i].lastMessageUserId == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : allLists[i].lastMessageUserName}: ',
+                            (allLists[i].lastMessageDate.toDate())
+                                .toString()
+                                .split(' ')[0],
                             style: TextStylesInter.textViewRegular14
-                                .copyWith(color: black2),
-                          ),
-                          Container(
-                            //width: 100.w,
-                            child: Flexible(
-                              child: Text(
-                                allLists[i].lastMessage,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStylesInter.textViewRegular14
-                                    .copyWith(color: black2),
-                              ),
-                            ),
+                                .copyWith(color: Color.fromRGBO(72, 72, 74, 1)),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
+                      FutureBuilder(
+                          future: getUserImages(allLists[i].id),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator(
+                                color: verdigris,
+                              ));
+                            }
+                            return snapshot.data ??
+                                SvgPicture.asset(peopleIcon);
+                          }),
+                    ],
+                  ),
+                )
               ],
             ),
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      (allLists[i].lastMessageDate.toDate())
-                          .toString()
-                          .split(' ')[0],
-                      style: TextStylesInter.textViewRegular14
-                          .copyWith(color: Color.fromRGBO(72, 72, 74, 1)),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-                FutureBuilder(
-                    future: getUserImages(allLists[i].id),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                            child: CircularProgressIndicator(
-                          color: verdigris,
-                        ));
-                      }
-                      return snapshot.data ?? SvgPicture.asset(peopleIcon);
-                    }),
-              ],
-            ),
-          )
-        ],
-      ),
-    );
+          );
+        });
   }
 
   Future<Widget> getUserImages(String docId) async {
@@ -181,5 +192,28 @@ class ChatCard extends StatelessWidget {
             children: imageWidgets.map((image) => image).toList()),
       ),
     );
+  }
+
+  String getTotalListPrice(List storeItems) {
+    var total = 0.0;
+    for (var item in storeItems) {
+      if (item.data().containsKey('item_price') &&
+          item['item_price'].runtimeType == String) {
+        if (item['item_price'] != null &&
+            item['item_price'] != "null" &&
+            item['item_price'] != "") {
+          total += double.parse(item['item_price']);
+        } else {
+          total += 0;
+        }
+      } else if (item.data().containsKey('item_price') &&
+          item['item_price'].runtimeType == double) {
+        total += item['item_price'] ?? 0;
+      } else {
+        total += 0;
+      }
+    }
+
+    return total.toStringAsFixed(2);
   }
 }

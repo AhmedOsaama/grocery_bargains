@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:bargainb/models/chatlist.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/components/chats_search_delegate.dart';
@@ -236,7 +234,6 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                   }
                   if (chatlistsProvider.chatlistsView ==
                       ChatlistsView.CHATVIEW) {
-                    log(allLists.first.totalPrice.toString());
                     return ListView.separated(
                         separatorBuilder: (ctx, i) => Divider(),
                         itemCount: allLists.length,
@@ -264,7 +261,6 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                                 List<ChatList> lists = [];
 
                                 friendsList[i].chatlists.forEach((element) {
-                                  log(element.data().toString());
                                   lists.add(ChatList(
                                       id: element.id,
                                       name: element.get("list_name"),

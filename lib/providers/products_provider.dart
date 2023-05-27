@@ -60,6 +60,7 @@ class ProductsProvider with ChangeNotifier {
       log(e.toString());
       print(decodedProduct['name']);
       print("Error in converting Albert json to product");
+      print(e);
     }
 
     return albertProduct;
@@ -427,11 +428,17 @@ class ProductsProvider with ChangeNotifier {
   Future<List<Product>> getProductsByCategory(
       String category, String store, String brand) async {
     List<Product> products = [];
+    if (category == "Baby en kind") {
+      category = "baby-en-kind";
+    }
+    if (category == "Sport- en dieetvoeding") {
+      category = "sport-en-dieetvoeding";
+    }
 
     if (store == "Store" && brand == "Brand") {
-      var response = await NetworkServices.getLimitedAlbertProductsByCategory(category);
-      if(response != null)
-        products = convertToProductListFromJson(jsonDecode(response.body));
+      var response =
+          await NetworkServices.getLimitedAlbertProductsByCategory(category);
+      products = convertToProductListFromJson(jsonDecode(response.body));
       // albertProducts.forEach((element) {
       //   if (element.category != "") {
       //     if (element.category.toLowerCase() == category.toLowerCase()) {
@@ -439,6 +446,7 @@ class ProductsProvider with ChangeNotifier {
       //     }
       //   }
       // });
+
       jumboProducts.forEach((element) {
         if (element.category != "") {
           if (element.category.toLowerCase() == category.toLowerCase()) {
@@ -573,9 +581,9 @@ class ProductsProvider with ChangeNotifier {
     List<Product> products = [];
 
     if (store == "Store" && brand == "Brand") {
-      var response = await NetworkServices.getLimitedAlbertProductsBySubCategory(category);
-      if(response != null)
-        products = convertToProductListFromJson(jsonDecode(response.body));
+      var response =
+          await NetworkServices.getLimitedAlbertProductsBySubCategory(category);
+      products = convertToProductListFromJson(jsonDecode(response.body));
       // albertProducts.forEach((element) {
       //   if (element.subCategory != null) {
       //     if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
@@ -869,7 +877,6 @@ class ProductsProvider with ChangeNotifier {
     }
     return comparisonId;
   }
-
 
   String getImage(String storeName) {
     if (storeName == 'AH') return albert;

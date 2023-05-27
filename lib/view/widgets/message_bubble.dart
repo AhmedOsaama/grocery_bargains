@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/chatlist.dart';
@@ -155,10 +154,9 @@ class _MessageBubbleState extends State<MessageBubble> {
 
                     break;
                   case 'Albert':
-                    log(widget.itemName);
                     var response = await NetworkServices.searchAlbertProducts(
                         widget.itemName);
-                    log(response.body);
+
                     product = Provider.of<ProductsProvider>(context,
                             listen: false)
                         .convertToProductListFromJson(jsonDecode(response.body))
