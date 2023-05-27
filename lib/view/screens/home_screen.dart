@@ -845,7 +845,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                         AppNavigator.push(
                                             context: context,
                                             screen: ProductDetailScreen(
-                                              comparisonId: -1,
                                               productId: bargain.itemId,
                                               storeName: bargain.store,
                                               productName: bargain.itemName,
