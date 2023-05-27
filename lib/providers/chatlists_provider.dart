@@ -224,6 +224,20 @@ class ChatlistsProvider with ChangeNotifier {
     print("ENTERED");
     try {
       var chatlist = chatlists.firstWhere((chatlist) => chatlist.id == listId);
+      var item = await FirebaseFirestore.instance
+          .collection('/lists/${listId}/items')
+          .doc(itemId)
+          .get();
+      if (item.data()!.containsKey("chat_reference")) {
+        if (item.data()!["chat_reference"].toString().isNotEmpty) {
+          await FirebaseFirestore.instance
+              .collection("/lists/$listId/messages")
+              .doc(item.data()!["chat_reference"].toString().split("/").last)
+              .update({
+            'isAddedToList': false,
+          });
+        }
+      }
       await FirebaseFirestore.instance
           .collection('/lists/${listId}/items')
           .doc(itemId)
