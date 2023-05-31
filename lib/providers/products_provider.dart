@@ -353,6 +353,7 @@ class ProductsProvider with ChangeNotifier {
     print("Jumbo Products Length: ${jumboProducts.length}");
     print("Hoogvliet Products Length:  ${hoogvlietProducts.length}");
     print("Best value bargains Length: ${bestValueBargains.length}");
+    notifyListeners();
   }
 
   Future<List<ComparisonProduct>> getAllComparisons() async {
@@ -398,6 +399,7 @@ class ProductsProvider with ChangeNotifier {
       print("Error getting jumbo products");
       print(e);
     }
+    // notifyListeners();
     return response.statusCode;
   }
 
@@ -411,6 +413,7 @@ class ProductsProvider with ChangeNotifier {
       print("Error getting hoogvliet products");
       print(e);
     }
+    // notifyListeners();
     return response.statusCode;
   }
 

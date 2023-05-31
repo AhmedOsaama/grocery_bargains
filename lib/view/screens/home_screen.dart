@@ -657,7 +657,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 List<String> ids = [];
                                 allLists.forEach(
                                   (element) {
-                                    log(element.data().toString());
+                                    // log(element.data().toString());
                                     ids.add(element.id);
                                   },
                                 );
@@ -723,7 +723,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   builder: (ctx, provider, _) {
                                     var comparisonProducts =
                                         provider.comparisonProducts;
-                                    if (comparisonProducts.isEmpty) {
+                                    if (comparisonProducts.isEmpty || provider.albertProducts.isEmpty || provider.jumboProducts.isEmpty || provider.hoogvlietProducts.isEmpty) {
                                       return Container(
                                         child: ListView(
                                           shrinkWrap: true,
