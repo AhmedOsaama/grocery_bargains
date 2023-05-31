@@ -877,8 +877,14 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
           .collection('/lists')
           .doc(widget.listId)
           .update({
-        "userIds": FieldValue.arrayUnion([userId])
+        "userIds": FieldValue.arrayUnion([userId]),
+        "new_participant_username": userInfo.name,
       });
+      // var accessToken = Platform.environment['GOOGLE_APPLICATION_CREDENTIALS'];
+      // print(accessToken);
+      // var client = await clientViaServiceAccount(ServiceAccountCredentials.fromJson(accessToken),['https://www.googleapis.com/auth/cloud-platform']);
+      //   var deviceToken = await FirebaseMessaging.instance.getToken();
+      //   get(Uri.parse('https://europe-west1-discountly.cloudfunctions.net/pushNotificationToContact?token=$deviceToken')).then((value) => print(value.body));
       setState(() {
         listUsers.clear();
         contactsList.clear();
@@ -902,20 +908,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   //       });
   // }
 
-  // Future<void> shareListViaDeepLink() async {
-  //   // final dynamicLinkParams = DynamicLinkParameters(
-  //   //   link: Uri.parse(
-  //   //       "https://www.google.com/add_user/${widget.listName}/${widget.listId}"), //TODO: listName has white space and that won't reflect well in using the link later
-  //   //   uriPrefix: "https://swaav.page.link",
-  //   //   androidParameters:
-  //   //       const AndroidParameters(packageName: "thebargainb.app"),
-  //   //   // iosParameters: const IOSParameters(bundleId: "com.example.app.ios"),
-  //   // );
-  //   // final dynamicLink =
-  //   //     await FirebaseDynamicLinks.instance.buildShortLink(dynamicLinkParams);
-  //   // Share.share(dynamicLink.shortUrl.toString());
-  //   Share.share("https://bargainb.app.link?bnc_validate=true");
-  // }
 
   Future<void> updateListName(String value) async {
     setState(() {
@@ -933,6 +925,9 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   }
 
   shareListViaDeepLink() async {
+    // var deviceToken = await FirebaseMessaging.instance.getToken();
+    // get(Uri.parse('https://europe-west1-discountly.cloudfunctions.net/pushNotificationToContact?token=$deviceToken')).then((value) => print(value.body));
+
     BranchUniversalObject buo = BranchUniversalObject(
         canonicalIdentifier: 'invite_to_list',
         //canonicalUrl: '',
