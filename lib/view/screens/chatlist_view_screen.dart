@@ -212,7 +212,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
               var phoneNumber = user.get('phoneNumber');
 
               var contactIndex = contacts.indexWhere((contact) {
-                return (contact.phones.first.normalizedNumber == phoneNumber);
+                if(contact.phones.isNotEmpty) return (contact.phones.first.normalizedNumber == phoneNumber);
+                else return false;
               });
 
               if (contactIndex != -1) {
