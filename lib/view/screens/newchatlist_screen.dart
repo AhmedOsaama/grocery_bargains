@@ -19,6 +19,7 @@ import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
+import 'package:phone_number/phone_number.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
@@ -282,15 +283,32 @@ class _NewChatlistScreenState extends State<NewChatlistScreen> {
               isNotEqualTo: '',
             )
             .get();
+        var regionCode = await PhoneNumberUtil().carrierRegionCode();
         if (users.docs.isNotEmpty) {
           for (var user in users.docs) {
             if (user.get('phoneNumber') != userInfo.get("phoneNumber")) {
               try {
                 var phoneNumber = user.get('phoneNumber');
 
-                var contactIndex = contacts.indexWhere((contact) {
-                  return (contact.phones.first.normalizedNumber == phoneNumber);
-                });
+                var contactIndex = -1;
+                if(Platform.isIOS) {
+                  for (var contact in contacts) {
+                    try {
+                      var number = contact.phones.first.number;
+                      var parsedNumber = await PhoneNumberUtil().parse(
+                          number, regionCode: regionCode);
+                      if (parsedNumber.e164 == phoneNumber)
+                        contactIndex = contacts.indexOf(contact);
+                    } catch (e) {
+                      // print(e);
+                    }
+                  }
+                }else{
+                  contactIndex = contacts.indexWhere((contact) {
+                    if(contact.phones.isNotEmpty) return (contact.phones.first.normalizedNumber == phoneNumber);
+                    else return false;
+                  });
+                }
 
                 if (contactIndex != -1) {
                   var name = user.get('username');
