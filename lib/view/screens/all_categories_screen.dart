@@ -122,9 +122,13 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                       ),
                                       Flexible(
                                         child: Text(
-                                          provider.categories
-                                              .elementAt(index)
-                                              .category,
+                                          context.locale.languageCode != "nl"
+                                              ? provider.categories
+                                                  .elementAt(index)
+                                                  .englishCategory
+                                              : provider.categories
+                                                  .elementAt(index)
+                                                  .category,
                                           maxLines: 2,
                                           textAlign: TextAlign.center,
                                           style: TextStylesInter.textView16

@@ -436,7 +436,9 @@ class _ChatViewState extends State<ChatView> {
                                           height: 70.h,
                                         ),
                                         Text(
-                                          element.category,
+                                          context.locale.languageCode != "nl"
+                                              ? element.englishCategory
+                                              : element.category,
                                           style: TextStyles.textViewMedium11
                                               .copyWith(color: gunmetal),
                                           textAlign: TextAlign.center,

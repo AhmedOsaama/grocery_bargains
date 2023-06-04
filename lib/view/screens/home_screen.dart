@@ -457,7 +457,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   height: 65.h,
                                                 ),
                                                 Text(
-                                                  element.category,
+                                                  context.locale.languageCode !=
+                                                          "nl"
+                                                      ? element.englishCategory
+                                                      : element.category,
                                                   style: TextStyles
                                                       .textViewMedium10
                                                       .copyWith(
@@ -657,7 +660,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 List<String> ids = [];
                                 allLists.forEach(
                                   (element) {
-                                    // log(element.data().toString());
                                     ids.add(element.id);
                                   },
                                 );
@@ -723,7 +725,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                   builder: (ctx, provider, _) {
                                     var comparisonProducts =
                                         provider.comparisonProducts;
-                                    if (comparisonProducts.isEmpty || provider.albertProducts.isEmpty || provider.jumboProducts.isEmpty || provider.hoogvlietProducts.isEmpty) {
+                                    if (comparisonProducts.isEmpty ||
+                                        provider.albertProducts.isEmpty ||
+                                        provider.jumboProducts.isEmpty ||
+                                        provider.hoogvlietProducts.isEmpty) {
                                       return Container(
                                         child: ListView(
                                           shrinkWrap: true,

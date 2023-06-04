@@ -187,7 +187,9 @@ class MySearchDelegate extends SearchDelegate {
                                           height: 65.h,
                                         ),
                                         Text(
-                                          element.category,
+                                          context.locale.languageCode != "nl"
+                                              ? element.englishCategory
+                                              : element.category,
                                           style: TextStyles.textViewMedium10
                                               .copyWith(color: gunmetal),
                                           textAlign: TextAlign.center,

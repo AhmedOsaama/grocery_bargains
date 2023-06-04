@@ -16,11 +16,13 @@ class ProductCategory {
     required this.id,
     required this.image,
     required this.category,
+    required this.englishCategory,
     required this.subcategories,
   });
 
   int id;
   String category;
+  String englishCategory;
   String image;
   String subcategories;
 
@@ -28,6 +30,7 @@ class ProductCategory {
       ProductCategory(
         id: json["id"],
         category: json["category"],
+        englishCategory: json["category_english"],
         image: "assets/images/categories/" + json["category"] + ".png",
         subcategories: json["subcategories"],
       );
