@@ -16,7 +16,9 @@ import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl_phone_field/phone_number.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
+import 'package:phone_number/phone_number.dart';
 import 'package:provider/provider.dart';
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
@@ -206,21 +208,53 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
             .collection('users')
             .where('phoneNumber', isNotEqualTo: '')
             .get();
+        var regionCode = await PhoneNumberUtil().carrierRegionCode();
         if (users.docs.isNotEmpty) {
           for (var user in users.docs) {
             try {
               var phoneNumber = user.get('phoneNumber');
-
-              var contactIndex = contacts.indexWhere((contact) {
-                return (contact.phones.first.normalizedNumber == phoneNumber);
-              });
+                var contactIndex = -1;
+              if(Platform.isIOS) {
+                for (var contact in contacts) {
+                  try {
+                    var number = contact.phones.first.number;
+                    var parsedNumber = await PhoneNumberUtil().parse(
+                        number, regionCode: regionCode);
+                    if (parsedNumber.e164 == phoneNumber)
+                      contactIndex = contacts.indexOf(contact);
+                  } catch (e) {
+                    // print(e);
+                  }
+                }
+              }else{
+                contactIndex = contacts.indexWhere((contact) {
+                  if(contact.phones.isNotEmpty) return (contact.phones.first.normalizedNumber == phoneNumber);
+                  else return false;
+                });
+              }
 
               if (contactIndex != -1) {
                 //match found
                 var contact = contacts.elementAt(contactIndex);
-                var participantIndex = listUsers.indexWhere((participant) =>
-                    participant.phoneNumber ==
-                    contact.phones.first.normalizedNumber);
+                var participantIndex = -1;
+                if(Platform.isIOS) {
+                  for (var participant in listUsers) {
+                    try {
+                      var number = contact.phones.first.number;
+                      var parsedNumber = await PhoneNumberUtil().parse(
+                          number, regionCode: regionCode);
+                      if (parsedNumber.e164 == participant.phoneNumber)
+                        participantIndex = listUsers.indexOf(participant);
+                    } catch (e) {
+                      // print(e);
+                    }
+                  }
+                }else{
+                  participantIndex = listUsers.indexWhere((participant) {
+                    return participant.phoneNumber == contact.phones.first.normalizedNumber;
+                  });
+                }
+
                 if (participantIndex == -1) {
                   //contact is not part of the chatlist
                   var name = user.get('username');
