@@ -7,6 +7,7 @@ import 'package:bargainb/view/widgets/otp_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -123,6 +124,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
         print("logged in");
         saveRememberMePref();
+        if(!result.docs.first.data().containsKey('token')) saveUserDeviceToken(userCredential);
         //saveFirstTimePref();
         AppNavigator.pushReplacement(context: context, screen: MainScreen());
       }
@@ -548,11 +550,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (!userSnapshot.exists) {
         try {
           email = userCredential.user!.email!;
-          print(email);
           username = userCredential.user!.displayName ?? "User";
-          print(username);
           photoURL = userCredential.user!.photoURL ?? "";
-          print(photoURL);
           phoneNumber = "";
         } catch (e) {
           print(e);
@@ -585,8 +584,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     //in case of phone auth: only phone number is provided in usercredential
     //in case of email auth: only email is provided in usercredential
     //in case of social auth: email, username and photo are provided in usercredential
-    print(email);
-    print(username);
+    var deviceToken = await FirebaseMessaging.instance.getToken();              //could produce a problem if permission is not accepted especially on iOS
     await FirebaseFirestore.instance
         .collection('users')
         .doc(userCredential.user!.uid)
@@ -595,6 +593,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       "username": username,
       'imageURL': photoURL,
       'phoneNumber': phoneNumber,
+      'token': deviceToken,
+      'timestamp': Timestamp.now(),
       'language': 'en',
       'status': "Hello! I'm using BargainB. Join the app",
       'privacy': {
@@ -607,15 +607,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'daily': false,
       },
     });
-    // await FirebaseFirestore.instance
-    //     .collection('users')
-    //     .doc(userCredential.user!.uid)
-    //     .set({
-    //   "email": email.isEmpty ? userCredential.user?.email : email,
-    //   "username":
-    //       username.isEmpty ? userCredential.user?.displayName : username,
-    //   'imageURL': userCredential.user?.photoURL,
-    //   'phoneNumber': userCredential.user?.phoneNumber,
-    // });
+  }
+
+  Future<void> saveUserDeviceToken(UserCredential userCredential) async {
+    var deviceToken = await FirebaseMessaging.instance.getToken();              //could produce a problem if permission is not accepted especially on iOS
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userCredential.user!.uid)
+        .update({
+      'token': deviceToken,
+      'timestamp': Timestamp.now(),
+    });
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Added device token")));
   }
 }

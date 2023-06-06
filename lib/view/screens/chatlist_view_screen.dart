@@ -16,6 +16,7 @@ import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:http/http.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:bargainb/config/routes/app_navigator.dart';
@@ -874,6 +875,12 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
           .where('phoneNumber', isEqualTo: userInfo.phoneNumber)
           .get();
       var userId = userData.docs.first.id;
+      if(userData.docs.first.data().containsKey('token')) {
+        var userDeviceToken = userData.docs.first.get('token');
+        get(Uri.parse('https://europe-west1-discountly.cloudfunctions.net/pushNotificationToContact?token=$userDeviceToken&chatlistName=${chatList.name}&chatlistId=${chatList.id}')).then((value) => print(value.body));
+      }else{
+        print("FAILED TO GET USER DEVICE TOKEN");
+      }
       await FirebaseFirestore.instance
           .collection('/lists')
           .doc(widget.listId)
@@ -884,8 +891,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       // var accessToken = Platform.environment['GOOGLE_APPLICATION_CREDENTIALS'];
       // print(accessToken);
       // var client = await clientViaServiceAccount(ServiceAccountCredentials.fromJson(accessToken),['https://www.googleapis.com/auth/cloud-platform']);
-      //   var deviceToken = await FirebaseMessaging.instance.getToken();
-      //   get(Uri.parse('https://europe-west1-discountly.cloudfunctions.net/pushNotificationToContact?token=$deviceToken')).then((value) => print(value.body));
       setState(() {
         listUsers.clear();
         contactsList.clear();
