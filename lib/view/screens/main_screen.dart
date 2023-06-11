@@ -24,7 +24,8 @@ Key tabKey = UniqueKey();
 PersistentTabController NavigatorController = PersistentTabController();
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  final String? notificationData;
+  const MainScreen({Key? key, this.notificationData}) : super(key: key);
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -60,8 +61,14 @@ class _MainScreenState extends State<MainScreen> {
           data["+clicked_branch_link"] == true) {
         //Link clicked. Add logic to get link data and route user to correct screen
         var listId = data["list_id"];
+        var page = data["page"];
+
         // if(route == '/home_screen')
         print('Custom string: ${listId}');
+        print('Custom string: ${page}');
+        if(page != null){
+          if(page == '/profile-screen') AppNavigator.push(context: context, screen: ProfileScreen());
+        }
         if (listId != null) {
           var currentUserId = FirebaseAuth.instance.currentUser?.uid;
           FirebaseFirestore.instance
@@ -109,7 +116,11 @@ class _MainScreenState extends State<MainScreen> {
     });
     // FlutterBranchSdk.validateSDKIntegration();
     if (FirebaseAuth.instance.currentUser != null)
-      Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists();
+      Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists().then((value) {
+        if(widget.notificationData != null){
+          AppNavigator.push(context: context, screen: ChatListViewScreen(listId: widget.notificationData!));
+        }
+      });
   }
 
   @override

@@ -50,12 +50,6 @@ Future<void> main() async {
   );
   // print(await FirebaseAppCheck.instance.getToken());
   await FirebaseAppCheck.instance.activate(
-      // webRecaptchaSiteKey: 'recaptcha-v3-site-key',
-      // Default provider for Android is the Play Integrity provider. You can use the "AndroidProvider" enum to choose
-      // your preferred provider. Choose from:
-      // 1. debug provider
-      // 2. safety net provider
-      // 3. play integrity provider
       );
   var notificationMessage =
       await FirebaseMessaging.instance.getInitialMessage();
@@ -64,17 +58,6 @@ Future<void> main() async {
   var isRemembered = pref.getBool("rememberMe") ?? false;
   var isFirstTime = pref.getBool("firstTime") ?? true;
 
-  if (isFirstTime) {
-    // var consentStatus = await GdprDialog.instance.getConsentStatus();
-    // print(consentStatus.name);
-    // if(consentStatus == ConsentStatus.required) {
-    // GdprDialog.instance.showDialog(isForTest: true,testDeviceId: '07EB556D7EBA611E395AAF54AB12E08C')
-    //     .then((onValue) {
-    //   print('result === $onValue');
-    // });
-    // }
-    // pref.setBool("firstTime", false);
-  }
   final String path = await DynamicLinkService().handleDynamicLinks();
 
   await SentryFlutter.init(
@@ -239,9 +222,10 @@ class _MyAppState extends State<MyApp> {
                           ]);
 
                       if (widget.notificationMessage != null) {
-                        return ChatListViewScreen(
-                            listId: widget.notificationMessage?.data['listId'],
-                            isNotificationOpened: true);
+                        // return ChatListViewScreen(
+                        //     listId: widget.notificationMessage?.data['listId'],
+                        //     isNotificationOpened: true);
+                        return MainScreen(notificationData: widget.notificationMessage?.data['listId'],);
                       }
 
                       return widget.isFirstTime

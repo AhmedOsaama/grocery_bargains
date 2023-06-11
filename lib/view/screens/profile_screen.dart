@@ -14,6 +14,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,6 +26,7 @@ import 'package:bargainb/view/screens/settings_screen.dart';
 import 'package:bargainb/view/widgets/setting_row.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utils/assets_manager.dart';
@@ -59,6 +61,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String phone = "";
   String status = "";
 
+  void shareProfileDeepLink() async {
+    BranchUniversalObject buo = BranchUniversalObject(
+        canonicalIdentifier: 'invite_to_profile',
+        //canonicalUrl: '',
+        title: "Profile Page",
+        imageUrl:
+        'https://play-lh.googleusercontent.com/u6LMBvrIXH6r1LFQftqjSzebxflasn-nhcoZUlP6DjWHV6fmrwgNFyjJeFwFmckrySHF=w240-h480-rw',
+        contentDescription:
+        'Hey, Check out this profile page',
+        // keywords: ['Plugin', 'Branch', 'Flutter'],
+        publiclyIndex: true,
+        locallyIndex: true,
+        contentMetadata: BranchContentMetaData()
+          ..addCustomMetadata('page', '/profile-screen'));
+    BranchLinkProperties lp = BranchLinkProperties(
+      //alias: 'flutterplugin', //define link url,
+        channel: 'Profile',
+        feature: 'sharing',
+        stage: 'new share',
+        campaign: "Profile sharing",
+        tags: ['tag-1']);
+    BranchResponse response =
+    await FlutterBranchSdk.getShortUrl(buo: buo, linkProperties: lp);
+    FlutterBranchSdk.trackContent(buo: [buo], branchEvent: BranchEvent.standardEvent(BranchStandardEvent.INVITE)..addCustomData("shared-page", "Profile"));
+    if (response.success) {
+      print('Link generated: ${response.result}');
+    } else {
+      print('Error : ${response.errorCode} - ${response.errorMessage}');
+    }
+    Share.share(response.result);
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Consumer<GoogleSignInProvider>(builder: (ctx, provider, _) {
@@ -74,34 +109,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
           actions: [
             TextButton(
                 onPressed: () async {
-                  if (isEditing && isEdited) {
-                    Map<String, Object?> data = {};
-
-                    if (name.isNotEmpty) {
-                      data.addAll({'username': name});
-                    }
-                    if (status.isNotEmpty) {
-                      data.addAll({'status': status});
-                    }
-
-                    if (phone.isNotEmpty && isPhoneEdited) {
-                      await verifyPhoneNumber(phone);
-                    }
-                    if (!isPhoneEdited) {
-                      await FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(FirebaseAuth.instance.currentUser!.uid)
-                          .update(data);
-                      setState(() {
-                        updateUserDataFuture();
-                      });
-                    }
-                  }
-                  if (!isPhoneEdited || !isEditing)
-                    setState(() {
-                      isEditing = !isEditing;
-                      isEdited = !isEdited;
-                    });
+                  shareProfileDeepLink();
+                  // if (isEditing && isEdited) {
+                  //   Map<String, Object?> data = {};
+                  //
+                  //   if (name.isNotEmpty) {
+                  //     data.addAll({'username': name});
+                  //   }
+                  //   if (status.isNotEmpty) {
+                  //     data.addAll({'status': status});
+                  //   }
+                  //
+                  //   if (phone.isNotEmpty && isPhoneEdited) {
+                  //     await verifyPhoneNumber(phone);
+                  //   }
+                  //   if (!isPhoneEdited) {
+                  //     await FirebaseFirestore.instance
+                  //         .collection('users')
+                  //         .doc(FirebaseAuth.instance.currentUser!.uid)
+                  //         .update(data);
+                  //     setState(() {
+                  //       updateUserDataFuture();
+                  //     });
+                  //   }
+                  // }
+                  // if (!isPhoneEdited || !isEditing)
+                  //   setState(() {
+                  //     isEditing = !isEditing;
+                  //     isEdited = !isEdited;
+                  //   });
                 },
                 child: Text(
                   isEditing ? "save".tr() : LocaleKeys.edit.tr(),

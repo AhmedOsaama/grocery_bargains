@@ -36,21 +36,13 @@ var imagesWidgets = ValueNotifier(<Widget>[]);
 
 class ChatListViewScreen extends StatefulWidget {
   final String listId;
-  // String listName;
-  // final String? storeName;
-  // final String? storeImage;
   final bool isUsingDynamicLink;
   final bool isNotificationOpened;
   bool isListView;
-  // final Function? updateList;
   ChatListViewScreen({
     Key? key,
     required this.listId,
-    // required this.listName,
     this.isUsingDynamicLink = false,
-    // this.storeName,
-    // this.storeImage,
-    // this.updateList,
     this.isListView = false, //The screen opens on a Chat View by default
     this.isNotificationOpened = false,
   }) : super(key: key);
@@ -74,19 +66,19 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
   @override
   void initState() {
-    if (widget.isNotificationOpened) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-        await Provider.of<ChatlistsProvider>(context, listen: false)
-            .getAllChatlists();
-        chatList = Provider.of<ChatlistsProvider>(context, listen: false)
-            .chatlists
-            .firstWhere((chatList) => chatList.id == widget.listId);
-      });
-    } else {
+    // if (widget.isNotificationOpened) {
+    //   // WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+    //     await Provider.of<ChatlistsProvider>(context, listen: false)
+    //         .getAllChatlists();
+    //     chatList = Provider.of<ChatlistsProvider>(context, listen: false)
+    //         .chatlists
+    //         .firstWhere((chatList) => chatList.id == widget.listId);
+    //   // });
+    // } else {
       chatList = Provider.of<ChatlistsProvider>(context, listen: false)
           .chatlists
           .firstWhere((chatList) => chatList.id == widget.listId);
-    }
+    // }
     if (widget.isUsingDynamicLink) {
       var currentUserId = FirebaseAuth.instance.currentUser?.uid;
       FirebaseFirestore.instance
@@ -965,9 +957,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   }
 
   shareListViaDeepLink() async {
-    // var deviceToken = await FirebaseMessaging.instance.getToken();
-    // get(Uri.parse('https://europe-west1-discountly.cloudfunctions.net/pushNotificationToContact?token=$deviceToken')).then((value) => print(value.body));
-
     BranchUniversalObject buo = BranchUniversalObject(
         canonicalIdentifier: 'invite_to_list',
         //canonicalUrl: '',

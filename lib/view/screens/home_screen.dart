@@ -1012,7 +1012,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
     await pushNewScreen(context,
         screen: ChatListViewScreen(
-          // updateList: updateList,
           listId: id,
           isListView: false,
         ),
