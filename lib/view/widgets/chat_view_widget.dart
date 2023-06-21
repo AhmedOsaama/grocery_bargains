@@ -8,6 +8,7 @@ import 'package:bargainb/view/components/close_button.dart';
 import 'package:bargainb/view/components/draggable_list.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/screens/categories_screen.dart';
+import 'package:bargainb/view/widgets/chatlist_item.dart';
 import 'package:bargainb/view/widgets/product_dialog.dart';
 import 'package:bargainb/view/widgets/quantity_counter.dart';
 import 'package:bargainb/view/widgets/size_container.dart';
@@ -32,6 +33,7 @@ import 'package:bargainb/view/components/dotted_container.dart';
 import 'package:bargainb/view/components/generic_field.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 
+import '../../models/list_item.dart';
 import '../../providers/products_provider.dart';
 import 'discountItem.dart';
 import 'message_bubble.dart';
@@ -56,6 +58,14 @@ class _ChatViewState extends State<ChatView> {
   var isCollapsed = true;
   var isExpandingChatlist = false;
   bool isFirstTime = false;
+
+  List albertItems = [];
+  List jumboItems = [];
+  List hoogvlietItems = [];
+  List quicklyAddedItems = [];
+
+  TextEditingController quickItemController = TextEditingController();
+
   @override
   void initState() {
     getFirstTime();
@@ -302,9 +312,6 @@ class _ChatViewState extends State<ChatView> {
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return Container();
                             }
-                            if (items.isEmpty) {
-                              return Container();
-                            }
                             int height = 400;
                             switch (items.length) {
                               case 1:
@@ -380,169 +387,198 @@ class _ChatViewState extends State<ChatView> {
                                                 )),
                                     ],
                                   ),
+
                                   if (isExpandingChatlist)
-                                    Flexible(
-                                        child: ListView.separated(
-                                      itemCount: items.length,
-                                      separatorBuilder: (ctx, i) => 10.ph,
-                                      padding: EdgeInsets.only(bottom: 15.h),
-                                      itemBuilder: (ctx, i) {
-                                        var isChecked = items[i]['item_isChecked'];
-                                        var text = items[i]['text'] ?? '';
-                                        var itemName = items[i]['item_name'];
-                                        var itemImage = items[i]['item_image'];
-                                        var itemSize = items[i]['item_size'];
-                                        var itemPrice = items[i]['item_price'];
-                                        var itemOldPrice = items[i].data().containsKey("item_oldPrice")
-                                            ? items[i]['item_oldPrice'] ?? ""
-                                            : '';
-                                        var itemQuantity = items[i].data().containsKey("item_quantity")
-                                            ? items[i]['item_quantity']
-                                            : 1;
-                                        var storeName =
-                                            items[i].data().containsKey("store_name") ? items[i]['store_name'] : '';
-                                        var itemId =
-                                            items[i].data().containsKey("item_id") ? items[i]['item_id'] : -1;
-                                        var itemBrand =
-                                            items[i].data().containsKey("item_brand") ? items[i]['item_brand'] : '';
-                                        return text.isNotEmpty
-                                            ? Container()
-                                            : Column(
-                                              children: [
-                                                Row(
-                                                    // crossAxisAlignment: CrossAxisAlignment.center,
-                                                    children: [
-                                                      Expanded(
-                                                        child: Opacity(
-                                                          opacity: isChecked ? 0.6 : 1,
-                                                          child: Row(
-                                                            children: [
-                                                              Checkbox(
-                                                                value: isChecked,
-                                                                checkColor: purple70,
-                                                                side: BorderSide(color: purple70, width: 2),
-                                                                onChanged: (value) {
-                                                                  setState(() {
-                                                                    items[i]
-                                                                        .data()
-                                                                        .update('item_isChecked', (value) => !isChecked);
-                                                                    // (items[i] as Map)['item_isChecked'] =
-                                                                    // !isChecked;
-                                                                  });
-                                                                  FirebaseFirestore.instance
-                                                                      .collection(
-                                                                          "/lists/${items[i].reference.parent.id}/items")
-                                                                      .doc(items[i].id)
-                                                                      .update({
-                                                                    "item_isChecked": isChecked,
-                                                                  }).catchError((e) {
-                                                                    print(e);
-                                                                    ScaffoldMessenger.of(context).showSnackBar(
-                                                                        SnackBar(content: Text("OperationNotDone".tr())));
-                                                                  });
-                                                                },
-                                                              ),
-                                                              GestureDetector(
-                                                                onTap: () {},
-                                                                child: Image.network(
-                                                                  itemImage,
-                                                                  errorBuilder: (ctx, _, p) => SvgPicture.asset(
-                                                                    imageError,
-                                                                    height: 50,
-                                                                  ),
-                                                                  width: 55,
-                                                                  height: 55,
-                                                                ),
-                                                              ),
-                                                              12.pw,
-                                                              Column(
-                                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                                children: [
-                                                                  // Text(storeName),
-                                                                  Text(
-                                                                    itemBrand,
-                                                                    style: TextStylesInter.textViewSemiBold13.copyWith(
-                                                                      color: blackSecondary,
-                                                                    ),
-                                                                  ),
-                                                                  Container(
-                                                                    width: 130.w,
-                                                                    child: Text(
-                                                                      itemName,
-                                                                      overflow: TextOverflow.ellipsis,
-                                                                      maxLines: 2,
-                                                                      style: TextStylesInter.textViewRegular10.copyWith(
-                                                                          color: blackSecondary,
-                                                                          decoration: isChecked
-                                                                              ? TextDecoration.lineThrough
-                                                                              : null),
-                                                                    ),
-                                                                  ),
-                                                                  10.ph,
-                                                                ],
-                                                              ),
-                                                              Spacer(),
-                                                              Text("X " + itemQuantity.toString()),
-                                                              10.pw,
-                                                              GestureDetector(
-                                                                  onTap: () {
-                                                                    showDialog(
-                                                                        context: context,
-                                                                        builder: (ctx) => ProductDialog(
-                                                                          itemId: itemId,
-                                                                            itemQuantity: itemQuantity,
-                                                                            itemImage: itemImage,
-                                                                            itemBrand: itemBrand,
-                                                                            itemSize: itemSize,
-                                                                            itemName: itemName, storeName: storeName,));
-                                                                  },
-                                                                  child: SvgPicture.asset(
-                                                                    edit,
-                                                                    color: Colors.black,
-                                                                  )),
-                                                              12.pw,
-                                                              Text(
-                                                                "€ ${(double.parse(itemPrice) * itemQuantity).toStringAsFixed(2)}",
-                                                                style: TextStyles.textViewMedium13.copyWith(
-                                                                  color: prussian,
-                                                                  decoration: isChecked ? TextDecoration.lineThrough : null,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                Row(
-                                                  children: [
-                                                    105.pw,
-                                                    SizeContainer(itemSize: itemSize),
-                                                    10.pw,
-                                                    if (itemOldPrice != null &&
-                                                        itemOldPrice.isNotEmpty) ...[
-                                                      Text(
-                                                        "€ ${itemOldPrice}",
-                                                        // "€ 2.33",
-                                                        style: TextStyles.textViewMedium10.copyWith(
-                                                            color: greyText,
-                                                            decoration: TextDecoration.lineThrough),
-                                                      ),
-                                                      5.pw,
-                                                      Text(
-                                                        "€ ${(double.parse(itemOldPrice) - double.parse(itemPrice)).toStringAsFixed(2)} less",
-                                                        // "€ ${2.33 - 1.00} less",
-                                                        style: TextStyles.textViewMedium10.copyWith(
-                                                          color: greenSecondary,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ],
+                                    Builder(builder: (ctx) {
+                                      if(items.isEmpty) return Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          ...List.generate(3, (index) => Row(
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.all(15),
+                                                margin: EdgeInsets.symmetric(vertical: 7),
+                                                decoration: BoxDecoration(color: purple30,
+                                                  borderRadius: BorderRadius.circular(20),
                                                 ),
-                                              ],
-                                            );
-                                      },
-                                    )),
+                                                child: SvgPicture.asset(cheese,width: 27,height: 27,),
+                                              ),
+                                              10.pw,
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    width: 75.w,
+                                                    height: 10.h,
+                                                    decoration: BoxDecoration(
+                                                    color: purple50,
+                                                    borderRadius: BorderRadius.circular(6)
+                                                  ),),
+                                                  5.ph,
+                                                  Container(
+                                                    width: 220.w,
+                                                    height: 8.h,
+                                                    decoration: BoxDecoration(
+                                                    color: purple10,
+                                                    borderRadius: BorderRadius.circular(6)
+                                                  ),),
+                                                  5.ph,
+                                                  Container(
+                                                    width: 220.w,
+                                                    height: 8.h,
+                                                    decoration: BoxDecoration(
+                                                    color: purple10,
+                                                    borderRadius: BorderRadius.circular(6)
+                                                  ),),
+                                                ],
+                                              ),
+                                              Spacer(),
+                                              Text("€ 1.25"),
+                                            ],
+                                          )),
+                                          10.ph,
+                                          Text("Add your first item to your chatlist", style: TextStylesInter.textViewSemiBold20.copyWith(color: blackSecondary),),
+                                          15.ph,
+                                          Text("Add items to your chatlist to see which supermarkets are cheapest", style: TextStylesInter.textViewRegular10.copyWith(color: greyText),),
+                                          15.ph,
+                                          GenericButton(
+                                              onPressed: () async {
+                                                SharedPreferences pref = await SharedPreferences.getInstance();
+                                                return showSearch(context: context, delegate: MySearchDelegate(pref, true));
+                                              },
+                                              child: Text(LocaleKeys.addItem.tr()),
+                                              color: mainPurple,
+                                              borderRadius: BorderRadius.circular(6)),
+                                        ],
+                                      );
+                                      albertItems.clear();
+                                      jumboItems.clear();
+                                      hoogvlietItems.clear();
+                                      quicklyAddedItems.clear();
+                                        for (var item in items) {
+                                          if (item['store_name'] == "Albert") {
+                                            albertItems.add(item);
+                                          }
+                                          if (item['store_name'] == "Jumbo") {
+                                            jumboItems.add(item);
+                                          }
+                                          if (item['store_name'] == "Hoogvliet") {
+                                            hoogvlietItems.add(item);
+                                          }
+                                          if (item['store_name'].isEmpty) {
+                                            quicklyAddedItems.add(item);
+                                          }
+                                        }
+                                      return Flexible(
+                                        child: ListView(
+                                          children: [
+                                            if (albertItems.isNotEmpty) ...[
+                                              Text(
+                                                "Albert Heijn",
+                                                style:
+                                                    TextStylesInter.textViewRegular16.copyWith(color: Colors.lightBlue),
+                                              ),
+                                              5.ph,
+                                              Column(
+                                                children: albertItems.map((item) {
+                                                  return ChatlistItem(item: item);
+                                                }).toList(),
+                                              ),
+                                            ],
+                                            if (jumboItems.isNotEmpty) ...[
+                                              Text(
+                                                "Jumbo",
+                                                style:
+                                                    TextStylesInter.textViewRegular16.copyWith(color: Colors.lightBlue),
+                                              ),
+                                              5.ph,
+                                              Column(
+                                                children: jumboItems.map((item) {
+                                                  return ChatlistItem(item: item);
+                                                }).toList(),
+                                              ),
+                                            ],
+                                            if (hoogvlietItems.isNotEmpty) ...[
+                                              Text(
+                                                "Hoogvliet",
+                                                style:
+                                                    TextStylesInter.textViewRegular16.copyWith(color: Colors.lightBlue),
+                                              ),
+                                              5.ph,
+                                              Column(
+                                                children: hoogvlietItems.map((item) {
+                                                  return ChatlistItem(item: item);
+                                                }).toList(),
+                                              ),
+                                              Divider(
+                                                thickness: 2,
+                                                color: Colors.black,
+                                              ),
+                                              Text("Quick Items",style: TextStylesInter.textViewRegular12.copyWith(color: greyText),),
+                                              Column(
+                                                children: quicklyAddedItems.map((item) {
+                                                  return ChatlistItem(item: item);
+                                                }).toList(),
+                                              ),
+                                              5.ph,
+                                              Text(
+                                                LocaleKeys.quickAdd.tr(),
+                                                style:
+                                                    TextStylesInter.textViewSemiBold12.copyWith(color: blackSecondary),
+                                              ),
+                                              5.ph,
+                                              GenericField(
+                                                controller: quickItemController,
+                                                onSubmitted: (value) {
+                                                  Provider.of<ChatlistsProvider>(context, listen: false).addItemToList(
+                                                      ListItem(
+                                                          id: -1,
+                                                          storeName: "",
+                                                          imageURL: '',
+                                                          isChecked: false,
+                                                          name: value.trim(),
+                                                          price: "0.0",
+                                                          quantity: 0,
+                                                          size: '',
+                                                          text: value.trim(),
+                                                          brand: ''),
+                                                      widget.listId);
+                                                  quickItemController.clear();
+                                                },
+                                                hintText: LocaleKeys.addSomethingQuickly.tr(),
+                                                hintStyle:
+                                                    TextStylesInter.textViewRegular12.copyWith(color: blackSecondary),
+                                                fillColor: lightPurple,
+                                                suffixIcon: TextButton(
+                                                  onPressed: () async {
+                                                    await Provider.of<ChatlistsProvider>(context, listen: false)
+                                                        .addItemToList(
+                                                            ListItem(
+                                                                id: -1,
+                                                                storeName: "",
+                                                                imageURL: '',
+                                                                isChecked: false,
+                                                                name: quickItemController.text.trim(),
+                                                                price: "0.0",
+                                                                quantity: 0,
+                                                                size: '',
+                                                                text: quickItemController.text.trim(),
+                                                                brand: ''),
+                                                            widget.listId);
+                                                    quickItemController.clear();
+                                                  },
+                                                  child: Text(
+                                                    LocaleKeys.add.tr(),
+                                                    style: TextStylesDMSans.textViewBold12.copyWith(color: mainPurple),
+                                                  ),
+                                                ),
+                                              )
+                                            ],
+                                            15.ph,
+                                          ],
+                                        ),
+                                      );
+                                    }),
                                 ],
                               ),
                             );

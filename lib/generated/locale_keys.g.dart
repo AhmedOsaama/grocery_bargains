@@ -180,7 +180,7 @@ abstract class  LocaleKeys {
   static const next = 'next';
   static const helloGuest = 'helloGuest';
   static const gotAnyIdeas = 'gotAnyIdeas';
-  static const readTimeStamp = 'readTimeStamp';
+  static const readtimestamp = 'readtimestamp';
   static const latestValueBargains = 'latestValueBargains';
   static const dataAccess = 'dataAccess';
   static const privacyPolicy = 'privacyPolicy';
@@ -240,5 +240,7 @@ abstract class  LocaleKeys {
   static const addYourPhoneNumber = 'addYourPhoneNumber';
   static const addedToList = 'addedToList';
   static const greatNews = 'greatNews';
+  static const addSomethingQuickly = 'addSomethingQuickly';
+  static const quickAdd = 'quickAdd';
 
 }

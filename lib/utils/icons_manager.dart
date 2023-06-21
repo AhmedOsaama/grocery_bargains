@@ -40,3 +40,4 @@ const String closeCircle = "$imgPath/closeCircle.svg";
 const String imageError = "$imgPath/image_error.svg";
 const String tutorial = "$imgPath/tutorial.svg";
 const String edit = "$imgPath/edit.svg";
+const String cheese = "$imgPath/cheese.svg";

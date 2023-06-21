@@ -242,6 +242,8 @@
   "inviteMembers"                                       : "Invite Members",
   "addYourPhoneNumber"                                  : "Add your phone number to find others on BargainB",
   "addedToList"                                         : "Added to List",
-  "greatNews"                                         : "Great news! The invited user has been added to your list. They can now view and contribute to the list. Happy collaborating!"
+  "greatNews"                                         : "Great news! The invited user has been added to your list. They can now view and contribute to the list. Happy collaborating!",
 
+  "addSomethingQuickly"                             : "Add something quickly",
+  "quickAdd"                             : "Quick Add"
 }

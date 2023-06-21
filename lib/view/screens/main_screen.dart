@@ -1,4 +1,6 @@
+import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
+import 'package:bargainb/view/screens/product_detail_screen.dart';
 import 'package:bargainb/view/widgets/signin_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -36,11 +38,6 @@ class _MainScreenState extends State<MainScreen> {
   final unSelectedColor = purple30;
   late bool isFirstTime;
 
-  // void initState() {
-  //   getUserDataFuture = FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
-  //   DynamicLinkService().listenToDynamicLinks(context);               //case 2 the app is open but in background and opened again via deep link
-  //   super.initState();
-  // }
 
   Future<Null> getSharedPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -61,13 +58,17 @@ class _MainScreenState extends State<MainScreen> {
           data["+clicked_branch_link"] == true) {
         //Link clicked. Add logic to get link data and route user to correct screen
         var listId = data["list_id"];
+        var productData = data["product_data"];
         var page = data["page"];
 
-        // if(route == '/home_screen')
         print('Custom string: ${listId}');
+        print('Custom string: ${productData}');
         print('Custom string: ${page}');
         if(page != null){
           if(page == '/profile-screen') AppNavigator.push(context: context, screen: ProfileScreen());
+        }
+        if(productData != null){
+          Provider.of<ProductsProvider>(context,listen: false).goToProductPage(productData['store_name'], context, productData['product_id']);
         }
         if (listId != null) {
           var currentUserId = FirebaseAuth.instance.currentUser?.uid;
@@ -114,7 +115,6 @@ class _MainScreenState extends State<MainScreen> {
       print(
           'InitSession error: ${platformException.code} - ${platformException.message}');
     });
-    // FlutterBranchSdk.validateSDKIntegration();
     if (FirebaseAuth.instance.currentUser != null)
       Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists().then((value) {
         if(widget.notificationData != null){

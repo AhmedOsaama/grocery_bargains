@@ -24,6 +24,7 @@ class GenericField extends StatefulWidget {
   final TextInputType? keyboardType;
   final int? maxLines;
   final bool? isFilled;
+  final Color? fillColor;
   final Color colorStyle;
   final double borderRaduis;
   final BoxShadow? boxShadow;
@@ -53,7 +54,7 @@ class GenericField extends StatefulWidget {
     this.hintStyle,
     this.onTap,
     this.boxShadow,
-    this.suffixConstraints,
+    this.suffixConstraints, this.fillColor,
   });
 
   @override
@@ -113,7 +114,7 @@ class _GenericFieldState extends State<GenericField> {
           suffixIcon: widget.suffixIcon,
           hintText: widget.hintText,
           labelText: widget.labeltext,
-          fillColor: Colors.white,
+          fillColor: widget.fillColor ?? Colors.white,
           // suffixIconConstraints: widget.suffixConstraints ?? BoxConstraints.tight(Size.square(40)),
           suffixIconConstraints: widget.suffixConstraints,
           labelStyle: const TextStyle(fontSize: 16, color: Color(0xff343434)),

@@ -2,11 +2,14 @@ import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/view/widgets/quantity_counter.dart';
 import 'package:bargainb/view/widgets/size_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../models/product.dart';
+import '../../providers/chatlists_provider.dart';
 import '../../providers/products_provider.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
@@ -19,8 +22,12 @@ class ProductDialog extends StatefulWidget {
   String itemBrand;
   String itemSize;
   String itemName;
+  String listId;
+  String itemDocId;
+  String itemPrice;
   String storeName;
   int itemQuantity;
+
   ProductDialog(
       {Key? key,
       required this.itemQuantity,
@@ -28,6 +35,8 @@ class ProductDialog extends StatefulWidget {
       required this.itemId,
       required this.itemImage,
       required this.itemBrand,
+        required this.listId,
+        required this.itemPrice,required this.itemDocId,
       required this.itemSize,
       required this.itemName})
       : super(key: key);
@@ -92,7 +101,17 @@ class _ProductDialogState extends State<ProductDialog> {
                 Column(
                   children: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Provider.of<ChatlistsProvider>(
+                            context,
+                            listen: false)
+                            .deleteItemFromChatlist(
+                            widget.listId,
+                            widget.itemDocId,
+                            widget.itemPrice
+                        );
+                        AppNavigator.pop(context: context);
+                      },
                       icon: Icon(Icons.delete, color: purple30),
                       splashRadius: 25,
                     ),
@@ -108,7 +127,6 @@ class _ProductDialogState extends State<ProductDialog> {
                     IconButton(
                         onPressed: () {
                           var productProvider = Provider.of<ProductsProvider>(context, listen: false);
-                          print(widget.itemId);
                           late Product product;
                           switch (widget.storeName) {
                             case 'Hoogvliet':
@@ -154,7 +172,7 @@ class _ProductDialogState extends State<ProductDialog> {
                 30.pw,
                 Column(
                   children: [
-                    IconButton(onPressed: () {}, icon: Icon(Icons.share_outlined, color: purple30),splashRadius: 25),
+                    IconButton(onPressed: shareProductViaDeepLink, icon: Icon(Icons.share_outlined, color: purple30),splashRadius: 25),
                     Text(
                       'Share',
                       style: TextStylesInter.textViewMedium12.copyWith(color: purple30),
@@ -167,5 +185,35 @@ class _ProductDialogState extends State<ProductDialog> {
         ),
       ),
     );
+  }
+  shareProductViaDeepLink() async {
+    BranchUniversalObject buo = BranchUniversalObject(
+        canonicalIdentifier: 'invite_to_product',
+        title: widget.itemName,
+        imageUrl:
+        'https://play-lh.googleusercontent.com/u6LMBvrIXH6r1LFQftqjSzebxflasn-nhcoZUlP6DjWHV6fmrwgNFyjJeFwFmckrySHF=w240-h480-rw',
+        contentDescription:
+        'Hey, check out this product ${widget.itemName} from BargainB',
+        publiclyIndex: true,
+        locallyIndex: true,
+        contentMetadata: BranchContentMetaData()
+          ..addCustomMetadata('product_data', {
+            "product_id": widget.itemId,
+            "store_name": widget.storeName
+          }));
+    BranchLinkProperties lp = BranchLinkProperties(
+        channel: 'facebook',
+        feature: 'sharing product',
+        stage: 'new share',
+        tags: ['one', 'two', 'three']);
+    BranchResponse response =
+    await FlutterBranchSdk.getShortUrl(buo: buo, linkProperties: lp);
+
+    if (response.success) {
+      print('Link generated: ${response.result}');
+    } else {
+      print('Error : ${response.errorCode} - ${response.errorMessage}');
+    }
+    Share.share(response.result);
   }
 }

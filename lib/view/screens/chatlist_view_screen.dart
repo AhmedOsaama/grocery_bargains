@@ -281,8 +281,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // var chatlistsProvider =
-    //     Provider.of<ChatlistsProvider>(context);
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(color: white, boxShadow: [
@@ -296,7 +294,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
           children: [
             75.ph,
             Container(
-              // color: Colors.red,
               child: Row(
                 children: [
                   15.pw,

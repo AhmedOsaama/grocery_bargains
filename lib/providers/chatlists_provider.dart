@@ -225,6 +225,7 @@ class ChatlistsProvider with ChangeNotifier {
           .collection('/lists/${listId}/items')
           .doc(itemId)
           .delete();
+      //TODO: delete item from messages here using item_id field
       await FirebaseFirestore.instance.collection('lists').doc(listId).update({
         "size": FieldValue.increment(-1),
         "total_price":

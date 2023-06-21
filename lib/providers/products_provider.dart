@@ -7,9 +7,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:bargainb/services/network_services.dart';
 
+import '../config/routes/app_navigator.dart';
 import '../models/bestValue_item.dart';
 import '../models/product.dart';
 import '../utils/assets_manager.dart';
+import '../view/screens/product_detail_screen.dart';
 
 class ProductsProvider with ChangeNotifier {
   List<Product> jumboProducts = [];
@@ -887,6 +889,40 @@ class ProductsProvider with ChangeNotifier {
       print(e);
     }
     return comparisonId;
+  }
+
+  void goToProductPage(String storeName, BuildContext context, String productId){
+    late Product product;
+    switch (storeName) {
+      case 'Hoogvliet':
+        product =
+        hoogvlietProducts
+            .firstWhere((product) => product.id == productId);
+        break;
+      case 'Jumbo':
+        product =
+            jumboProducts.firstWhere((product) => product.id == productId);
+        break;
+      case 'Albert':
+        product =
+            albertProducts.firstWhere((product) => product.id == productId);
+        break;
+    }
+    AppNavigator.push(
+        context: context,
+        screen: ProductDetailScreen(
+          productId: product.id,
+          productBrand: product.brand,
+          oldPrice: product.oldPrice,
+          storeName: product.storeName,
+          productName: product.name,
+          imageURL: product.imageURL,
+          description: product.description,
+          size1: product.size,
+          size2: product.size2 ?? "",
+          price1: double.tryParse(product.price ?? "") ?? 0.0,
+          price2: double.tryParse(product.price2 ?? "") ?? 0.0,
+        ));
   }
 
   String getImage(String storeName) {
