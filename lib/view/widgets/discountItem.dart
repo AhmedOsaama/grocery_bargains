@@ -192,14 +192,16 @@ class DiscountItem extends StatelessWidget {
   }
 
   void goToStoreProductPage(Product product, BuildContext context) {
-      AppNavigator.push(
+     AppNavigator.push(
           context: context,
           screen: ProductDetailScreen(
             productId: product.id,
+            productBrand: product.brand,
             storeName: selectedStore,
             productName: product.name,
             imageURL: product.imageURL,
             description: product.description,
+            oldPrice: product.oldPrice,
             price1: double.tryParse(product.price ?? "") ?? 0.0,
             price2: double.tryParse(product.price2 ?? "") ?? 0.0,
             size1: product.size,

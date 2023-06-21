@@ -26,3 +26,5 @@ const String onboarding3 = "$imgPath/onboarding3.png";
 const String onboarding4 = "$imgPath/onboarding4.png";
 const String signinDialog = "$imgPath/signindialog.png";
 const String personAva = "$imgPath/personAva.png";
+const String groceryList = "$imgPath/grocery_list.png";
+const String messagesPlaceholder = "$imgPath/messages.svg";

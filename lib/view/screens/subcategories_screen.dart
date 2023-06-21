@@ -174,6 +174,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                     products.elementAt(index).oldPrice ?? "",
                                 storeName: products.elementAt(index).storeName,
                                 name: products.elementAt(index).name,
+                                brand: products.elementAt(index).brand,
                                 url: products.elementAt(index).url,
                                 category: products.elementAt(index).category,
                                 price: products.elementAt(index).price,
@@ -188,6 +189,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                     context: context,
                                     screen: ProductDetailScreen(
                                       productId: p.id,
+                                      productBrand: p.brand,
                                       oldPrice: p.oldPrice ?? "",
                                       storeName: p.storeName,
                                       productName: p.name,
@@ -459,6 +461,7 @@ class _SubCategoriesScreenState extends State<SubCategoriesScreen> {
                                                         screen:
                                                             ProductDetailScreen(
                                                           productId: p.id,
+                                                          productBrand: p.brand,
                                                           oldPrice:
                                                               p.oldPrice ?? "",
                                                           storeName:

@@ -154,32 +154,16 @@ class ChatlistsProvider with ChangeNotifier {
     return friendsList;
   }
 
-  Future<void> showChooseListDialog(
-      {required BuildContext context,
-      required bool isSharing,
-      required ListItem listItem}) async {
-    // var allLists = []; //TODO: use the provider's chatlist instead of allLists
-    // var chatlists = Provider.of<ChatlistsProvider>(context,listen: false).chatlists;
-    // for (var chatlist in chatlists) {
-    //   allLists.add({
-    //     "list_name": chatlist.name,
-    //     'list_id': chatlist.id,
-    //   });
-    // }
-    showDialog(
-        context: context,
-        builder: (ctx) =>
-            ChooseListDialog(isSharing: isSharing, item: listItem));
-  }
 
-  Future<String> createChatList(List<String> userIds) async {
+  Future<String> createChatList(List<String> userIds, {String? name}) async {
     userIds.add(FirebaseAuth.instance.currentUser!.uid);
+    print(name);
     var docRef = await FirebaseFirestore.instance.collection('/lists').add({
       "last_message": "",
       "last_message_date": Timestamp.fromDate(DateTime.now().toUtc()),
       "last_message_userId": "",
       "last_message_userName": "",
-      "list_name": "Name...",
+      "list_name": name ?? "Name...",
       "size": 0,
       "storeImageUrl": storePlaceholder,
       "storeName": "None",
@@ -188,7 +172,7 @@ class ChatlistsProvider with ChangeNotifier {
     });
     chatlists.add(ChatList(
         id: docRef.id,
-        name: "Name...",
+        name: name ?? "Name...",
         storeName: '',
         userIds: [FirebaseAuth.instance.currentUser?.uid ?? ""],
         totalPrice: 0.0,
@@ -221,7 +205,6 @@ class ChatlistsProvider with ChangeNotifier {
 
   Future<void> deleteItemFromChatlist(
       String listId, String itemId, String itemPrice) async {
-    print("ENTERED");
     try {
       var chatlist = chatlists.firstWhere((chatlist) => chatlist.id == listId);
       var item = await FirebaseFirestore.instance
@@ -254,10 +237,6 @@ class ChatlistsProvider with ChangeNotifier {
     } catch (e) {
       print(e);
     }
-    // chatlist.lastMessage = "Added $lastMessage";
-    // chatlist.lastMessageDate = Timestamp.now();
-    // chatlist.lastMessageUserId = FirebaseAuth.instance.currentUser?.uid ?? "";
-    // chatlist.lastMessageUserName = userName;
   }
 
   Future<void> updateListName(String value, String listId) async {
@@ -306,14 +285,15 @@ class ChatlistsProvider with ChangeNotifier {
 
   Future<bool> shareItem(
       {required ListItem item, required String docId}) async {
-    //TODO: duplicated with chat_view_widget line 310
     final userData = await FirebaseFirestore.instance
         .collection('/users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
     await FirebaseFirestore.instance.collection('/lists/$docId/messages').add({
+      'item_id': item.id,
       'item_name': item.name,
       'item_image': item.imageURL,
+      "item_brand": item.brand,
       'item_description': item.size,
       'store_name': item.storeName,
       'isAddedToList': false,
@@ -337,28 +317,6 @@ class ChatlistsProvider with ChangeNotifier {
     return true;
   }
 
-  Future<bool> addItemToList(ListItem item, String docId) async {
-    bool done = true;
-    final userData = await FirebaseFirestore.instance
-        .collection('/users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
-    await FirebaseFirestore.instance.collection('/lists/$docId/items').add({
-      "item_name": item.name,
-      "item_size": item.size,
-      "item_price": item.price,
-      "item_image": item.imageURL,
-      'store_name': item.storeName,
-      "item_isChecked": false,
-      "text": item.text,
-      "owner": userData['username'],
-      "time": Timestamp.fromDate(DateTime.now().toUtc()),
-    }).catchError((e) {
-      done = false;
-    });
-    updateChatList(docId, '', userData);
-    return done;
-  }
 
   Future<bool> shareItemAsMessage(
       {itemId,
@@ -399,6 +357,60 @@ class ChatlistsProvider with ChangeNotifier {
     updateChatList(listId, 'Shared $itemName', userData);
     return true;
   }
+
+  Future<bool> addItemToList(ListItem item, String docId) async {
+    bool done = true;
+    final userData = await FirebaseFirestore.instance
+        .collection('/users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    await FirebaseFirestore.instance.collection('/lists/$docId/items').add({
+      'item_id': item.id,
+      "item_name": item.name,
+      "item_brand": item.brand,
+      "item_size": item.size,
+      "item_price": item.price,
+      "item_image": item.imageURL,
+      'store_name': item.storeName,
+      'item_quantity': item.quantity,
+      'item_oldPrice': item.oldPrice,
+      "item_isChecked": false,
+      "text": item.text,
+      "owner": userData['username'],
+      "time": Timestamp.fromDate(DateTime.now().toUtc()),
+    }).catchError((e) {
+      done = false;
+    });
+    await FirebaseFirestore.instance.collection('/lists/$docId/messages').add({
+      'item_id': item.id,
+      "item_name": item.name,
+      "item_image": item.imageURL,
+      'item_description': "",
+      "item_brand": item.brand,
+      'item_size': item.size,
+      'store_name': item.storeName,
+      'item_quantity': item.quantity,
+      'isAddedToList': false,
+      "item_price": item.price,
+      'item_oldPrice': item.oldPrice,
+      'message': "",
+      'createdAt': Timestamp.fromDate(DateTime.now().toUtc()),
+      'userId': FirebaseAuth.instance.currentUser!.uid,
+      'username': userData['username'],
+      'userImageURL': userData['imageURL'],
+    }).catchError((e) {
+      print(e);
+    });
+    FirebaseFirestore.instance.collection('/lists').doc(docId).update({
+      "last_message": "Added ${item.id}",
+      "last_message_date": Timestamp.fromDate(DateTime.now().toUtc()),
+      "last_message_userId": FirebaseAuth.instance.currentUser?.uid,
+      "last_message_userName": userData['username'],
+    });
+    updateChatList(docId, '', userData);
+    return done;
+  }
+
 
   Future<void> addMessageToList({
     required DocumentReference messageDocPath,

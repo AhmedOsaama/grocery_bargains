@@ -63,7 +63,6 @@
   "priceAlert" : "Prijs alert",
   "seeMore": "Bekijk meer",
   "myLists" : "Mijn lijsten",
-  "createYourFirstList" : "Maak je eerste lijst",
   "blank" : "Blanco",
   "store" : "Winkel",
   "total" : "Totaal",
@@ -225,10 +224,24 @@
   "DidntGetCode"                  : "Heb je de code niet gekregen ?  ",
   "Resend"                  : "Opnieuw verzenden",
 
-
-
   "allCategories"                  : "Alle categorieën",
   "HelloGuest"                  : "Hallo, Gast!",
-  "Tutorial"                  : "Tutorial"
+  "Tutorial"                  : "Tutorial",
+
+  "createYourFirstList"           : "Create Your First Chatlists",
+  "noChatlists":                    "NO CHATLISTS",
+  "savings":                    "Savings",
+  "createAList":                    "Create a list",
+  "enterChatListName"                                : "Enter chatlist name",
+  "didYouKnowWhenYouShareChatlists"                   : "Did you know that when you share chatlists with friends and family, you can chat with them about the items on the lists, add items while they are at the store, and do more!",
+  "create"                                        : "Create",
+  "back"                                          : "Back",
+  "addYourFriendsAndFamily"                       : "Add your friends and family to start chatting, or add items to your lists",
+  "addItem"                                       : "Add Item",
+  "addContacts"                                       : "Add Contacts",
+  "inviteMembers"                                       : "Invite Members",
+  "addYourPhoneNumber"                                  : "Add your phone number to find others on BargainB",
+  "addedToList"                                         : "Added to List",
+  "greatNews"                                         : "Great news! The invited user has been added to your list. They can now view and contribute to the list. Happy collaborating!"
 
 }

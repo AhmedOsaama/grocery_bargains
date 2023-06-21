@@ -23,112 +23,79 @@ class ChatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<QuerySnapshot>(
-        future: FirebaseFirestore.instance
-            .collection('/lists/${allLists.elementAt(i).id}/items')
-            .get(),
+        future: FirebaseFirestore.instance.collection('/lists/${allLists.elementAt(i).id}/items').get(),
         builder: (context, snapshot) {
           var storeItems = snapshot.data?.docs ?? [];
           return InkWell(
             onTap: () => pushNewScreen(context,
                 screen: ChatListViewScreen(
-                  // updateList: updateList,
                   listId: allLists.elementAt(i).id,
                 ),
                 withNavBar: false),
-            child: Row(
-              children: [
-                Image.asset(
-                  storePlaceholder,
-                  width: 45,
-                  height: 45,
-                ),
-                18.pw,
-                Expanded(
-                  flex: 2,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        allLists[i].name,
-                        style: TextStylesInter.textViewSemiBold16
-                            .copyWith(color: black2),
-                      ),
-                      snapshot.hasData
-                          ? Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  "${storeItems.length} ${LocaleKeys.items.tr()}",
-                                  style: TextStylesInter.textViewMedium10
-                                      .copyWith(color: purple50),
-                                ),
-                                5.pw,
-                                Text(
-                                  "€${getTotalListPrice(storeItems)}",
-                                  style: TextStylesInter.textViewMedium10
-                                      .copyWith(color: black2),
-                                ),
-                              ],
-                            )
-                          : Container(),
-                      allLists[i].lastMessage.isEmpty
-                          ? Text("")
-                          : Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  '${allLists[i].lastMessageUserId == FirebaseAuth.instance.currentUser?.uid ? LocaleKeys.you.tr() : allLists[i].lastMessageUserName}: ',
-                                  style: TextStylesInter.textViewRegular14
-                                      .copyWith(color: black2),
-                                ),
-                                Container(
-                                  //width: 100.w,
-                                  child: Flexible(
-                                    child: Text(
-                                      allLists[i].lastMessage,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStylesInter.textViewRegular14
-                                          .copyWith(color: black2),
-                                    ),
-                                  ),
-                                ),
-                              ],
+            child: Container(
+              padding: EdgeInsets.only(left: 17.w, top: 10.h, bottom: 10.h),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: white,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          allLists[i].name,
+                          style: TextStylesInter.textViewSemiBold16.copyWith(color: black2),
+                        ),
+                        15.ph,
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text.rich(
+                              TextSpan(text: "${LocaleKeys.chatlist.tr()} ",style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
+                                  children: [TextSpan(text: " ${storeItems.length} ${LocaleKeys.items.tr()}",style: TextStylesInter.textViewSemiBold10.copyWith(color: blackSecondary))])
                             ),
-                    ],
+                            10.pw,
+                            Text.rich(
+                                TextSpan(text: "${LocaleKeys.total.tr()} ",style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
+                                    children: [TextSpan(text: " €${getTotalListPrice(storeItems)}",style: TextStylesInter.textViewSemiBold10.copyWith(color: mainPurple))])
+                            ),
+                            10.pw,
+                            Text.rich(
+                                TextSpan(text: "${LocaleKeys.savings.tr()} ",style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
+                                    children: [TextSpan(text: "€${getTotalListSavings(storeItems)}",style: TextStylesInter.textViewSemiBold10.copyWith(color: greenSecondary))])
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            (allLists[i].lastMessageDate.toDate())
-                                .toString()
-                                .split(' ')[0],
-                            style: TextStylesInter.textViewRegular14
-                                .copyWith(color: Color.fromRGBO(72, 72, 74, 1)),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                      FutureBuilder(
-                          future: getUserImages(allLists[i].id),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                  child: CircularProgressIndicator(
-                                color: verdigris,
-                              ));
-                            }
-                            return snapshot.data ??
-                                SvgPicture.asset(peopleIcon);
-                          }),
-                    ],
-                  ),
-                )
-              ],
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Text(
+                          (allLists[i].lastMessageDate.toDate()).toString().split(' ')[0],
+                          style: TextStylesInter.textViewRegular14.copyWith(color: Color.fromRGBO(72, 72, 74, 1)),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        FutureBuilder(
+                            future: getUserImages(allLists[i].id),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(
+                                    child: CircularProgressIndicator(
+                                  color: verdigris,
+                                ));
+                              }
+                              return snapshot.data ?? SvgPicture.asset(peopleIcon);
+                            }),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           );
         });
@@ -139,11 +106,8 @@ class ChatCard extends StatelessWidget {
     imageWidgets.clear();
     List userIds = [];
     try {
-      final list = await FirebaseFirestore.instance
-          .collection('/lists')
-          .doc(docId)
-          .get()
-          .timeout(Duration(seconds: 10));
+      final list =
+          await FirebaseFirestore.instance.collection('/lists').doc(docId).get().timeout(Duration(seconds: 10));
       userIds = list['userIds'];
     } catch (e) {
       print(e);
@@ -158,19 +122,16 @@ class ChatCard extends StatelessWidget {
       userIds = userIds.getRange(0, 3).toList();
     }
     for (var userId in userIds) {
-      final userSnapshot = await FirebaseFirestore.instance
-          .collection('/users')
-          .doc(userId)
-          .get();
+      final userSnapshot = await FirebaseFirestore.instance.collection('/users').doc(userId).get();
       imageUrl = userSnapshot.data()!['imageURL'];
       if (imageUrl.isEmpty) {
-        imageWidgets.add(SvgPicture.asset(peopleIcon));
+        imageWidgets.add(CircleAvatar(child: SvgPicture.asset(bee),radius: 9,));
       } else {
         imageWidgets.add(CircleAvatar(
           backgroundImage: NetworkImage(
             imageUrl,
           ),
-          radius: 12,
+          radius: 9,
         ));
       }
     }
@@ -197,23 +158,33 @@ class ChatCard extends StatelessWidget {
   String getTotalListPrice(List storeItems) {
     var total = 0.0;
     for (var item in storeItems) {
-      if (item.data().containsKey('item_price') &&
-          item['item_price'].runtimeType == String) {
-        if (item['item_price'] != null &&
-            item['item_price'] != "null" &&
-            item['item_price'] != "") {
+      if (item.data().containsKey('item_price') && item['item_price'].runtimeType == String) {
+        if (item['item_price'] != null && item['item_price'] != "null" && item['item_price'] != "") {
           total += double.parse(item['item_price']);
         } else {
           total += 0;
         }
-      } else if (item.data().containsKey('item_price') &&
-          item['item_price'].runtimeType == double) {
+      } else if (item.data().containsKey('item_price') && item['item_price'].runtimeType == double) {
         total += item['item_price'] ?? 0;
       } else {
         total += 0;
       }
     }
 
+    return total.toStringAsFixed(2);
+  }
+
+  String getTotalListSavings(List items) {
+    var total = 0.0;
+    for (var item in items) {
+      try {
+        total += item['item_oldPrice'].runtimeType == String
+            ? (double.parse(item['item_oldPrice']) - double.parse(item['item_price']) )
+            : (item['item_oldPrice'] - item['item_price'] );
+      } catch (e) {
+        total += 0.0;
+      }
+    }
     return total.toStringAsFixed(2);
   }
 }

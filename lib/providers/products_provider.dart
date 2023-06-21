@@ -30,6 +30,7 @@ class ProductsProvider with ChangeNotifier {
       var imageURL = decodedProduct['image_url'];
       var storeName = "Albert";
       var description = decodedProduct['product_description'];
+      var brand = decodedProduct['product_brand'];
       var category = decodedProduct['product_category'] ?? "";
       var subCategory = decodedProduct['type_of_product'];
       var price1 = decodedProduct['price_1'];
@@ -45,6 +46,7 @@ class ProductsProvider with ChangeNotifier {
           storeName: storeName,
           id: id,
           offer: offer,
+          brand: brand,
           subCategory: subCategory,
           oldPrice: oldPrice,
           price: price1,
@@ -88,6 +90,7 @@ class ProductsProvider with ChangeNotifier {
           storeName: storeName,
           id: id,
           offer: offer,
+          brand: "",
           subCategory: subCategory,
           oldPrice: oldPrice,
           price: price1,
@@ -132,6 +135,7 @@ class ProductsProvider with ChangeNotifier {
           storeName: storeName,
           id: id,
           offer: offer,
+          brand: "",
           subCategory: subCategory,
           oldPrice: oldPrice,
           price: price1,
@@ -159,6 +163,8 @@ class ProductsProvider with ChangeNotifier {
         var imageURL = product['image_url'];
         var storeName =
             product.containsKey('product_brand') ? "Albert" : "Jumbo";
+        var brand =
+            product.containsKey('product_brand') ? product['product_brand'] : "";
         var description = product['product_description'];
         var category = product['product_category'] ?? "";
         var subCategory = product.containsKey('type_of_product')
@@ -185,6 +191,7 @@ class ProductsProvider with ChangeNotifier {
             storeName: storeName,
             id: id,
             offer: offer,
+            brand: brand,
             subCategory: subCategory,
             oldPrice: oldPrice,
             price: price1,
@@ -227,6 +234,7 @@ class ProductsProvider with ChangeNotifier {
             storeName: storeName,
             id: id,
             offer: offer,
+            brand: "",
             subCategory: subCategory,
             oldPrice: oldPrice,
             price: price,

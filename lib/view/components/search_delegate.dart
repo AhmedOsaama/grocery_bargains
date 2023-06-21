@@ -88,6 +88,7 @@ class MySearchDelegate extends SearchDelegate {
               itemBuilder: (ctx, i) {
                 var id = searchResults[i].id;
                 var productName = searchResults[i].name;
+                var productBrand = searchResults[i].brand;
                 var productLink = searchResults[i].url;
                 var imageURL = searchResults[i].imageURL;
                 var storeName = searchResults[i].storeName;
@@ -104,6 +105,7 @@ class MySearchDelegate extends SearchDelegate {
                         screen: ProductDetailScreen(
                           productId: id,
                           oldPrice: oldPrice,
+                          productBrand: productBrand,
                           storeName: storeName,
                           productName: productName,
                           imageURL: imageURL,

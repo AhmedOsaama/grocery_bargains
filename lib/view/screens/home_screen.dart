@@ -851,6 +851,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             context: context,
                                             screen: ProductDetailScreen(
                                               productId: bargain.itemId,
+                                              productBrand: '',
                                               storeName: bargain.store,
                                               productName: bargain.itemName,
                                               imageURL: bargain.itemImage,
@@ -1013,7 +1014,6 @@ class _HomeScreenState extends State<HomeScreen> {
     await pushNewScreen(context,
         screen: ChatListViewScreen(
           listId: id,
-          isListView: false,
         ),
         withNavBar: false);
 

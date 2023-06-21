@@ -291,6 +291,7 @@ class _ItemState extends State<Item> {
                                           listen: false)
                                       .addItemToList(
                                           ListItem(
+                                            id: -1,
                                               storeName: "",
                                               imageURL: '',
                                               isChecked: false,
@@ -298,7 +299,7 @@ class _ItemState extends State<Item> {
                                               price: "0.0",
                                               quantity: 0,
                                               size: '',
-                                              text: newItem),
+                                              text: newItem, brand: ''),
                                           widget.listId);
                                   var r = itemsState.value.last;
                                   itemsState.value.last = (ItemData(
@@ -451,9 +452,7 @@ class _ItemState extends State<Item> {
                                     } catch (e) {
                                       print(e);
                                     }
-
-                                    //TODO: check if the item has a chat reference before deleting and if it has then mark the item as un added
-                                  },
+                                    },
                                   icon: const Icon(
                                     Icons.delete,
                                     color: Colors.red,
@@ -553,7 +552,7 @@ class _ItemState extends State<Item> {
                                               0.0,
                                           price2: double.tryParse(
                                                   product.price2 ?? "") ??
-                                              0.0,
+                                              0.0, productBrand: product.brand,
                                         ));
                                   },
                                   child: Image.network(
@@ -637,9 +636,7 @@ class _ItemState extends State<Item> {
                               } catch (e) {
                                 print(e);
                               }
-
-                              //TODO: check if the item has a chat reference before deleting and if it has then mark the item as un added
-                            },
+                              },
                             icon: const Icon(
                               Icons.delete,
                               color: Colors.red,

@@ -800,6 +800,26 @@ abstract class TextStylesInter {
     fontWeight: FontWeight.w600,
     fontFamily: fontFamilyInter,
   );
+  static TextStyle textViewSemiBold10 = TextStyle(
+    fontSize: 10.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: fontFamilyInter,
+  );
+  static TextStyle textViewSemiBold12 = TextStyle(
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: fontFamilyInter,
+  );
+  static TextStyle textViewSemiBold13 = TextStyle(
+    fontSize: 13.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: fontFamilyInter,
+  );
+  static TextStyle textViewSemiBold32 = TextStyle(
+    fontSize: 32.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: fontFamilyInter,
+  );
   static TextStyle textViewBold14 = TextStyle(
     fontSize: 14.sp,
     fontWeight: FontWeight.w700,
@@ -824,6 +844,10 @@ abstract class TextStylesInter {
   );
   static TextStyle textViewSemiBold17 = TextStyle(
     fontSize: 17.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: fontFamilyInter,
+  ); static TextStyle textViewSemiBold20 = TextStyle(
+    fontSize: 20.sp,
     fontWeight: FontWeight.w600,
     fontFamily: fontFamilyInter,
   );

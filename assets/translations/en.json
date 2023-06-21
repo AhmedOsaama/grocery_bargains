@@ -72,7 +72,6 @@
   "priceAlert"                           : "Price alert",
   "seeMore"                           : "See more",
   "myLists"                           : "My lists",
-  "createYourFirstList"                           : "Create Your First List",
   "blank"                           : "Blank",
   "store"                           : "Store",
   "total"                           : "Total",
@@ -104,8 +103,8 @@
   "settings"                     : "Settings",
   "support"                     : "Support",
   "signout"                     : "Sign out",
-  "chatlist"                    : "ChatList",
-  "chatlists"                    : "ChatLists",
+  "chatlist"                    : "Chatlist",
+  "chatlists"                    : "Chatlists",
   "subscription"                  : "Subscription",
   "freePlan"                      : "Free plan",
   "language"                      : "Language",
@@ -238,9 +237,23 @@
   "DidntGetCode"                  : "Didn't get the code ?  ",
   "Resend"                  : "Resend",
 
-
-
   "allCategories"                  : "All categories",
   "HelloGuest"                  : "Hello, Guest!",
-  "Tutorial"                  : "Tutorial"
+  "Tutorial"                  : "Tutorial",
+
+  "createYourFirstList"           : "Create Your First Chatlists",
+  "noChatlists":                    "NO CHATLISTS",
+  "savings":                    "Savings",
+  "createAList":                    "Create a list",
+  "enterChatListName"                                : "Enter chatlist name",
+  "didYouKnowWhenYouShareChatlists"                   : "Did you know that when you share chatlists with friends and family, you can chat with them about the items on the lists, add items while they are at the store, and do more!",
+  "create"                                        : "Create",
+  "back"                                          : "Back",
+  "addYourFriendsAndFamily"                       : "Add your friends and family to start chatting, or add items to your lists",
+  "addItem"                                       : "Add Item",
+  "addContacts"                                       : "Add Contacts",
+  "inviteMembers"                                       : "Invite Members",
+  "addYourPhoneNumber"                                  : "Add your phone number to find others on BargainB",
+  "addedToList"                                         : "Added to List",
+  "greatNews"                                         : "Great news! The invited user has been added to your list. They can now view and contribute to the list. Happy collaborating!"
 }

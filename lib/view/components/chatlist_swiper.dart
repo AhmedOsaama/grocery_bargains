@@ -63,9 +63,7 @@ class _ChatlistSwiperState extends State<ChatlistSwiper> {
                 if (details.localPosition.dx < 223) {
                   await pushNewScreen(context,
                       screen: ChatListViewScreen(
-                        // updateList: updateList,
                         listId: widget.ids.elementAt(index),
-                        isListView: false,
                       ),
                       withNavBar: false);
 

@@ -15,10 +15,9 @@ import '../../utils/style_utils.dart';
 import '../components/button.dart';
 
 class ChooseListDialog extends StatefulWidget {
-  final bool isSharing;
   final ListItem item;
   const ChooseListDialog(
-      {Key? key, required this.item, required this.isSharing})
+      {Key? key, required this.item})
       : super(key: key);
 
   @override
@@ -131,7 +130,6 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                         onPressed: !hasChosenList || done
                             ? null
                             : () async {
-                                if (!widget.isSharing) {
                                   var b = await Provider.of<ChatlistsProvider>(
                                           context,
                                           listen: false)
@@ -140,17 +138,6 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                                   setState(() {
                                     done = b;
                                   });
-                                } else {
-                                  var b = await Provider.of<ChatlistsProvider>(
-                                          context,
-                                          listen: false)
-                                      .shareItem(
-                                          item: widget.item,
-                                          docId: selectedListId);
-                                  setState(() {
-                                    done = b;
-                                  });
-                                }
                               },
                         height: 60.h,
                         width: double.infinity,
@@ -179,16 +166,13 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                               ))),
                     15.ph,
                     GenericButton(
-                        //TODO: create and share or add an item button(Check the figma flow)
                         onPressed: () async {
                           if (done) {
                             Navigator.of(context).pop();
 
                             await pushNewScreen(context,
                                 screen: ChatListViewScreen(
-                                  // updateList: updateList,
                                   listId: selectedListId,
-                                  isListView: !widget.isSharing,
                                 ),
                                 withNavBar: false);
                             NavigatorController.jumpToTab(1);

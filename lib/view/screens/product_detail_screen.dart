@@ -1,6 +1,7 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/view/widgets/quantity_counter.dart';
 import 'package:bargainb/view/widgets/signin_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,9 +19,11 @@ import 'package:bargainb/view/widgets/price_comparison_item.dart';
 
 import '../../models/list_item.dart';
 import '../../models/product.dart';
+import '../widgets/choose_list_dialog.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final String storeName;
+  final String productBrand;
   final int productId;
   final String productName;
   final String imageURL;
@@ -41,7 +44,7 @@ class ProductDetailScreen extends StatefulWidget {
     required this.size1,
     required this.size2,
     required this.productId,
-    this.oldPrice,
+    this.oldPrice, required this.productBrand,
   }) : super(key: key);
 
   @override
@@ -164,6 +167,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           screen: ProductDetailScreen(
             productId: product.id,
             storeName: selectedStore,
+            productBrand: product.brand,
             productName: product.name,
             imageURL: product.imageURL,
             description: product.description,
@@ -231,20 +235,19 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                       title: 'Sign In',
                                     ));
                           } else {
-                            Provider.of<ChatlistsProvider>(context,
-                                    listen: false)
-                                .showChooseListDialog(
+                           showChooseListDialog(
                               context: context,
-                              isSharing: false,
                               listItem: ListItem(
+                                  id: widget.productId,
                                   storeName: widget.storeName,
                                   name: widget.productName,
+                                  brand: widget.productBrand,
                                   oldPrice: widget.oldPrice,
                                   price: defaultPrice.toString(),
                                   isChecked: false,
                                   quantity: quantity,
                                   imageURL: widget.imageURL,
-                                  size: widget.size1,
+                                  size: widget.size1.isEmpty ? widget.size2 : widget.size1,
                                   text: ''),
                             );
                           }
@@ -274,108 +277,51 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       )
                     ],
                   ),
-                  GestureDetector(
-                    //sharing
-                    onTap: () async {
-                      if (FirebaseAuth.instance.currentUser == null) {
-                        showDialog(
-                            context: context,
-                            builder: (ctx) => SigninDialog(
-                                  body:
-                                      'You have to be signed in to use this feature.',
-                                  buttonText: 'Sign in',
-                                  title: 'Sign In',
-                                ));
-                      } else {
-                        Provider.of<ChatlistsProvider>(context, listen: false)
-                            .showChooseListDialog(
-                          context: context,
-                          isSharing: true,
-                          listItem: ListItem(
-                              storeName: widget.storeName,
-                              name: widget.productName,
-                              oldPrice: widget.oldPrice,
-                              price: defaultPrice.toString(),
-                              isChecked: false,
-                              quantity: quantity,
-                              imageURL: widget.imageURL,
-                              size: widget.size1,
-                              text: ''),
-                        );
-                      }
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 60,
-                          height: 60,
-                          margin: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            color: Color.fromRGBO(135, 208, 192, 0.5),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Icon(
-                            Icons.share_outlined,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                        Text(
-                          "share".tr(),
-                          style: TextStyles.textViewMedium12
-                              .copyWith(color: prussian),
-                        )
-                      ],
-                    ),
-                  ),
+                  // GestureDetector(
+                  //   //sharing
+                  //   onTap: (){},
+                  //   child: Column(
+                  //     children: [
+                  //       Container(
+                  //         width: 60,
+                  //         height: 60,
+                  //         margin: EdgeInsets.symmetric(horizontal: 10),
+                  //         decoration: BoxDecoration(
+                  //           color: Color.fromRGBO(135, 208, 192, 0.5),
+                  //           borderRadius: BorderRadius.circular(20),
+                  //         ),
+                  //         child: Icon(
+                  //           Icons.share_outlined,
+                  //         ),
+                  //       ),
+                  //       SizedBox(
+                  //         height: 10.h,
+                  //       ),
+                  //       Text(
+                  //         "share".tr(),
+                  //         style: TextStyles.textViewMedium12
+                  //             .copyWith(color: prussian),
+                  //       )
+                  //     ],
+                  //   ),
+                  // ),
                   // priceAlertButton,
                 ],
               ),
               SizedBox(
                 height: 25.h,
               ),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //   children: [
-              //     Text(
-              //       "Quantity",
-              //       style: TextStyles.textViewMedium12
-              //           .copyWith(color: Colors.grey),
-              //     ),
-              //     Container(
-              //       child: Row(
-              //         children: [
-              //           IconButton(
-              //             onPressed: () {
-              //               if (quantity > 0) {
-              //                 setState(() {
-              //                   quantity--;
-              //                 });
-              //               }
-              //             },
-              //             icon: Icon(Icons.remove),
-              //             color: verdigris,
-              //           ),
-              //           VerticalDivider(),
-              //           Text(
-              //             quantity.toString(),
-              //             style: TextStyles.textViewMedium18,
-              //           ),
-              //           VerticalDivider(),
-              //           IconButton(
-              //               onPressed: () {
-              //                 setState(() {
-              //                   ++quantity;
-              //                 });
-              //               },
-              //               icon: Icon(Icons.add),
-              //               color: verdigris),
-              //         ],
-              //       ),
-              //     ),
-              //   ],
-              // ),
+              QuantityCounter(quantity: quantity, increaseQuantity: (){
+                setState(() {
+                  ++quantity;
+                });
+              },
+                decreaseQuantity: (){
+                setState(() {
+                  quantity--;
+                });
+                },
+              ),
               SizedBox(
                 height: 30.h,
               ),
@@ -555,6 +501,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       )
     ],
   );
+}
+
+Future<void> showChooseListDialog(
+    {required BuildContext context,
+      required ListItem listItem}) async {
+  showDialog(
+      context: context,
+      builder: (ctx) =>
+          ChooseListDialog(item: listItem));
 }
 
 class ItemSize {

@@ -24,7 +24,6 @@ class GenericField extends StatefulWidget {
   final TextInputType? keyboardType;
   final int? maxLines;
   final bool? isFilled;
-  final bool isSearchField;
   final Color colorStyle;
   final double borderRaduis;
   final BoxShadow? boxShadow;
@@ -52,7 +51,6 @@ class GenericField extends StatefulWidget {
     this.obscureText = false,
     this.onChanged,
     this.hintStyle,
-    this.isSearchField = false,
     this.onTap,
     this.boxShadow,
     this.suffixConstraints,

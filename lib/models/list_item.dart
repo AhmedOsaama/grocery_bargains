@@ -1,6 +1,8 @@
 class ListItem {
+  int id;
   String name;
   String size;
+  String brand;
   String imageURL;
   int quantity;
   String price;
@@ -11,6 +13,8 @@ class ListItem {
   ListItem(
       {this.oldPrice,
       required this.storeName,
+      required this.brand,
+      required this.id,
       required this.name,
       required this.price,
       required this.text,

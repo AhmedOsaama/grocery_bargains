@@ -89,22 +89,6 @@ Future<void> main() async {
         ))),
   );
 
-  // runApp(EasyLocalization(
-  //     supportedLocales: const [Locale('ar'), Locale('en')],
-  //     path: 'assets/translations',
-  //     fallbackLocale: const Locale('en'),
-  //     child: MultiProvider(
-  //       providers: [
-  //         ChangeNotifierProvider<GoogleSignInProvider>(create: (_) => GoogleSignInProvider()),
-  //         ChangeNotifierProvider<ProductsProvider>(create: (_) => ProductsProvider()),
-  //         ChangeNotifierProvider<ChatlistsProvider>(create: (_) => ChatlistsProvider()),
-  //       ],
-  //       child: MyApp(
-  //           dynamicLinkPath: path,
-  //           isRemembered: isRemembered,
-  //           isFirstTime: isFirstTime
-  //       ),
-  //     )));
 }
 
 class MyApp extends StatefulWidget {
@@ -158,13 +142,8 @@ class _MyAppState extends State<MyApp> {
       builder: (context, _) => MaterialApp(
         title: 'BargainB',
         theme: ThemeData(
-          // brightness: Brightness.light,
           canvasColor: Colors.white,
         ),
-        /* darkTheme: ThemeData(
-          // brightness: Brightness.light,
-          canvasColor: black,
-        ), */
         debugShowCheckedModeBanner: false,
         home: FutureBuilder(
             future: getAllProductsFuture,
@@ -175,8 +154,6 @@ class _MyAppState extends State<MyApp> {
                 return Stack(
                   children: [
                     Container(
-                      /*  width: double.infinity,
-                      height: double.infinity, */
                       decoration: BoxDecoration(
                         image: DecorationImage(
                             image: AssetImage(splashImage), fit: BoxFit.fill),
@@ -206,8 +183,6 @@ class _MyAppState extends State<MyApp> {
                       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
                           overlays: []);
                       return Container(
-                        /* width: double.infinity,
-                        height: double.infinity, */
                         decoration: BoxDecoration(
                           image: DecorationImage(
                               image: AssetImage(splashImage), fit: BoxFit.fill),

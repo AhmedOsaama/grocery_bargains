@@ -293,15 +293,18 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   category: products.elementAt(index).category,
                                   price: products.elementAt(index).price,
                                   size: products.elementAt(index).size,
+                                  brand: products.elementAt(index).brand,
                                   imageURL: products.elementAt(index).imageURL,
                                   description: products.elementAt(index).description,
-                                  size2: products.elementAt(index).size2 ?? "");
+                                  size2: products.elementAt(index).size2 ?? "",
+                              );
                               return GestureDetector(
                                 onTap: () async {
                                   AppNavigator.push(
                                       context: context,
                                       screen: ProductDetailScreen(
                                         productId: p.id,
+                                        productBrand: p.brand,
                                         oldPrice: p.oldPrice ?? "",
                                         storeName: p.storeName,
                                         productName: p.name,
@@ -494,6 +497,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                                           context: context,
                                                           screen: ProductDetailScreen(
                                                             productId: p.id,
+                                                            productBrand: p.brand,
                                                             oldPrice: p.oldPrice ?? "",
                                                             storeName: p.storeName,
                                                             productName: p.name,

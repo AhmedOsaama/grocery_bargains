@@ -8,6 +8,7 @@ class GenericButton extends StatelessWidget {
   final Color borderColor;
   final Color shadowColorButton;
   final Color? disabledBackgroundColor;
+  final OutlinedBorder? shape;
   final double elevationButton;
   final EdgeInsets? padding;
   final List<BoxShadow>? shadow;
@@ -28,7 +29,7 @@ class GenericButton extends StatelessWidget {
     this.elevationButton = 0.0,
     this.shadow,
     this.disabledBackgroundColor,
-    this.padding,
+    this.padding, this.shape,
   }) : super(key: key);
 
   @override
@@ -47,7 +48,7 @@ class GenericButton extends StatelessWidget {
           // shadowColor: shadowColorButton,
           elevation: 0,
           disabledBackgroundColor: disabledBackgroundColor,
-          shape: RoundedRectangleBorder(
+          shape: shape ?? RoundedRectangleBorder(
             borderRadius: borderRadius,
           ),
         ),
