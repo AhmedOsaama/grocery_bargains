@@ -58,7 +58,6 @@ Future<void> main() async {
   var isRemembered = pref.getBool("rememberMe") ?? false;
   var isFirstTime = pref.getBool("firstTime") ?? true;
 
-  final String path = await DynamicLinkService().handleDynamicLinks();
 
   await SentryFlutter.init(
     (options) {
@@ -83,7 +82,6 @@ Future<void> main() async {
           ],
           child: MyApp(
               notificationMessage: notificationMessage,
-              dynamicLinkPath: path,
               isRemembered: isRemembered,
               isFirstTime: isFirstTime),
         ))),
@@ -92,13 +90,11 @@ Future<void> main() async {
 }
 
 class MyApp extends StatefulWidget {
-  final String dynamicLinkPath;
   final RemoteMessage? notificationMessage;
   final bool isRemembered;
   final bool isFirstTime;
   const MyApp(
       {super.key,
-      required this.dynamicLinkPath,
       required this.isRemembered,
       required this.isFirstTime,
       this.notificationMessage});
@@ -200,7 +196,7 @@ class _MyAppState extends State<MyApp> {
                         // return ChatListViewScreen(
                         //     listId: widget.notificationMessage?.data['listId'],
                         //     isNotificationOpened: true);
-                        return MainScreen(notificationData: widget.notificationMessage?.data['listId'],);
+                        return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
                       }
 
                       return widget.isFirstTime

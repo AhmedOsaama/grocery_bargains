@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/view/widgets/quantity_counter.dart';
 import 'package:bargainb/view/widgets/size_container.dart';
@@ -197,10 +199,10 @@ class _ProductDialogState extends State<ProductDialog> {
         publiclyIndex: true,
         locallyIndex: true,
         contentMetadata: BranchContentMetaData()
-          ..addCustomMetadata('product_data', {
+          ..addCustomMetadata('product_data', jsonEncode({
             "product_id": widget.itemId,
             "store_name": widget.storeName
-          }));
+          })));
     BranchLinkProperties lp = BranchLinkProperties(
         channel: 'facebook',
         feature: 'sharing product',
@@ -214,6 +216,7 @@ class _ProductDialogState extends State<ProductDialog> {
     } else {
       print('Error : ${response.errorCode} - ${response.errorMessage}');
     }
-    Share.share(response.result);
+    await Share.share(response.result);
+    AppNavigator.pop(context: context);
   }
 }

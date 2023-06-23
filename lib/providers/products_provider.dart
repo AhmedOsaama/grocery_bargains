@@ -6,6 +6,7 @@ import 'package:bargainb/models/product_category.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:bargainb/services/network_services.dart';
+import 'package:flutter/material.dart';
 
 import '../config/routes/app_navigator.dart';
 import '../models/bestValue_item.dart';
@@ -891,7 +892,7 @@ class ProductsProvider with ChangeNotifier {
     return comparisonId;
   }
 
-  void goToProductPage(String storeName, BuildContext context, String productId){
+  void goToProductPage(String storeName, BuildContext context, int productId){
     late Product product;
     switch (storeName) {
       case 'Hoogvliet':

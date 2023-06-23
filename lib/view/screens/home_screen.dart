@@ -100,8 +100,6 @@ class _HomeScreenState extends State<HomeScreen> {
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .get();
     }
-    DynamicLinkService().listenToDynamicLinks(
-        context); //case 2 the app is open but in background and opened again via deep link
 
     getFirstTime();
   }

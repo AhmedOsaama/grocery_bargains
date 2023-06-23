@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/view/screens/product_detail_screen.dart';
@@ -53,7 +55,6 @@ class _MainScreenState extends State<MainScreen> {
     getSharedPrefs();
     NavigatorController.index = 0;
     FlutterBranchSdk.initSession().listen((data) {
-      print("branch data: " + data.entries.toList().toString());
       if (data.containsKey("+clicked_branch_link") &&
           data["+clicked_branch_link"] == true) {
         //Link clicked. Add logic to get link data and route user to correct screen
@@ -68,8 +69,19 @@ class _MainScreenState extends State<MainScreen> {
           if(page == '/profile-screen') AppNavigator.push(context: context, screen: ProfileScreen());
         }
         if(productData != null){
-          Provider.of<ProductsProvider>(context,listen: false).goToProductPage(productData['store_name'], context, productData['product_id']);
-        }
+          try {
+              productData = jsonDecode(productData);
+              Provider.of<ProductsProvider>(context, listen: false).goToProductPage(
+                  productData['store_name'], context, productData['product_id']);
+          }catch(e){
+            Provider.of<ProductsProvider>(context, listen: false).getAllProducts().then((value) {
+              Provider.of<ProductsProvider>(context, listen: false).goToProductPage(
+                  productData['store_name'], context, productData['product_id']);
+            }).catchError((e){
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+            });
+          }
+          }
         if (listId != null) {
           var currentUserId = FirebaseAuth.instance.currentUser?.uid;
           FirebaseFirestore.instance
