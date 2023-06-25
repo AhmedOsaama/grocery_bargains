@@ -7,6 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:bargainb/services/network_services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../config/routes/app_navigator.dart';
 import '../models/bestValue_item.dart';
@@ -925,6 +927,38 @@ class ProductsProvider with ChangeNotifier {
           price2: double.tryParse(product.price2 ?? "") ?? 0.0,
         ));
   }
+
+  void shareProductViaDeepLink(String itemName, int itemId, String storeName, BuildContext context) async {
+    BranchUniversalObject buo = BranchUniversalObject(
+        canonicalIdentifier: 'invite_to_product',
+        title: itemName,
+        imageUrl:
+        'https://play-lh.googleusercontent.com/u6LMBvrIXH6r1LFQftqjSzebxflasn-nhcoZUlP6DjWHV6fmrwgNFyjJeFwFmckrySHF=w240-h480-rw',
+        contentDescription:
+        'Hey, check out this product ${itemName} from BargainB',
+        publiclyIndex: true,
+        locallyIndex: true,
+        contentMetadata: BranchContentMetaData()
+          ..addCustomMetadata('product_data', jsonEncode({
+            "product_id": itemId,
+            "store_name": storeName
+          })));
+    BranchLinkProperties lp = BranchLinkProperties(
+        channel: 'facebook',
+        feature: 'sharing product',
+        stage: 'new share',
+        tags: ['one', 'two', 'three']);
+    BranchResponse response =
+    await FlutterBranchSdk.getShortUrl(buo: buo, linkProperties: lp);
+
+    if (response.success) {
+      print('Link generated: ${response.result}');
+    } else {
+      print('Error : ${response.errorCode} - ${response.errorMessage}');
+    }
+    await Share.share(response.result);
+  }
+
 
   String getImage(String storeName) {
     if (storeName == 'AH') return albert;

@@ -1,3 +1,4 @@
+import 'package:bargainb/utils/empty_padding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -19,65 +20,52 @@ class PriceComparisonItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: const [
-          BoxShadow(
-            blurRadius: 32,
-            offset: Offset(0, 5),
-            color: Color.fromRGBO(59, 59, 59, 0.12),
-          ),
-        ],
+        borderRadius: isSameStore ? BorderRadius.circular(3) : null,
+        border: isSameStore ? Border.all(color: mainPurple) : Border(bottom: BorderSide(color: purple30)),
       ),
       padding: EdgeInsets.all(10),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Image.asset(
             storeImagePath,
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
           ),
-          SizedBox(
-            width: 20.w,
-          ),
+          Spacer(),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text.rich(TextSpan(
-                  text: "€",
-                  style:
-                      TextStyles.textViewRegular20.copyWith(color: verdigris),
-                  children: [
-                    TextSpan(
-                        text: price,
-                        style: TextStyles.textViewBold23
-                            .copyWith(color: verdigris))
-                  ])),
+              Text(
+                "€$price",
+                style:
+                TextStylesInter.textViewBold18.copyWith(color: blackSecondary),
+              ),
               Text(
                 size,
-                style: TextStyles.textViewLight12
-                    .copyWith(color: const Color.fromRGBO(62, 62, 62, 1)),
+                style: TextStyles.textViewMedium10
+                    .copyWith(color: greyText),
               ),
-              SizedBox(
-                height: 5.h,
-              ),
-              // Container(
-              //   padding: EdgeInsets.all(3),
-              //   decoration: BoxDecoration(
-              //     borderRadius: BorderRadius.circular(15),
-              //     border: Border.all(color: verdigris),
-              //   ),
-              //   child: Text("2 for € 4",style: TextStyles.textViewMedium10.copyWith(color: verdigris),),
-              // )
             ],
           ),
           Spacer(),
-          // PlusButton(onTap: (){}),
-          // SizedBox(width: 20.w,),
           if(!isSameStore)
-          Icon(Icons.arrow_forward_ios,color: mainPurple,)
+          Container(
+            padding: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: purple30)
+              ),
+              child: Icon(Icons.arrow_forward_ios,color: mainPurple,)),
+          if(isSameStore)
+            Container(
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: purple30)
+                ),
+                child: Icon(Icons.add, color: mainPurple,)),
         ],
       ),
     );

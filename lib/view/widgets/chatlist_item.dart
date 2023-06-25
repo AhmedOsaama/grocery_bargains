@@ -34,17 +34,21 @@ class _ChatlistItemState extends State<ChatlistItem> {
 
   @override
   void initState() {
-    isChecked = widget.item['item_isChecked'];
-    text = widget.item['text'] ?? '';
-    itemName = widget.item['item_name'];
-    itemImage = widget.item['item_image'];
-    itemSize = widget.item['item_size'];
-    itemPrice = widget.item['item_price'];
-    itemOldPrice = widget.item.data().containsKey("item_oldPrice") ? widget.item['item_oldPrice'] ?? "" : '';
-    itemQuantity = widget.item.data().containsKey("item_quantity") ? widget.item['item_quantity'] : 1;
-    storeName = widget.item.data().containsKey("store_name") ? widget.item['store_name'] : '';
-    itemId = widget.item.data().containsKey("item_id") ? widget.item['item_id'] : -1;
-    itemBrand = widget.item.data().containsKey("item_brand") ? widget.item['item_brand'] : '';
+    try {
+      isChecked = widget.item['item_isChecked'];
+      text = widget.item['text'] ?? '';
+      itemName = widget.item['item_name'];
+      itemImage = widget.item['item_image'];
+      itemSize = widget.item['item_size'];
+      itemPrice = widget.item['item_price'];
+      itemOldPrice = widget.item.data().containsKey("item_oldPrice") ? widget.item['item_oldPrice'] ?? "" : '';
+      itemQuantity = widget.item.data().containsKey("item_quantity") ? widget.item['item_quantity'] : 1;
+      storeName = widget.item.data().containsKey("store_name") ? widget.item['store_name'] : '';
+      itemId = widget.item.data().containsKey("item_id") ? widget.item['item_id'] : -1;
+      itemBrand = widget.item.data().containsKey("item_brand") ? widget.item['item_brand'] : '';
+    }catch(e){
+      print(e);
+    }
     super.initState();
   }
 

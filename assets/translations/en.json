@@ -205,9 +205,7 @@
   "newContact"                                        : "New contact",
   "shareGroceriesToChat"                               : "Share groceries to chat, add them to list at the same place.",
   "pressACardIconToSearch"                            : "Press a card icon to search groceries from chatlist.",
-  "chooseAChatlistOrCreateNew"                        : "Choose a chatlist or create new",
   "added"                                                  : "Added  ",
-  "viewInTheChatlist"                                     : "View in the chatlist",
   "camera"                                                : "Camera",
   "gallery"                                               : "Gallery",
 
@@ -258,6 +256,12 @@
   "greatNews"                                         : "Great news! The invited user has been added to your list. They can now view and contribute to the list. Happy collaborating!",
 
   "addSomethingQuickly"                             : "Add something quickly",
-  "quickAdd"                             : "Quick Add"
+  "quickAdd"                             : "Quick Add",
 
+  "whereToBuy"                            : "Where To Buy",
+  "cheapest"                            : "CHEAPEST",
+  "chooseAChatlist"                        : "Choose a chatlist",
+  "addedTo"                        : "Added to",
+  "view"                                     : "View",
+  "pleaseCreateAList"                         : "Please create a list"
 }

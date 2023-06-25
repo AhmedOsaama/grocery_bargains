@@ -20,6 +20,7 @@ import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/product_item.dart';
 import 'package:provider/provider.dart';
 
+import '../../models/list_item.dart';
 import '../../providers/chatlists_provider.dart';
 
 class MessageBubble extends StatefulWidget {
@@ -187,6 +188,17 @@ class _MessageBubbleState extends State<MessageBubble> {
                                   userName: widget.userName,
                                   userId: widget.userId,
                                   message: widget.message,
+                                  item: ListItem(
+                                            id: -1,
+                                            storeName: "",
+                                            imageURL: '',
+                                            isChecked: false,
+                                            name: widget.message,
+                                            price: "0.0",
+                                            quantity: 0,
+                                            size: '',
+                                            text: widget.message,
+                                            brand: ''),
                                 );
                               },
                         child: widget.isAddedToList
@@ -230,12 +242,23 @@ class _MessageBubbleState extends State<MessageBubble> {
                         onTap: widget.isAddedToList
                             ? () {}
                             : () async {
-                                await chatlistProvider.addMessageToList(
-                                  messageDocPath: widget.messageDocPath,
-                                  userName: widget.userName,
-                                  userId: widget.userId,
-                                  message: widget.message,
-                                );
+                          await chatlistProvider.addMessageToList(
+                            messageDocPath: widget.messageDocPath,
+                            userName: widget.userName,
+                            userId: widget.userId,
+                            message: widget.message,
+                            item: ListItem(
+                                id: -1,
+                                storeName: "",
+                                imageURL: '',
+                                isChecked: false,
+                                name: widget.message,
+                                price: "0.0",
+                                quantity: 0,
+                                size: '',
+                                text: widget.message,
+                                brand: ''),
+                          );
                               },
                         child: widget.isAddedToList
                             ? SvgPicture.asset(checkMark)

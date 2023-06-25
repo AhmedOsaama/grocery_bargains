@@ -192,9 +192,7 @@
   "newContact"                                        : "Nieuwe contact",
   "shareGroceriesToChat"                               : "Deel boodschappen om te chatten en voeg ze toe aan de lijst op dezelfde plaats.",
   "pressACardIconToSearch"                            : "Druk op een kaartpictogram om boodschappen uit de chatlijst te zoeken.",
-  "chooseAChatlistOrCreateNew"                        : "Kies een chatlijst of maak een nieuwe aan",
   "added"                                                  : "Toegevoegd",
-  "viewInTheChatlist"                                     : "Bekijk in de chatlijst",
   "camera"                                                : "Camera",
   "gallery"                                               : "Galerij",
 
@@ -245,5 +243,12 @@
   "greatNews"                                         : "Great news! The invited user has been added to your list. They can now view and contribute to the list. Happy collaborating!",
 
   "addSomethingQuickly"                             : "Add something quickly",
-  "quickAdd"                             : "Quick Add"
+  "quickAdd"                             : "Quick Add",
+
+  "whereToBuy"                            : "Where To Buy",
+  "cheapest"                            : "CHEAPEST",
+  "chooseAChatlist"                        : "Choose a chatlist",
+  "addedTo"                        : "Added to",
+  "view"                                     : "View",
+  "pleaseCreateAList"                         : "Please create a list"
 }

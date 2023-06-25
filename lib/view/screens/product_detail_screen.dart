@@ -3,6 +3,7 @@ import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/view/widgets/quantity_counter.dart';
 import 'package:bargainb/view/widgets/signin_dialog.dart';
+import 'package:bargainb/view/widgets/size_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +45,8 @@ class ProductDetailScreen extends StatefulWidget {
     required this.size1,
     required this.size2,
     required this.productId,
-    this.oldPrice, required this.productBrand,
+    this.oldPrice,
+    required this.productBrand,
   }) : super(key: key);
 
   @override
@@ -59,8 +61,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   final comparisonItems = [];
 
   var selectedIndex = 0;
-  var selectedSizeIndex = 0;
+  // var selectedSizeIndex = 0;
   var bestValueSize = "";
+  var cheapest = "";
 
   int quantity = 1;
 
@@ -72,13 +75,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ItemSize(price: widget.price1.toString(), size: widget.size1),
       ItemSize(price: widget.price2.toString(), size: widget.size2),
     ]);
-    defaultPrice = widget.price1 == null
-        ? widget.price2 as double
-        : widget.price1 as double;
-    // mixpanel.track("view_product", properties: {
-    //   "product_id": widget.productId,
-    //   "store_name": widget.storeName
-    // });
+    if (widget.price1 != null && widget.price2 != null) {
+      if (widget.price1! < widget.price2!) cheapest = widget.price1.toString();
+      if (widget.price2! < widget.price1!) cheapest = widget.price2.toString();
+    }
+    defaultPrice = widget.price1 == null ? widget.price2 as double : widget.price1 as double;
+    print("CHEAPEST: $cheapest");
 
     super.initState();
   }
@@ -104,29 +106,44 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   void getComparisons() {
     try {
-      var productsProvider =
-          Provider.of<ProductsProvider>(context, listen: false);
+      var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
+      var chatlistsProvider = Provider.of<ChatlistsProvider>(context, listen: false);
       late ComparisonProduct productComparison;
+      var listItem = ListItem(
+          id: widget.productId,
+          storeName: widget.storeName,
+          name: widget.productName,
+          brand: widget.productBrand,
+          oldPrice: widget.oldPrice,
+          price: defaultPrice.toString(),
+          isChecked: false,
+          quantity: quantity,
+          imageURL: widget.imageURL,
+          size: widget.size1.isEmpty ? widget.size2 : widget.size1,
+          text: '');
       Product albertProduct;
       Product jumboProduct;
       Product hoogvlietProduct;
-      if(widget.storeName == "Albert"){
-        productComparison = productsProvider.comparisonProducts.firstWhere(
-                (comparisonProduct) => widget.productId == comparisonProduct.albertId);
-      } if(widget.storeName == "Jumbo"){
-        productComparison = productsProvider.comparisonProducts.firstWhere(
-                (comparisonProduct) => widget.productId == comparisonProduct.jumboId);
-      } if(widget.storeName == "Hoogvliet"){
-        productComparison = productsProvider.comparisonProducts.firstWhere(
-                (comparisonProduct) => widget.productId == comparisonProduct.hoogvlietId);
+      if (widget.storeName == "Albert") {
+        productComparison = productsProvider.comparisonProducts
+            .firstWhere((comparisonProduct) => widget.productId == comparisonProduct.albertId);
+      }
+      if (widget.storeName == "Jumbo") {
+        productComparison = productsProvider.comparisonProducts
+            .firstWhere((comparisonProduct) => widget.productId == comparisonProduct.jumboId);
+      }
+      if (widget.storeName == "Hoogvliet") {
+        productComparison = productsProvider.comparisonProducts
+            .firstWhere((comparisonProduct) => widget.productId == comparisonProduct.hoogvlietId);
       }
       albertProduct = productsProvider.albertProducts.firstWhere((product) => product.id == productComparison.albertId);
       jumboProduct = productsProvider.jumboProducts.firstWhere((product) => product.id == productComparison.jumboId);
-      hoogvlietProduct = productsProvider.hoogvlietProducts.firstWhere((product) => product.id == productComparison.hoogvlietId);
+      hoogvlietProduct =
+          productsProvider.hoogvlietProducts.firstWhere((product) => product.id == productComparison.hoogvlietId);
 
       comparisonItems.add(GestureDetector(
         onTap: widget.storeName == "Jumbo"
-            ? () {}
+            ? () => chatlistsProvider.addProductToList(context, listItem)
             : () => goToStoreProductPage(context, "Jumbo", jumboProduct),
         child: PriceComparisonItem(
             isSameStore: widget.storeName == "Jumbo",
@@ -136,7 +153,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ));
       comparisonItems.add(GestureDetector(
         onTap: widget.storeName == "Albert"
-            ? () {}
+            ? () => chatlistsProvider.addProductToList(context, listItem)
             : () => goToStoreProductPage(context, "Albert", albertProduct),
         child: PriceComparisonItem(
             isSameStore: widget.storeName == "Albert",
@@ -146,7 +163,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ));
       comparisonItems.add(GestureDetector(
         onTap: widget.storeName == "Hoogvliet"
-            ? () {}
+            ? () => chatlistsProvider.addProductToList(context, listItem)
             : () => goToStoreProductPage(context, "Hoogvliet", hoogvlietProduct),
         child: PriceComparisonItem(
             isSameStore: widget.storeName == "Hoogvliet",
@@ -160,24 +177,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
   }
 
-  void goToStoreProductPage(
-      BuildContext context, String selectedStore, Product product) {
-      AppNavigator.push(
-          context: context,
-          screen: ProductDetailScreen(
-            productId: product.id,
-            storeName: selectedStore,
-            productBrand: product.brand,
-            productName: product.name,
-            imageURL: product.imageURL,
-            description: product.description,
-            price1: double.tryParse(product.price ?? "") ?? 0.0,
-            price2: double.tryParse(product.price2 ?? "") ?? 0.0,
-            size1: product.size,
-            size2: product.size2 ?? "",
-          ));
-    }
-
+  void goToStoreProductPage(BuildContext context, String selectedStore, Product product) {
+    AppNavigator.push(
+        context: context,
+        screen: ProductDetailScreen(
+          productId: product.id,
+          storeName: selectedStore,
+          productBrand: product.brand,
+          productName: product.name,
+          imageURL: product.imageURL,
+          description: product.description,
+          price1: double.tryParse(product.price ?? "") ?? 0.0,
+          price2: double.tryParse(product.price2 ?? "") ?? 0.0,
+          size1: product.size,
+          size2: product.size2 ?? "",
+        ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -194,142 +209,78 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                widget.storeName,
-                style: TextStyles.textViewMedium30.copyWith(color: prussian),
+                widget.productBrand.isEmpty ? widget.storeName : widget.productBrand,
+                style: TextStyles.textViewSemiBold30.copyWith(color: blackSecondary),
               ),
               Text(
                 widget.productName,
-                style: TextStyles.textViewLight15,
+                style: TextStylesInter.textViewRegular14,
               ),
+              5.ph,
+              SizeContainer(itemSize: widget.size1),
               10.ph,
-              Center(
-                child: Container(
-                    height: 214.h,
-                    width: 214.w,
-                    child:
-                        // Image.asset(productImages.elementAt(selectedIndex))
-                        Image.network(
-                      widget.imageURL,
-                      width: 214.w,
-                      height: 214.h,
-                    )),
-              ),
-              SizedBox(
-                height: 30.h,
-              ),
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  Container(
+                      height: 200.h,
+                      width: 200.w,
+                      child: Image.network(
+                        widget.imageURL,
+                        errorBuilder: (ctx, i, _) => SvgPicture.asset(imageError),
+                        width: 214.w,
+                        height: 214.h,
+                      )),
                   Column(
                     children: [
                       GestureDetector(
-                        //adding
-                        onTap: () async {
-                          if (FirebaseAuth.instance.currentUser == null) {
-                            showDialog(
-                                context: context,
-                                builder: (ctx) => SigninDialog(
-                                      body:
-                                          'You have to be signed in to use this feature.',
-                                      buttonText: 'Sign in',
-                                      title: 'Sign In',
-                                    ));
-                          } else {
-                           showChooseListDialog(
-                              context: context,
-                              listItem: ListItem(
-                                  id: widget.productId,
-                                  storeName: widget.storeName,
-                                  name: widget.productName,
-                                  brand: widget.productBrand,
-                                  oldPrice: widget.oldPrice,
-                                  price: defaultPrice.toString(),
-                                  isChecked: false,
-                                  quantity: quantity,
-                                  imageURL: widget.imageURL,
-                                  size: widget.size1.isEmpty ? widget.size2 : widget.size1,
-                                  text: ''),
-                            );
-                          }
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(21),
-                          margin: EdgeInsets.symmetric(horizontal: 10),
-                          decoration: BoxDecoration(
-                            color: Color.fromRGBO(135, 208, 192, 0.5),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: SvgPicture.asset(
-                            plusIcon,
-                            width: 18,
-                            height: 18,
-                            color: prussian,
-                          ),
+                        onTap: () => Provider.of<ProductsProvider>(context, listen: false)
+                            .shareProductViaDeepLink(widget.productName, widget.productId, widget.storeName, context),
+                        child: Column(
+                          children: [
+                            Container(
+                                // margin: EdgeInsets.symmetric(horizontal: 10),
+                                padding: EdgeInsets.all(15),
+                                decoration: BoxDecoration(
+                                  color: purple30,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: SvgPicture.asset(
+                                  shareIcon,
+                                  width: 20,
+                                  height: 20,
+                                )),
+                            10.ph,
+                            Text(
+                              "share".tr(),
+                              style: TextStyles.textViewMedium12.copyWith(color: blackSecondary),
+                            )
+                          ],
                         ),
                       ),
-                      SizedBox(
-                        height: 10.h,
+                      20.ph,
+                      QuantityCounter(
+                        quantity: quantity,
+                        increaseQuantity: () {
+                          setState(() {
+                            ++quantity;
+                          });
+                        },
+                        decreaseQuantity: () {
+                          setState(() {
+                            quantity--;
+                          });
+                        },
                       ),
-                      Text(
-                        "addToList".tr(),
-                        style: TextStyles.textViewMedium12
-                            .copyWith(color: prussian),
-                      )
                     ],
-                  ),
-                  // GestureDetector(
-                  //   //sharing
-                  //   onTap: (){},
-                  //   child: Column(
-                  //     children: [
-                  //       Container(
-                  //         width: 60,
-                  //         height: 60,
-                  //         margin: EdgeInsets.symmetric(horizontal: 10),
-                  //         decoration: BoxDecoration(
-                  //           color: Color.fromRGBO(135, 208, 192, 0.5),
-                  //           borderRadius: BorderRadius.circular(20),
-                  //         ),
-                  //         child: Icon(
-                  //           Icons.share_outlined,
-                  //         ),
-                  //       ),
-                  //       SizedBox(
-                  //         height: 10.h,
-                  //       ),
-                  //       Text(
-                  //         "share".tr(),
-                  //         style: TextStyles.textViewMedium12
-                  //             .copyWith(color: prussian),
-                  //       )
-                  //     ],
-                  //   ),
-                  // ),
-                  // priceAlertButton,
+                  )
                 ],
               ),
-              SizedBox(
-                height: 25.h,
-              ),
-              QuantityCounter(quantity: quantity, increaseQuantity: (){
-                setState(() {
-                  ++quantity;
-                });
-              },
-                decreaseQuantity: (){
-                setState(() {
-                  quantity--;
-                });
-                },
-              ),
-              SizedBox(
-                height: 30.h,
-              ),
+              30.ph,
               if (comparisonItems.isNotEmpty) ...[
                 Text(
-                  "PriceComparison".tr(),
-                  style:
-                      TextStyles.textViewSemiBold18.copyWith(color: prussian),
+                  "whereToBuy".tr(),
+                  style: TextStylesInter.textViewSemiBold16.copyWith(color: blackSecondary),
                 ),
                 ListView.builder(
                   shrinkWrap: true,
@@ -346,25 +297,37 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               Container(
                 padding: EdgeInsets.all(15),
                 decoration: BoxDecoration(
-                    border: Border.all(color: grey, width: 2),
-                    borderRadius: BorderRadius.circular(15)),
+                    border: Border.all(color: purple30, width: 2), borderRadius: BorderRadius.circular(15)),
                 child: Row(
                   children: [
-                    Icon(Icons.warning_amber_outlined),
+                    Icon(
+                      Icons.report_gmailerrorred,
+                      color: mainPurple,
+                    ),
                     SizedBox(
                       width: 15.w,
                     ),
                     Flexible(
                         child: Text(
                       "ThePricesShown".tr(),
-                      style: TextStyles.textViewLight12
-                          .copyWith(color: const Color.fromRGBO(62, 62, 62, 1)),
+                      style: TextStyles.textViewLight12.copyWith(color: const Color.fromRGBO(62, 62, 62, 1)),
                     )),
                   ],
                 ),
               ),
+              30.ph,
+              if (widget.description.isNotEmpty) ...[
+                Text("Description".tr(), style: TextStyles.textViewSemiBold18.copyWith(color: blackSecondary)),
+                SizedBox(
+                  height: 10.h,
+                ),
+                Text(
+                  widget.description,
+                  style: TextStylesInter.textViewMedium14.copyWith(color: Color.fromRGBO(134, 136, 137, 1)),
+                ),
+              ],
               SizedBox(
-                height: 30.h,
+                height: 20.h,
               ),
               Text(
                 "Sizes".tr(),
@@ -375,47 +338,38 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   physics: NeverScrollableScrollPhysics(),
                   children: productSizes.map((size) {
                     var index = productSizes.indexOf(size);
-                    print("SIZE: " + size.size);
-                    print("PRICE: " + size.price);
-                    if (size.size.isEmpty ||
-                        size.size == "None" ||
-                        size.price == '0.0') {
+                    if (size.size.isEmpty || size.size == "None" || size.price == '0.0') {
                       return Container();
                     }
                     return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedSizeIndex = index;
-                        });
-                      },
+                      onTap: () {},
                       child: Container(
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          border: Border.all(
-                              width: 2.0,
-                              color: bestValueSize == size.size
-                                  ? mainPurple
-                                  : Colors.transparent),
+                          border: Border.all(color: bestValueSize == size.size ? mainPurple : Colors.transparent),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Row(
                           children: [
                             Image.network(
                               widget.imageURL,
-                              errorBuilder: (ctx, _, s) =>
-                                  Icon(Icons.no_photography),
+                              errorBuilder: (ctx, _, s) => SvgPicture.asset(imageError),
                               width: 64,
                               height: 64,
                             ),
-                            SizedBox(
-                              width: 15.w,
+                            5.pw,
+                            Image.asset(
+                              Provider.of<ProductsProvider>(context, listen: false).getImage(widget.storeName),
+                              width: 20,
+                              height: 20,
                             ),
+                            34.pw,
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   size.size,
-                                  style: TextStyles.textViewSemiBold16,
+                                  style: TextStylesInter.textViewSemiBold16.copyWith(color: blackSecondary),
                                 ),
                                 SizedBox(
                                   height: 10.h,
@@ -424,92 +378,53 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   children: [
                                     Text(
                                       "\€${size.price}", //to type euro: ALT + 0128
-                                      style: TextStyles.textViewMedium12
-                                          .copyWith(
-                                              color: Color.fromRGBO(
-                                                  108, 197, 29, 1)),
+                                      style: TextStyles.textViewMedium12.copyWith(color: mainPurple),
                                     ),
                                   ],
                                 )
                               ],
                             ),
                             Spacer(),
-                            if (bestValueSize.isNotEmpty &&
-                                bestValueSize == size.size)
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 3),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: purple70),
-                                child: Text(
-                                  "BESTVALUE".tr(),
-                                  style: TextStyles.textViewRegular12
-                                      .copyWith(color: Colors.white),
-                                ),
-                              ),
+                            Column(
+                              children: [
+                                if (bestValueSize.isNotEmpty && bestValueSize == size.size)
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                                    decoration:
+                                        BoxDecoration(borderRadius: BorderRadius.circular(10), color: mainPurple),
+                                    child: Text(
+                                      "BESTVALUE".tr(),
+                                      style: TextStyles.textViewRegular12.copyWith(color: Colors.white),
+                                    ),
+                                  ),
+                                10.ph,
+                                if (cheapest.isNotEmpty && cheapest == size.price)
+                                  Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                                    decoration:
+                                        BoxDecoration(borderRadius: BorderRadius.circular(10), color: mainPurple),
+                                    child: Text(
+                                      "cheapest".tr(),
+                                      style: TextStyles.textViewRegular12.copyWith(color: Colors.white),
+                                    ),
+                                  ),
+                              ],
+                            )
                           ],
                         ),
                       ),
                     );
                   }).toList()),
-              Divider(),
-              SizedBox(
-                height: 20.h,
-              ),
-              Text("Description".tr(),
-                  style:
-                      TextStyles.textViewSemiBold18.copyWith(color: prussian)),
-              SizedBox(
-                height: 10.h,
-              ),
-              Text(
-                widget.description,
-                style: TextStyles.textViewMedium14
-                    .copyWith(color: Color.fromRGBO(134, 136, 137, 1)),
-              ),
-              SizedBox(
-                height: 20.h,
-              )
             ],
           ),
         ),
       ),
     );
   }
-
-  var priceAlertButton = Column(
-    children: [
-      Container(
-        width: 60,
-        height: 60,
-        margin: EdgeInsets.symmetric(horizontal: 10),
-        decoration: BoxDecoration(
-          color: Color.fromRGBO(135, 208, 192, 0.5),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Icon(
-          Icons.notifications_none_outlined,
-        ),
-      ),
-      SizedBox(
-        height: 10.h,
-      ),
-      Text(
-        "Price alert",
-        style: TextStyles.textViewMedium12.copyWith(color: prussian),
-      )
-    ],
-  );
 }
 
-Future<void> showChooseListDialog(
-    {required BuildContext context,
-      required ListItem listItem}) async {
-  showDialog(
-      context: context,
-      builder: (ctx) =>
-          ChooseListDialog(item: listItem));
+Future<void> showChooseListDialog({required BuildContext context, required ListItem listItem}) async {
+  showDialog(context: context, builder: (ctx) => ChooseListDialog(item: listItem, context: context));
 }
 
 class ItemSize {

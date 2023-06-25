@@ -11,16 +11,12 @@ class QuantityCounter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          "Quantity",
-          style: TextStyles.textViewMedium12
-              .copyWith(color: Colors.grey),
-        ),
         Container(
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
                 onPressed: () {
@@ -29,22 +25,31 @@ class QuantityCounter extends StatelessWidget {
                   }
                 },
                 icon: Icon(Icons.remove),
-                color: verdigris,
+                color: mainPurple,
               ),
-              VerticalDivider(),
+              VerticalDivider(
+                color: grey,
+              ),
               Text(
                 quantity.toString(),
                 style: TextStyles.textViewMedium18,
               ),
-              VerticalDivider(),
+              VerticalDivider(
+                color: grey,
+              ),
               IconButton(
                   onPressed: () {
                    increaseQuantity();
                   },
                   icon: Icon(Icons.add),
-                  color: verdigris),
+                  color: mainPurple),
             ],
           ),
+        ),
+        Text(
+          "Quantity",
+          style: TextStyles.textViewMedium12
+              .copyWith(color: blackSecondary),
         ),
       ],
     );

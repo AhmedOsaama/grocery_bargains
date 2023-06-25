@@ -1,3 +1,4 @@
+import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
@@ -16,9 +17,8 @@ import '../components/button.dart';
 
 class ChooseListDialog extends StatefulWidget {
   final ListItem item;
-  const ChooseListDialog(
-      {Key? key, required this.item})
-      : super(key: key);
+  final BuildContext context;
+  const ChooseListDialog({Key? key, required this.item, required this.context}) : super(key: key);
 
   @override
   State<ChooseListDialog> createState() => _ChooseListDialogState();
@@ -64,11 +64,8 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                       children: [
                         Flexible(
                           child: Text(
-                            done
-                                ? widget.item.name
-                                : LocaleKeys.chooseAChatlistOrCreateNew.tr(),
-                            style: TextStyles.textViewRegular14
-                                .copyWith(color: black),
+                            done ? widget.item.name : LocaleKeys.chooseAChatlist.tr(),
+                            style: TextStyles.textViewRegular14.copyWith(color: black),
                           ),
                         ),
                         Image.network(
@@ -79,11 +76,8 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                       ],
                     )
                   : Text(
-                      done
-                          ? widget.item.name
-                          : LocaleKeys.chooseAChatlistOrCreateNew.tr(),
-                      style:
-                          TextStyles.textViewRegular14.copyWith(color: black),
+                      done ? widget.item.name : LocaleKeys.chooseAChatlist.tr(),
+                      style: TextStyles.textViewRegular14.copyWith(color: black),
                     ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -98,8 +92,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                                 value: chatlist.id,
                                 child: Text(
                                   chatlist.name,
-                                  style: TextStyles.textViewRegular14
-                                      .copyWith(color: Colors.grey),
+                                  style: TextStyles.textViewRegular14.copyWith(color: Colors.grey),
                                 )))
                             .toList()
                           ..insert(
@@ -108,8 +101,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                                   value: "choose",
                                   child: Text(
                                     LocaleKeys.chooseList.tr(),
-                                    style: TextStyles.textViewRegular14
-                                        .copyWith(color: Colors.grey),
+                                    style: TextStyles.textViewRegular14.copyWith(color: Colors.grey),
                                   ))),
                         onChanged: (value) {
                           setState(() {
@@ -130,69 +122,29 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                         onPressed: !hasChosenList || done
                             ? null
                             : () async {
-                                  var b = await Provider.of<ChatlistsProvider>(
-                                          context,
-                                          listen: false)
-                                      .addItemToList(
-                                          widget.item, selectedListId);
-                                  setState(() {
-                                    done = b;
-                                  });
-                              },
+                                var chatlistsProvider = Provider.of<ChatlistsProvider>(context, listen: false);
+                                var b = await chatlistsProvider.addItemToList(widget.item, selectedListId);
+                                setState(() {
+                                  done = b;
+                                });
+                                var chatlistName =
+                                    chatlistsProvider.chatlists.firstWhere((chatlist) => chatlist.id == selectedListId).name;
+                                chatlistsProvider.showChatlistSnackBar(
+                                    widget.context,
+                                    Text(LocaleKeys.addedTo.tr() + " $chatlistName"),
+                                    LocaleKeys.view.tr(),
+                                    selectedListId,
+                                    false);
+                                AppNavigator.pop(context: context);
+                        },
                         height: 60.h,
                         width: double.infinity,
                         color: yellow,
                         disabledBackgroundColor: done ? yellow : orange10,
                         borderRadius: BorderRadius.circular(6),
-                        child: (done
-                            ? Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    LocaleKeys.added.tr(),
-                                    style: TextStylesInter.textViewSemiBold16
-                                        .copyWith(color: white),
-                                  ),
-                                  Icon(
-                                    Icons.done,
-                                    color: white,
-                                  )
-                                ],
-                              )
-                            : Text(
-                                LocaleKeys.addToList.tr(),
-                                style: TextStylesInter.textViewSemiBold16
-                                    .copyWith(color: black2),
-                              ))),
-                    15.ph,
-                    GenericButton(
-                        onPressed: () async {
-                          if (done) {
-                            Navigator.of(context).pop();
-
-                            await pushNewScreen(context,
-                                screen: ChatListViewScreen(
-                                  listId: selectedListId,
-                                ),
-                                withNavBar: false);
-                            NavigatorController.jumpToTab(1);
-                          } else {
-                            Provider.of<ChatlistsProvider>(context,
-                                    listen: false)
-                                .createChatList([]);
-                          }
-                        },
-                        height: 60.h,
-                        width: double.infinity,
-                        borderColor: Colors.grey,
-                        color: white,
-                        borderRadius: BorderRadius.circular(6),
                         child: Text(
-                          done
-                              ? "View in the chatlist"
-                              : LocaleKeys.createNewList.tr(),
-                          style: TextStylesInter.textViewSemiBold16.copyWith(
-                              color: Color.fromRGBO(128, 128, 128, 1)),
+                          LocaleKeys.addToList.tr(),
+                          style: TextStylesInter.textViewSemiBold16.copyWith(color: black2),
                         )),
                   ],
                 ),

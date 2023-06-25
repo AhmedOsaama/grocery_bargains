@@ -471,6 +471,7 @@ class _ChatViewState extends State<ChatView> {
                                         }
                                       return Flexible(
                                         child: ListView(
+                                          padding: EdgeInsets.zero,
                                           children: [
                                             if (albertItems.isNotEmpty) ...[
                                               Text(
@@ -510,6 +511,7 @@ class _ChatViewState extends State<ChatView> {
                                                   return ChatlistItem(item: item);
                                                 }).toList(),
                                               ),
+                                              ],
                                               Divider(
                                                 thickness: 2,
                                                 color: Colors.black,
@@ -572,10 +574,9 @@ class _ChatViewState extends State<ChatView> {
                                                     style: TextStylesDMSans.textViewBold12.copyWith(color: mainPurple),
                                                   ),
                                                 ),
-                                              )
-                                            ],
+                                              ),
                                             15.ph,
-                                          ],
+                                            ],
                                         ),
                                       );
                                     }),

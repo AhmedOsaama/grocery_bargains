@@ -1,16 +1,23 @@
 import 'dart:developer';
 
 import 'package:bargainb/models/chatlist.dart';
+import 'package:bargainb/utils/app_colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:bargainb/models/list_item.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 import '../config/routes/app_navigator.dart';
+import '../generated/locale_keys.g.dart';
 import '../utils/assets_manager.dart';
+import '../view/screens/chatlist_view_screen.dart';
 import '../view/screens/chatlists_screen.dart';
+import '../view/screens/main_screen.dart';
+import '../view/screens/product_detail_screen.dart';
 import '../view/widgets/choose_list_dialog.dart';
+import '../view/widgets/signin_dialog.dart';
 
 class ChatlistsProvider with ChangeNotifier {
   List<ChatList> chatlists = [];
@@ -250,6 +257,44 @@ class ChatlistsProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> addProductToList(BuildContext context, ListItem listItem) async {        //adds a product from home or product page to chatlist
+    if (FirebaseAuth.instance.currentUser == null) {
+      showDialog(
+          context: context,
+          builder: (ctx) => SigninDialog(
+            body: 'You have to be signed in to use this feature.',
+            buttonText: 'Sign in',
+            title: 'Sign In',
+          ));
+    } else {
+      if(chatlists.length > 1)
+      showChooseListDialog(
+        context: context,
+        listItem: listItem
+      );
+      if(chatlists.length == 1) {
+        await addItemToList(listItem, chatlists[0].id);
+        showChatlistSnackBar(
+            context,
+            Text(LocaleKeys.addedTo.tr() + " ${chatlists[0].name}"),
+            LocaleKeys.view.tr(),
+            chatlists[0].id,
+            false);
+      }
+      if(chatlists.isEmpty){
+        showChatlistSnackBar(
+            context,
+            Text(LocaleKeys.pleaseCreateAList.tr()),
+            LocaleKeys.create.tr(),
+            "",
+            true);
+      }
+
+
+    }
+  }
+
+
   //chat methods
   Future<void> sendMessage(String message, String listId) async {
     if (message.isNotEmpty) {
@@ -320,15 +365,7 @@ class ChatlistsProvider with ChangeNotifier {
 
 
   Future<bool> shareItemAsMessage(
-      {itemId,
-      itemName,
-      itemImage,
-      itemSize,
-      itemPrice,
-      itemOldPrice,
-      itemDescription,
-      storeName,
-      listId}) async {
+      {itemId, itemName, itemImage, itemSize, itemPrice, itemOldPrice, itemDescription, storeName, listId}) async {
     final userData = await FirebaseFirestore.instance
         .collection('/users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -365,6 +402,7 @@ class ChatlistsProvider with ChangeNotifier {
         .collection('/users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .get();
+    print(docId);
     await FirebaseFirestore.instance.collection('/lists/$docId/items').add({
       'item_id': item.id,
       "item_name": item.name,
@@ -403,7 +441,7 @@ class ChatlistsProvider with ChangeNotifier {
       print(e);
     });
     FirebaseFirestore.instance.collection('/lists').doc(docId).update({
-      "last_message": "Added ${item.id}",
+      "last_message": "Added ${item.name}",
       "last_message_date": Timestamp.fromDate(DateTime.now().toUtc()),
       "last_message_userId": FirebaseAuth.instance.currentUser?.uid,
       "last_message_userName": userData['username'],
@@ -418,13 +456,22 @@ class ChatlistsProvider with ChangeNotifier {
     required String message,
     required String userName,
     required String userId,
+    required ListItem item,
   }) async {
     await FirebaseFirestore.instance
         .collection('${messageDocPath.parent.parent?.path}/items')
         .add({
-      "text": message,
-      "chat_reference": messageDocPath.path,
+      'item_id': item.id,
+      "item_name": item.name,
+      "item_brand": item.brand,
+      "item_size": item.size,
+      "item_price": item.price,
+      "item_image": item.imageURL,
+      'store_name': item.storeName,
+      'item_quantity': item.quantity,
+      'item_oldPrice': item.oldPrice,
       "item_isChecked": false,
+      "text": item.text,
       "owner": userName,
       "time": Timestamp.fromDate(DateTime.now().toUtc()),
     });
@@ -516,5 +563,36 @@ class ChatlistsProvider with ChangeNotifier {
     chatlist.lastMessageUserId = FirebaseAuth.instance.currentUser?.uid ?? "";
     chatlist.lastMessageUserName = userData['username'];
     notifyListeners();
+  }
+
+  void showChatlistSnackBar(BuildContext context, Widget content, String actionLabel, String selectedListId , bool isCreating){
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+      backgroundColor: mainPurple,
+      content: content,
+      action: SnackBarAction(
+          label: actionLabel,
+          onPressed: () async {
+            if(isCreating) {
+              await pushNewScreen(context,
+                  screen: ChatlistsScreen(),
+                  withNavBar: true);
+              NavigatorController.jumpToTab(1);
+              return;
+            }
+            // Navigator.of(context).pop();
+            print("Pressed snackbar action $selectedListId");
+            // try {
+              await pushNewScreen(context,
+                  screen: ChatListViewScreen(
+                    listId: selectedListId,
+                  ),
+                  withNavBar: true);
+              NavigatorController.jumpToTab(1);
+            // }catch(e){
+            //   print(e);
+            // }
+          }),
+    ));
   }
 }

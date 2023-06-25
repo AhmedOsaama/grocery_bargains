@@ -180,7 +180,7 @@ abstract class  LocaleKeys {
   static const next = 'next';
   static const helloGuest = 'helloGuest';
   static const gotAnyIdeas = 'gotAnyIdeas';
-  static const readtimestamp = 'readtimestamp';
+  static const readTimeStamp = 'readTimeStamp';
   static const latestValueBargains = 'latestValueBargains';
   static const dataAccess = 'dataAccess';
   static const privacyPolicy = 'privacyPolicy';
@@ -192,9 +192,7 @@ abstract class  LocaleKeys {
   static const newContact = 'newContact';
   static const shareGroceriesToChat = 'shareGroceriesToChat';
   static const pressACardIconToSearch = 'pressACardIconToSearch';
-  static const chooseAChatlistOrCreateNew = 'chooseAChatlistOrCreateNew';
   static const added = 'added';
-  static const viewInTheChatlist = 'viewInTheChatlist';
   static const camera = 'camera';
   static const gallery = 'gallery';
   static const Mobile = 'Mobile';
@@ -242,5 +240,11 @@ abstract class  LocaleKeys {
   static const greatNews = 'greatNews';
   static const addSomethingQuickly = 'addSomethingQuickly';
   static const quickAdd = 'quickAdd';
+  static const whereToBuy = 'whereToBuy';
+  static const cheapest = 'cheapest';
+  static const chooseAChatlist = 'chooseAChatlist';
+  static const addedTo = 'addedTo';
+  static const view = 'view';
+  static const pleaseCreateAList = 'pleaseCreateAList';
 
 }

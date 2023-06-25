@@ -174,7 +174,7 @@ class _ProductDialogState extends State<ProductDialog> {
                 30.pw,
                 Column(
                   children: [
-                    IconButton(onPressed: shareProductViaDeepLink, icon: Icon(Icons.share_outlined, color: purple30),splashRadius: 25),
+                    IconButton(onPressed: () => Provider.of<ProductsProvider>(context,listen: false).shareProductViaDeepLink(widget.itemName, widget.itemId, widget.storeName, context), icon: Icon(Icons.share_outlined, color: purple30),splashRadius: 25),
                     Text(
                       'Share',
                       style: TextStylesInter.textViewMedium12.copyWith(color: purple30),
@@ -187,36 +187,5 @@ class _ProductDialogState extends State<ProductDialog> {
         ),
       ),
     );
-  }
-  shareProductViaDeepLink() async {
-    BranchUniversalObject buo = BranchUniversalObject(
-        canonicalIdentifier: 'invite_to_product',
-        title: widget.itemName,
-        imageUrl:
-        'https://play-lh.googleusercontent.com/u6LMBvrIXH6r1LFQftqjSzebxflasn-nhcoZUlP6DjWHV6fmrwgNFyjJeFwFmckrySHF=w240-h480-rw',
-        contentDescription:
-        'Hey, check out this product ${widget.itemName} from BargainB',
-        publiclyIndex: true,
-        locallyIndex: true,
-        contentMetadata: BranchContentMetaData()
-          ..addCustomMetadata('product_data', jsonEncode({
-            "product_id": widget.itemId,
-            "store_name": widget.storeName
-          })));
-    BranchLinkProperties lp = BranchLinkProperties(
-        channel: 'facebook',
-        feature: 'sharing product',
-        stage: 'new share',
-        tags: ['one', 'two', 'three']);
-    BranchResponse response =
-    await FlutterBranchSdk.getShortUrl(buo: buo, linkProperties: lp);
-
-    if (response.success) {
-      print('Link generated: ${response.result}');
-    } else {
-      print('Error : ${response.errorCode} - ${response.errorMessage}');
-    }
-    await Share.share(response.result);
-    AppNavigator.pop(context: context);
   }
 }
