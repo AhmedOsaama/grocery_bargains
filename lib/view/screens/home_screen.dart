@@ -8,6 +8,7 @@ import 'package:bargainb/utils/triangle_painter.dart';
 import 'package:bargainb/view/components/chatlist_swiper.dart';
 import 'package:bargainb/view/components/generic_field.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
+import 'package:bargainb/view/components/search_widget.dart';
 import 'package:bargainb/view/screens/all_categories_screen.dart';
 import 'package:bargainb/view/screens/categories_screen.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
@@ -212,290 +213,53 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                   return Future.value();
                 },
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15.w),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            FutureBuilder(
-                                future: getUserDataFuture,
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.waiting) {
-                                    return Center(child: Container());
-                                  } else if (snapshot.hasData) {
-                                    if (!snapshot.data!.data()!.containsKey("privacy")) {
-                                      FirebaseFirestore.instance
-                                          .collection('users')
-                                          .doc(FirebaseAuth.instance.currentUser!.uid)
-                                          .update({
-                                        'language': 'en',
-                                        'status': "Hello! I'm using BargainB. Join the app",
-                                        'privacy': {
-                                          'connectContacts': true,
-                                          'locationServices': false,
-                                        },
-                                        'preferences': {
-                                          'emailMarketing': true,
-                                          'weekly': true,
-                                          'daily': false,
-                                        },
-                                      });
-                                    }
-                                    return Text(
-                                      style: TextStylesInter.textViewSemiBold24.copyWith(color: mainPurple),
-                                      '${'Hello, ' + snapshot.data!['username']}!',
-                                    );
-                                  } else {
-                                    return Text(
-                                      style: TextStylesInter.textViewSemiBold24.copyWith(color: mainPurple),
-                                      'HelloGuest'.tr(),
-                                    );
-                                  }
-                                }),
-                            FutureBuilder(
-                                future: getUserDataFuture,
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState == ConnectionState.waiting || !snapshot.hasData) {
-                                    return Container();
-                                  }
-
-                                  return snapshot.data!['imageURL'] != ""
-                                      ? GestureDetector(
-                                          onTap: () {
-                                            NavigatorController.jumpToTab(2);
-                                          },
-                                          child: CircleAvatar(
-                                            backgroundImage: NetworkImage(snapshot.data!['imageURL']),
-                                            radius: 30,
-                                          ),
-                                        )
-                                      : GestureDetector(
-                                          onTap: () async {
-                                            NavigatorController.jumpToTab(2);
-                                          },
-                                          child: SvgPicture.asset(bee));
-                                }),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 15.h,
-                        ),
-                        Showcase.withWidget(
-                          targetBorderRadius: BorderRadius.circular(999),
-                          key: isHomeFirstTime ? TooltipKeys.showCase2 : new GlobalKey<State<StatefulWidget>>(),
-                          container: Container(
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: 11,
-                                  width: 13,
-                                  child: CustomPaint(
-                                    painter: TrianglePainter(
-                                      strokeColor: purple70,
-                                      strokeWidth: 1,
-                                      paintingStyle: PaintingStyle.fill,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(15),
-                                  width: 180.w,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8.r),
-                                    color: purple70,
-                                  ),
-                                  child: Column(children: [
-                                    Text(
-                                      "ItIsSmartSearch".tr(),
-                                      maxLines: 4,
-                                      style: TextStyles.textViewRegular13.copyWith(color: white),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        ShowCaseWidget.of(builder).next();
-                                      },
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
-                                        children: [
-                                          Text(
-                                            "Next".tr(),
-                                            style: TextStyles.textViewSemiBold14.copyWith(color: white),
-                                          ),
-                                          Icon(
-                                            Icons.arrow_forward_ios,
-                                            color: white,
-                                            size: 15.sp,
-                                          )
-                                        ],
-                                      ),
-                                    )
-                                  ]),
-                                ),
-                              ],
-                            ),
-                          ),
-                          height: 50,
-                          width: 50,
-                          child: GenericField(
-                            isFilled: true,
-                            onTap: () async {
-                              SharedPreferences pref = await SharedPreferences.getInstance();
-                              return showSearch(context: context, delegate: MySearchDelegate(pref, true));
-                            },
-                            prefixIcon: Icon(Icons.search),
-                            borderRaduis: 999,
-                            hintText: LocaleKeys.whatAreYouLookingFor.tr(),
-                            hintStyle: TextStyles.textViewSemiBold14.copyWith(color: gunmetal),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "allCategories".tr(),
-                              style: TextStylesDMSans.textViewBold16.copyWith(color: prussian),
-                            ),
-                            TextButton(
-                                onPressed: () {
-                                  pushNewScreen(context, screen: AllCategoriesScreen(), withNavBar: true);
-                                },
-                                child: Text(
-                                  'seeAll'.tr(),
-                                  style: textButtonStyle,
-                                ))
-                          ],
-                        ),
-                        Provider.of<ProductsProvider>(context, listen: true).categories.isEmpty
-                            ? const Center(
-                                child: CircularProgressIndicator(),
-                              )
-                            : Container(
-                                height: ScreenUtil().screenHeight * 0.14,
-                                child: ListView(
-                                    scrollDirection: Axis.horizontal,
-                                    children:
-                                        Provider.of<ProductsProvider>(context, listen: true).categories.map((element) {
-                                      return Padding(
-                                        padding: EdgeInsets.only(
-                                          left: Provider.of<ProductsProvider>(context, listen: true).categories.first ==
-                                                  element
-                                              ? 0
-                                              : 10.0,
-                                        ),
-                                        child: GestureDetector(
-                                          onTap: () => pushNewScreen(context,
-                                              screen: CategoriesScreen(
-                                                category: element.category,
-                                              ),
-                                              withNavBar: true),
-                                          child: SizedBox(
-                                            width: 71.w,
-                                            child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.center,
-                                              children: [
-                                                Image.asset(
-                                                  element.image,
-                                                  width: 65.w,
-                                                  height: 65.h,
-                                                ),
-                                                Text(
-                                                  context.locale.languageCode != "nl"
-                                                      ? element.englishCategory
-                                                      : element.category,
-                                                  style: TextStyles.textViewMedium10.copyWith(color: gunmetal),
-                                                  textAlign: TextAlign.center,
-                                                  maxLines: 3,
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    }).toList()),
-                              ),
-                        Showcase.withWidget(
-                          key: isHomeFirstTime ? TooltipKeys.showCase3 : new GlobalKey<State<StatefulWidget>>(),
-                          targetBorderRadius: BorderRadius.circular(8.r),
-                          tooltipPosition: TooltipPosition.top,
-                          onBarrierClick: () async {
-                            await addRandomProduct(builder);
-                          },
-                          onTargetClick: () async {
-                            await addRandomProduct(builder);
-                          },
-                          onTargetDoubleTap: () async {
-                            await addRandomProduct(builder);
-                          },
-                          container: Column(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 15.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 15.h,
+                      ),
+                      Showcase.withWidget(
+                        targetBorderRadius: BorderRadius.circular(999),
+                        key: isHomeFirstTime ? TooltipKeys.showCase2 : new GlobalKey<State<StatefulWidget>>(),
+                        container: Container(
+                          child: Column(
                             children: [
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                                width: ScreenUtil().screenWidth * 0.95,
+                                height: 11,
+                                width: 13,
+                                child: CustomPaint(
+                                  painter: TrianglePainter(
+                                    strokeColor: purple70,
+                                    strokeWidth: 1,
+                                    paintingStyle: PaintingStyle.fill,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(15),
+                                width: 180.w,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8.r),
                                   color: purple70,
                                 ),
-                                child: Column(
-                                    children: [
+                                child: Column(children: [
                                   Text(
-                                    "StartHereTo".tr(),
+                                    "ItIsSmartSearch".tr(),
                                     maxLines: 4,
                                     style: TextStyles.textViewRegular13.copyWith(color: white),
                                   ),
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Image.asset(personAva),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                                            margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.only(
-                                                topRight: const Radius.circular(18),
-                                                topLeft: const Radius.circular(18),
-                                                bottomLeft: const Radius.circular(0),
-                                                bottomRight: const Radius.circular(18),
-                                              ),
-                                              color: const Color.fromRGBO(233, 233, 235, 1),
-                                            ),
-                                            child: Text(
-                                              "Got any ideas for the plan",
-                                              style: TextStyles.textViewRegular16.copyWith(color: Colors.black),
-                                              textAlign: TextAlign.left,
-                                            ),
-                                          ),
-                                          SvgPicture.asset(whiteAdd),
-                                          Text(
-                                            "  Add to list",
-                                            style: TextStyles.textViewRegular10.copyWith(color: white),
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        "Read 10:02",
-                                        style: TextStyles.textViewRegular10.copyWith(color: white),
-                                      ),
-                                    ],
-                                  ),
                                   GestureDetector(
-                                    onTap: () async {
-                                      await addRandomProduct(builder);
+                                    onTap: () {
+                                      ShowCaseWidget.of(builder).next();
                                     },
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         Text(
-                                          "Next",
+                                          "Next".tr(),
                                           style: TextStyles.textViewSemiBold14.copyWith(color: white),
                                         ),
                                         Icon(
@@ -508,64 +272,225 @@ class _HomeScreenState extends State<HomeScreen> {
                                   )
                                 ]),
                               ),
-                              Container(
-                                height: 11,
-                                width: 13,
-                                child: CustomPaint(
-                                  painter: DownTrianglePainter(
-                                    strokeColor: purple70,
-                                    strokeWidth: 1,
-                                    paintingStyle: PaintingStyle.fill,
-                                  ),
-                                ),
-                              ),
                             ],
                           ),
-                          height: 110.h,
-                          width: ScreenUtil().screenWidth * 0.95,
-                          child: FutureBuilder(
-                              future: getAllListsFuture,
-                              builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
-                                if (snapshot.connectionState == ConnectionState.waiting) {
-                                  return Container();
-                                }
-                                var allLists = snapshot.data?.docs ?? [];
-                                if (!snapshot.hasData ||
-                                    allLists.isEmpty ||
-                                    FirebaseAuth.instance.currentUser == null) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      NavigatorController.jumpToTab(1);
-                                    },
-                                    child: Image.asset(
-                                      newChatList,
-                                    ),
-                                  );
-                                }
-                                return Container();
-                              }),
                         ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              LocaleKeys.latestBargains.tr(),
-                              style: TextStylesDMSans.textViewBold16.copyWith(color: prussian),
+                        height: 50,
+                        width: 50,
+                        child: SearchWidget(isBackButton: false)
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "allCategories".tr(),
+                            style: TextStylesDMSans.textViewBold16.copyWith(color: prussian),
+                          ),
+                          TextButton(
+                              onPressed: () {
+                                pushNewScreen(context, screen: AllCategoriesScreen(), withNavBar: true);
+                              },
+                              child: Text(
+                                'seeAll'.tr(),
+                                style: textButtonStyle,
+                              ))
+                        ],
+                      ),
+                      Provider.of<ProductsProvider>(context, listen: true).categories.isEmpty
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : Container(
+                              height: ScreenUtil().screenHeight * 0.14,
+                              child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children:
+                                      Provider.of<ProductsProvider>(context, listen: true).categories.map((element) {
+                                    return Padding(
+                                      padding: EdgeInsets.only(
+                                        left: Provider.of<ProductsProvider>(context, listen: true).categories.first ==
+                                                element
+                                            ? 0
+                                            : 10.0,
+                                      ),
+                                      child: GestureDetector(
+                                        onTap: () => pushNewScreen(context,
+                                            screen: CategoriesScreen(
+                                              category: element.category,
+                                            ),
+                                            withNavBar: true),
+                                        child: SizedBox(
+                                          width: 71.w,
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Image.asset(
+                                                element.image,
+                                                width: 65.w,
+                                                height: 65.h,
+                                              ),
+                                              Text(
+                                                context.locale.languageCode != "nl"
+                                                    ? element.englishCategory
+                                                    : element.category,
+                                                style: TextStyles.textViewMedium10.copyWith(color: gunmetal),
+                                                textAlign: TextAlign.center,
+                                                maxLines: 3,
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }).toList()),
                             ),
-                            TextButton(
-                                onPressed: () {
-                                  AppNavigator.push(context: context, screen: LatestBargainsScreen());
-                                },
-                                child: Text(
-                                  'seeAll'.tr(),
-                                  style: textButtonStyle,
-                                ))
+                      Showcase.withWidget(
+                        key: isHomeFirstTime ? TooltipKeys.showCase3 : new GlobalKey<State<StatefulWidget>>(),
+                        targetBorderRadius: BorderRadius.circular(8.r),
+                        tooltipPosition: TooltipPosition.top,
+                        onBarrierClick: () async {
+                          await addRandomProduct(builder);
+                        },
+                        onTargetClick: () async {
+                          await addRandomProduct(builder);
+                        },
+                        onTargetDoubleTap: () async {
+                          await addRandomProduct(builder);
+                        },
+                        container: Column(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+                              width: ScreenUtil().screenWidth * 0.95,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.r),
+                                color: purple70,
+                              ),
+                              child: Column(children: [
+                                Text(
+                                  "StartHereTo".tr(),
+                                  maxLines: 4,
+                                  style: TextStyles.textViewRegular13.copyWith(color: white),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Image.asset(personAva),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                                          margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.only(
+                                              topRight: const Radius.circular(18),
+                                              topLeft: const Radius.circular(18),
+                                              bottomLeft: const Radius.circular(0),
+                                              bottomRight: const Radius.circular(18),
+                                            ),
+                                            color: const Color.fromRGBO(233, 233, 235, 1),
+                                          ),
+                                          child: Text(
+                                            "Got any ideas for the plan",
+                                            style: TextStyles.textViewRegular16.copyWith(color: Colors.black),
+                                            textAlign: TextAlign.left,
+                                          ),
+                                        ),
+                                        SvgPicture.asset(whiteAdd),
+                                        Text(
+                                          "  Add to list",
+                                          style: TextStyles.textViewRegular10.copyWith(color: white),
+                                        ),
+                                      ],
+                                    ),
+                                    Text(
+                                      "Read 10:02",
+                                      style: TextStyles.textViewRegular10.copyWith(color: white),
+                                    ),
+                                  ],
+                                ),
+                                GestureDetector(
+                                  onTap: () async {
+                                    await addRandomProduct(builder);
+                                  },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        "Next",
+                                        style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                                      ),
+                                      Icon(
+                                        Icons.arrow_forward_ios,
+                                        color: white,
+                                        size: 15.sp,
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ]),
+                            ),
+                            Container(
+                              height: 11,
+                              width: 13,
+                              child: CustomPaint(
+                                painter: DownTrianglePainter(
+                                  strokeColor: purple70,
+                                  strokeWidth: 1,
+                                  paintingStyle: PaintingStyle.fill,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
-                        Consumer<ProductsProvider>(
+                        height: 110.h,
+                        width: ScreenUtil().screenWidth * 0.95,
+                        child: FutureBuilder(
+                            future: getAllListsFuture,
+                            builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Container();
+                              }
+                              var allLists = snapshot.data?.docs ?? [];
+                              if (!snapshot.hasData || allLists.isEmpty || FirebaseAuth.instance.currentUser == null) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    NavigatorController.jumpToTab(1);
+                                  },
+                                  child: Image.asset(
+                                    newChatList,
+                                  ),
+                                );
+                              }
+                              return Container();
+                            }),
+                      ),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            LocaleKeys.latestBargains.tr(),
+                            style: TextStylesDMSans.textViewBold16.copyWith(color: prussian),
+                          ),
+                          TextButton(
+                              onPressed: () {
+                                AppNavigator.push(context: context, screen: LatestBargainsScreen());
+                              },
+                              child: Text(
+                                'seeAll'.tr(),
+                                style: textButtonStyle,
+                              ))
+                        ],
+                      ),
+                      Expanded(
+                        child: Consumer<ProductsProvider>(
                           builder: (ctx, provider, _) {
                             var comparisonProducts = provider.comparisonProducts;
                             if (comparisonProducts.isEmpty ||
@@ -573,7 +498,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                 provider.jumboProducts.isEmpty ||
                                 provider.hoogvlietProducts.isEmpty) {
                               return ListView(
-                                shrinkWrap: true,
                                 children: List<Widget>.generate(
                                     20,
                                     (index) => Shimmer(
@@ -593,29 +517,24 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             } else {
                               return PagedGridView<int, ComparisonProduct>(
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,mainAxisSpacing: 15.h, crossAxisSpacing: 5.w,childAspectRatio: 0.6),
-                                shrinkWrap: true,
+                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    mainAxisSpacing: 15.h,
+                                    // crossAxisSpacing: 5.w,
+                                    childAspectRatio: 0.6
+                                ),
                                 pagingController: _pagingController,
                                 builderDelegate: PagedChildBuilderDelegate<ComparisonProduct>(
-                                    itemBuilder: (context, item, index) => Row(
-                                          children: [
-                                            DiscountItem(
-                                              inGridView: false,
-                                              comparisonProduct: item,
-                                            ),
-                                            10.pw
-                                          ],
-                                        )),
+                                    itemBuilder: (context, item, index) => DiscountItem(
+                                      inGridView: false,
+                                      comparisonProduct: item,
+                                    )),
                               );
                             }
                           },
                         ),
-                        SizedBox(
-                          height: 10.h,
-                        ),
-                        10.ph,
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),

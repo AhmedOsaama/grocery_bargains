@@ -7,6 +7,7 @@ import 'package:bargainb/models/user_info.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/components/button.dart';
 import 'package:bargainb/view/components/draggable_list.dart';
+import 'package:bargainb/view/components/search_widget.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:bargainb/view/screens/contact_profile_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
@@ -293,42 +294,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             75.ph,
-            Container(
-              child: Row(
-                children: [
-                  15.pw,
-                  GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap:  widget.isNotificationOpened ? () => AppNavigator.pushReplacement(
-                        context: context, screen: MainScreen()) : () => AppNavigator.pop(context: context),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.arrow_back_ios,color: mainPurple,),
-                        SvgPicture.asset(bargainbIcon,height: 42.h,),
-                      ],
-                    ),
-                  ),
-                  6.pw,
-                  Expanded(
-                    child: GenericField(
-                      onTap: () async {
-                        SharedPreferences pref =
-                        await SharedPreferences.getInstance();
-                        return showSearch(
-                            context: context,
-                            delegate: MySearchDelegate(pref, true));
-                      },
-                      prefixIcon: Icon(Icons.search,color: Colors.black,),
-                      borderRaduis: 999,
-                      hintText: LocaleKeys.whatAreYouLookingFor.tr(),
-                      hintStyle: TextStyles.textViewSemiBold14
-                          .copyWith(color: greyText),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            SearchWidget(isBackButton: true),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Row(

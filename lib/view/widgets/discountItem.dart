@@ -1,6 +1,7 @@
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/utils/icons_manager.dart';
+import 'package:bargainb/view/widgets/size_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -30,8 +31,12 @@ class DiscountItem extends StatelessWidget {
     return product.imageURL;
   }
 
+  String getProductBrand(Product product) {
+    return product.brand;
+  }
+
   String getProductSize(Product product) {
-    return product.size;
+    return product.size.isNotEmpty ? product.size : product.size2!;
   }
 
   String getProductName(Product product) {
@@ -46,6 +51,9 @@ class DiscountItem extends StatelessWidget {
       print(e);
     }
     return "0.00";
+  }
+  String getOldPrice(Product product) {
+    return product.oldPrice!;
   }
 
   String? getDiscountValue(Product product) {
@@ -92,7 +100,7 @@ class DiscountItem extends StatelessWidget {
       },
       child: Container(
         // height: 250.h,
-        width: 174.w,
+        // width: 174.w,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: white,
@@ -115,26 +123,23 @@ class DiscountItem extends StatelessWidget {
         child: Stack(
           alignment: Alignment.bottomRight,
           children: [
-            Container(
-              margin: EdgeInsets.only(bottom: 10.h),
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: purple30),
-              ),
-              child: Icon(
-                Icons.arrow_forward_ios,
-                color: mainPurple,
-                // size: 18,
-              ),
-            ),
-            Container(
-              alignment: Alignment.topRight,
-              margin: EdgeInsets.only(top: 10),
-              child: Image.asset(
-                productsProvider.getImage(selectedStore),
-                width: 22,
-                height: 21,
+            GestureDetector(
+              onTap: (){
+                var listItem = ListItem(storeName: selectedStore, brand: product.brand, id: product.id, name: product.name, price: getPrice(product), text: "", isChecked: false, quantity: 1, imageURL: product.imageURL, size: getProductSize(product));
+                Provider.of<ChatlistsProvider>(context,listen: false).addProductToList(context, listItem);
+              },
+              child: Container(
+                margin: EdgeInsets.only(bottom: 10.h),
+                padding: EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: purple30),
+                ),
+                child: Icon(
+                  Icons.add,
+                  color: mainPurple,
+                  size: 30,
+                ),
               ),
             ),
             Column(
@@ -157,19 +162,26 @@ class DiscountItem extends StatelessWidget {
                     ),
                   ),
                 ),
+                SizeContainer(itemSize: getProductSize(product)),
+                10.ph,
+                if(getProductBrand(product).isNotEmpty)
                 SizedBox(
                   width: 105.w,
                   child: Text(
-                    getProductName(product),
-                    maxLines: 2,
+                    getProductBrand(product),
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyles.textViewSemiBold14,
+                    style: TextStylesInter.textViewSemiBold13,
                   ),
                 ),
+                5.ph,
                 Text(
-                  getProductSize(product),
-                  style: TextStyles.textViewMedium12.copyWith(
-                      color: Color.fromRGBO(204, 204, 204, 1)),
+                  getProductName(product),
+                  style: TextStylesInter.textViewRegular12.copyWith(color: blackSecondary),
+                ),
+                5.ph,
+                Text(
+                  selectedStore == "Albert" ? "Albert Heijn" : selectedStore,
+                  style: TextStylesInter.textViewSemiBold12.copyWith(color: Colors.lightBlue),
                 ),
                 5.ph,
                 Text(
@@ -178,10 +190,19 @@ class DiscountItem extends StatelessWidget {
                 ),
                 3.ph,
                 if (getDiscountValue(product) != null)
-                  Text(
-                    "${LocaleKeys.save.tr()} €${getDiscountValue(product)}",
-                    style: TextStylesInter.textViewMedium10.copyWith(
-                        color: Color.fromRGBO(24, 195, 54, 1)),
+                  Row(
+                    children: [
+                      Text(
+                        "€" + getOldPrice(product),
+                        style: TextStylesInter.textViewMedium10.copyWith(color: greyText, decoration: TextDecoration.lineThrough),
+                      ),
+                      3.pw,
+                      Text(
+                        "${LocaleKeys.save.tr()} €${getDiscountValue(product)}",
+                        style: TextStylesInter.textViewMedium10.copyWith(
+                            color: Color.fromRGBO(24, 195, 54, 1)),
+                      ),
+                    ],
                   ),
               ],
             ),
