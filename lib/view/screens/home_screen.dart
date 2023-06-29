@@ -10,7 +10,7 @@ import 'package:bargainb/view/components/generic_field.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/components/search_widget.dart';
 import 'package:bargainb/view/screens/all_categories_screen.dart';
-import 'package:bargainb/view/screens/categories_screen.dart';
+import 'package:bargainb/view/screens/category_screen.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:bargainb/view/screens/latest_bargains_screen.dart';
@@ -318,7 +318,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                       child: GestureDetector(
                                         onTap: () => pushNewScreen(context,
-                                            screen: CategoriesScreen(
+                                            screen: CategoryScreen(
                                               category: element.category,
                                             ),
                                             withNavBar: true),

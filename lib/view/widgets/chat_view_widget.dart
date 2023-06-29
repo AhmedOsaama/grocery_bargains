@@ -7,7 +7,7 @@ import 'package:bargainb/view/components/button.dart';
 import 'package:bargainb/view/components/close_button.dart';
 import 'package:bargainb/view/components/draggable_list.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
-import 'package:bargainb/view/screens/categories_screen.dart';
+import 'package:bargainb/view/screens/category_screen.dart';
 import 'package:bargainb/view/widgets/chatlist_item.dart';
 import 'package:bargainb/view/widgets/product_dialog.dart';
 import 'package:bargainb/view/widgets/quantity_counter.dart';

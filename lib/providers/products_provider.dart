@@ -82,7 +82,7 @@ class ProductsProvider with ChangeNotifier {
       var storeName = "Jumbo";
       var description = decodedProduct['product_description'] ?? "";
       var category = decodedProduct['product_category'] ?? "";
-      var subCategory = "";
+      var subCategory = decodedProduct['subcategory'] ?? "";
       var price1 = decodedProduct['price'];
       var price2 = null;
       var oldPrice = decodedProduct['old_price'];
@@ -593,30 +593,30 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<List<Product>> getProductsBySubCategory(
-      String category, String store, String brand) async {
+      String subCategory, String store, String brand) async {
     List<Product> products = [];
 
     if (store == "Store" && brand == "Brand") {
-      var response =
-          await NetworkServices.getLimitedAlbertProductsBySubCategory(category);
-      products = convertToProductListFromJson(jsonDecode(response.body));
-      // albertProducts.forEach((element) {
-      //   if (element.subCategory != null) {
-      //     if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
-      //       products.add(element);
-      //     }
-      //   }
-      // });
+      // var response =
+          // await NetworkServices.getLimitedAlbertProductsBySubCategory(category);
+      // products = convertToProductListFromJson(jsonDecode(response.body));
+      albertProducts.forEach((element) {
+        if (element.subCategory != null) {
+          if (element.subCategory!.toLowerCase() == subCategory.toLowerCase()) {
+            products.add(element);
+          }
+        }
+      });
       jumboProducts.forEach((element) {
         if (element.subCategory != null) {
-          if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
+          if (element.subCategory!.toLowerCase() == subCategory.toLowerCase()) {
             products.add(element);
           }
         }
       });
       hoogvlietProducts.forEach((element) {
         if (element.subCategory != null) {
-          if (element.subCategory!.toLowerCase() == category.toLowerCase()) {
+          if (element.subCategory!.toLowerCase() == subCategory.toLowerCase()) {
             products.add(element);
           }
         }
@@ -627,7 +627,7 @@ class ProductsProvider with ChangeNotifier {
           albertProducts.forEach((element) {
             if (element.subCategory != null) {
               if (element.subCategory!.toLowerCase() ==
-                  category.toLowerCase()) {
+                  subCategory.toLowerCase()) {
                 products.add(element);
               }
             }
@@ -637,7 +637,7 @@ class ProductsProvider with ChangeNotifier {
           jumboProducts.forEach((element) {
             if (element.subCategory != null) {
               if (element.subCategory!.toLowerCase() ==
-                  category.toLowerCase()) {
+                  subCategory.toLowerCase()) {
                 products.add(element);
               }
             }
@@ -647,7 +647,7 @@ class ProductsProvider with ChangeNotifier {
           hoogvlietProducts.forEach((element) {
             if (element.subCategory != null) {
               if (element.subCategory!.toLowerCase() ==
-                  category.toLowerCase()) {
+                  subCategory.toLowerCase()) {
                 products.add(element);
               }
             }
@@ -658,7 +658,7 @@ class ProductsProvider with ChangeNotifier {
       albertProducts.forEach((element) {
         if (element.storeName != "" && (element.subCategory != null)) {
           if (element.storeName.toLowerCase() == brand.toLowerCase() &&
-              (element.subCategory!.toLowerCase() == category.toLowerCase())) {
+              (element.subCategory!.toLowerCase() == subCategory.toLowerCase())) {
             products.add(element);
           }
         }
@@ -666,7 +666,7 @@ class ProductsProvider with ChangeNotifier {
       jumboProducts.forEach((element) {
         if (element.storeName != "" && (element.subCategory != null)) {
           if (element.storeName.toLowerCase() == brand.toLowerCase() &&
-              (element.subCategory!.toLowerCase() == category.toLowerCase())) {
+              (element.subCategory!.toLowerCase() == subCategory.toLowerCase())) {
             products.add(element);
           }
         }
@@ -674,7 +674,7 @@ class ProductsProvider with ChangeNotifier {
       hoogvlietProducts.forEach((element) {
         if (element.storeName != "" && (element.subCategory != null)) {
           if (element.storeName.toLowerCase() == brand.toLowerCase() &&
-              (element.subCategory!.toLowerCase() == category.toLowerCase())) {
+              (element.subCategory!.toLowerCase() == subCategory.toLowerCase())) {
             products.add(element);
           }
         }
@@ -686,7 +686,7 @@ class ProductsProvider with ChangeNotifier {
             if (element.storeName != "" && (element.subCategory != null)) {
               if (element.storeName.toLowerCase() == brand.toLowerCase() &&
                   (element.subCategory!.toLowerCase() ==
-                      category.toLowerCase())) {
+                      subCategory.toLowerCase())) {
                 products.add(element);
               }
             }
@@ -697,7 +697,7 @@ class ProductsProvider with ChangeNotifier {
             if (element.storeName != "" && (element.subCategory != null)) {
               if (element.storeName.toLowerCase() == brand.toLowerCase() &&
                   (element.subCategory!.toLowerCase() ==
-                      category.toLowerCase())) {
+                      subCategory.toLowerCase())) {
                 products.add(element);
               }
             }
@@ -708,7 +708,7 @@ class ProductsProvider with ChangeNotifier {
             if (element.storeName != "" && (element.subCategory != null)) {
               if (element.storeName.toLowerCase() == brand.toLowerCase() &&
                   (element.subCategory!.toLowerCase() ==
-                      category.toLowerCase())) {
+                      subCategory.toLowerCase())) {
                 products.add(element);
               }
             }

@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bargainb/models/product_category.dart';
 import 'package:bargainb/services/network_services.dart';
-import 'package:bargainb/view/screens/categories_screen.dart';
+import 'package:bargainb/view/screens/category_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -172,7 +172,7 @@ class MySearchDelegate extends SearchDelegate {
                                 child: GestureDetector(
                                   onTap: () => AppNavigator.pushReplacement(
                                       context: context,
-                                      screen: CategoriesScreen(
+                                      screen: CategoryScreen(
                                         category: element.category,
                                       )),
                                   child: SizedBox(

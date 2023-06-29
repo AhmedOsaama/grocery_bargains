@@ -18,6 +18,7 @@ class ProductCategory {
     required this.category,
     required this.englishCategory,
     required this.subcategories,
+    required this.subCategoriesEnglish,
   });
 
   int id;
@@ -25,6 +26,7 @@ class ProductCategory {
   String englishCategory;
   String image;
   String subcategories;
+  String subCategoriesEnglish;
 
   factory ProductCategory.fromJson(Map<String, dynamic> json) =>
       ProductCategory(
@@ -33,11 +35,13 @@ class ProductCategory {
         englishCategory: json["category_english"],
         image: "assets/images/categories/" + json["category"] + ".png",
         subcategories: json["subcategories"],
+        subCategoriesEnglish: json["sub_category_english"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "category": category,
         "subcategories": subcategories,
+        "sub_category_english": subCategoriesEnglish,
       };
 }

@@ -19,10 +19,11 @@ import '../../utils/style_utils.dart';
 import '../screens/product_detail_screen.dart';
 
 class DiscountItem extends StatelessWidget {
-  final ComparisonProduct comparisonProduct;
+  final ComparisonProduct? comparisonProduct;
+  final Product? product;
   final bool inGridView;
   DiscountItem(
-      {Key? key, required this.comparisonProduct, required this.inGridView})
+      {Key? key, this.comparisonProduct, required this.inGridView, this.product})
       : super(key: key);
 
   var selectedStore = (['Albert', "Jumbo", "Hoogvliet"]..shuffle()).first;
@@ -79,20 +80,25 @@ class DiscountItem extends StatelessWidget {
     var productsProvider =
         Provider.of<ProductsProvider>(context, listen: false);
     late Product product;
-    try {
-      if (selectedStore == "Albert") {
-        product = productsProvider.albertProducts.firstWhere((product) => product.id == comparisonProduct.albertId);
+    if(this.product != null){
+      product = this.product!;
+      selectedStore = product.storeName;
+    }else {
+      try {
+        if (selectedStore == "Albert") {
+          product = productsProvider.albertProducts.firstWhere((product) => product.id == comparisonProduct!.albertId);
+        }
+        if (selectedStore == "Jumbo") {
+          product = productsProvider.jumboProducts.firstWhere((product) => product.id == comparisonProduct!.jumboId);
+        }
+        if (selectedStore == "Hoogvliet") {
+          product =
+              productsProvider.hoogvlietProducts.firstWhere((product) => product.id == comparisonProduct!.hoogvlietId);
+        }
+      } catch (e) {
+        // print(comparisonProduct.hoogvlietId);
+        print("Error in discountItem: $e");
       }
-      if (selectedStore == "Jumbo") {
-        product = productsProvider.jumboProducts.firstWhere((product) => product.id == comparisonProduct.jumboId);
-      }
-      if (selectedStore == "Hoogvliet") {
-        product =
-            productsProvider.hoogvlietProducts.firstWhere((product) => product.id == comparisonProduct.hoogvlietId);
-      }
-    }catch(e){
-      print(comparisonProduct.hoogvlietId);
-      print("Error in discountItem: $e");
     }
     return GestureDetector(
       onTap: () {
@@ -232,63 +238,3 @@ class DiscountItem extends StatelessWidget {
 
 }
 
-class StorePrice extends StatelessWidget {
-  final String currentPrice;
-  final String? oldPrice;
-  final String storeImagePath;
-  StorePrice(
-      {Key? key,
-      required this.currentPrice,
-      this.oldPrice,
-      required this.storeImagePath})
-      : super(key: key);
-
-  var doubleOldPrice = 0.0;
-  var doubleCurrentPrice = 0.0;
-  @override
-  Widget build(BuildContext context) {
-    if (oldPrice != null) {
-      doubleOldPrice = double.tryParse(oldPrice!) ?? 0.0;
-      doubleCurrentPrice = double.tryParse(currentPrice) ?? 0.0;
-    }
-    return Column(
-      children: [
-        Image.asset(
-          storeImagePath,
-          width: 30,
-          height: 22,
-        ),
-        10.ph,
-        // if (oldPrice != null)
-        //   Column(
-        //     crossAxisAlignment: CrossAxisAlignment.start,
-        //     children: [
-        //       Text(
-        //         '€$currentPrice',
-        //         style: TextStylesInter.textViewMedium15.copyWith(color: black2),
-        //       ),
-        //       Text.rich(TextSpan(
-        //           text: '€$oldPrice',
-        //           style: TextStylesInter.textViewMedium10.copyWith(
-        //               color: Color.fromRGBO(134, 136, 137, 1),
-        //               decoration: TextDecoration.lineThrough),
-        //           children: [
-        //             TextSpan(
-        //               text:
-        //                   ' €${(doubleOldPrice - doubleCurrentPrice).toStringAsFixed(2)} less',
-        //               style: TextStylesInter.textViewMedium10.copyWith(
-        //                   color: verdigris, decoration: TextDecoration.none),
-        //             )
-        //           ]))
-        //     ],
-        //   ),
-        // if (oldPrice == null)
-        Text(
-          '€$currentPrice',
-          style: TextStylesInter.textViewMedium12
-              .copyWith(color: Color.fromRGBO(134, 136, 137, 1)),
-        )
-      ],
-    );
-  }
-}
