@@ -110,7 +110,7 @@ class NetworkServices {
 
   static Future<http.Response> searchAlbertProducts(String searchTerm) async {
     final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/function-3?search=$searchTerm');
+        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new?tableName=products&searchIndex=$searchTerm');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;
@@ -118,7 +118,7 @@ class NetworkServices {
 
   static Future<http.Response> searchJumboProducts(String searchTerm) async {
     final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/search_jumbo?search=$searchTerm');
+        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new?tableName=jumbo&searchIndex=$searchTerm');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;
@@ -126,7 +126,7 @@ class NetworkServices {
 
   static Future<http.Response> searchHoogvlietProducts(String searchTerm) async {
     final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/search_hoogvliet?search=$searchTerm');
+        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new?tableName=hoogvliet&searchIndex=$searchTerm');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;
@@ -179,6 +179,15 @@ class NetworkServices {
   static Future<http.Response> searchHoogvlietProductByName(String searchTerm) async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/search_hoogvliet_by_name?search=$searchTerm');
+    var response = await http.get(
+        url, headers: {'Content-Type': 'application/json',});
+    return response;
+  }
+
+  static Future<http.Response> getSearchSuggestions(String searchTerm, String tableName) async {
+    final url = Uri.parse(
+      'https://us-central1-discountly.cloudfunctions.net/test_search_list?tableName=$tableName&searchIndex=$searchTerm'
+    );
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;

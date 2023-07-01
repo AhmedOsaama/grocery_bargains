@@ -41,7 +41,7 @@ class SearchWidget extends StatelessWidget {
 
         6.pw,
         Expanded(
-          child: GenericField(
+          child: GestureDetector(
             onTap: () async {
               SharedPreferences pref =
               await SharedPreferences.getInstance();
@@ -49,11 +49,23 @@ class SearchWidget extends StatelessWidget {
                   context: context,
                   delegate: MySearchDelegate(pref, true));
             },
-            prefixIcon: Icon(Icons.search,color: Colors.black,),
-            borderRaduis: 999,
-            hintText: LocaleKeys.whatAreYouLookingFor.tr(),
-            hintStyle: TextStyles.textViewSemiBold14
-                .copyWith(color: greyText),
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10.w,vertical: 12.h),
+              decoration: BoxDecoration(
+                color: white,
+                border: Border.all(color: grey),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Row(
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(Icons.search,color: Colors.black,),
+                  10.pw,
+                  Text(LocaleKeys.whatAreYouLookingFor.tr(),style: TextStyles.textViewSemiBold14
+                      .copyWith(color: greyText),)
+                ],
+              ),
+            ),
           ),
         ),
       ],

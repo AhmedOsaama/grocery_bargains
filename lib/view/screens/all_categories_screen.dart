@@ -32,6 +32,11 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: white,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Theme.of(context).canvasColor,
+        foregroundColor: Colors.black,
+      ),
       body: WillPopScope(
         onWillPop: () {
           FocusScope.of(context).unfocus();
@@ -42,10 +47,6 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 30.h,
-              ),
-              SearchWidget(isBackButton: true),
               SizedBox(
                 height: 10.h,
               ),
