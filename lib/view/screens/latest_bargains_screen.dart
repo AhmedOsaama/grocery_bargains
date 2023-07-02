@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
+import '../components/search_appBar.dart';
 import '../widgets/discountItem.dart';
 
 class LatestBargainsScreen extends StatefulWidget {
@@ -43,16 +44,7 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
         Provider.of<ProductsProvider>(context, listen: true).comparisonProducts;
     return Scaffold(
         backgroundColor: white,
-        appBar: AppBar(
-          elevation: 0,
-          centerTitle: true,
-          backgroundColor: white,
-          foregroundColor: Colors.black,
-          title: Text(
-            LocaleKeys.latestBargains.tr(),
-            style: TextStylesInter.textViewSemiBold17.copyWith(color: black2),
-          ),
-        ),
+        appBar: SearchAppBar(isBackButton: true,),
         body: comparisonProducts.isEmpty
             ? Center(
                 child: CircularProgressIndicator(),
@@ -61,19 +53,6 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 15.0),
                 child: Column(
                   children: [
-                    10.ph,
-                    GenericField(
-                      isFilled: true,
-                      onTap: () async {
-                        SharedPreferences pref =
-                            await SharedPreferences.getInstance();
-                        return showSearch(
-                            context: context,
-                            delegate: MySearchDelegate(pref, true));
-                      },
-                      prefixIcon: Icon(Icons.search),
-                      borderRaduis: 999,
-                    ),
                     10.ph,
                     Expanded(
                       child: PagedGridView<int, ComparisonProduct>(

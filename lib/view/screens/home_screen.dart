@@ -291,7 +291,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           TextButton(
                               onPressed: () {
-                                pushNewScreen(context, screen: AllCategoriesScreen(), withNavBar: true);
+                                AppNavigator.push(context: context, screen: AllCategoriesScreen());
+                                // pushNewScreen(context, screen: AllCategoriesScreen(), withNavBar: true);
                               },
                               child: Text(
                                 'seeAll'.tr(),

@@ -18,6 +18,7 @@ import 'package:bargainb/view/screens/product_detail_screen.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../models/product.dart';
+import '../components/search_appBar.dart';
 import '../widgets/discountItem.dart';
 
 class SubCategoryScreen extends StatefulWidget {
@@ -52,6 +53,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: white,
+      appBar: SearchAppBar(isBackButton: true,),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.only(right: 15.w),
@@ -61,8 +63,6 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
               SizedBox(
                 height: 30.h,
               ),
-              SearchWidget(isBackButton: true),
-              // 15.ph,
               15.ph,
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 15.w),

@@ -23,7 +23,7 @@ class SearchWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        isBackButton ? 15.pw : Container(),
+        // isBackButton ? 15.pw : Container(),
         isBackButton ?
         GestureDetector(
           behavior: HitTestBehavior.opaque,
@@ -37,7 +37,7 @@ class SearchWidget extends StatelessWidget {
               SvgPicture.asset(bargainbIcon,height: 42.h,),
             ],
           ),
-        ) :               SvgPicture.asset(bargainbIcon,height: 42.h,),
+        ) :  SvgPicture.asset(bargainbIcon,height: 42.h,),
 
         6.pw,
         Expanded(

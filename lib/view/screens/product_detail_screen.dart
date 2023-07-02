@@ -20,6 +20,7 @@ import 'package:bargainb/view/widgets/price_comparison_item.dart';
 
 import '../../models/list_item.dart';
 import '../../models/product.dart';
+import '../components/search_appBar.dart';
 import '../widgets/choose_list_dialog.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -197,11 +198,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Theme.of(context).canvasColor,
-        foregroundColor: Colors.black,
-      ),
+      appBar: SearchAppBar(isBackButton: true,),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),

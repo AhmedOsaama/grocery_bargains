@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/providers/google_sign_in_provider.dart';
+import 'package:bargainb/view/components/search_appBar.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/subscription_screen.dart';
 import 'package:bargainb/view/screens/support_screen.dart';
@@ -98,66 +99,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Consumer<GoogleSignInProvider>(builder: (ctx, provider, _) {
       return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          elevation: 0.2,
-          backgroundColor: Colors.white,
-          title: Text(
-            LocaleKeys.profile.tr(),
-            style: TextStyles.textViewSemiBold16.copyWith(color: black1),
-          ),
-          actions: [
-            TextButton(
-                onPressed: () async {
-                  shareProfileDeepLink();
-                  // if (isEditing && isEdited) {
-                  //   Map<String, Object?> data = {};
-                  //
-                  //   if (name.isNotEmpty) {
-                  //     data.addAll({'username': name});
-                  //   }
-                  //   if (status.isNotEmpty) {
-                  //     data.addAll({'status': status});
-                  //   }
-                  //
-                  //   if (phone.isNotEmpty && isPhoneEdited) {
-                  //     await verifyPhoneNumber(phone);
-                  //   }
-                  //   if (!isPhoneEdited) {
-                  //     await FirebaseFirestore.instance
-                  //         .collection('users')
-                  //         .doc(FirebaseAuth.instance.currentUser!.uid)
-                  //         .update(data);
-                  //     setState(() {
-                  //       updateUserDataFuture();
-                  //     });
-                  //   }
-                  // }
-                  // if (!isPhoneEdited || !isEditing)
-                  //   setState(() {
-                  //     isEditing = !isEditing;
-                  //     isEdited = !isEdited;
-                  //   });
-                },
-                child: Text(
-                  isEditing ? "save".tr() : LocaleKeys.edit.tr(),
-                  style:
-                      TextStyle(fontWeight: FontWeight.w600, fontSize: 17.sp),
-                ))
-          ],
-          leading: isEditing
-              ? IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isEditing = !isEditing;
-                    });
-                  },
-                  icon: Icon(
-                    Icons.arrow_back_ios,
-                    color: mainPurple,
-                  ))
-              : Container(),
-        ),
+       appBar: SearchAppBar(isBackButton: false),
         body: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),

@@ -1,6 +1,7 @@
 import 'package:bargainb/models/chatlist.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/components/chats_search_delegate.dart';
+import 'package:bargainb/view/components/search_appBar.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/contact_profile_screen.dart';
 import 'package:bargainb/models/user_info.dart' as UserInfo;
@@ -53,6 +54,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
     var chatlistsProvider = context.watch<ChatlistsProvider>();
     return Scaffold(
       backgroundColor: Color.fromRGBO(245, 247, 254, 1),
+      appBar: SearchAppBar(isBackButton: false,),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () {

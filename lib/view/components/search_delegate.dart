@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:bargainb/models/product_category.dart';
 import 'package:bargainb/services/network_services.dart';
+import 'package:bargainb/utils/empty_padding.dart';
+import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/screens/category_screen.dart';
 import 'package:bargainb/view/widgets/discountItem.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -25,6 +27,8 @@ class MySearchDelegate extends SearchDelegate {
   MySearchDelegate(this.pref, this.showCategories);
 
   List<String> suggestions = [];
+  String sortDropdownValue = 'Sort';
+  String storeDropdownValue = 'Store';
 
   @override
   List<Widget>? buildActions(BuildContext context) {
@@ -37,8 +41,7 @@ class MySearchDelegate extends SearchDelegate {
             ? Container(
                 margin: EdgeInsets.only(right: 10.w),
                 padding: EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle, border: Border.all(color: grey)),
+                decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: grey)),
                 child: Icon(
                   Icons.close,
                   color: Colors.black,
@@ -62,14 +65,8 @@ class MySearchDelegate extends SearchDelegate {
   Widget buildResults(BuildContext context) {
     var productProvider = Provider.of<ProductsProvider>(context, listen: false);
     if (query.isNotEmpty) saveRecentSearches();
-    // List allProducts =
-    //     Provider.of<ProductsProvider>(context, listen: false).allProducts;
-    // var searchResults = allProducts
-    //     .where((product) => product['Name'].toString().contains(query))
-    //     .toList();
     return FutureBuilder<List<Product?>>(
-        future: Provider.of<ProductsProvider>(context, listen: false)
-            .searchProducts(query),
+        future: Provider.of<ProductsProvider>(context, listen: false).searchProducts(query),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting)
             return const Center(
@@ -84,35 +81,131 @@ class MySearchDelegate extends SearchDelegate {
             return Center(
               child: Text("noMatchesFound".tr()),
             );
+          // var results = List.from(searchResults);
+          var results = [];
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
-            child: GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 15.h,
-                  childAspectRatio: 0.6
-              ),
-              itemCount: searchResults.length,
-              itemBuilder: (ctx, i) {
-                // var id = searchResults[i].id;
-                // var productName = searchResults[i].name;
-                // var productBrand = searchResults[i].brand;
-                // var productLink = searchResults[i].url;
-                // var imageURL = searchResults[i].imageURL;
-                // var storeName = searchResults[i].storeName;
-                // var description = searchResults[i].description;
-                // var price1 = searchResults[i].price ?? '';
-                // var price2 = searchResults[i].price2 ?? '';
-                // var oldPrice = searchResults[i].oldPrice ?? "";
-                // var size1 = searchResults[i].size;
-                // var size2 = searchResults[i].size2 ?? "";
-                return DiscountItem(inGridView: false, product: searchResults[i],);
-              },
-            ),
+            child: StatefulBuilder(builder: (context, setState) {
+              results = filterProducts(results, searchResults, productProvider);
+              return Column(
+                children: [
+                  20.ph,
+                  Row(children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 15.w),
+                      decoration: BoxDecoration(color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r))),
+                      child: DropdownButton<String>(
+                        value: sortDropdownValue,
+                        icon: Icon(
+                          Icons.keyboard_arrow_down,
+                          color: white,
+                        ),
+                        iconSize: 24,
+                        underline: Container(),
+                        dropdownColor: orange70,
+                        style: TextStyles.textViewMedium12,
+                        borderRadius: BorderRadius.circular(4.r),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            sortDropdownValue = newValue!;
+                          });
+                        },
+                        items:
+                            <String>['Sort', 'Low price', 'High price'].map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(
+                              value,
+                              style: TextStyles.textViewMedium12,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                    8.pw,
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 15.w),
+                      decoration: BoxDecoration(color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r))),
+                      child: Center(
+                        child: DropdownButton<String>(
+                          value: storeDropdownValue,
+                          icon: Icon(
+                            Icons.keyboard_arrow_down,
+                            color: white,
+                          ),
+                          iconSize: 24,
+                          dropdownColor: orange70,
+                          underline: Container(),
+                          style: TextStyles.textViewMedium12,
+                          borderRadius: BorderRadius.circular(4.r),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              storeDropdownValue = newValue!;
+                            });
+                          },
+                          items: <String>['Store', 'Albert Heijn', 'Jumbo', 'Hoogvliet']
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: TextStyles.textViewMedium12,
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                    8.pw,
+                  ]),
+                  Expanded(
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2, mainAxisSpacing: 15.h, childAspectRatio: 0.6),
+                      itemCount: results.length,
+                      itemBuilder: (ctx, i) {
+                        return DiscountItem(
+                          inGridView: false,
+                          product: results[i],
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              );
+            }),
           );
         });
   }
 
+  List filterProducts(List results, List<Product?> searchResults, ProductsProvider productProvider) {
+    if (sortDropdownValue == "Sort" && storeDropdownValue == "Store") {
+      results = List.from(searchResults);
+    }
+    if (sortDropdownValue != "Sort" && storeDropdownValue == "Store") {
+      results = productProvider.sortProducts(sortDropdownValue, results);
+    }
+    if (sortDropdownValue == "Sort" && storeDropdownValue != "Store") {
+      if (storeDropdownValue == "Albert Heijn") {
+        results =
+            searchResults.where((searchResult) => searchResult?.storeName == "Albert").toList();
+      }else{
+        results =
+            searchResults.where((searchResult) => searchResult?.storeName == storeDropdownValue).toList();
+      }
+    }
+    if (sortDropdownValue != "Sort" && storeDropdownValue != "Store") {
+      if (storeDropdownValue == "Albert Heijn") {
+        results =
+            searchResults.where((searchResult) => searchResult?.storeName == "Albert").toList();
+      }else{
+        results =
+            searchResults.where((searchResult) => searchResult?.storeName == storeDropdownValue).toList();
+      }
+      results = productProvider.sortProducts(sortDropdownValue, results);
+    }
+    return results;
+  }
 
   void saveRecentSearches() {
     var recentSearches = pref.getStringList('recentSearches') ?? [];
@@ -121,7 +214,7 @@ class MySearchDelegate extends SearchDelegate {
     pref.setStringList('recentSearches', recentSearches);
   }
 
-  void getRecentSearches(String input){
+  void getRecentSearches(String input) {
     suggestions.clear();
     List<String> searchResults = pref.getStringList('recentSearches') ?? [];
     suggestions = searchResults.where((searchResult) {
@@ -134,25 +227,28 @@ class MySearchDelegate extends SearchDelegate {
     final input = query.toLowerCase();
     getRecentSearches(input);
     List<String> networkSuggestions = [];
-    if(query.isEmpty) return [];
+    if (query.isEmpty) return [];
     var resultsResponse = await Future.wait([
-    NetworkServices.getSearchSuggestions(input, "products"),
-    NetworkServices.getSearchSuggestions(input, "jumbo"),
-    NetworkServices.getSearchSuggestions(input, "hoogvliet"),
+      NetworkServices.getSearchSuggestions(input, "products"),
+      NetworkServices.getSearchSuggestions(input, "jumbo"),
+      NetworkServices.getSearchSuggestions(input, "hoogvliet"),
     ]);
-    List decodedResults = [...jsonDecode(resultsResponse[0].body), ...jsonDecode(resultsResponse[1].body), ...jsonDecode(resultsResponse[2].body)];
+    List decodedResults = [
+      ...jsonDecode(resultsResponse[0].body),
+      ...jsonDecode(resultsResponse[1].body),
+      ...jsonDecode(resultsResponse[2].body)
+    ];
     decodedResults.forEach((result) {
       networkSuggestions.add(result['name']);
     });
     return networkSuggestions.where((suggestion) {
       return suggestion.toLowerCase().contains(input);
     }).toList();
-
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-      return FutureBuilder<List>(
+    return FutureBuilder<List>(
         future: buildFutureSuggestions(),
         builder: (context, snapshot) {
           // if(snapshot.connectionState == ConnectionState.waiting){
@@ -166,28 +262,30 @@ class MySearchDelegate extends SearchDelegate {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ...networkSuggestion.map((suggestion) => ListTile(
-                    title: Text(suggestion),
-                    leading: Icon(Icons.search),
-                    onTap: () {
-                      query = suggestion;
-                      showResults(context);
-                    },
-                  )
-                  ).toList(),
-                  ...suggestions.map((suggestion) => ListTile(
-                    title: Text(suggestion),
-                    leading: Icon(Icons.history),
-                    onTap: () {
-                      query = suggestion;
-                      showResults(context);
-                    },
-                  )
-                  ).toList(),
+                  ...networkSuggestion
+                      .map((suggestion) => ListTile(
+                            title: Text(suggestion),
+                            leading: Icon(Icons.search),
+                            onTap: () {
+                              query = suggestion;
+                              showResults(context);
+                            },
+                          ))
+                      .toList(),
+                  ...suggestions
+                      .map((suggestion) => ListTile(
+                            title: Text(suggestion),
+                            leading: Icon(Icons.history),
+                            onTap: () {
+                              query = suggestion;
+                              showResults(context);
+                            },
+                          ))
+                      .toList(),
                 ],
               ),
             ),
           );
-        }
-      );
-}}
+        });
+  }
+}

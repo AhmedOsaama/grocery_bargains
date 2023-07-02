@@ -294,7 +294,10 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             75.ph,
-            SearchWidget(isBackButton: true),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: SearchWidget(isBackButton: true),
+            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               child: Row(

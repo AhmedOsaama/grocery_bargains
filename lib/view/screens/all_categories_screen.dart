@@ -14,6 +14,7 @@ import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/generic_field.dart';
 
 import '../../config/routes/app_navigator.dart';
+import '../components/search_appBar.dart';
 
 class AllCategoriesScreen extends StatefulWidget {
   const AllCategoriesScreen({Key? key}) : super(key: key);
@@ -32,11 +33,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: white,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Theme.of(context).canvasColor,
-        foregroundColor: Colors.black,
-      ),
+      appBar: SearchAppBar(isBackButton: false,),
       body: WillPopScope(
         onWillPop: () {
           FocusScope.of(context).unfocus();

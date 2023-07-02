@@ -543,14 +543,15 @@ class ProductsProvider with ChangeNotifier {
     return products;
   }
 
-  List<Product> sortProducts(String filter, List<Product> pro) {
+  List sortProducts(String filter, List pro) {
+    var sortedProducts = pro;
     try {
       switch (filter) {
-        case 'Price low - high':
-          pro.sort((a, b) => double.parse(a.price!).compareTo(double.parse(b.price!)));
+        case 'Low price':
+          sortedProducts.sort((a, b) => double.parse(a!.price!).compareTo(double.parse(b!.price!)));
           break;
-        case 'Price high - low':
-          pro.sort((a, b) => double.parse(b.price!).compareTo(double.parse(a.price!)));
+        case 'High price':
+          sortedProducts.sort((a, b) => double.parse(b!.price!).compareTo(double.parse(a!.price!)));
           break;
 
         /* case 'Nutri Score A - E':
@@ -561,7 +562,7 @@ class ProductsProvider with ChangeNotifier {
       log(e.toString());
     }
 
-    return pro;
+    return sortedProducts;
   }
 
   Future<List<Product>> getProductsBySubCategory(String subCategory, String store, String brand) async {
@@ -817,14 +818,6 @@ class ProductsProvider with ChangeNotifier {
     }).toList();
 
     var hoogvlietProducts = convertToHoogvlietProductListFromJson(jsonDecode(response[2].body));
-    // var jumboProducts = convertToProductListFromJson(jsonDecode(response[1].body));
-
-    // var albertResponse = jsonDecode((await NetworkServices.searchAlbertProducts(searchTerm)).body);
-    // var jumboResponse = jsonDecode((await NetworkServices.searchJumboProducts(searchTerm)).body);
-    // var hoogvlietResponse = jsonDecode((await NetworkServices.searchHoogvlietProducts(searchTerm)).body);
-    // var albertProducts = convertToProductListFromJson(albertResponse);
-    // var jumboProducts = convertToProductListFromJson(jumboResponse);
-    // var hoogvlietProducts = convertToHoogvlietProductListFromJson(hoogvlietResponse);
 
     var searchResult = [...jumboProducts, ...albertProducts, ...hoogvlietProducts];
     return searchResult;
