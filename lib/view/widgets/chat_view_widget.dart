@@ -17,6 +17,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -130,10 +131,19 @@ class _ChatViewState extends State<ChatView> {
   @override
   Widget build(BuildContext context) {
     return ShowCaseWidget(
-      builder: Builder(builder: (builder) {
+      onStart: (_, p) {
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+      },
+      onFinish: () {
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
+          SystemUiOverlay.top,
+          SystemUiOverlay.bottom,
+        ]);
+      },
+      builder: Builder(builder: (ctx) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           if (isFirstTime) {
-            ShowCaseWidget.of(builder).startShowCase([TooltipKeys.showCase4, TooltipKeys.showCase5]);
+            ShowCaseWidget.of(ctx).startShowCase([TooltipKeys.showCase6]);
           }
         });
         return Stack(
@@ -144,317 +154,455 @@ class _ChatViewState extends State<ChatView> {
               chatlistBackground,
               fit: BoxFit.cover,
             ),
-            Column(
-              children: [
-                Expanded(
-                  child: Stack(
-                    children: [
-                      StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection("/lists/${widget.listId}/messages")
-                              .orderBy('createdAt', descending: true)
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return const Center(child: CircularProgressIndicator());
-                            }
-                            final messages = snapshot.data?.docs ?? [];
-                            if (messages.isEmpty || !snapshot.hasData) {
-                              return Column(
-                                children: [
-                                  SvgPicture.asset(messagesPlaceholder),
-                                  15.ph,
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                                    child: Text(
-                                      LocaleKeys.addYourFriendsAndFamily.tr(),
-                                      textAlign: TextAlign.center,
-                                      style: TextStylesInter.textViewMedium15.copyWith(color: blackSecondary),
-                                    ),
-                                  ),
-                                  20.ph,
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      GenericButton(
-                                        onPressed: () => widget.showInviteMembersDialog(context),
-                                        child: Text(LocaleKeys.addContacts.tr()),
-                                        color: mainPurple,
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      25.pw,
-                                      GenericButton(
-                                          onPressed: () async {
-                                            SharedPreferences pref = await SharedPreferences.getInstance();
-                                            return showSearch(context: context, delegate: MySearchDelegate(pref, true));
-                                          },
-                                          child: Text(LocaleKeys.addItem.tr()),
-                                          color: mainPurple,
-                                          borderRadius: BorderRadius.circular(6)),
-                                    ],
-                                  )
-                                ],
-                              );
-                            }
-                            return ListView.builder(
-                                reverse: true,
-                                itemCount: messages.length,
-                                itemBuilder: (ctx, index) => Showcase.withWidget(
-                                      key: isFirstTime ? TooltipKeys.showCase5 : new GlobalKey<State<StatefulWidget>>(),
-                                      onTargetClick: () async => await turnOffFirstTime(),
-                                      onBarrierClick: () async => await turnOffFirstTime(),
-                                      onTargetDoubleTap: () async => await turnOffFirstTime(),
-                                      tooltipPosition: TooltipPosition.top,
-                                      targetBorderRadius: BorderRadius.circular(8),
-                                      container: Container(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              padding: EdgeInsets.all(15),
-                                              width: 180.w,
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(8.r),
-                                                color: purple70,
-                                              ),
-                                              child: Column(children: [
-                                                Text(
-                                                  LocaleKeys.shareGroceriesToChat.tr(),
-                                                  maxLines: 4,
-                                                  style: TextStyles.textViewRegular13.copyWith(color: white),
-                                                ),
-                                                GestureDetector(
-                                                  onTap: () async {
-                                                    await turnOffFirstTime();
-                                                    ShowCaseWidget.of(builder).next();
-                                                  },
-                                                  child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.end,
-                                                    children: [
-                                                      Text(
-                                                        LocaleKeys.next.tr(),
-                                                        style: TextStyles.textViewSemiBold14.copyWith(color: white),
-                                                      ),
-                                                      Icon(
-                                                        Icons.arrow_forward_ios,
-                                                        color: white,
-                                                        size: 15.sp,
-                                                      )
-                                                    ],
-                                                  ),
-                                                )
-                                              ]),
-                                            ),
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                15.pw,
-                                                Container(
-                                                  height: 11,
-                                                  width: 13,
-                                                  child: CustomPaint(
-                                                    painter: DownTrianglePainter(
-                                                      strokeColor: purple70,
-                                                      strokeWidth: 1,
-                                                      paintingStyle: PaintingStyle.fill,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      height: 110.h,
-                                      width: 190.h,
-                                      child: Container(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: MessageBubble(
-                                          itemId: (messages[index].data()! as Map).containsKey('item_id')
-                                              ? messages[index]['item_id']
-                                              : -1,
-                                          itemBrand: (messages[index].data()! as Map).containsKey('item_brand')
-                                              ? messages[index]['item_brand']
-                                              : "",
-                                          itemQuantity: (messages[index].data()! as Map).containsKey('item_quantity')
-                                              ? messages[index]['item_quantity']
-                                              : 0,
-                                          itemSize: (messages[index].data()! as Map).containsKey('item_size')
-                                              ? messages[index]['item_size']
-                                              : "",
-                                          itemName: messages[index]['item_name'],
-                                          // itemSize: messages[index]
-                                          //     ['item_size'],
-                                          itemPrice: messages[index]['item_price'].toString(),
-                                          itemOldPrice: messages[index]['item_oldPrice'] ?? "0.0",
-                                          itemImage: messages[index]['item_image'],
-                                          storeName: messages[index]['store_name'] ?? "",
-                                          isMe: messages[index]['userId'] == FirebaseAuth.instance.currentUser!.uid,
-                                          message: messages[index]['message'],
-                                          messageDocPath: messages[index].reference,
-                                          userName: messages[index]['username'],
-                                          userId: messages[index]['userId'],
-                                          userImage: messages[index]['userImageURL'],
-                                          key: ValueKey(messages[index].id),
-                                          isAddedToList: messages[index]['isAddedToList'],
-                                        ),
-                                      ),
-                                    ));
-                          }),
-                      StreamBuilder(
-                          //chatlist header
-                          stream: FirebaseFirestore.instance
-                              .collection("/lists/${widget.listId}/items")
-                              .orderBy('time')
-                              .snapshots(),
-                          builder: (context, snapshot) {
-                            final items = snapshot.data?.docs ?? [];
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return Container();
-                            }
-                            int height = 400;
-                            switch (items.length) {
-                              case 1:
-                                height = 120;
-                                break;
-                              case 2:
-                                height = 200;
-                                break;
-                              case 3:
-                                height = 270;
-                                break;
-                              case 4:
-                                height = 350;
-                                break;
-                              default:
-                                height = 400;
-                            }
-                            return Container(
-                              height: isExpandingChatlist ? double.infinity : 55.h,
-                              padding: EdgeInsets.symmetric(horizontal: 15),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Colors.white,
-                                boxShadow: Utils.boxShadow,
+            Showcase.withWidget(
+              height: 1.h,
+              width: 380.w,
+              key: isFirstTime ? TooltipKeys.showCase6 : new GlobalKey<State<StatefulWidget>>(),
+              onTargetClick: () async => await turnOffFirstTime(),
+              onBarrierClick: () async => await turnOffFirstTime(),
+              onTargetDoubleTap: () async => await turnOffFirstTime(),
+              tooltipPosition: TooltipPosition.top,
+              targetBorderRadius: BorderRadius.circular(8),
+              container: Container(
+                // margin: EdgeInsets.only(top: 100),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(15),
+                      margin: EdgeInsets.only(left: 30),
+                      width: 270.w,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.r),
+                        color: purple70,
+                      ),
+                      child: Column(children: [
+                        Text(
+                          LocaleKeys.shareGroceriesToChat.tr(),
+                          maxLines: 5,
+                          style: TextStyles.textViewRegular13.copyWith(color: white),
+                        ),
+                        GestureDetector(
+                          onTap: () async {
+                            // await turnOffFirstTime();
+                            setState(() {
+                              isFirstTime = false;
+                            });
+                            widget.showInviteMembersDialog(context);
+                            ShowCaseWidget.of(ctx).next();
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Text(
+                                LocaleKeys.next.tr(),
+                                style: TextStyles.textViewSemiBold14.copyWith(color: white),
                               ),
-                              child: Column(
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                color: white,
+                                size: 15.sp,
+                              )
+                            ],
+                          ),
+                        )
+                      ]),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        150.pw,
+                        Container(
+                          height: 11,
+                          width: 13,
+                          child: CustomPaint(
+                            painter: DownTrianglePainter(
+                              strokeColor: purple70,
+                              strokeWidth: 1,
+                              paintingStyle: PaintingStyle.fill,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        isFirstTime
+                            ? ListView(
                                 children: [
-                                  Row(
-                                    children: [
-                                      Text.rich(TextSpan(
-                                          text: "${LocaleKeys.chatlist.tr()} ",
-                                          style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
-                                          children: [
-                                            TextSpan(
-                                                text: " ${items.length} ${LocaleKeys.items.tr()}",
-                                                style: TextStylesInter.textViewBold12.copyWith(color: blackSecondary))
-                                          ])),
-                                      15.pw,
-                                      Text.rich(TextSpan(
-                                          text: "${LocaleKeys.total.tr()} ",
-                                          style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
-                                          children: [
-                                            TextSpan(
-                                                text: " €${getTotalListPrice(items)}",
-                                                style: TextStylesInter.textViewBold12.copyWith(color: mainPurple))
-                                          ])),
-                                      15.pw,
-                                      Text.rich(TextSpan(
-                                          text: "${LocaleKeys.savings.tr()} ",
-                                          style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
-                                          children: [
-                                            TextSpan(
-                                                text: " €${getTotalListSavings(items)}",
-                                                style: TextStylesInter.textViewBold12.copyWith(color: greenSecondary))
-                                          ])),
-                                      Spacer(),
-                                      IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              isExpandingChatlist = !isExpandingChatlist;
-                                            });
-                                          },
-                                          icon: isExpandingChatlist
-                                              ? Icon(
-                                                  Icons.keyboard_arrow_up,
-                                                  color: mainPurple,
-                                                  size: 45.sp,
-                                                )
-                                              : Icon(
-                                                  Icons.keyboard_arrow_down,
-                                                  color: mainPurple,
-                                                  size: 45.sp,
-                                                )),
-                                    ],
-                                  ),
+                                  MessageBubble(
+                                      itemName: "",
+                                      itemImage: "",
+                                      userName: "Ahmed",
+                                      userImage: "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1084",
+                                      isMe: false,
+                                      message: "Hey I made the grocery list, check it out.",
+                                      isAddedToList: false,
+                                      itemPrice: "",
+                                      itemOldPrice: "",
+                                      itemSize: "",
+                                      storeName: "",
+                                      userId: "",
+                                      itemId: -1,
+                                      itemBrand: "",
+                                      itemQuantity: 0),   MessageBubble(
+                                      itemName: "",
+                                      itemImage: "",
+                                      userName: "Ahmed",
+                                      userImage: "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1084",
+                                      isMe: false,
+                                      message: "Hey, do we need butter?",
+                                      isAddedToList: false,
+                                      itemPrice: "",
+                                      itemOldPrice: "",
+                                      itemSize: "",
+                                      storeName: "",
+                                      userId: "",
+                                      itemId: -1,
+                                      itemBrand: "",
+                                      itemQuantity: 0),
+                                  MessageBubble(
+                                      itemName: "",
+                                      itemImage: "",
+                                      userName: "Ahmed",
+                                      userImage: "https://www.himalmag.com/wp-content/uploads/2019/07/sample-profile-picture.png",
+                                      isMe: true,
+                                      message: "yes we do",
+                                      isAddedToList: false,
+                                      itemPrice: "",
+                                      itemOldPrice: "",
+                                      itemSize: "",
+                                      storeName: "",
+                                      userId: "",
+                                      itemId: -1,
+                                      itemBrand: "",
+                                      itemQuantity: 0),
+                                  MessageBubble(
+                                      itemName: "",
+                                      itemImage: "",
+                                      userName: "Ahmed",
+                                      userImage: "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1084",
+                                      isMe: false,
+                                      message: "Can you add it to the list? i am not sure which one.",
+                                      isAddedToList: false,
+                                      itemPrice: "",
+                                      itemOldPrice: "",
+                                      itemSize: "",
+                                      storeName: "",
+                                      userId: "",
+                                      itemId: -1,
+                                      itemBrand: "",
+                                      itemQuantity: 0),  MessageBubble(
+                                      itemName: "",
+                                      itemImage: "",
+                                      userName: "Ahmed",
+                                      userImage: "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1084",
+                                      isMe: false,
+                                      message: "Anything else not on the list ?",
+                                      isAddedToList: false,
+                                      itemPrice: "",
+                                      itemOldPrice: "",
+                                      itemSize: "",
+                                      storeName: "",
+                                      userId: "",
+                                      itemId: -1,
+                                      itemBrand: "",
+                                      itemQuantity: 0),
+                                  MessageBubble(
+                                      itemName: "Spreadable Blend of Butter & Rapeseed Oil",
+                                      itemImage: "https://images.arla.com/recordid/520C13F1-C489-4BBC-9590546669B7C3FE/picture.png?width=1200&height=630",
+                                      userName: "Ahmed",
+                                      userImage: "https://www.himalmag.com/wp-content/uploads/2019/07/sample-profile-picture.png",
+                                      isMe: true,
+                                      message: "",
+                                      isAddedToList: true,
+                                      itemPrice: "2.20",
+                                      itemOldPrice: "3.20",
+                                      itemSize: "500g",
+                                      storeName: "Albert",
+                                      userId: "",
+                                      itemId: 2,
+                                      itemBrand: "Lurpak",
+                                      itemQuantity: 1),
+                                  MessageBubble(
+                                      itemName: "",
+                                      itemImage: "",
+                                      userName: "Ahmed",
+                                      userImage: "https://www.himalmag.com/wp-content/uploads/2019/07/sample-profile-picture.png",
+                                      isMe: true,
+                                      message: "Stop by at the dry cleaners to pick up clothes",
+                                      isAddedToList: true,
+                                      itemPrice: "",
+                                      itemOldPrice: "",
+                                      itemSize: "",
+                                      storeName: "",
+                                      userId: "",
+                                      itemId: -1,
+                                      itemBrand: "",
+                                      itemQuantity: 0),
 
-                                  if (isExpandingChatlist)
-                                    Builder(builder: (ctx) {
-                                      if(items.isEmpty) return Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          ...List.generate(3, (index) => Row(
-                                            children: [
-                                              Container(
-                                                padding: EdgeInsets.all(15),
-                                                margin: EdgeInsets.symmetric(vertical: 7),
-                                                decoration: BoxDecoration(color: purple30,
-                                                  borderRadius: BorderRadius.circular(20),
-                                                ),
-                                                child: SvgPicture.asset(cheese,width: 27,height: 27,),
-                                              ),
-                                              10.pw,
-                                              Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                    width: 75.w,
-                                                    height: 10.h,
-                                                    decoration: BoxDecoration(
-                                                    color: purple50,
-                                                    borderRadius: BorderRadius.circular(6)
-                                                  ),),
-                                                  5.ph,
-                                                  Container(
-                                                    width: 220.w,
-                                                    height: 8.h,
-                                                    decoration: BoxDecoration(
-                                                    color: purple10,
-                                                    borderRadius: BorderRadius.circular(6)
-                                                  ),),
-                                                  5.ph,
-                                                  Container(
-                                                    width: 220.w,
-                                                    height: 8.h,
-                                                    decoration: BoxDecoration(
-                                                    color: purple10,
-                                                    borderRadius: BorderRadius.circular(6)
-                                                  ),),
-                                                ],
-                                              ),
-                                              Spacer(),
-                                              Text("€ 1.25"),
-                                            ],
-                                          )),
-                                          10.ph,
-                                          Text("Add your first item to your chatlist", style: TextStylesInter.textViewSemiBold20.copyWith(color: blackSecondary),),
-                                          15.ph,
-                                          Text("Add items to your chatlist to see which supermarkets are cheapest", style: TextStylesInter.textViewRegular10.copyWith(color: greyText),),
-                                          15.ph,
-                                          GenericButton(
-                                              onPressed: () async {
-                                                SharedPreferences pref = await SharedPreferences.getInstance();
-                                                return showSearch(context: context, delegate: MySearchDelegate(pref, true));
-                                              },
-                                              child: Text(LocaleKeys.addItem.tr()),
+                                ],
+                              )
+                            : StreamBuilder<QuerySnapshot>(
+                                stream: FirebaseFirestore.instance
+                                    .collection("/lists/${widget.listId}/messages")
+                                    .orderBy('createdAt', descending: true)
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                    return const Center(child: CircularProgressIndicator());
+                                  }
+                                  final messages = snapshot.data?.docs ?? [];
+                                  if (messages.isEmpty || !snapshot.hasData) {
+                                    return Column(
+                                      children: [
+                                        SvgPicture.asset(messagesPlaceholder),
+                                        15.ph,
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 40),
+                                          child: Text(
+                                            LocaleKeys.addYourFriendsAndFamily.tr(),
+                                            textAlign: TextAlign.center,
+                                            style: TextStylesInter.textViewMedium15.copyWith(color: blackSecondary),
+                                          ),
+                                        ),
+                                        20.ph,
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            GenericButton(
+                                              onPressed: () => widget.showInviteMembersDialog(context),
+                                              child: Text(LocaleKeys.addContacts.tr()),
                                               color: mainPurple,
-                                              borderRadius: BorderRadius.circular(6)),
-                                        ],
-                                      );
-                                      albertItems.clear();
-                                      jumboItems.clear();
-                                      hoogvlietItems.clear();
-                                      quicklyAddedItems.clear();
+                                              borderRadius: BorderRadius.circular(6),
+                                            ),
+                                            25.pw,
+                                            GenericButton(
+                                                onPressed: () async {
+                                                  SharedPreferences pref = await SharedPreferences.getInstance();
+                                                  return showSearch(
+                                                      context: context, delegate: MySearchDelegate(pref, true));
+                                                },
+                                                child: Text(LocaleKeys.addItem.tr()),
+                                                color: mainPurple,
+                                                borderRadius: BorderRadius.circular(6)),
+                                          ],
+                                        )
+                                      ],
+                                    );
+                                  }
+                                  return ListView.builder(
+                                      reverse: true,
+                                      itemCount: messages.length,
+                                      itemBuilder: (ctx, index) => Container(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: MessageBubble(
+                                              itemId: (messages[index].data()! as Map).containsKey('item_id')
+                                                  ? messages[index]['item_id']
+                                                  : -1,
+                                              itemBrand: (messages[index].data()! as Map).containsKey('item_brand')
+                                                  ? messages[index]['item_brand']
+                                                  : "",
+                                              itemQuantity:
+                                                  (messages[index].data()! as Map).containsKey('item_quantity')
+                                                      ? messages[index]['item_quantity']
+                                                      : 0,
+                                              itemSize: (messages[index].data()! as Map).containsKey('item_size')
+                                                  ? messages[index]['item_size']
+                                                  : "",
+                                              itemName: messages[index]['item_name'],
+                                              // itemSize: messages[index]
+                                              //     ['item_size'],
+                                              itemPrice: messages[index]['item_price'].toString(),
+                                              itemOldPrice: messages[index]['item_oldPrice'] ?? "0.0",
+                                              itemImage: messages[index]['item_image'],
+                                              storeName: messages[index]['store_name'] ?? "",
+                                              isMe: messages[index]['userId'] == FirebaseAuth.instance.currentUser!.uid,
+                                              message: messages[index]['message'],
+                                              messageDocPath: messages[index].reference,
+                                              userName: messages[index]['username'],
+                                              userId: messages[index]['userId'],
+                                              userImage: messages[index]['userImageURL'],
+                                              key: ValueKey(messages[index].id),
+                                              isAddedToList: messages[index]['isAddedToList'],
+                                            ),
+                                          ));
+                                }),
+                        StreamBuilder(
+                            //chatlist header
+                            stream: FirebaseFirestore.instance
+                                .collection("/lists/${widget.listId}/items")
+                                .orderBy('time')
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              final items = snapshot.data?.docs ?? [];
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return Container();
+                              }
+                              int height = 400;
+                              switch (items.length) {
+                                case 1:
+                                  height = 120;
+                                  break;
+                                case 2:
+                                  height = 200;
+                                  break;
+                                case 3:
+                                  height = 270;
+                                  break;
+                                case 4:
+                                  height = 350;
+                                  break;
+                                default:
+                                  height = 400;
+                              }
+                              return Container(
+                                height: isExpandingChatlist ? double.infinity : 55.h,
+                                padding: EdgeInsets.symmetric(horizontal: 15),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.white,
+                                  boxShadow: Utils.boxShadow,
+                                ),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text.rich(TextSpan(
+                                            text: "${LocaleKeys.chatlist.tr()} ",
+                                            style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
+                                            children: [
+                                              TextSpan(
+                                                  text: isFirstTime ? "9 items" : " ${items.length} ${LocaleKeys.items.tr()}",
+                                                  style: TextStylesInter.textViewBold12.copyWith(color: blackSecondary))
+                                            ])),
+                                        15.pw,
+                                        Text.rich(TextSpan(
+                                            text: "${LocaleKeys.total.tr()} ",
+                                            style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
+                                            children: [
+                                              TextSpan(
+                                                  text: isFirstTime ? "€17.32" : " €${getTotalListPrice(items)}",
+                                                  style: TextStylesInter.textViewBold12.copyWith(color: mainPurple))
+                                            ])),
+                                        15.pw,
+                                        Text.rich(TextSpan(
+                                            text: "${LocaleKeys.savings.tr()} ",
+                                            style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
+                                            children: [
+                                              TextSpan(
+                                                  text: isFirstTime ? "€4.32" : " €${getTotalListSavings(items)}",
+                                                  style: TextStylesInter.textViewBold12.copyWith(color: greenSecondary))
+                                            ])),
+                                        Spacer(),
+                                        IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                isExpandingChatlist = !isExpandingChatlist;
+                                              });
+                                            },
+                                            icon: isExpandingChatlist
+                                                ? Icon(
+                                                    Icons.keyboard_arrow_up,
+                                                    color: mainPurple,
+                                                    size: 45.sp,
+                                                  )
+                                                : Icon(
+                                                    Icons.keyboard_arrow_down,
+                                                    color: mainPurple,
+                                                    size: 45.sp,
+                                                  )),
+                                      ],
+                                    ),
+                                    if (isExpandingChatlist)
+                                      Builder(builder: (ctx) {
+                                        if (items.isEmpty)
+                                          return Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              ...List.generate(
+                                                  3,
+                                                  (index) => Row(
+                                                        children: [
+                                                          Container(
+                                                            padding: EdgeInsets.all(15),
+                                                            margin: EdgeInsets.symmetric(vertical: 7),
+                                                            decoration: BoxDecoration(
+                                                              color: purple30,
+                                                              borderRadius: BorderRadius.circular(20),
+                                                            ),
+                                                            child: SvgPicture.asset(
+                                                              cheese,
+                                                              width: 27,
+                                                              height: 27,
+                                                            ),
+                                                          ),
+                                                          10.pw,
+                                                          Column(
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Container(
+                                                                width: 75.w,
+                                                                height: 10.h,
+                                                                decoration: BoxDecoration(
+                                                                    color: purple50,
+                                                                    borderRadius: BorderRadius.circular(6)),
+                                                              ),
+                                                              5.ph,
+                                                              Container(
+                                                                width: 220.w,
+                                                                height: 8.h,
+                                                                decoration: BoxDecoration(
+                                                                    color: purple10,
+                                                                    borderRadius: BorderRadius.circular(6)),
+                                                              ),
+                                                              5.ph,
+                                                              Container(
+                                                                width: 220.w,
+                                                                height: 8.h,
+                                                                decoration: BoxDecoration(
+                                                                    color: purple10,
+                                                                    borderRadius: BorderRadius.circular(6)),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                          Spacer(),
+                                                          Text("€ 1.25"),
+                                                        ],
+                                                      )),
+                                              10.ph,
+                                              Text(
+                                                "Add your first item to your chatlist",
+                                                style:
+                                                    TextStylesInter.textViewSemiBold20.copyWith(color: blackSecondary),
+                                              ),
+                                              15.ph,
+                                              Text(
+                                                "Add items to your chatlist to see which supermarkets are cheapest",
+                                                style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
+                                              ),
+                                              15.ph,
+                                              GenericButton(
+                                                  onPressed: () async {
+                                                    SharedPreferences pref = await SharedPreferences.getInstance();
+                                                    return showSearch(
+                                                        context: context, delegate: MySearchDelegate(pref, true));
+                                                  },
+                                                  child: Text(LocaleKeys.addItem.tr()),
+                                                  color: mainPurple,
+                                                  borderRadius: BorderRadius.circular(6)),
+                                            ],
+                                          );
+                                        albertItems.clear();
+                                        jumboItems.clear();
+                                        hoogvlietItems.clear();
+                                        quicklyAddedItems.clear();
                                         for (var item in items) {
                                           if (item['store_name'] == "Albert") {
                                             albertItems.add(item);
@@ -469,54 +617,57 @@ class _ChatViewState extends State<ChatView> {
                                             quicklyAddedItems.add(item);
                                           }
                                         }
-                                      return Flexible(
-                                        child: ListView(
-                                          padding: EdgeInsets.zero,
-                                          children: [
-                                            if (albertItems.isNotEmpty) ...[
-                                              Text(
-                                                "Albert Heijn",
-                                                style:
-                                                    TextStylesInter.textViewRegular16.copyWith(color: Colors.lightBlue),
-                                              ),
-                                              5.ph,
-                                              Column(
-                                                children: albertItems.map((item) {
-                                                  return ChatlistItem(item: item);
-                                                }).toList(),
-                                              ),
-                                            ],
-                                            if (jumboItems.isNotEmpty) ...[
-                                              Text(
-                                                "Jumbo",
-                                                style:
-                                                    TextStylesInter.textViewRegular16.copyWith(color: Colors.lightBlue),
-                                              ),
-                                              5.ph,
-                                              Column(
-                                                children: jumboItems.map((item) {
-                                                  return ChatlistItem(item: item);
-                                                }).toList(),
-                                              ),
-                                            ],
-                                            if (hoogvlietItems.isNotEmpty) ...[
-                                              Text(
-                                                "Hoogvliet",
-                                                style:
-                                                    TextStylesInter.textViewRegular16.copyWith(color: Colors.lightBlue),
-                                              ),
-                                              5.ph,
-                                              Column(
-                                                children: hoogvlietItems.map((item) {
-                                                  return ChatlistItem(item: item);
-                                                }).toList(),
-                                              ),
+                                        return Flexible(
+                                          child: ListView(
+                                            padding: EdgeInsets.zero,
+                                            children: [
+                                              if (albertItems.isNotEmpty) ...[
+                                                Text(
+                                                  "Albert Heijn",
+                                                  style: TextStylesInter.textViewRegular16
+                                                      .copyWith(color: Colors.lightBlue),
+                                                ),
+                                                5.ph,
+                                                Column(
+                                                  children: albertItems.map((item) {
+                                                    return ChatlistItem(item: item);
+                                                  }).toList(),
+                                                ),
+                                              ],
+                                              if (jumboItems.isNotEmpty) ...[
+                                                Text(
+                                                  "Jumbo",
+                                                  style: TextStylesInter.textViewRegular16
+                                                      .copyWith(color: Colors.lightBlue),
+                                                ),
+                                                5.ph,
+                                                Column(
+                                                  children: jumboItems.map((item) {
+                                                    return ChatlistItem(item: item);
+                                                  }).toList(),
+                                                ),
+                                              ],
+                                              if (hoogvlietItems.isNotEmpty) ...[
+                                                Text(
+                                                  "Hoogvliet",
+                                                  style: TextStylesInter.textViewRegular16
+                                                      .copyWith(color: Colors.lightBlue),
+                                                ),
+                                                5.ph,
+                                                Column(
+                                                  children: hoogvlietItems.map((item) {
+                                                    return ChatlistItem(item: item);
+                                                  }).toList(),
+                                                ),
                                               ],
                                               Divider(
                                                 thickness: 2,
                                                 color: Colors.black,
                                               ),
-                                              Text("Quick Items",style: TextStylesInter.textViewRegular12.copyWith(color: greyText),),
+                                              Text(
+                                                "Quick Items",
+                                                style: TextStylesInter.textViewRegular12.copyWith(color: greyText),
+                                              ),
                                               Column(
                                                 children: quicklyAddedItems.map((item) {
                                                   return ChatlistItem(item: item);
@@ -575,55 +726,56 @@ class _ChatViewState extends State<ChatView> {
                                                   ),
                                                 ),
                                               ),
-                                            15.ph,
+                                              15.ph,
                                             ],
-                                        ),
-                                      );
-                                    }),
-                                ],
-                              ),
-                            );
-                          }),
-                    ],
+                                          ),
+                                        );
+                                      }),
+                                  ],
+                                ),
+                              );
+                            }),
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: GenericField(
-                          controller: messageController,
-                          hintText: LocaleKeys.textHere.tr(),
-                          hintStyle: TextStylesInter.textViewRegular14.copyWith(color: blackSecondary),
-                          suffixIcon: Icon(
-                            Icons.emoji_emotions_outlined,
+                  Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: GenericField(
+                            controller: messageController,
+                            hintText: LocaleKeys.textHere.tr(),
+                            hintStyle: TextStylesInter.textViewRegular14.copyWith(color: blackSecondary),
+                            suffixIcon: Icon(
+                              Icons.emoji_emotions_outlined,
+                            ),
+                            borderRaduis: 99999,
+                            onSubmitted: (_) async {
+                              await Provider.of<ChatlistsProvider>(context, listen: false)
+                                  .sendMessage(messageController.text.trim(), widget.listId);
+                              messageController.clear();
+                            },
                           ),
-                          borderRaduis: 99999,
-                          onSubmitted: (_) async {
+                        ),
+                        5.pw,
+                        GestureDetector(
+                          onTap: () async {
                             await Provider.of<ChatlistsProvider>(context, listen: false)
                                 .sendMessage(messageController.text.trim(), widget.listId);
                             messageController.clear();
+                            FocusScope.of(context).unfocus();
                           },
+                          child: SvgPicture.asset(
+                            send,
+                          ),
                         ),
-                      ),
-                      5.pw,
-                      GestureDetector(
-                        onTap: () async {
-                          await Provider.of<ChatlistsProvider>(context, listen: false)
-                              .sendMessage(messageController.text.trim(), widget.listId);
-                          messageController.clear();
-                          FocusScope.of(context).unfocus();
-                        },
-                        child: SvgPicture.asset(
-                          send,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                // 20.ph,
-              ],
+                  // 20.ph,
+                ],
+              ),
             ),
           ],
         );
@@ -631,118 +783,4 @@ class _ChatViewState extends State<ChatView> {
     );
   }
 
-  Showcase tooltipWidget(BuildContext builder, BuildContext context) {
-    return Showcase.withWidget(
-      targetPadding: EdgeInsets.only(left: 100.w),
-      key: isFirstTime ? TooltipKeys.showCase4 : new GlobalKey<State<StatefulWidget>>(),
-      container: Container(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: EdgeInsets.all(15),
-              width: 180.w,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8.r),
-                color: purple70,
-              ),
-              child: Column(children: [
-                Text(
-                  LocaleKeys.pressACardIconToSearch.tr(),
-                  maxLines: 4,
-                  style: TextStyles.textViewRegular13.copyWith(color: white),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    ShowCaseWidget.of(builder).next();
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        LocaleKeys.next.tr(),
-                        style: TextStyles.textViewSemiBold14.copyWith(color: white),
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        color: white,
-                        size: 15.sp,
-                      )
-                    ],
-                  ),
-                )
-              ]),
-            ),
-            Row(
-              children: [
-                15.pw,
-                Container(
-                  height: 11,
-                  width: 13,
-                  child: CustomPaint(
-                    painter: DownTrianglePainter(
-                      strokeColor: purple70,
-                      strokeWidth: 1,
-                      paintingStyle: PaintingStyle.fill,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-      height: 110.h,
-      width: 190.h,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15.w),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              children: [
-                5.ph,
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      panelController.isPanelClosed ? panelController.open() : panelController.close();
-                    });
-                  },
-                  icon: SvgPicture.asset(cartAdd),
-                  iconSize: 40,
-                ),
-              ],
-            ),
-            Expanded(
-                child: GenericField(
-              controller: messageController,
-              hintText: LocaleKeys.textHere.tr(),
-              hintStyle: TextStylesInter.textViewRegular14.copyWith(color: black2),
-              onSubmitted: (_) async {
-                await Provider.of<ChatlistsProvider>(context, listen: false)
-                    .sendMessage(messageController.text.trim(), widget.listId);
-                messageController.clear();
-              },
-              suffixIcon: GestureDetector(
-                onTap: () async {
-                  await Provider.of<ChatlistsProvider>(context, listen: false)
-                      .sendMessage(messageController.text.trim(), widget.listId);
-                  messageController.clear();
-                  FocusScope.of(context).unfocus();
-                },
-                child: Padding(
-                  padding: const EdgeInsetsDirectional.only(end: 9),
-                  child: SvgPicture.asset(
-                    send,
-                  ),
-                ),
-              ),
-              borderRaduis: 50,
-              boxShadow: Utils.boxShadow[0],
-            ))
-          ],
-        ),
-      ),
-    );
-  }
 }

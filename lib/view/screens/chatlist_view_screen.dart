@@ -32,9 +32,12 @@ import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/chat_view_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
+import '../../utils/tooltips_keys.dart';
+import '../../utils/triangle_painter.dart';
 import '../components/dotted_container.dart';
 import '../components/generic_field.dart';
 import '../components/search_delegate.dart';
@@ -68,31 +71,32 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
   late ChatList chatList;
 
+  bool isFirstTime = false;
+
+  Future<Null> getFirstTime() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isFirstTime = prefs.getBool("firstTime") ?? true;
+    });
+  }
+
   @override
   void initState() {
-      chatList = Provider.of<ChatlistsProvider>(context, listen: false)
-          .chatlists
-          .firstWhere((chatList) => chatList.id == widget.listId);
+    getFirstTime();
+    chatList = Provider.of<ChatlistsProvider>(context, listen: false)
+        .chatlists
+        .firstWhere((chatList) => chatList.id == widget.listId);
     if (widget.isUsingDynamicLink) {
       var currentUserId = FirebaseAuth.instance.currentUser?.uid;
-      FirebaseFirestore.instance
-          .collection('/lists')
-          .doc(widget.listId)
-          .get()
-          .then((listSnapshot) {
+      FirebaseFirestore.instance.collection('/lists').doc(widget.listId).get().then((listSnapshot) {
         final List userIds = listSnapshot.data()!['userIds'];
         if (!userIds.contains(currentUserId)) {
           userIds.add(currentUserId);
-          FirebaseFirestore.instance
-              .collection('/lists')
-              .doc(widget.listId)
-              .update({"userIds": userIds});
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text(
-                  "${LocaleKeys.userAddedToChatlist.tr()} ${chatList.name}")));
+          FirebaseFirestore.instance.collection('/lists').doc(widget.listId).update({"userIds": userIds});
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text("${LocaleKeys.userAddedToChatlist.tr()} ${chatList.name}")));
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(LocaleKeys.userAlreadyExists.tr())));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(LocaleKeys.userAlreadyExists.tr())));
         }
       });
     }
@@ -108,11 +112,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     imageWidgets.clear();
     try {
       print(allUserIds);
-      final list = await FirebaseFirestore.instance
-          .collection('/lists')
-          .doc(widget.listId)
-          .get()
-          .timeout(Duration(seconds: 10));
+      final list =
+          await FirebaseFirestore.instance.collection('/lists').doc(widget.listId).get().timeout(Duration(seconds: 10));
       userIds = list['userIds'];
     } catch (e) {
       print(e);
@@ -130,39 +131,32 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     String id = "";
     for (var userId in userIds) {
       //for every userId in the chatlist
-      final userSnapshot = await FirebaseFirestore.instance
-          .collection('/users')
-          .doc(userId)
-          .get();
+      final userSnapshot = await FirebaseFirestore.instance.collection('/users').doc(userId).get();
       imageUrl = userSnapshot.data()!['imageURL'];
       email = userSnapshot.data()!['email'];
       userName = userSnapshot.data()!['username'];
       phoneNumber = userSnapshot.data()!['phoneNumber'];
       id = userSnapshot.id;
-      listUsers.add(UserContactInfo(
-          id: id,
-          phoneNumber: phoneNumber,
-          imageURL: imageUrl,
-          name: userName,
-          email: email));
+      listUsers
+          .add(UserContactInfo(id: id, phoneNumber: phoneNumber, imageURL: imageUrl, name: userName, email: email));
 
       if (imageUrl.isEmpty) {
-        if(imageWidgets.length < 3)
+        if (imageWidgets.length < 3)
           imageWidgets.add(
-          SvgPicture.asset(
-            bee,
-            width: 20,
-            height: 20,
-          ),
-        );
+            SvgPicture.asset(
+              bee,
+              width: 20,
+              height: 20,
+            ),
+          );
       } else {
-        if(imageWidgets.length < 3)
-        imageWidgets.add(CircleAvatar(
-          backgroundImage: NetworkImage(
-            imageUrl,
-          ),
-          radius: 10,
-        ));
+        if (imageWidgets.length < 3)
+          imageWidgets.add(CircleAvatar(
+            backgroundImage: NetworkImage(
+              imageUrl,
+            ),
+            radius: 10,
+          ));
       }
     }
     if (userIds.length > 3) {
@@ -171,22 +165,17 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
         style: TextStyles.textViewBold15.copyWith(color: black),
       ));
     }
-    var userInfo = await FirebaseFirestore.instance
-        .collection('/users')
-        .doc(FirebaseAuth.instance.currentUser?.uid)
-        .get();
+    var userInfo =
+        await FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser?.uid).get();
 
-    if (userInfo.get('phoneNumber').isNotEmpty &&
-        userInfo.data()!["privacy"]["connectContacts"]) {
+    if (userInfo.get('phoneNumber').isNotEmpty && userInfo.data()!["privacy"]["connectContacts"]) {
       var isPermissionGranted = await FlutterContacts.requestPermission();
       isContactsPermissionGranted = isPermissionGranted;
       if (isPermissionGranted) {
-        List<Contact> contacts =
-            await FlutterContacts.getContacts(withProperties: true);
+        List<Contact> contacts = await FlutterContacts.getContacts(withProperties: true);
         print("Contacts size: " + contacts.length.toString());
 
-        var users = await FirebaseFirestore
-            .instance //getting all users that signed in with phone
+        var users = await FirebaseFirestore.instance //getting all users that signed in with phone
             .collection('users')
             .where('phoneNumber', isNotEqualTo: '')
             .get();
@@ -195,23 +184,23 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
           for (var user in users.docs) {
             try {
               var phoneNumber = user.get('phoneNumber');
-                var contactIndex = -1;
-              if(Platform.isIOS) {
+              var contactIndex = -1;
+              if (Platform.isIOS) {
                 for (var contact in contacts) {
                   try {
                     var number = contact.phones.first.number;
-                    var parsedNumber = await PhoneNumberUtil().parse(
-                        number, regionCode: regionCode);
-                    if (parsedNumber.e164 == phoneNumber)
-                      contactIndex = contacts.indexOf(contact);
+                    var parsedNumber = await PhoneNumberUtil().parse(number, regionCode: regionCode);
+                    if (parsedNumber.e164 == phoneNumber) contactIndex = contacts.indexOf(contact);
                   } catch (e) {
                     // print(e);
                   }
                 }
-              }else{
+              } else {
                 contactIndex = contacts.indexWhere((contact) {
-                  if(contact.phones.isNotEmpty) return (contact.phones.first.normalizedNumber == phoneNumber);
-                  else return false;
+                  if (contact.phones.isNotEmpty)
+                    return (contact.phones.first.normalizedNumber == phoneNumber);
+                  else
+                    return false;
                 });
               }
 
@@ -219,19 +208,18 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                 //match found
                 var contact = contacts.elementAt(contactIndex);
                 var participantIndex = -1;
-                if(Platform.isIOS) {
+                if (Platform.isIOS) {
                   for (var participant in listUsers) {
                     try {
                       var number = contact.phones.first.number;
-                      var parsedNumber = await PhoneNumberUtil().parse(
-                          number, regionCode: regionCode);
+                      var parsedNumber = await PhoneNumberUtil().parse(number, regionCode: regionCode);
                       if (parsedNumber.e164 == participant.phoneNumber)
                         participantIndex = listUsers.indexOf(participant);
                     } catch (e) {
                       // print(e);
                     }
                   }
-                }else{
+                } else {
                   participantIndex = listUsers.indexWhere((participant) {
                     return participant.phoneNumber == contact.phones.first.normalizedNumber;
                   });
@@ -243,12 +231,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                   var email = user.get('email');
                   var imageURL = user.get('imageURL');
                   var id = user.id;
-                  contactsList.add(UserContactInfo(
-                      id: id,
-                      phoneNumber: phoneNumber,
-                      imageURL: imageURL,
-                      name: name,
-                      email: email));
+                  contactsList.add(
+                      UserContactInfo(id: id, phoneNumber: phoneNumber, imageURL: imageURL, name: name, email: email));
                 }
               }
             } catch (e) {
@@ -283,136 +267,146 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(color: white, boxShadow: [
-          BoxShadow(
-              blurRadius: 50,
-              offset: Offset(0, 20),
-              color: Color.fromRGBO(52, 99, 237, 0.15)),
-        ]),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            75.ph,
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: SearchWidget(isBackButton: true),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Row(
-                children: [
-                  isEditingName
-                      ? Container(
-                          width: 200.w,
-                          child: TextFormField(
-                            initialValue: chatList.name,
-                            style: TextStyles.textViewSemiBold24
-                                .copyWith(color: prussian),
-                            onFieldSubmitted: (value) async {
-                              await updateListName(value);
-                            },
-                          ),
-                        )
-                      : Container(
-                          width: 150.w,
-                          child: Text(
-                            chatList.name,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStylesInter.textViewSemiBold26
-                                .copyWith(color: blackSecondary),
-                          ),
+      body:
+          // WidgetsBinding.instance.addPostFrameCallback((_) async {
+          //   if (isFirstTime) {
+          //     ShowCaseWidget.of(showContext).startShowCase([TooltipKeys.showCase]);
+          //   }
+          //
+          // });
+           Container(
+            decoration: BoxDecoration(color: white, boxShadow: [
+              BoxShadow(blurRadius: 50, offset: Offset(0, 20), color: Color.fromRGBO(52, 99, 237, 0.15)),
+            ]),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                75.ph,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: SearchWidget(isBackButton: true),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Row(
+                    children: [
+                      isEditingName
+                          ? Container(
+                              width: 200.w,
+                              child: TextFormField(
+                                initialValue: chatList.name,
+                                style: TextStyles.textViewSemiBold24.copyWith(color: prussian),
+                                onFieldSubmitted: (value) async {
+                                  await updateListName(value);
+                                },
+                              ),
+                            )
+                          : Container(
+                              width: 150.w,
+                              child: Text(
+                                chatList.name,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStylesInter.textViewSemiBold26.copyWith(color: blackSecondary),
+                              ),
+                            ),
+                      Spacer(),
+                      DropdownButton(
+                        underline: Container(),
+                        borderRadius: BorderRadius.circular(6),
+                        dropdownColor: purple10,
+                        icon: Icon(
+                          Icons.more_vert,
+                          color: Colors.black,
                         ),
-                  Spacer(),
-                  DropdownButton(
-                    underline: Container(),
-                    borderRadius: BorderRadius.circular(6),
-                    dropdownColor: purple10,
-                    icon: Icon(
-                      Icons.more_vert,
-                      color: Colors.black,
-                    ),
-                    items: [
-                      DropdownMenuItem(
-                          value: 'Rename',
-                          child: Text(LocaleKeys.rename.tr(), style: TextStyles.textViewMedium12.copyWith(color: prussian),)),
-                      DropdownMenuItem(
-                          value: 'Remove',
-                          child: Text(LocaleKeys.remove.tr(), style: TextStyles.textViewMedium12.copyWith(color: prussian))),
-                    ],
-                    onChanged: (option) {
-                      if (option == 'Rename') {
-                        setState(() {
-                          isEditingName = true;
-                        });
-                      } else if (option == 'Remove') {
-                        deleteList(context);
-                      }
-                    },
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      showInviteMembersDialog(context);
-                    },
-                    icon: SvgPicture.asset(newperson,color: Colors.black,),
-                  ),
-                  Container(
-                    // width: listUsers.length >= 3 ? 60.w : 35.w,
-                    width: 60.w,
-                    height: 30,
-                    child: FutureBuilder(
-                        future: getUserImagesFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator(
+                        items: [
+                          DropdownMenuItem(
+                              value: 'Rename',
+                              child: Text(
+                                LocaleKeys.rename.tr(),
+                                style: TextStyles.textViewMedium12.copyWith(color: prussian),
+                              )),
+                          DropdownMenuItem(
+                              value: 'Remove',
+                              child: Text(LocaleKeys.remove.tr(),
+                                  style: TextStyles.textViewMedium12.copyWith(color: prussian))),
+                        ],
+                        onChanged: (option) {
+                          if (option == 'Rename') {
+                            setState(() {
+                              isEditingName = true;
+                            });
+                          } else if (option == 'Remove') {
+                            deleteList(context);
+                          }
+                        },
+                      ),
+                      IconButton(
+                        onPressed: () {
+                          showInviteMembersDialog(context);
+                        },
+                        icon: SvgPicture.asset(
+                          newperson,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Container(
+                        // width: listUsers.length >= 3 ? 60.w : 35.w,
+                        width: 60.w,
+                        height: 30,
+                        child: FutureBuilder(
+                            future: getUserImagesFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(
+                                    child: CircularProgressIndicator(
                                   color: verdigris,
                                 ));
-                          }
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: snapshot.data ?? SvgPicture.asset(bee),
-                          );
-                        }),
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 10.0),
+                                child: snapshot.data ?? SvgPicture.asset(bee),
+                              );
+                            }),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                Expanded(child: ChatView(listId: widget.listId, showInviteMembersDialog: showInviteMembersDialog))
+              ],
             ),
-                Expanded(
-                    child: ChatView(
-                    listId: widget.listId,
-                      showInviteMembersDialog: showInviteMembersDialog
-                  ))
-          ],
-        ),
       ),
     );
   }
 
-  void showInviteMembersDialog(BuildContext context) {
-    showDialog(context: context, builder: (ctx) => InviteMembersDialog(listUsers: listUsers, isContactsPermissionGranted: isContactsPermissionGranted, contactsList: contactsList, shareList: shareListViaDeepLink, addContactToChatlist: addContactToChatlist));
+  void showInviteMembersDialog(BuildContext context,) {
+    showDialog(
+        context: context,
+        builder: (ctx) => InviteMembersDialog(
+            listUsers: listUsers,
+            isContactsPermissionGranted: isContactsPermissionGranted,
+            contactsList: contactsList,
+            shareList: shareListViaDeepLink,
+            addContactToChatlist: addContactToChatlist,
+        ));
   }
 
-  Future<void> addContactToChatlist(
-      UserContactInfo userInfo, BuildContext context) async {
+  Future<void> addContactToChatlist(UserContactInfo userInfo, BuildContext context) async {
     try {
       var userData = await FirebaseFirestore.instance
           .collection('/users')
           .where('phoneNumber', isEqualTo: userInfo.phoneNumber)
           .get();
       var userId = userData.docs.first.id;
-      if(userData.docs.first.data().containsKey('token')) {
+      if (userData.docs.first.data().containsKey('token')) {
         var userDeviceToken = userData.docs.first.get('token');
-        get(Uri.parse('https://europe-west1-discountly.cloudfunctions.net/pushNotificationToContact?token=$userDeviceToken&chatlistName=${chatList.name}&chatlistId=${chatList.id}')).then((value) => print(value.body));
-      }else{
+        get(Uri.parse(
+                'https://europe-west1-discountly.cloudfunctions.net/pushNotificationToContact?token=$userDeviceToken&chatlistName=${chatList.name}&chatlistId=${chatList.id}'))
+            .then((value) => print(value.body));
+      } else {
         print("FAILED TO GET USER DEVICE TOKEN");
       }
-      await FirebaseFirestore.instance
-          .collection('/lists')
-          .doc(widget.listId)
-          .update({
+      await FirebaseFirestore.instance.collection('/lists').doc(widget.listId).update({
         "userIds": FieldValue.arrayUnion([userId]),
         "new_participant_username": userInfo.name,
       });
@@ -436,13 +430,11 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       isEditingName = false;
       chatList.name = value;
     });
-    Provider.of<ChatlistsProvider>(context, listen: false)
-        .updateListName(value, widget.listId);
+    Provider.of<ChatlistsProvider>(context, listen: false).updateListName(value, widget.listId);
   }
 
   Future<void> deleteList(BuildContext context) async {
-    Provider.of<ChatlistsProvider>(context, listen: false)
-        .deleteList(context, widget.listId);
+    Provider.of<ChatlistsProvider>(context, listen: false).deleteList(context, widget.listId);
     await pushDynamicScreen(context, screen: ChatlistsScreen());
   }
 
@@ -453,21 +445,18 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
         title: chatList.name,
         imageUrl:
             'https://play-lh.googleusercontent.com/u6LMBvrIXH6r1LFQftqjSzebxflasn-nhcoZUlP6DjWHV6fmrwgNFyjJeFwFmckrySHF=w240-h480-rw',
-        contentDescription:
-            'Hey, I would like to invite you to ${chatList.name} in BargainB',
+        contentDescription: 'Hey, I would like to invite you to ${chatList.name} in BargainB',
         // keywords: ['Plugin', 'Branch', 'Flutter'],
         publiclyIndex: true,
         locallyIndex: true,
-        contentMetadata: BranchContentMetaData()
-          ..addCustomMetadata('list_id', chatList.id));
+        contentMetadata: BranchContentMetaData()..addCustomMetadata('list_id', chatList.id));
     BranchLinkProperties lp = BranchLinkProperties(
         //alias: 'flutterplugin', //define link url,
         channel: 'facebook',
         feature: 'sharing',
         stage: 'new share',
         tags: ['one', 'two', 'three']);
-    BranchResponse response =
-        await FlutterBranchSdk.getShortUrl(buo: buo, linkProperties: lp);
+    BranchResponse response = await FlutterBranchSdk.getShortUrl(buo: buo, linkProperties: lp);
 
     if (response.success) {
       print('Link generated: ${response.result}');

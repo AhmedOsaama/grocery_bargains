@@ -246,5 +246,6 @@ abstract class  LocaleKeys {
   static const addedTo = 'addedTo';
   static const view = 'view';
   static const pleaseCreateAList = 'pleaseCreateAList';
+  static const toAddItemsInChat = 'toAddItemsInChat';
 
 }

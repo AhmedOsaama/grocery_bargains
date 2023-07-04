@@ -11,4 +11,6 @@ class TooltipKeys {
       GlobalKey<State<StatefulWidget>>(debugLabel: 'GlobalFormKey4');
   static final showCase5 =
       GlobalKey<State<StatefulWidget>>(debugLabel: 'GlobalFormKey5');
+  static final showCase6 =
+      GlobalKey<State<StatefulWidget>>(debugLabel: 'GlobalFormKey6');
 }

@@ -38,6 +38,7 @@ import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:showcaseview/showcaseview.dart';
 
 import '../../config/routes/app_navigator.dart';
+import '../../models/product.dart';
 import '../../services/dynamic_link_service.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/icons_manager.dart';
@@ -67,6 +68,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int startingIndex = 0;
   bool isHomeFirstTime = false;
   bool dialogOpened = false;
+
+
   Future<Null> getFirstTime() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -222,63 +225,62 @@ class _HomeScreenState extends State<HomeScreen> {
                         height: 15.h,
                       ),
                       Showcase.withWidget(
-                        targetBorderRadius: BorderRadius.circular(999),
-                        key: isHomeFirstTime ? TooltipKeys.showCase2 : new GlobalKey<State<StatefulWidget>>(),
-                        container: Container(
-                          child: Column(
-                            children: [
-                              Container(
-                                height: 11,
-                                width: 13,
-                                child: CustomPaint(
-                                  painter: TrianglePainter(
-                                    strokeColor: purple70,
-                                    strokeWidth: 1,
-                                    paintingStyle: PaintingStyle.fill,
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                padding: EdgeInsets.all(15),
-                                width: 180.w,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8.r),
-                                  color: purple70,
-                                ),
-                                child: Column(children: [
-                                  Text(
-                                    "ItIsSmartSearch".tr(),
-                                    maxLines: 4,
-                                    style: TextStyles.textViewRegular13.copyWith(color: white),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      ShowCaseWidget.of(builder).next();
-                                    },
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          "Next".tr(),
-                                          style: TextStyles.textViewSemiBold14.copyWith(color: white),
-                                        ),
-                                        Icon(
-                                          Icons.arrow_forward_ios,
-                                          color: white,
-                                          size: 15.sp,
-                                        )
-                                      ],
+                          targetBorderRadius: BorderRadius.circular(10),
+                          key: isHomeFirstTime ? TooltipKeys.showCase2 : new GlobalKey<State<StatefulWidget>>(),
+                          container: Container(
+                            child: Column(
+                              children: [
+                                Container(
+                                  height: 11,
+                                  width: 13,
+                                  child: CustomPaint(
+                                    painter: TrianglePainter(
+                                      strokeColor: purple70,
+                                      strokeWidth: 1,
+                                      paintingStyle: PaintingStyle.fill,
                                     ),
-                                  )
-                                ]),
-                              ),
-                            ],
+                                  ),
+                                ),
+                                Container(
+                                  padding: EdgeInsets.all(15),
+                                  width: 180.w,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8.r),
+                                    color: purple70,
+                                  ),
+                                  child: Column(children: [
+                                    Text(
+                                      "ItIsSmartSearch".tr(),
+                                      maxLines: 4,
+                                      style: TextStyles.textViewRegular13.copyWith(color: white),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        ShowCaseWidget.of(builder).next();
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            "Next".tr(),
+                                            style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: white,
+                                            size: 15.sp,
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ]),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        height: 50,
-                        width: 50,
-                        child: SearchWidget(isBackButton: false)
-                      ),
+                          height: 50,
+                          width: 50,
+                          child: SearchWidget(isBackButton: false)),
                       SizedBox(
                         height: 10.h,
                       ),
@@ -354,13 +356,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         targetBorderRadius: BorderRadius.circular(8.r),
                         tooltipPosition: TooltipPosition.top,
                         onBarrierClick: () async {
-                          await addRandomProduct(builder);
-                        },
-                        onTargetClick: () async {
-                          await addRandomProduct(builder);
-                        },
-                        onTargetDoubleTap: () async {
-                          await addRandomProduct(builder);
+                          await goToProductPageTutorial(context, builder);
                         },
                         container: Column(
                           children: [
@@ -416,7 +412,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 GestureDetector(
                                   onTap: () async {
-                                    await addRandomProduct(builder);
+                                    await goToProductPageTutorial(context, builder);
                                   },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
@@ -522,14 +518,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                     crossAxisCount: 2,
                                     mainAxisSpacing: 15.h,
                                     // crossAxisSpacing: 5.w,
-                                    childAspectRatio: 0.6
-                                ),
+                                    childAspectRatio: 0.6),
                                 pagingController: _pagingController,
                                 builderDelegate: PagedChildBuilderDelegate<ComparisonProduct>(
                                     itemBuilder: (context, item, index) => DiscountItem(
-                                      inGridView: false,
-                                      comparisonProduct: item,
-                                    )),
+                                          inGridView: false,
+                                          comparisonProduct: item,
+                                        )),
                               );
                             }
                           },
@@ -546,27 +541,51 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<void> goToProductPageTutorial(BuildContext context, BuildContext builder) async {
+     setState(() {
+      isHomeFirstTime = false;
+    });
+    Product product = Provider.of<ProductsProvider>(context,listen: false).albertProducts.last;
+    await pushNewScreen(context,
+        screen: ProductDetailScreen(
+      productId: product.id,
+      productBrand: product.brand,
+      storeName: product.storeName,
+      productName: product.name,
+      imageURL: product.imageURL,
+      description: product.description,
+      oldPrice: product.oldPrice,
+      price1: double.tryParse(product.price2 ?? "") ?? 0.0,
+      price2: double.tryParse(product.price ?? "") ?? 0.0,
+      size1: product.size,
+      size2: product.size2!,
+    ));
+
+    // NavigatorController.jumpToTab(1);
+    ShowCaseWidget.of(builder).next();
+  }
+
   Future addRandomProduct(BuildContext builder) async {
-    var id = await Provider.of<ChatlistsProvider>(context, listen: false).createChatList([]);
-    await Provider.of<ChatlistsProvider>(context, listen: false).shareItemAsMessage(
-        itemDescription:
-            Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).description,
-        storeName: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).storeName,
-        itemId: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).id,
-        itemName: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).name,
-        itemImage: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).imageURL,
-        itemSize: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).size,
-        itemPrice: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).price,
-        itemOldPrice: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).oldPrice,
-        listId: id);
+    // var id = await Provider.of<ChatlistsProvider>(context, listen: false).createChatList([]);
+    // await Provider.of<ChatlistsProvider>(context, listen: false).shareItemAsMessage(
+    //     itemDescription:
+    //         Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).description,
+    //     storeName: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).storeName,
+    //     itemId: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).id,
+    //     itemName: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).name,
+    //     itemImage: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).imageURL,
+    //     itemSize: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).size,
+    //     itemPrice: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).price,
+    //     itemOldPrice: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).oldPrice,
+    //     listId: id);
     setState(() {
       isHomeFirstTime = false;
     });
-    await pushNewScreen(context,
-        screen: ChatListViewScreen(
-          listId: id,
-        ),
-        withNavBar: false);
+    // await pushNewScreen(context,
+    //     screen: ChatListViewScreen(
+    //       listId: id,
+    //     ),
+    //     withNavBar: false);
 
     NavigatorController.jumpToTab(1);
     ShowCaseWidget.of(builder).next();

@@ -190,7 +190,7 @@
   "notNow"                                            : "Niet Nu",
   "youHaveToBeSignedIn"                               : "U moet aangemeld zijn om deze functie te gebruiken.",
   "newContact"                                        : "Nieuwe contact",
-  "shareGroceriesToChat"                               : "Deel boodschappen om te chatten en voeg ze toe aan de lijst op dezelfde plaats.",
+  "shareGroceriesToChat"                               : "Now you can chat and share the savings with your family and friends. Discuss the best deals, recommend items, and collaborate on your shopping lists!",
   "pressACardIconToSearch"                            : "Druk op een kaartpictogram om boodschappen uit de chatlijst te zoeken.",
   "added"                                                  : "Toegevoegd",
   "camera"                                                : "Camera",
@@ -250,5 +250,9 @@
   "chooseAChatlist"                        : "Choose a chatlist",
   "addedTo"                        : "Added to",
   "view"                                     : "View",
-  "pleaseCreateAList"                         : "Please create a list"
+  "pleaseCreateAList"                         : "Please create a list",
+  "toAddItemsInChat"                          : "To add items to the chat list, click on the ‘+’ button",
+  "toAddFamilyAndFriends"                     : "To add family and friends, click the people icon on the grocery lists and add the contacts who have BargainB or invited via a  link."
+
+
 }
