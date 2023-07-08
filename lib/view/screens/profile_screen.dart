@@ -121,7 +121,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        24.ph,
+                        isEditing ? Align(
+                          alignment: Alignment.topRight,
+                            child: TextButton(onPressed: () async {
+                              await saveProfileChanges();
+                            }, child: Text(LocaleKeys.save.tr()))) : Container(),
                         Center(
                           child: Column(
                             children: [
@@ -326,6 +330,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       );
     });
+  }
+
+  Future<void> saveProfileChanges() async {
+    if (isEditing && isEdited) {
+      Map<String, Object?> data = {};
+
+      if (name.isNotEmpty) {
+        data.addAll({'username': name});
+      }
+      if (status.isNotEmpty) {
+        data.addAll({'status': status});
+      }
+
+      if (phone.isNotEmpty && isPhoneEdited) {
+        await verifyPhoneNumber(phone);
+      }
+      if (!isPhoneEdited) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update(data);
+        setState(() {
+          updateUserDataFuture();
+        });
+      }
+    }
+    if (!isPhoneEdited || !isEditing)
+      setState(() {
+        isEditing = !isEditing;
+        isEdited = !isEdited;
+      });
   }
 
   Object getUserImage(

@@ -193,9 +193,6 @@ class _MyAppState extends State<MyApp> {
                           ]);
 
                       if (widget.notificationMessage != null) {
-                        // return ChatListViewScreen(
-                        //     listId: widget.notificationMessage?.data['listId'],
-                        //     isNotificationOpened: true);
                         return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
                       }
 

@@ -57,7 +57,7 @@ class _ChatViewState extends State<ChatView> {
   List allProducts = [];
   var isLoading = false;
   var isCollapsed = true;
-  var isExpandingChatlist = false;
+  var isExpandingChatlist = true;
   bool isFirstTime = false;
 
   List albertItems = [];
