@@ -29,7 +29,13 @@ class DiscountItem extends StatelessWidget {
   var selectedStore = (['Albert', "Jumbo", "Hoogvliet"]..shuffle()).first;
 
   String getProductImage(Product product) {
-    return product.imageURL;
+    try {
+      return product.imageURL;
+    }catch(e){
+      print(e);
+      print(product.id);
+      return "N/A";
+    }
   }
 
   String getProductBrand(Product product) {
@@ -37,7 +43,13 @@ class DiscountItem extends StatelessWidget {
   }
 
   String getProductSize(Product product) {
-    return product.size.isNotEmpty ? product.size : product.size2!;
+    try {
+      return product.size.isNotEmpty ? product.size : product.size2!;
+    }catch(e){
+      print(e);
+      print(product.id);
+      return "N/A";
+    }
   }
 
   String getProductName(Product product) {

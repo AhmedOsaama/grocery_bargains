@@ -38,12 +38,12 @@ class ProductsProvider with ChangeNotifier {
       var brand = decodedProduct['product_brand'];
       var category = decodedProduct['product_category'] ?? "";
       var subCategory = decodedProduct['type_of_product'];
-      var price1 = decodedProduct['price_1'];
-      var price2 = decodedProduct['price_2'];
+      var price1 = decodedProduct['price_2'];
+      var price2 = '';
       if (price1 == null && price2 == null) return null;
       var oldPrice = decodedProduct['befor_offer'];
-      var size1 = decodedProduct['unit_size_1'];
-      var size2 = decodedProduct['unit_size_2'];
+      var size1 = decodedProduct['unit_size_2'];
+      var size2 = '';
       var offer = decodedProduct['new_offer'];
       var productURL = decodedProduct['product_link'];
 
@@ -90,12 +90,13 @@ class ProductsProvider with ChangeNotifier {
       var size2 = null;
       var offer = decodedProduct['offer'];
       var productURL = decodedProduct['product_link'];
+      var brand = decodedProduct['brand'] ?? '';
 
       jumboProduct = Product(
           storeName: storeName,
           id: id,
           offer: offer,
-          brand: "",
+          brand: brand,
           subCategory: subCategory,
           oldPrice: oldPrice,
           price: price1,
@@ -135,12 +136,13 @@ class ProductsProvider with ChangeNotifier {
       var size2 = "";
       var offer = decodedProduct['offer'];
       var productURL = decodedProduct['product_link'] ?? "";
+      var brand = decodedProduct['brand'] ?? "";
 
       hoogvlietProduct = Product(
           storeName: storeName,
           id: id,
           offer: offer,
-          brand: "",
+          brand: brand,
           subCategory: subCategory,
           oldPrice: oldPrice,
           price: price1,
@@ -171,11 +173,11 @@ class ProductsProvider with ChangeNotifier {
         var description = product['product_description'];
         var category = product['product_category'] ?? "";
         var subCategory = product.containsKey('type_of_product') ? product['type_of_product'] : null;
-        var price1 = product.containsKey('price_1') ? product['price_1'] ?? product['price_2'] : product['price'];
-        var price2 = product.containsKey('price_2') ? product['price_2'] : null;
+        var price1 = product['price_2'];
+        var price2 = null;
         var oldPrice = product.containsKey('befor_offer') ? product['befor_offer'] : product['old_price'];
-        var size1 = product.containsKey('unit_size_1') ? product['unit_size_1'] ?? "" : product['unit_size'] ?? "";
-        var size2 = product.containsKey('unit_size_2') ? product['unit_size_2'] : null;
+        var size1 = product['unit_size_2'];
+        var size2 = null;
         var offer = product.containsKey('new_offer') ? product['new_offer'] : product['offer'];
         var productURL = product['product_link'];
 
@@ -196,7 +198,6 @@ class ProductsProvider with ChangeNotifier {
             category: category,
             url: productURL);
         productList.add(productObj);
-        populateBestValueBargains(productObj);
       }
     } catch (e) {
       print("Error converting to products list from json");
@@ -222,11 +223,13 @@ class ProductsProvider with ChangeNotifier {
         var size1 = product['unit'] ?? "";
         var offer = product['offer'] ?? "";
         var productURL = product['product_link'] ?? "";
+        var brand = product['brand'] ?? "";
+
         productList.add(Product(
             storeName: storeName,
             id: id,
             offer: offer,
-            brand: "",
+            brand: brand,
             subCategory: subCategory,
             oldPrice: oldPrice,
             price: price,
@@ -289,7 +292,6 @@ class ProductsProvider with ChangeNotifier {
         0]); //might fail with range error if it couldn't find the albert product in the above function. e.g. array is empty
     //add Albert product to the list of Albert products
     if (albertProduct != null) {
-      populateBestValueBargains(albertProduct);
       albertProducts.add(albertProduct);
     } else {
       throw "Invalid Albert product: product is null";
@@ -698,94 +700,6 @@ class ProductsProvider with ChangeNotifier {
     return 1;
   }
 
-  void populateBestValueBargains(Product product) {
-    // await getAllAlbertProducts(); //stuk: piece, tros: bunch
-    // bestValueBargains.clear();
-    try {
-      var id = product.id;
-      var productName = product.name;
-      var imageURL = product.imageURL;
-      var subCategory = product.subCategory ?? "";
-      var storeName = "Albert";
-      var description = product.description;
-      var price1 = product.price ?? "";
-      var price2 = product.price2 ?? "";
-      var oldPrice = product.oldPrice ?? "";
-      String size1 = product.size;
-      String size2 = product.size2 ?? "";
-      if (bestValueBargains.indexWhere((bargain) => bargain.itemId == product.id) != -1) return;
-
-      // if (size2.contains("stuk") || size2.contains("stuks")) continue;
-
-      if (price1.isNotEmpty && price2.isNotEmpty) {
-        //if both prices are not empty strings then sizes are not either
-        var numSize1 = 0;
-        var numSize2 = 0;
-        var numPrice1 = 0.0;
-        var numPrice2 = 0.0;
-        var ratio1;
-        var ratio2;
-        try {
-          numSize1 = getMeasurementConversion(size1);
-          numSize2 = int.tryParse(size2.split(' ')[0]) ?? 1; //case: per stuk or 2 stuk
-
-          if (size2.split(' ').length == 2)
-            numSize2 = numSize2 * getMeasurementConversion(size2.split(' ')[1]); //case: 150 g or 1 kg or 12 stuks
-          if (size2.split(' ').length == 3)
-            numSize2 = numSize2 *
-                (int.tryParse(size2.split(' ')[1]) ?? 1) *
-                getMeasurementConversion(
-                    size2.split(' ')[2]); //case: ca. 120 g or per 2 stuks        note: ca. means approx.
-          if (size2.split(' ').length == 4)
-            numSize2 = numSize2 *
-                (int.tryParse(size2.split(' ')[2]) ?? 1) *
-                getMeasurementConversion(size2.split(' ')[3]); //case: 2 x 160 g or 2 x 90 gram
-
-          numPrice1 = double.parse(price1);
-          numPrice2 = double.parse(price2);
-          ratio1 = numSize1 / numPrice1;
-          ratio2 = numSize2 / numPrice2;
-        } catch (e) {
-          print("ERROR IN BEST VALUE BARGAINS CALCULATION");
-          print(e);
-        }
-
-        if (ratio1 > ratio2) {
-          bestValueBargains.add(BestValueItem(
-              itemImage: imageURL,
-              subCategory: subCategory,
-              itemName: productName,
-              oldPrice: oldPrice,
-              description: description,
-              size1: size1,
-              size2: size2,
-              bestValueSize: size1,
-              itemId: id,
-              price1: price1,
-              price2: price2,
-              store: storeName));
-        } else if (ratio2 > ratio1) {
-          bestValueBargains.add(BestValueItem(
-              itemImage: imageURL,
-              subCategory: subCategory,
-              itemName: productName,
-              oldPrice: oldPrice,
-              description: description,
-              bestValueSize: size2,
-              size2: size2,
-              size1: size1,
-              itemId: id,
-              price1: price1,
-              price2: price2,
-              store: storeName));
-        }
-      }
-    } catch (e) {
-      print(e);
-    }
-    // print("Best value bargains length: " + bestValueBargains.length.toString());
-    // notifyListeners();
-  }
 
   Future<int> getProducts(int startingIndex) async {
     var decodedProductsList = [];

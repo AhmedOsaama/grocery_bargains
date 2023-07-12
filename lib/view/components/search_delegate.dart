@@ -83,6 +83,7 @@ class MySearchDelegate extends SearchDelegate {
             );
           // var results = List.from(searchResults);
           var results = [];
+          resetFilter();
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: StatefulBuilder(builder: (context, setState) {
@@ -176,6 +177,11 @@ class MySearchDelegate extends SearchDelegate {
             }),
           );
         });
+  }
+
+  void resetFilter(){
+    sortDropdownValue = 'Sort';
+    storeDropdownValue = 'Store';
   }
 
   List filterProducts(List results, List<Product?> searchResults, ProductsProvider productProvider) {

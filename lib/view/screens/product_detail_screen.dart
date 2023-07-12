@@ -219,7 +219,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       body: ShowCaseWidget(
         builder: Builder(builder: (ctx){
           WidgetsBinding.instance.addPostFrameCallback((_) async {
-            if (isFirstTime) {
+            if (isFirstTime && FirebaseAuth.instance.currentUser != null) {
               ShowCaseWidget.of(ctx).startShowCase([TooltipKeys.showCase4]);
             }
           });

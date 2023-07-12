@@ -37,6 +37,14 @@ class NetworkServices {
 
     return response;
   }
+  static Future<http.Response> getAllCategories() async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/get_all_categories');
+    var response =
+        await http.get(url, headers: {'Content-Type': 'application/json'});
+
+    return response;
+  }
 
   static Future<http.Response> getAllComparisons() async {
     final url = Uri.parse(

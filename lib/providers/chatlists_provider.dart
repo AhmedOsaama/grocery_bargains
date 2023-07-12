@@ -294,6 +294,14 @@ class ChatlistsProvider with ChangeNotifier {
     }
   }
 
+  Future<void> updateItemQuantity(String chatlistId, String itemId, int newQuantity) async {      //changes item quantity in a chatlist
+   await FirebaseFirestore.instance.collection("/lists/${chatlistId}/items").doc(itemId).update({
+      'item_quantity': newQuantity
+    });
+    print('Done updating quantity');
+    notifyListeners();
+  }
+
 
   //chat methods
   Future<void> sendMessage(String message, String listId) async {

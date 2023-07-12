@@ -8,6 +8,7 @@ import 'package:bargainb/view/components/close_button.dart';
 import 'package:bargainb/view/components/draggable_list.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/screens/category_screen.dart';
+import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/widgets/chatlist_item.dart';
 import 'package:bargainb/view/widgets/product_dialog.dart';
 import 'package:bargainb/view/widgets/quantity_counter.dart';
@@ -434,307 +435,309 @@ class _ChatViewState extends State<ChatView> {
                                             ),
                                           ));
                                 }),
-                        StreamBuilder(
-                            //chatlist header
-                            stream: FirebaseFirestore.instance
-                                .collection("/lists/${widget.listId}/items")
-                                .orderBy('time')
-                                .snapshots(),
-                            builder: (context, snapshot) {
-                              final items = snapshot.data?.docs ?? [];
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return Container();
-                              }
-                              int height = 400;
-                              switch (items.length) {
-                                case 1:
-                                  height = 120;
-                                  break;
-                                case 2:
-                                  height = 200;
-                                  break;
-                                case 3:
-                                  height = 270;
-                                  break;
-                                case 4:
-                                  height = 350;
-                                  break;
-                                default:
-                                  height = 400;
-                              }
-                              return Container(
-                                height: isExpandingChatlist ? double.infinity : 55.h,
-                                padding: EdgeInsets.symmetric(horizontal: 15),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: Colors.white,
-                                  boxShadow: Utils.boxShadow,
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text.rich(TextSpan(
-                                            text: "${LocaleKeys.chatlist.tr()} ",
-                                            style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
-                                            children: [
-                                              TextSpan(
-                                                  text: isFirstTime ? "9 items" : " ${items.length} ${LocaleKeys.items.tr()}",
-                                                  style: TextStylesInter.textViewBold12.copyWith(color: blackSecondary))
-                                            ])),
-                                        15.pw,
-                                        Text.rich(TextSpan(
-                                            text: "${LocaleKeys.total.tr()} ",
-                                            style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
-                                            children: [
-                                              TextSpan(
-                                                  text: isFirstTime ? "€17.32" : " €${getTotalListPrice(items)}",
-                                                  style: TextStylesInter.textViewBold12.copyWith(color: mainPurple))
-                                            ])),
-                                        15.pw,
-                                        Text.rich(TextSpan(
-                                            text: "${LocaleKeys.savings.tr()} ",
-                                            style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
-                                            children: [
-                                              TextSpan(
-                                                  text: isFirstTime ? "€4.32" : " €${getTotalListSavings(items)}",
-                                                  style: TextStylesInter.textViewBold12.copyWith(color: greenSecondary))
-                                            ])),
-                                        Spacer(),
-                                        IconButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                isExpandingChatlist = !isExpandingChatlist;
-                                              });
-                                            },
-                                            icon: isExpandingChatlist
-                                                ? Icon(
-                                                    Icons.keyboard_arrow_up,
-                                                    color: mainPurple,
-                                                    size: 45.sp,
-                                                  )
-                                                : Icon(
-                                                    Icons.keyboard_arrow_down,
-                                                    color: mainPurple,
-                                                    size: 45.sp,
-                                                  )),
-                                      ],
-                                    ),
-                                    if (isExpandingChatlist)
-                                      Builder(builder: (ctx) {
-                                        if (items.isEmpty)
-                                          return Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              ...List.generate(
-                                                  3,
-                                                  (index) => Row(
-                                                        children: [
-                                                          Container(
-                                                            padding: EdgeInsets.all(15),
-                                                            margin: EdgeInsets.symmetric(vertical: 7),
-                                                            decoration: BoxDecoration(
-                                                              color: purple30,
-                                                              borderRadius: BorderRadius.circular(20),
+                        Consumer<ChatlistsProvider>(
+                          builder: (ctx,chatlistProvider,_) => StreamBuilder(
+                              //chatlist header
+                              stream: FirebaseFirestore.instance
+                                  .collection("/lists/${widget.listId}/items")
+                                  .orderBy('time')
+                                  .snapshots(),
+                              builder: (context, snapshot) {
+                                final items = snapshot.data?.docs ?? [];
+                                if (snapshot.connectionState == ConnectionState.waiting) {
+                                  return Container();
+                                }
+                                int height = 400;
+                                switch (items.length) {
+                                  case 1:
+                                    height = 120;
+                                    break;
+                                  case 2:
+                                    height = 200;
+                                    break;
+                                  case 3:
+                                    height = 270;
+                                    break;
+                                  case 4:
+                                    height = 350;
+                                    break;
+                                  default:
+                                    height = 400;
+                                }
+                                return Container(
+                                  height: isExpandingChatlist ? double.infinity : 55.h,
+                                  padding: EdgeInsets.symmetric(horizontal: 15),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.white,
+                                    boxShadow: Utils.boxShadow,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text.rich(TextSpan(
+                                              text: "${LocaleKeys.chatlist.tr()} ",
+                                              style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
+                                              children: [
+                                                TextSpan(
+                                                    text: isFirstTime ? "9 items" : " ${items.length} ${LocaleKeys.items.tr()}",
+                                                    style: TextStylesInter.textViewBold12.copyWith(color: blackSecondary))
+                                              ])),
+                                          15.pw,
+                                          Text.rich(TextSpan(
+                                              text: "${LocaleKeys.total.tr()} ",
+                                              style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
+                                              children: [
+                                                TextSpan(
+                                                    text: isFirstTime ? "€17.32" : " €${getTotalListPrice(items)}",
+                                                    style: TextStylesInter.textViewBold12.copyWith(color: mainPurple))
+                                              ])),
+                                          15.pw,
+                                          Text.rich(TextSpan(
+                                              text: "${LocaleKeys.savings.tr()} ",
+                                              style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
+                                              children: [
+                                                TextSpan(
+                                                    text: isFirstTime ? "€4.32" : " €${getTotalListSavings(items)}",
+                                                    style: TextStylesInter.textViewBold12.copyWith(color: greenSecondary))
+                                              ])),
+                                          Spacer(),
+                                          IconButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  isExpandingChatlist = !isExpandingChatlist;
+                                                });
+                                              },
+                                              icon: isExpandingChatlist
+                                                  ? Icon(
+                                                      Icons.keyboard_arrow_up,
+                                                      color: mainPurple,
+                                                      size: 45.sp,
+                                                    )
+                                                  : Icon(
+                                                      Icons.keyboard_arrow_down,
+                                                      color: mainPurple,
+                                                      size: 45.sp,
+                                                    )),
+                                        ],
+                                      ),
+                                      if (isExpandingChatlist)
+                                        Builder(builder: (ctx) {
+                                          if (items.isEmpty)
+                                            return Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                ...List.generate(
+                                                    3,
+                                                    (index) => Row(
+                                                          children: [
+                                                            Container(
+                                                              padding: EdgeInsets.all(15),
+                                                              margin: EdgeInsets.symmetric(vertical: 7),
+                                                              decoration: BoxDecoration(
+                                                                color: purple30,
+                                                                borderRadius: BorderRadius.circular(20),
+                                                              ),
+                                                              child: SvgPicture.asset(
+                                                                cheese,
+                                                                width: 27,
+                                                                height: 27,
+                                                              ),
                                                             ),
-                                                            child: SvgPicture.asset(
-                                                              cheese,
-                                                              width: 27,
-                                                              height: 27,
+                                                            10.pw,
+                                                            Column(
+                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                              children: [
+                                                                Container(
+                                                                  width: 75.w,
+                                                                  height: 10.h,
+                                                                  decoration: BoxDecoration(
+                                                                      color: purple50,
+                                                                      borderRadius: BorderRadius.circular(6)),
+                                                                ),
+                                                                5.ph,
+                                                                Container(
+                                                                  width: 220.w,
+                                                                  height: 8.h,
+                                                                  decoration: BoxDecoration(
+                                                                      color: purple10,
+                                                                      borderRadius: BorderRadius.circular(6)),
+                                                                ),
+                                                                5.ph,
+                                                                Container(
+                                                                  width: 220.w,
+                                                                  height: 8.h,
+                                                                  decoration: BoxDecoration(
+                                                                      color: purple10,
+                                                                      borderRadius: BorderRadius.circular(6)),
+                                                                ),
+                                                              ],
                                                             ),
-                                                          ),
-                                                          10.pw,
-                                                          Column(
-                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                            children: [
-                                                              Container(
-                                                                width: 75.w,
-                                                                height: 10.h,
-                                                                decoration: BoxDecoration(
-                                                                    color: purple50,
-                                                                    borderRadius: BorderRadius.circular(6)),
-                                                              ),
-                                                              5.ph,
-                                                              Container(
-                                                                width: 220.w,
-                                                                height: 8.h,
-                                                                decoration: BoxDecoration(
-                                                                    color: purple10,
-                                                                    borderRadius: BorderRadius.circular(6)),
-                                                              ),
-                                                              5.ph,
-                                                              Container(
-                                                                width: 220.w,
-                                                                height: 8.h,
-                                                                decoration: BoxDecoration(
-                                                                    color: purple10,
-                                                                    borderRadius: BorderRadius.circular(6)),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          Spacer(),
-                                                          Text("€ 1.25"),
-                                                        ],
-                                                      )),
-                                              10.ph,
-                                              Text(
-                                                "Add your first item to your chatlist",
-                                                style:
-                                                    TextStylesInter.textViewSemiBold20.copyWith(color: blackSecondary),
-                                              ),
-                                              15.ph,
-                                              Text(
-                                                "Add items to your chatlist to see which supermarkets are cheapest",
-                                                style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
-                                              ),
-                                              15.ph,
-                                              GenericButton(
-                                                  onPressed: () async {
-                                                    SharedPreferences pref = await SharedPreferences.getInstance();
-                                                    return showSearch(
-                                                        context: context, delegate: MySearchDelegate(pref, true));
-                                                  },
-                                                  child: Text(LocaleKeys.addItem.tr()),
-                                                  color: mainPurple,
-                                                  borderRadius: BorderRadius.circular(6)),
-                                            ],
-                                          );
-                                        albertItems.clear();
-                                        jumboItems.clear();
-                                        hoogvlietItems.clear();
-                                        quicklyAddedItems.clear();
-                                        for (var item in items) {
-                                          if (item['store_name'] == "Albert") {
-                                            albertItems.add(item);
-                                          }
-                                          if (item['store_name'] == "Jumbo") {
-                                            jumboItems.add(item);
-                                          }
-                                          if (item['store_name'] == "Hoogvliet") {
-                                            hoogvlietItems.add(item);
-                                          }
-                                          if (item['store_name'].isEmpty) {
-                                            quicklyAddedItems.add(item);
-                                          }
-                                        }
-                                        return Flexible(
-                                          child: ListView(
-                                            padding: EdgeInsets.zero,
-                                            children: [
-                                              if (albertItems.isNotEmpty) ...[
+                                                            Spacer(),
+                                                            Text("€ 1.25"),
+                                                          ],
+                                                        )),
+                                                10.ph,
                                                 Text(
-                                                  "Albert Heijn",
-                                                  style: TextStylesInter.textViewRegular16
-                                                      .copyWith(color: Colors.lightBlue),
+                                                  "Add your first item to your chatlist",
+                                                  style:
+                                                      TextStylesInter.textViewSemiBold20.copyWith(color: blackSecondary),
                                                 ),
-                                                5.ph,
+                                                15.ph,
+                                                Text(
+                                                  "Add items to your chatlist to see which supermarkets are cheapest",
+                                                  style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
+                                                ),
+                                                15.ph,
+                                                GenericButton(
+                                                    onPressed: () async {
+                                                      SharedPreferences pref = await SharedPreferences.getInstance();
+                                                      return showSearch(
+                                                          context: context, delegate: MySearchDelegate(pref, true));
+                                                    },
+                                                    child: Text(LocaleKeys.addItem.tr()),
+                                                    color: mainPurple,
+                                                    borderRadius: BorderRadius.circular(6)),
+                                              ],
+                                            );
+                                          albertItems.clear();
+                                          jumboItems.clear();
+                                          hoogvlietItems.clear();
+                                          quicklyAddedItems.clear();
+                                          for (var item in items) {
+                                            if (item['store_name'] == "Albert") {
+                                              albertItems.add(item);
+                                            }
+                                            if (item['store_name'] == "Jumbo") {
+                                              jumboItems.add(item);
+                                            }
+                                            if (item['store_name'] == "Hoogvliet") {
+                                              hoogvlietItems.add(item);
+                                            }
+                                            if (item['store_name'].isEmpty) {
+                                              quicklyAddedItems.add(item);
+                                            }
+                                          }
+                                          return Flexible(
+                                            child: ListView(
+                                              padding: EdgeInsets.zero,
+                                              children: [
+                                                if (albertItems.isNotEmpty) ...[
+                                                  Text(
+                                                    "Albert Heijn",
+                                                    style: TextStylesInter.textViewRegular16
+                                                        .copyWith(color: Colors.lightBlue),
+                                                  ),
+                                                  5.ph,
+                                                  Column(
+                                                    children: albertItems.map((item) {
+                                                      return ChatlistItem(item: item);
+                                                    }).toList(),
+                                                  ),
+                                                ],
+                                                if (jumboItems.isNotEmpty) ...[
+                                                  Text(
+                                                    "Jumbo",
+                                                    style: TextStylesInter.textViewRegular16
+                                                        .copyWith(color: Colors.lightBlue),
+                                                  ),
+                                                  5.ph,
+                                                  Column(
+                                                    children: jumboItems.map((item) {
+                                                      return ChatlistItem(item: item);
+                                                    }).toList(),
+                                                  ),
+                                                ],
+                                                if (hoogvlietItems.isNotEmpty) ...[
+                                                  Text(
+                                                    "Hoogvliet",
+                                                    style: TextStylesInter.textViewRegular16
+                                                        .copyWith(color: Colors.lightBlue),
+                                                  ),
+                                                  5.ph,
+                                                  Column(
+                                                    children: hoogvlietItems.map((item) {
+                                                      return ChatlistItem(item: item);
+                                                    }).toList(),
+                                                  ),
+                                                ],
+                                                Divider(
+                                                  thickness: 2,
+                                                  color: Colors.black,
+                                                ),
+                                                Text(
+                                                  "Quick Items",
+                                                  style: TextStylesInter.textViewRegular12.copyWith(color: greyText),
+                                                ),
                                                 Column(
-                                                  children: albertItems.map((item) {
+                                                  children: quicklyAddedItems.map((item) {
                                                     return ChatlistItem(item: item);
                                                   }).toList(),
                                                 ),
-                                              ],
-                                              if (jumboItems.isNotEmpty) ...[
+                                                5.ph,
                                                 Text(
-                                                  "Jumbo",
-                                                  style: TextStylesInter.textViewRegular16
-                                                      .copyWith(color: Colors.lightBlue),
+                                                  LocaleKeys.quickAdd.tr(),
+                                                  style:
+                                                      TextStylesInter.textViewSemiBold12.copyWith(color: blackSecondary),
                                                 ),
                                                 5.ph,
-                                                Column(
-                                                  children: jumboItems.map((item) {
-                                                    return ChatlistItem(item: item);
-                                                  }).toList(),
-                                                ),
-                                              ],
-                                              if (hoogvlietItems.isNotEmpty) ...[
-                                                Text(
-                                                  "Hoogvliet",
-                                                  style: TextStylesInter.textViewRegular16
-                                                      .copyWith(color: Colors.lightBlue),
-                                                ),
-                                                5.ph,
-                                                Column(
-                                                  children: hoogvlietItems.map((item) {
-                                                    return ChatlistItem(item: item);
-                                                  }).toList(),
-                                                ),
-                                              ],
-                                              Divider(
-                                                thickness: 2,
-                                                color: Colors.black,
-                                              ),
-                                              Text(
-                                                "Quick Items",
-                                                style: TextStylesInter.textViewRegular12.copyWith(color: greyText),
-                                              ),
-                                              Column(
-                                                children: quicklyAddedItems.map((item) {
-                                                  return ChatlistItem(item: item);
-                                                }).toList(),
-                                              ),
-                                              5.ph,
-                                              Text(
-                                                LocaleKeys.quickAdd.tr(),
-                                                style:
-                                                    TextStylesInter.textViewSemiBold12.copyWith(color: blackSecondary),
-                                              ),
-                                              5.ph,
-                                              GenericField(
-                                                controller: quickItemController,
-                                                onSubmitted: (value) {
-                                                  Provider.of<ChatlistsProvider>(context, listen: false).addItemToList(
-                                                      ListItem(
-                                                          id: -1,
-                                                          storeName: "",
-                                                          imageURL: '',
-                                                          isChecked: false,
-                                                          name: value.trim(),
-                                                          price: "0.0",
-                                                          quantity: 0,
-                                                          size: '',
-                                                          text: value.trim(),
-                                                          brand: ''),
-                                                      widget.listId);
-                                                  quickItemController.clear();
-                                                },
-                                                hintText: LocaleKeys.addSomethingQuickly.tr(),
-                                                hintStyle:
-                                                    TextStylesInter.textViewRegular12.copyWith(color: blackSecondary),
-                                                fillColor: lightPurple,
-                                                suffixIcon: TextButton(
-                                                  onPressed: () async {
-                                                    await Provider.of<ChatlistsProvider>(context, listen: false)
-                                                        .addItemToList(
-                                                            ListItem(
-                                                                id: -1,
-                                                                storeName: "",
-                                                                imageURL: '',
-                                                                isChecked: false,
-                                                                name: quickItemController.text.trim(),
-                                                                price: "0.0",
-                                                                quantity: 0,
-                                                                size: '',
-                                                                text: quickItemController.text.trim(),
-                                                                brand: ''),
-                                                            widget.listId);
+                                                GenericField(
+                                                  controller: quickItemController,
+                                                  onSubmitted: (value) {
+                                                    Provider.of<ChatlistsProvider>(context, listen: false).addItemToList(
+                                                        ListItem(
+                                                            id: -1,
+                                                            storeName: "",
+                                                            imageURL: '',
+                                                            isChecked: false,
+                                                            name: value.trim(),
+                                                            price: "0.0",
+                                                            quantity: 0,
+                                                            size: '',
+                                                            text: value.trim(),
+                                                            brand: ''),
+                                                        widget.listId);
                                                     quickItemController.clear();
                                                   },
-                                                  child: Text(
-                                                    LocaleKeys.add.tr(),
-                                                    style: TextStylesDMSans.textViewBold12.copyWith(color: mainPurple),
+                                                  hintText: LocaleKeys.addSomethingQuickly.tr(),
+                                                  hintStyle:
+                                                      TextStylesInter.textViewRegular12.copyWith(color: blackSecondary),
+                                                  fillColor: lightPurple,
+                                                  suffixIcon: TextButton(
+                                                    onPressed: () async {
+                                                      await Provider.of<ChatlistsProvider>(context, listen: false)
+                                                          .addItemToList(
+                                                              ListItem(
+                                                                  id: -1,
+                                                                  storeName: "",
+                                                                  imageURL: '',
+                                                                  isChecked: false,
+                                                                  name: quickItemController.text.trim(),
+                                                                  price: "0.0",
+                                                                  quantity: 0,
+                                                                  size: '',
+                                                                  text: quickItemController.text.trim(),
+                                                                  brand: ''),
+                                                              widget.listId);
+                                                      quickItemController.clear();
+                                                    },
+                                                    child: Text(
+                                                      LocaleKeys.add.tr(),
+                                                      style: TextStylesDMSans.textViewBold12.copyWith(color: mainPurple),
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                              15.ph,
-                                            ],
-                                          ),
-                                        );
-                                      }),
-                                  ],
-                                ),
-                              );
-                            }),
+                                                15.ph,
+                                              ],
+                                            ),
+                                          );
+                                        }),
+                                    ],
+                                  ),
+                                );
+                              }),
+                        ),
                       ],
                     ),
                   ),

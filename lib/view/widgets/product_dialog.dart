@@ -50,6 +50,7 @@ class ProductDialog extends StatefulWidget {
 class _ProductDialogState extends State<ProductDialog> {
   @override
   Widget build(BuildContext context) {
+  var chatlistProvider = Provider.of<ChatlistsProvider>(context,listen: false);
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
@@ -88,11 +89,13 @@ class _ProductDialogState extends State<ProductDialog> {
                   setState(() {
                     ++widget.itemQuantity;
                   });
+                  chatlistProvider.updateItemQuantity(widget.listId, widget.itemDocId, widget.itemQuantity);
                 },
                 decreaseQuantity: () {
                   setState(() {
                     widget.itemQuantity--;
                   });
+                  chatlistProvider.updateItemQuantity(widget.listId, widget.itemDocId, widget.itemQuantity);
                 },
               ),
             ),

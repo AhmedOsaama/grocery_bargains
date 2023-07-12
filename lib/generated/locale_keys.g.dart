@@ -250,5 +250,6 @@ abstract class  LocaleKeys {
   static const toAddFamilyAndFriends = 'toAddFamilyAndFriends';
   static const messageSentSuccessfully = 'messageSentSuccessfully';
   static const somethingWentWrong = 'somethingWentWrong';
+  static const areYouSureToDelete = 'areYouSureToDelete';
 
 }

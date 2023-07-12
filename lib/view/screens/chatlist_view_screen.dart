@@ -268,12 +268,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body:
-          // WidgetsBinding.instance.addPostFrameCallback((_) async {
-          //   if (isFirstTime) {
-          //     ShowCaseWidget.of(showContext).startShowCase([TooltipKeys.showCase]);
-          //   }
-          //
-          // });
            Container(
             decoration: BoxDecoration(color: white, boxShadow: [
               BoxShadow(blurRadius: 50, offset: Offset(0, 20), color: Color.fromRGBO(52, 99, 237, 0.15)),
@@ -337,7 +331,58 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                               isEditingName = true;
                             });
                           } else if (option == 'Remove') {
-                            deleteList(context);
+                            showDialog(context: context, builder: (ctx) => Dialog(
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(15.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Image.asset(
+                                      groceryList,
+                                    ),
+                                    // 20.ph,
+                                    Text(
+                                      LocaleKeys.areYouSureToDelete.tr(),
+                                      style: TextStylesInter.textViewSemiBold20.copyWith(color: blackSecondary),
+                                    ),
+                                    15.ph,
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                            child: GenericButton(
+                                              height: 60.h,
+                                              onPressed: () => AppNavigator.pop(context: context),
+                                              color: Colors.white,
+                                              borderRadius: BorderRadius.circular(6),
+                                              borderColor: grey,
+                                              child: Text(
+                                                LocaleKeys.cancel.tr(),
+                                                style: TextStyles.textViewSemiBold16.copyWith(color: Colors.black),
+                                              ),
+                                            )),
+                                        10.pw,
+                                        Expanded(
+                                            child: GenericButton(
+                                              height: 60.h,
+                                              onPressed: () async {
+                                              deleteList(context);
+                                                AppNavigator.pop(context: context);
+                                              },
+                                              color:  brightOrange,
+                                              borderRadius: BorderRadius.circular(6),
+                                              borderColor: grey,
+                                              child: Text(
+                                                LocaleKeys.delete.tr(),
+                                                style: TextStyles.textViewSemiBold16.copyWith(color: Colors.white),
+                                              ),
+                                            )),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ));
                           }
                         },
                       ),

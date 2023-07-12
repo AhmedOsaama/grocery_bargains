@@ -565,32 +565,6 @@ class _HomeScreenState extends State<HomeScreen> {
     ShowCaseWidget.of(builder).next();
   }
 
-  Future addRandomProduct(BuildContext builder) async {
-    // var id = await Provider.of<ChatlistsProvider>(context, listen: false).createChatList([]);
-    // await Provider.of<ChatlistsProvider>(context, listen: false).shareItemAsMessage(
-    //     itemDescription:
-    //         Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).description,
-    //     storeName: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).storeName,
-    //     itemId: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).id,
-    //     itemName: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).name,
-    //     itemImage: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).imageURL,
-    //     itemSize: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).size,
-    //     itemPrice: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).price,
-    //     itemOldPrice: Provider.of<ProductsProvider>(context, listen: false).hoogvlietProducts.elementAt(20).oldPrice,
-    //     listId: id);
-    setState(() {
-      isHomeFirstTime = false;
-    });
-    // await pushNewScreen(context,
-    //     screen: ChatListViewScreen(
-    //       listId: id,
-    //     ),
-    //     withNavBar: false);
-
-    NavigatorController.jumpToTab(1);
-    ShowCaseWidget.of(builder).next();
-    return Future.value();
-  }
 
   Future<dynamic> showWelcomeDialog(BuildContext context, BuildContext builder) {
     return showDialog(

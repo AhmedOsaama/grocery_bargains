@@ -267,6 +267,7 @@
   "toAddItemsInChat"                          : "To add items to the chat list, click on the ‘+’ button",
   "toAddFamilyAndFriends"                     : "To add family and friends, click the people icon on the grocery lists and add the contacts who have BargainB or invited via a  link.",
   "messageSentSuccessfully"                   : "Message sent successfully",
-  "somethingWentWrong"                         : "Something went wrong, please try again"
+  "somethingWentWrong"                         : "Something went wrong, please try again",
+  "areYouSureToDelete"                          : "Are you sure to delete this list?"
 
 }

@@ -1,4 +1,5 @@
 import 'package:bargainb/utils/empty_padding.dart';
+import 'package:bargainb/view/screens/home_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ import '../../utils/tooltips_keys.dart';
 import '../../utils/triangle_painter.dart';
 import '../components/button.dart';
 import '../components/close_button.dart';
+import '../screens/chatlists_screen.dart';
 import '../screens/contact_profile_screen.dart';
 import '../screens/main_screen.dart';
 
@@ -69,7 +71,12 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
 
   @override
   Widget build(BuildContext context) {
+    var chatlistsProvider = Provider.of<ChatlistsProvider>(context,listen: false);
     return ShowCaseWidget(
+      onFinish: () async {
+        AppNavigator.pop(context: context);
+        chatlistsProvider.deleteList(context, chatlistsProvider.chatlists.last.id);
+      },
       builder: Builder(builder: (showCaseContext){
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           if (isFirstTime) {
