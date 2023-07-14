@@ -559,11 +559,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
         await saveUserData(userCredential);
       }
       saveRememberMePref();
-      MixpanelUtils().createUser(
-          userName: "TEST NAME",
-          email: userCredential.user!.email.toString(),
-          id: userCredential.user!.uid);
-      MixpanelUtils().trackSocialLogin(providerName: providerName);
+      // MixpanelUtils().createUser(
+      //     userName: "TEST NAME",
+      //     email: userCredential.user!.email.toString(),
+      //     id: userCredential.user!.uid);
+      // MixpanelUtils().trackSocialLogin(providerName: providerName);
 
       var pref = await SharedPreferences.getInstance();
       var isFirstTime = pref.getBool("firstTime") ?? true;
