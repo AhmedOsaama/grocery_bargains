@@ -5,6 +5,7 @@ import 'package:bargainb/main.dart';
 import 'package:bargainb/models/chatlist.dart';
 import 'package:bargainb/models/user_info.dart';
 import 'package:bargainb/utils/assets_manager.dart';
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/button.dart';
 import 'package:bargainb/view/components/draggable_list.dart';
 import 'package:bargainb/view/components/search_widget.dart';
@@ -101,6 +102,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       });
     }
     getUserImagesFuture = getUserImages();
+    TrackingUtils().trackPageVisited("Chatlist screen", FirebaseAuth.instance.currentUser!.uid);
 
     super.initState();
   }
@@ -509,5 +511,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       print('Error : ${response.errorCode} - ${response.errorMessage}');
     }
     Share.share(response.result);
+    TrackingUtils().trackShare(FirebaseAuth.instance.currentUser!.uid);
   }
 }

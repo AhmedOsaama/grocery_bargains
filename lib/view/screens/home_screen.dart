@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:bargainb/models/bestValue_item.dart';
@@ -42,6 +43,7 @@ import '../../models/product.dart';
 import '../../services/dynamic_link_service.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/icons_manager.dart';
+import '../../utils/tracking_utils.dart';
 import '../widgets/discountItem.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -54,6 +56,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PagingController<int, ComparisonProduct> _pagingController = PagingController(firstPageKey: 0);
   static const _pageSize = 100;
+
 
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
   // late Future<int> getAllProductsFuture;
@@ -96,6 +99,7 @@ class _HomeScreenState extends State<HomeScreen> {
       getUserDataFuture =
           FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
     }
+    TrackingUtils().trackPageVisited("Home screen", FirebaseAuth.instance.currentUser!.uid);
 
     getFirstTime();
   }
@@ -124,11 +128,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var chatlistProvider = Provider.of<ChatlistsProvider>(context,listen: false);
     return ShowCaseWidget(
+      // onFinish: (){
+      //   // print("TUTORIAL FINISHED");
+      //   // chatlistProvider.stopwatch.stop();
+      //   // print("STOPWATCH: " + chatlistProvider.stopwatch.elapsed.inSeconds.toString());
+      // },
       builder: Builder(builder: (builder) {
         if (isHomeFirstTime && !dialogOpened) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             showWelcomeDialog(context, builder);
+            chatlistProvider.stopwatch.start();
+            chatlistProvider.stopwatch.reset();
+            var onboardingDuration = chatlistProvider.stopwatch.elapsed.inSeconds.toString();
+            print("Onboarding duration start: " + onboardingDuration);
           });
           dialogOpened = true;
         }
@@ -545,24 +559,31 @@ class _HomeScreenState extends State<HomeScreen> {
      setState(() {
       isHomeFirstTime = false;
     });
-    Product product = Provider.of<ProductsProvider>(context,listen: false).albertProducts.last;
-    await pushNewScreen(context,
-        screen: ProductDetailScreen(
-      productId: product.id,
-      productBrand: product.brand,
-      storeName: product.storeName,
-      productName: product.name,
-      imageURL: product.imageURL,
-      description: product.description,
-      oldPrice: product.oldPrice,
-      price1: double.tryParse(product.price2 ?? "") ?? 0.0,
-      price2: double.tryParse(product.price ?? "") ?? 0.0,
-      size1: product.size,
-      size2: product.size2!,
-    ));
+     try {
+       Product product = Provider
+           .of<ProductsProvider>(context, listen: false)
+           .albertProducts
+           .first;
+       await pushNewScreen(context,
+           screen: ProductDetailScreen(
+             productId: product.id,
+             productBrand: product.brand,
+             storeName: product.storeName,
+             productName: product.name,
+             imageURL: product.imageURL,
+             description: product.description,
+             oldPrice: product.oldPrice,
+             price1: double.tryParse(product.price2 ?? "") ?? 0.0,
+             price2: 0,
+             size1: product.size,
+             size2: "",
+           ));
 
-    // NavigatorController.jumpToTab(1);
-    ShowCaseWidget.of(builder).next();
+       // NavigatorController.jumpToTab(1);
+       ShowCaseWidget.of(builder).next();
+     }catch(e){
+       print(e);
+     }
   }
 
 

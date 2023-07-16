@@ -5,6 +5,7 @@ import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/components/search_widget.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,6 +19,7 @@ import 'package:bargainb/view/screens/product_detail_screen.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../models/product.dart';
+import '../../utils/tracking_utils.dart';
 import '../components/search_appBar.dart';
 import '../widgets/discountItem.dart';
 
@@ -45,6 +47,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
   void initState() {
     getProductsBySubCategoryFuture = Provider.of<ProductsProvider>(context, listen: false)
         .getProductsBySubCategory(widget.subCategory, "Store", "Brand");
+    TrackingUtils().trackPageVisited("Subcategory Screen", FirebaseAuth.instance.currentUser!.uid);
     super.initState();
   }
 

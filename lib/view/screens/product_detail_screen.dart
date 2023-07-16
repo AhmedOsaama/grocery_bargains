@@ -1,6 +1,7 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/widgets/quantity_counter.dart';
 import 'package:bargainb/view/widgets/signin_dialog.dart';
 import 'package:bargainb/view/widgets/size_container.dart';
@@ -85,12 +86,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ItemSize(price: widget.price1.toString(), size: widget.size1),
       ItemSize(price: widget.price2.toString(), size: widget.size2),
     ]);
-    if (widget.price1 != null && widget.price2 != null) {
-      if (widget.price1! < widget.price2!) cheapest = widget.price1.toString();
-      if (widget.price2! < widget.price1!) cheapest = widget.price2.toString();
-    }
-    defaultPrice = widget.price1 == null ? widget.price2 as double : widget.price1 as double;
-    print("CHEAPEST: $cheapest");
+    // if (widget.price1 != null && widget.price2 != null) {
+    //   if (widget.price1! < widget.price2!) cheapest = widget.price1.toString();
+    //   if (widget.price2! < widget.price1!) cheapest = widget.price2.toString();
+    // }
+    // defaultPrice = widget.price1 == null ? widget.price2 as double : widget.price1 as double;
+    // print("CHEAPEST: $cheapest");
+    TrackingUtils().trackProductViewed(widget.productId.toString(), widget.storeName, FirebaseAuth.instance.currentUser!.uid);
+    TrackingUtils().trackPageVisited("Product Screen", FirebaseAuth.instance.currentUser!.uid);
 
     super.initState();
   }

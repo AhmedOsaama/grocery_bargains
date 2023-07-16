@@ -10,7 +10,8 @@ class TooltipKeys {
   static final showCase4 =
       GlobalKey<State<StatefulWidget>>(debugLabel: 'GlobalFormKey4');
   static final showCase5 =
-      GlobalKey<State<StatefulWidget>>(debugLabel: 'GlobalFormKey5');
+  GlobalKey<State<StatefulWidget>>(debugLabel: 'GlobalFormKey6');
   static final showCase6 =
-      GlobalKey<State<StatefulWidget>>(debugLabel: 'GlobalFormKey6');
+      GlobalKey<State<StatefulWidget>>(debugLabel: 'GlobalFormKey5');
+
 }

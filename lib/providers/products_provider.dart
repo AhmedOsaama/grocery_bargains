@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/models/product_category.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:bargainb/services/network_services.dart';
@@ -14,6 +15,7 @@ import '../config/routes/app_navigator.dart';
 import '../models/bestValue_item.dart';
 import '../models/product.dart';
 import '../utils/assets_manager.dart';
+import '../utils/tracking_utils.dart';
 import '../view/screens/product_detail_screen.dart';
 
 class ProductsProvider with ChangeNotifier {
@@ -734,6 +736,7 @@ class ProductsProvider with ChangeNotifier {
     var hoogvlietProducts = convertToHoogvlietProductListFromJson(jsonDecode(response[2].body));
 
     var searchResult = [...jumboProducts, ...albertProducts, ...hoogvlietProducts];
+    TrackingUtils().trackSearchPerformed("filter", FirebaseAuth.instance.currentUser!.uid, searchTerm);
     return searchResult;
   }
 
@@ -812,6 +815,7 @@ class ProductsProvider with ChangeNotifier {
       print('Error : ${response.errorCode} - ${response.errorMessage}');
     }
     await Share.share(response.result);
+    TrackingUtils().trackShare(FirebaseAuth.instance.currentUser!.uid);
   }
 
   String getImage(String storeName) {

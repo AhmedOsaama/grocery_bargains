@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -33,6 +34,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   @override
   void initState() {
     updateUserDataFuture();
+    TrackingUtils().trackPageVisited("Preferences Screen", FirebaseAuth.instance.currentUser!.uid);
     super.initState();
   }
 

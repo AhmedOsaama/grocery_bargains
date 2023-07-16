@@ -53,6 +53,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   var photoURL = "";
 
   var resendToken = null;
+  initState(){
+    TrackingUtils().trackPageVisited("Register Screen", FirebaseAuth.instance.currentUser!.uid);
+    super.initState();
+  }
 
   Future<void> saveRememberMePref() async {
     var pref = await SharedPreferences.getInstance();
@@ -69,8 +73,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
     try {
       if (!isLogin) {
-        // userCredential = await _auth.createUserWithEmailAndPassword(
-        //     email: email, password: password);
+
         var result = await FirebaseFirestore.instance
             .collection('users')
             .where('phoneNumber', isEqualTo: phoneNumber)
@@ -93,10 +96,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
         var userCredential = await loginWithPhoneNumber(phoneNumber);
         if (userCredential == null) {
+          TrackingUtils().trackUserRegistrationFailed("credential error");
           throw "credential error";
         }
 
         this.phoneNumber = userCredential.user!.phoneNumber!;
+        TrackingUtils().trackUserRegistrationSuccess(userCredential.user!.uid);
+        TrackingUtils().trackRegisteredUserPlatform(Platform.operatingSystem);
         await saveUserData(userCredential);
 
         saveRememberMePref();
@@ -104,8 +110,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         AppNavigator.pushReplacement(
             context: context, screen: OnBoardingScreen());
       } else {
-        // userCredential = await _auth.signInWithEmailAndPassword(
-        //     email: email, password: phoneNumber);
         print("Logging in...");
         var result = await FirebaseFirestore.instance
             .collection('users')
@@ -119,7 +123,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           return;
         }
         var userCredential = await loginWithPhoneNumber(phoneNumber);
+        TrackingUtils().trackSuccessfulLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
         if (userCredential == null) {
+          TrackingUtils().trackFailedLogin("credential error");
           throw "credential error";
         }
         print("logged in");
@@ -135,6 +141,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         message = error.message!;
       }
       print(message);
+      TrackingUtils().trackUserRegistrationFailed(message);
+      TrackingUtils().trackFailedLogin(message);
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
         content: Text(message),
         backgroundColor: Theme.of(ctx).colorScheme.error,
@@ -448,11 +456,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _formKey.currentState?.save();
       await _submitAuthForm(email, username, phoneNumber, context).timeout(
         Duration(seconds: 180),
-        // onTimeout: () {
-        // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        //     content: Text(
-        //         "Failed to login or signup, Please check your internet and try again later")));
-        // }
       );
     }
   }
@@ -557,13 +560,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
           print(e);
         }
         await saveUserData(userCredential);
+        TrackingUtils().trackUserRegistrationSuccess(userCredential.user!.uid);
+        TrackingUtils().trackRegisteredUserPlatform(Platform.operatingSystem);
+      }else{
+        TrackingUtils().trackSuccessfulLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
       }
       saveRememberMePref();
-      // MixpanelUtils().createUser(
-      //     userName: "TEST NAME",
-      //     email: userCredential.user!.email.toString(),
-      //     id: userCredential.user!.uid);
-      // MixpanelUtils().trackSocialLogin(providerName: providerName);
+
 
       var pref = await SharedPreferences.getInstance();
       var isFirstTime = pref.getBool("firstTime") ?? true;

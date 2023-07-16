@@ -4,9 +4,11 @@ import 'package:bargainb/models/product_category.dart';
 import 'package:bargainb/services/network_services.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/icons_manager.dart';
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/screens/category_screen.dart';
 import 'package:bargainb/view/widgets/discountItem.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -210,6 +212,7 @@ class MySearchDelegate extends SearchDelegate {
       }
       results = productProvider.sortProducts(sortDropdownValue, results);
     }
+    TrackingUtils().trackSearchPerformed("$sortDropdownValue, $storeDropdownValue", FirebaseAuth.instance.currentUser!.uid, "");
     return results;
   }
 

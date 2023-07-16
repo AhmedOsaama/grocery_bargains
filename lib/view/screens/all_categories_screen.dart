@@ -1,10 +1,12 @@
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/components/search_widget.dart';
 import 'package:bargainb/view/screens/category_screen.dart';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +28,7 @@ class AllCategoriesScreen extends StatefulWidget {
 class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
   @override
   void initState() {
+    TrackingUtils().trackPageVisited("All categories screen", FirebaseAuth.instance.currentUser!.uid);
     super.initState();
   }
 

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/view/widgets/quantity_counter.dart';
 import 'package:bargainb/view/widgets/size_container.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -15,6 +16,7 @@ import '../../providers/chatlists_provider.dart';
 import '../../providers/products_provider.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
+import '../../utils/tracking_utils.dart';
 import '../components/close_button.dart';
 import '../screens/product_detail_screen.dart';
 
@@ -37,8 +39,9 @@ class ProductDialog extends StatefulWidget {
       required this.itemId,
       required this.itemImage,
       required this.itemBrand,
-        required this.listId,
-        required this.itemPrice,required this.itemDocId,
+      required this.listId,
+      required this.itemPrice,
+      required this.itemDocId,
       required this.itemSize,
       required this.itemName})
       : super(key: key);
@@ -50,7 +53,7 @@ class ProductDialog extends StatefulWidget {
 class _ProductDialogState extends State<ProductDialog> {
   @override
   Widget build(BuildContext context) {
-  var chatlistProvider = Provider.of<ChatlistsProvider>(context,listen: false);
+    var chatlistProvider = Provider.of<ChatlistsProvider>(context, listen: false);
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
@@ -107,14 +110,8 @@ class _ProductDialogState extends State<ProductDialog> {
                   children: [
                     IconButton(
                       onPressed: () {
-                        Provider.of<ChatlistsProvider>(
-                            context,
-                            listen: false)
-                            .deleteItemFromChatlist(
-                            widget.listId,
-                            widget.itemDocId,
-                            widget.itemPrice
-                        );
+                        Provider.of<ChatlistsProvider>(context, listen: false)
+                            .deleteItemFromChatlist(widget.listId, widget.itemDocId, widget.itemPrice);
                         AppNavigator.pop(context: context);
                       },
                       icon: Icon(Icons.delete, color: purple30),
@@ -162,6 +159,7 @@ class _ProductDialogState extends State<ProductDialog> {
                                 price1: double.tryParse(product.price ?? "") ?? 0.0,
                                 price2: double.tryParse(product.price2 ?? "") ?? 0.0,
                               ));
+                          TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "View item in chatlist", DateTime.now().toUtc().toString());
                         },
                         splashRadius: 25,
                         icon: Icon(
@@ -177,7 +175,14 @@ class _ProductDialogState extends State<ProductDialog> {
                 30.pw,
                 Column(
                   children: [
-                    IconButton(onPressed: () => Provider.of<ProductsProvider>(context,listen: false).shareProductViaDeepLink(widget.itemName, widget.itemId, widget.storeName, context), icon: Icon(Icons.share_outlined, color: purple30),splashRadius: 25),
+                    IconButton(
+                        onPressed: () {
+                          Provider.of<ProductsProvider>(context, listen: false)
+                              .shareProductViaDeepLink(widget.itemName, widget.itemId, widget.storeName, context);
+                          TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Share item in chatlist", DateTime.now().toUtc().toString());
+                        },
+                        icon: Icon(Icons.share_outlined, color: purple30),
+                        splashRadius: 25),
                     Text(
                       'Share',
                       style: TextStylesInter.textViewMedium12.copyWith(color: purple30),

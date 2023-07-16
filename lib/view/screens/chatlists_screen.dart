@@ -5,7 +5,6 @@ import 'package:bargainb/view/components/search_appBar.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/contact_profile_screen.dart';
 import 'package:bargainb/models/user_info.dart' as UserInfo;
-import 'package:bargainb/view/screens/newchatlist_screen.dart';
 import 'package:bargainb/view/screens/register_screen.dart';
 import 'package:bargainb/view/widgets/chat_card.dart';
 import 'package:bargainb/view/widgets/create_list_dialog.dart';
@@ -31,9 +30,9 @@ import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/widgets/store_list_widget.dart';
 
 import '../../config/routes/app_navigator.dart';
+import '../../utils/tracking_utils.dart';
 import '../components/generic_field.dart';
 
-enum ChatlistsView { CHATVIEW, LISTVIEW, PERSONVIEW }
 
 class ChatlistsScreen extends StatefulWidget {
   const ChatlistsScreen({Key? key}) : super(key: key);
@@ -48,6 +47,12 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
   bool isAdding = false;
 
   bool canCreate = false;
+
+  @override
+  void initState() {
+    TrackingUtils().trackPageVisited("All chatlists screen", FirebaseAuth.instance.currentUser!.uid);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -151,11 +156,12 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                             return Column(
                               children: [
                                 GestureDetector(
-                                    onTap: () => pushNewScreen(context,
-                                        screen: ChatListViewScreen(
-                                          listId: allLists[i].id,
-                                        ),
-                                        withNavBar: false),
+                                    // onTap: () => pushNewScreen(context,
+                                    //     screen: ChatListViewScreen(
+                                    //       listId: allLists[i].id,
+                                    //     ),
+                                    //     withNavBar: true
+                                    // ),
                                     child: ChatCard(allLists, i)),
                                 if (i == allLists.length - 1) ...[
                                   30.ph,

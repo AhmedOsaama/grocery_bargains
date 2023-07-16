@@ -14,6 +14,7 @@ import 'package:bargainb/view/widgets/profile_dialog.dart';
 import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
+import '../../utils/tracking_utils.dart';
 
 class SettingsScreen extends StatefulWidget {
   SettingsScreen({Key? key}) : super(key: key);
@@ -27,6 +28,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     updateUserDataFuture();
+    TrackingUtils().trackPageVisited("Settings Screen", FirebaseAuth.instance.currentUser!.uid);
+
     super.initState();
   }
 

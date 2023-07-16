@@ -31,7 +31,7 @@ class ChatCard extends StatelessWidget {
                 screen: ChatListViewScreen(
                   listId: allLists.elementAt(i).id,
                 ),
-                withNavBar: false),
+                withNavBar: true),
             child: Container(
               padding: EdgeInsets.only(left: 17.w, top: 10.h, bottom: 10.h),
               decoration: BoxDecoration(

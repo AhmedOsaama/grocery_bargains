@@ -1,4 +1,5 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/screens/settings_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -31,6 +32,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
 
   @override
   void initState() {
+    TrackingUtils().trackPageVisited("Language Screen", FirebaseAuth.instance.currentUser!.uid);
     updateUserDataFuture();
     super.initState();
   }

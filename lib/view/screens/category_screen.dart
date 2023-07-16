@@ -6,6 +6,7 @@ import 'package:bargainb/view/components/search_widget.dart';
 import 'package:bargainb/view/screens/subcategory_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,6 +21,7 @@ import 'package:bargainb/view/screens/product_detail_screen.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../models/product.dart';
+import '../../utils/tracking_utils.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({Key? key, required this.category}) : super(key: key);
@@ -46,6 +48,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   int maxChipsToShow = 6;
   @override
   void initState() {
+    TrackingUtils().trackPageVisited("Category screen", FirebaseAuth.instance.currentUser!.uid);
     getProductsByCategoryFuture =
         Provider.of<ProductsProvider>(context, listen: false).getProductsByCategory(widget.category, "Store", "Brand");
     super.initState();

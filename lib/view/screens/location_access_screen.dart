@@ -24,98 +24,100 @@ class LocationAccessScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 15.w),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 70.h,
-            ),
-            SvgPicture.asset(bargainbIcon),
-            Image.asset(onboarding4),
-            30.ph,
-            Text(
-              LocaleKeys.dataAccess.tr(),
-              style: TextStyles.textViewSemiBold30.copyWith(color: prussian),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(
-              height: 20.h,
-            ),
-            RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                  children: [
-                    TextSpan(
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () async {
-                            final url = Uri.parse(
-                                'https://thebargainb.com/privacy-policy');
-                            try {
-                              await launchUrl(url);
-                            } catch (e) {
-                              log(e.toString());
-                            }
-                          },
-                        text: LocaleKeys.privacyPolicy.tr(),
-                        style: TextStyles.textViewRegular14
-                            .copyWith(color: mainPurple))
-                  ],
-                  style: TextStyles.textViewRegular14.copyWith(color: gunmetal),
-                  text:
-                  LocaleKeys.itIsImportantToUnderstandWhy.tr()),
-            ),
-            16.ph,
-            Text(
-                LocaleKeys.bargainBUsesLocationData.tr(),
-              style: TextStyles.textViewRegular14.copyWith(color: gunmetal),
-              textAlign: TextAlign.center,
-            ),
-            50.ph,
-            GenericButton(
-              borderRadius: BorderRadius.circular(6),
-              // borderColor: borderColor,
-              color: mainYellow,
-              height: 60.h,
-              width: double.infinity,
-              onPressed: () async {
-                if (await AppTrackingTransparency.trackingAuthorizationStatus ==
-                    TrackingStatus.notDetermined) {
-                  // Request system's tracking authorization dialog
-                  await AppTrackingTransparency.requestTrackingAuthorization();
-                }
-                AppNavigator.pushReplacement(
-                    context: context, screen: MainScreen());
-              },
-              child: Text(
-                  LocaleKeys.accept.tr(),
-                style: TextStyles.textViewSemiBold16.copyWith(color: white),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 15.w),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 70.h,
               ),
-            ),
-            10.ph,
-            GenericButton(
-              borderRadius: BorderRadius.circular(6),
-              borderColor: borderColor,
-              color: Colors.transparent,
-              height: 60.h,
-              width: double.infinity,
-              onPressed: () async {
-                if (await AppTrackingTransparency.trackingAuthorizationStatus ==
-                    TrackingStatus.notDetermined) {
-                  // Request system's tracking authorization dialog
-                  await AppTrackingTransparency.requestTrackingAuthorization();
-                }
-                AppNavigator.pushReplacement(
-                    context: context, screen: MainScreen());
-              },
-              child: Text(
-                LocaleKeys.notNow.tr(),
-                style: TextStyles.textViewSemiBold16.copyWith(color: black),
+              SvgPicture.asset(bargainbIcon),
+              Image.asset(onboarding4),
+              30.ph,
+              Text(
+                LocaleKeys.dataAccess.tr(),
+                style: TextStyles.textViewSemiBold30.copyWith(color: prussian),
+                textAlign: TextAlign.center,
               ),
-            ),
-            Spacer(),
-          ],
+              SizedBox(
+                height: 20.h,
+              ),
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                    children: [
+                      TextSpan(
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () async {
+                              final url = Uri.parse(
+                                  'https://thebargainb.com/privacy-policy');
+                              try {
+                                await launchUrl(url);
+                              } catch (e) {
+                                log(e.toString());
+                              }
+                            },
+                          text: ' ' + LocaleKeys.privacyPolicy.tr(),
+                          style: TextStyles.textViewRegular14
+                              .copyWith(color: mainPurple))
+                    ],
+                    style: TextStyles.textViewRegular14.copyWith(color: gunmetal),
+                    text:
+                    LocaleKeys.itIsImportantToUnderstandWhy.tr()),
+              ),
+              16.ph,
+              Text(
+                  LocaleKeys.bargainBUsesLocationData.tr(),
+                style: TextStyles.textViewRegular14.copyWith(color: gunmetal),
+                textAlign: TextAlign.center,
+              ),
+              50.ph,
+              GenericButton(
+                borderRadius: BorderRadius.circular(6),
+                // borderColor: borderColor,
+                color: mainYellow,
+                height: 60.h,
+                width: double.infinity,
+                onPressed: () async {
+                  if (await AppTrackingTransparency.trackingAuthorizationStatus ==
+                      TrackingStatus.notDetermined) {
+                    // Request system's tracking authorization dialog
+                    await AppTrackingTransparency.requestTrackingAuthorization();
+                  }
+                  AppNavigator.pushReplacement(
+                      context: context, screen: MainScreen());
+                },
+                child: Text(
+                    LocaleKeys.accept.tr(),
+                  style: TextStyles.textViewSemiBold16.copyWith(color: white),
+                ),
+              ),
+              10.ph,
+              GenericButton(
+                borderRadius: BorderRadius.circular(6),
+                borderColor: borderColor,
+                color: Colors.transparent,
+                height: 60.h,
+                width: double.infinity,
+                onPressed: () async {
+                  if (await AppTrackingTransparency.trackingAuthorizationStatus ==
+                      TrackingStatus.notDetermined) {
+                    // Request system's tracking authorization dialog
+                    await AppTrackingTransparency.requestTrackingAuthorization();
+                  }
+                  AppNavigator.pushReplacement(
+                      context: context, screen: MainScreen());
+                },
+                child: Text(
+                  LocaleKeys.notNow.tr(),
+                  style: TextStyles.textViewSemiBold16.copyWith(color: black),
+                ),
+              ),
+              // Spacer(),
+            ],
+          ),
         ),
       ),
     );

@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:bargainb/models/chatlist.dart';
 import 'package:bargainb/utils/app_colors.dart';
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,7 +23,7 @@ import '../view/widgets/signin_dialog.dart';
 class ChatlistsProvider with ChangeNotifier {
   List<ChatList> chatlists = [];
   late Future<QuerySnapshot> chatlistsFuture;
-  var chatlistsView = ChatlistsView.CHATVIEW;
+  final stopwatch = Stopwatch();
   Future<QuerySnapshot> getAllChatlistsFuture() async {
     chatlistsFuture = FirebaseFirestore.instance
         .collection('/lists')
@@ -190,6 +191,7 @@ class ChatlistsProvider with ChangeNotifier {
         lastMessageUserId: '',
         lastMessageUserName: ''));
     notifyListeners();
+    TrackingUtils().trackUserCreateChatlist(FirebaseAuth.instance.currentUser!.uid, name ?? "Name...");
     return docRef.id;
   }
 
@@ -208,6 +210,7 @@ class ChatlistsProvider with ChangeNotifier {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("couldntDeleteList".tr())));
     });
+    TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Delete chatlist", DateTime.now().toUtc().toString());
   }
 
   Future<void> deleteItemFromChatlist(
@@ -245,6 +248,7 @@ class ChatlistsProvider with ChangeNotifier {
     } catch (e) {
       print(e);
     }
+    TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Delete item from chatlist", DateTime.now().toUtc().toString());
   }
 
   Future<void> updateListName(String value, String listId) async {
@@ -255,6 +259,7 @@ class ChatlistsProvider with ChangeNotifier {
     var chatlist = chatlists.firstWhere((chatlist) => chatlist.id == listId);
     chatlist.name = value;
     notifyListeners();
+    TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Update list name", DateTime.now().toUtc().toString());
   }
 
   Future<void> addProductToList(BuildContext context, ListItem listItem) async {        //adds a product from home or product page to chatlist
@@ -300,6 +305,7 @@ class ChatlistsProvider with ChangeNotifier {
     });
     print('Done updating quantity');
     notifyListeners();
+   TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Update quantity", DateTime.now().toUtc().toString());
   }
 
 
@@ -335,6 +341,7 @@ class ChatlistsProvider with ChangeNotifier {
       });
       updateChatList(listId, message, userData);
     }
+    TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Send message", DateTime.now().toUtc().toString());
   }
 
   Future<bool> shareItem(

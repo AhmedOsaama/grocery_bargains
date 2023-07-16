@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/providers/google_sign_in_provider.dart';
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/search_appBar.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/subscription_screen.dart';
@@ -45,6 +46,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     updateUserDataFuture();
+    TrackingUtils().trackUserProfileViewed(FirebaseAuth.instance.currentUser!.uid);
+    TrackingUtils().trackPageVisited("Profile Screen", FirebaseAuth.instance.currentUser!.uid);
     super.initState();
   }
 
@@ -361,6 +364,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         isEditing = !isEditing;
         isEdited = !isEdited;
       });
+    TrackingUtils().trackUserProfileEdited(FirebaseAuth.instance.currentUser!.uid);
+    TrackingUtils().trackAccountSettingsUpdated(FirebaseAuth.instance.currentUser!.uid);
   }
 
   Object getUserImage(

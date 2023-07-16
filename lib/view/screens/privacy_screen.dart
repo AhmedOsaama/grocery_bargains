@@ -11,6 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
+import '../../utils/tracking_utils.dart';
 
 enum Language { english, dutch }
 
@@ -34,6 +35,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   @override
   void initState() {
     updateUserDataFuture();
+    TrackingUtils().trackPageVisited("Privacy Screen", FirebaseAuth.instance.currentUser!.uid);
     super.initState();
   }
 

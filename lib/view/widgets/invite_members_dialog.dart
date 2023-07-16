@@ -1,4 +1,5 @@
 import 'package:bargainb/utils/empty_padding.dart';
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/screens/home_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -76,11 +77,15 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
       onFinish: () async {
         AppNavigator.pop(context: context);
         chatlistsProvider.deleteList(context, chatlistsProvider.chatlists.last.id);
+        chatlistsProvider.stopwatch.stop();
+        var onboardingDuration = chatlistsProvider.stopwatch.elapsed.inSeconds.toString();
+        print("Onboarding duration: " + onboardingDuration);
+        TrackingUtils().trackOnboarding(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), onboardingDuration);
       },
       builder: Builder(builder: (showCaseContext){
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           if (isFirstTime) {
-            ShowCaseWidget.of(showCaseContext).startShowCase([TooltipKeys.showCase5]);
+            ShowCaseWidget.of(showCaseContext).startShowCase([TooltipKeys.showCase6]);
           }
         });
        return Dialog(
@@ -89,7 +94,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
             height: 50,
             width: 150,
             targetBorderRadius: BorderRadius.circular(10),
-            key: isFirstTime ? TooltipKeys.showCase5 : new GlobalKey<State<StatefulWidget>>(),
+            key: isFirstTime ? TooltipKeys.showCase6 : new GlobalKey<State<StatefulWidget>>(),
             tooltipPosition: TooltipPosition.bottom,
             container: Container(
               child: Column(
@@ -214,6 +219,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                                               lists: lists,
                                               user: userInfo,
                                             ));
+                                        TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Open contact page", DateTime.now().toUtc().toString());
                                       }
                                     },
                                     child: Padding(
@@ -251,7 +257,10 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                           ],
                           20.ph,
                           TextButton(
-                            onPressed: () => widget.shareList(),
+                            onPressed: () {
+                              widget.shareList();
+                              TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Share chatlist", DateTime.now().toUtc().toString());
+                            },
                             child: Text(LocaleKeys.invitePeopleViaLink.tr(),
                                 style: TextStylesInter.textViewRegular12.copyWith(color: mainOrange)),
                           ),
@@ -322,6 +331,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                                           InkWell(
                                             onTap: () async {
                                               await widget.addContactToChatlist(userInfo, context);
+                                              TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Add contact to chatlist", DateTime.now().toUtc().toString());
                                               showDialog(
                                                   context: context,
                                                   builder: (ctx) => Dialog(

@@ -37,6 +37,7 @@ import 'package:bargainb/view/screens/profile_screen.dart';
 
 import '../../models/list_item.dart';
 import '../../providers/products_provider.dart';
+import '../../utils/tracking_utils.dart';
 import 'discountItem.dart';
 import 'message_bubble.dart';
 
@@ -58,7 +59,7 @@ class _ChatViewState extends State<ChatView> {
   List allProducts = [];
   var isLoading = false;
   var isCollapsed = true;
-  var isExpandingChatlist = true;
+  var isExpandingChatlist = false;
   bool isFirstTime = false;
 
   List albertItems = [];
@@ -73,15 +74,6 @@ class _ChatViewState extends State<ChatView> {
     getFirstTime();
     final fbm = FirebaseMessaging.instance;
     fbm.requestPermission();
-    // FirebaseMessaging.onMessage.listen((message) {
-    //   print("onMessage: " + message.data.entries.toList().toString());
-    // });
-    // FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    //   print("onMessageOpenedApp: " + message.toString());
-    // });
-    // FirebaseMessaging.onBackgroundMessage((message) async {
-    //   print("onBackgroundMessage: " + message.toString());
-    // });
     fbm.subscribeToTopic(widget.listId);
 
     super.initState();
@@ -508,6 +500,7 @@ class _ChatViewState extends State<ChatView> {
                                                 setState(() {
                                                   isExpandingChatlist = !isExpandingChatlist;
                                                 });
+                                                TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Expand/collapse chatlist items", DateTime.now().toUtc().toString());
                                               },
                                               icon: isExpandingChatlist
                                                   ? Icon(
@@ -721,6 +714,7 @@ class _ChatViewState extends State<ChatView> {
                                                                   brand: ''),
                                                               widget.listId);
                                                       quickItemController.clear();
+                                                      TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Add quick item", DateTime.now().toUtc().toString());
                                                     },
                                                     child: Text(
                                                       LocaleKeys.add.tr(),
@@ -746,7 +740,13 @@ class _ChatViewState extends State<ChatView> {
                     child: Row(
                       children: [
                         Expanded(
-                          child: GenericField(
+                          child:
+                          // TextField(
+                          //   decoration: InputDecoration(fillColor: Colors.white,
+                          //     filled: true
+                          //   ),
+                          // ),
+                          GenericField(
                             controller: messageController,
                             hintText: LocaleKeys.textHere.tr(),
                             hintStyle: TextStylesInter.textViewRegular14.copyWith(color: blackSecondary),

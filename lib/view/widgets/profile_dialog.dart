@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -89,6 +90,7 @@ class ProfileDialog extends StatelessWidget {
                             } else {
                               FirebaseAuth.instance.signOut();
                             }
+                            TrackingUtils().trackUserLoggedOut(DateTime.now().toUtc().toString(), FirebaseAuth.instance.currentUser!.uid);
                             print("SIGNED OUT...................");
                           } else {
                             await FirebaseAuth.instance.currentUser?.reload();
@@ -98,6 +100,7 @@ class ProfileDialog extends StatelessWidget {
                                 .delete();
 
                             await FirebaseAuth.instance.currentUser?.delete();
+                            TrackingUtils().trackAccountDeleted(FirebaseAuth.instance.currentUser!.uid);
                           }
                           AppNavigator.pushReplacement(
                               context: context, screen: RegisterScreen());
