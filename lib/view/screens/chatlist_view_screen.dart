@@ -49,11 +49,13 @@ class ChatListViewScreen extends StatefulWidget {
   final String listId;
   final bool isUsingDynamicLink;
   final bool isNotificationOpened;
+  final bool? isExpandingChatlist;
   ChatListViewScreen({
     Key? key,
     required this.listId,
     this.isUsingDynamicLink = false,
     this.isNotificationOpened = false,
+    this.isExpandingChatlist,
   }) : super(key: key);
 
   @override
@@ -269,90 +271,91 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:
-           Container(
-            decoration: BoxDecoration(color: white, boxShadow: [
-              BoxShadow(blurRadius: 50, offset: Offset(0, 20), color: Color.fromRGBO(52, 99, 237, 0.15)),
-            ]),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                75.ph,
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: SearchWidget(isBackButton: true),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Row(
-                    children: [
-                      isEditingName
-                          ? Container(
-                              width: 200.w,
-                              child: TextFormField(
-                                initialValue: chatList.name,
-                                style: TextStyles.textViewSemiBold24.copyWith(color: prussian),
-                                onFieldSubmitted: (value) async {
-                                  await updateListName(value);
-                                },
-                              ),
-                            )
-                          : Container(
-                              width: 150.w,
-                              child: Text(
-                                chatList.name,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStylesInter.textViewSemiBold26.copyWith(color: blackSecondary),
-                              ),
-                            ),
-                      Spacer(),
-                      DropdownButton(
-                        underline: Container(),
-                        borderRadius: BorderRadius.circular(6),
-                        dropdownColor: purple10,
-                        icon: Icon(
-                          Icons.more_vert,
-                          color: Colors.black,
+      body: Container(
+        decoration: BoxDecoration(color: white, boxShadow: [
+          BoxShadow(blurRadius: 50, offset: Offset(0, 20), color: Color.fromRGBO(52, 99, 237, 0.15)),
+        ]),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            75.ph,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: SearchWidget(isBackButton: true),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Row(
+                children: [
+                  isEditingName
+                      ? Container(
+                          width: 200.w,
+                          child: TextFormField(
+                            initialValue: chatList.name,
+                            style: TextStyles.textViewSemiBold24.copyWith(color: prussian),
+                            onFieldSubmitted: (value) async {
+                              await updateListName(value);
+                            },
+                          ),
+                        )
+                      : Container(
+                          width: 150.w,
+                          child: Text(
+                            chatList.name,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStylesInter.textViewSemiBold26.copyWith(color: blackSecondary),
+                          ),
                         ),
-                        items: [
-                          DropdownMenuItem(
-                              value: 'Rename',
-                              child: Text(
-                                LocaleKeys.rename.tr(),
-                                style: TextStyles.textViewMedium12.copyWith(color: prussian),
-                              )),
-                          DropdownMenuItem(
-                              value: 'Remove',
-                              child: Text(LocaleKeys.remove.tr(),
-                                  style: TextStyles.textViewMedium12.copyWith(color: prussian))),
-                        ],
-                        onChanged: (option) {
-                          if (option == 'Rename') {
-                            setState(() {
-                              isEditingName = true;
-                            });
-                          } else if (option == 'Remove') {
-                            showDialog(context: context, builder: (ctx) => Dialog(
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Image.asset(
-                                      groceryList,
-                                    ),
-                                    // 20.ph,
-                                    Text(
-                                      LocaleKeys.areYouSureToDelete.tr(),
-                                      style: TextStylesInter.textViewSemiBold20.copyWith(color: blackSecondary),
-                                    ),
-                                    15.ph,
-                                    Row(
+                  Spacer(),
+                  DropdownButton(
+                    underline: Container(),
+                    borderRadius: BorderRadius.circular(6),
+                    dropdownColor: purple10,
+                    icon: Icon(
+                      Icons.more_vert,
+                      color: Colors.black,
+                    ),
+                    items: [
+                      DropdownMenuItem(
+                          value: 'Rename',
+                          child: Text(
+                            LocaleKeys.rename.tr(),
+                            style: TextStyles.textViewMedium12.copyWith(color: prussian),
+                          )),
+                      DropdownMenuItem(
+                          value: 'Remove',
+                          child: Text(LocaleKeys.remove.tr(),
+                              style: TextStyles.textViewMedium12.copyWith(color: prussian))),
+                    ],
+                    onChanged: (option) {
+                      if (option == 'Rename') {
+                        setState(() {
+                          isEditingName = true;
+                        });
+                      } else if (option == 'Remove') {
+                        showDialog(
+                            context: context,
+                            builder: (ctx) => Dialog(
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(15.0),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Expanded(
-                                            child: GenericButton(
+                                        Image.asset(
+                                          groceryList,
+                                        ),
+                                        // 20.ph,
+                                        Text(
+                                          LocaleKeys.areYouSureToDelete.tr(),
+                                          style: TextStylesInter.textViewSemiBold20.copyWith(color: blackSecondary),
+                                        ),
+                                        15.ph,
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                                child: GenericButton(
                                               height: 60.h,
                                               onPressed: () => AppNavigator.pop(context: context),
                                               color: Colors.white,
@@ -363,15 +366,15 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                                 style: TextStyles.textViewSemiBold16.copyWith(color: Colors.black),
                                               ),
                                             )),
-                                        10.pw,
-                                        Expanded(
-                                            child: GenericButton(
+                                            10.pw,
+                                            Expanded(
+                                                child: GenericButton(
                                               height: 60.h,
                                               onPressed: () async {
-                                              deleteList(context);
+                                                deleteList(context);
                                                 AppNavigator.pop(context: context);
                                               },
-                                              color:  brightOrange,
+                                              color: brightOrange,
                                               borderRadius: BorderRadius.circular(6),
                                               borderColor: grey,
                                               child: Text(
@@ -379,63 +382,70 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                                 style: TextStyles.textViewSemiBold16.copyWith(color: Colors.white),
                                               ),
                                             )),
+                                          ],
+                                        )
                                       ],
-                                    )
-                                  ],
-                                ),
-                              ),
+                                    ),
+                                  ),
+                                ));
+                      }
+                    },
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      showInviteMembersDialog(context);
+                    },
+                    icon: SvgPicture.asset(
+                      newperson,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Container(
+                    // width: listUsers.length >= 3 ? 60.w : 35.w,
+                    width: 60.w,
+                    height: 30,
+                    child: FutureBuilder(
+                        future: getUserImagesFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator(
+                              color: verdigris,
                             ));
                           }
-                        },
-                      ),
-                      IconButton(
-                        onPressed: () {
-                          showInviteMembersDialog(context);
-                        },
-                        icon: SvgPicture.asset(
-                          newperson,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Container(
-                        // width: listUsers.length >= 3 ? 60.w : 35.w,
-                        width: 60.w,
-                        height: 30,
-                        child: FutureBuilder(
-                            future: getUserImagesFuture,
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return const Center(
-                                    child: CircularProgressIndicator(
-                                  color: verdigris,
-                                ));
-                              }
-                              return Padding(
-                                padding: const EdgeInsets.only(top: 10.0),
-                                child: snapshot.data ?? SvgPicture.asset(bee),
-                              );
-                            }),
-                      ),
-                    ],
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 10.0),
+                            child: snapshot.data ?? SvgPicture.asset(bee),
+                          );
+                        }),
                   ),
-                ),
-                Expanded(child: ChatView(listId: widget.listId, showInviteMembersDialog: showInviteMembersDialog))
-              ],
+                ],
+              ),
             ),
+            Expanded(
+                child: ChatView(
+              listId: widget.listId,
+              showInviteMembersDialog: showInviteMembersDialog,
+              isExpandingChatlist: widget.isExpandingChatlist,
+            ))
+          ],
+        ),
       ),
     );
   }
 
-  void showInviteMembersDialog(BuildContext context,) {
+  void showInviteMembersDialog(
+    BuildContext context,
+  ) {
     showDialog(
         context: context,
         builder: (ctx) => InviteMembersDialog(
-            listUsers: listUsers,
-            isContactsPermissionGranted: isContactsPermissionGranted,
-            contactsList: contactsList,
-            shareList: shareListViaDeepLink,
-            addContactToChatlist: addContactToChatlist,
-        ));
+              listUsers: listUsers,
+              isContactsPermissionGranted: isContactsPermissionGranted,
+              contactsList: contactsList,
+              shareList: shareListViaDeepLink,
+              addContactToChatlist: addContactToChatlist,
+            ));
   }
 
   Future<void> addContactToChatlist(UserContactInfo userInfo, BuildContext context) async {

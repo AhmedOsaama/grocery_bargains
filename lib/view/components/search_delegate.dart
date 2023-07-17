@@ -25,8 +25,8 @@ import '../../models/product.dart';
 
 class MySearchDelegate extends SearchDelegate {
   final SharedPreferences pref;
-  final bool showCategories;
-  MySearchDelegate(this.pref, this.showCategories);
+  final String? searchQuery;
+  MySearchDelegate({required this.pref, this.searchQuery});
 
   List<String> suggestions = [];
   String sortDropdownValue = 'Sort';

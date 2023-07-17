@@ -1,5 +1,6 @@
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/components/search_widget.dart';
@@ -9,11 +10,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/generic_field.dart';
+import 'package:translator/translator.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../components/search_appBar.dart';
@@ -36,7 +39,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: white,
-      appBar: SearchAppBar(isBackButton: false,),
+      appBar: SearchAppBar(isBackButton: true,),
       body: WillPopScope(
         onWillPop: () {
           FocusScope.of(context).unfocus();
@@ -63,13 +66,13 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                         (MediaQuery.of(context).size.height / 2),
                     children: List.generate(
                         provider.categories.length,
-                        (index) => GestureDetector(
+                        (index) {
+                          var category = provider.categories[index].category;
+                          return GestureDetector(
                               onTap: () => AppNavigator.pushReplacement(
                                   context: context,
                                   screen: CategoryScreen(
-                                    category: provider.categories
-                                        .elementAt(index)
-                                        .category,
+                                    category: category,
                                   )),
                               child: Column(
                                   crossAxisAlignment:
@@ -78,29 +81,45 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                     Container(
                                       width: 174.w,
                                       height: 174.h,
-                                      child: Image.asset(
+                                      child: Image.network(
                                         provider.categories
                                             .elementAt(index)
                                             .image,
+                                        errorBuilder: (_,p,x){
+                                          return SvgPicture.asset(imageError);
+                                        },
                                       ),
                                     ),
-                                    Flexible(
-                                      child: Text(
-                                        context.locale.languageCode != "nl"
-                                            ? provider.categories
-                                                .elementAt(index)
-                                                .englishCategory
-                                            : provider.categories
-                                                .elementAt(index)
-                                                .category,
-                                        maxLines: 2,
-                                        textAlign: TextAlign.center,
-                                        style: TextStylesInter.textView16
-                                            .copyWith(color: black2),
-                                      ),
+                                    FutureBuilder(
+                                      future: GoogleTranslator().translate(category, to: "nl"),
+                                      builder: (context, snapshot) {
+                                        if(snapshot.connectionState == ConnectionState.waiting) return Container();
+                                        var translatedCategory = snapshot.data!.text;
+                                        if(context.locale.languageCode == "nl"){
+                                         return Flexible(
+                                            child: Text(
+                                              translatedCategory,
+                                              maxLines: 2,
+                                              textAlign: TextAlign.center,
+                                              style: TextStylesInter.textView16
+                                                  .copyWith(color: black2),
+                                            ),
+                                          );
+                                        }
+                                        return Flexible(
+                                          child: Text(
+                                            category,
+                                            maxLines: 2,
+                                            textAlign: TextAlign.center,
+                                            style: TextStylesInter.textView16
+                                                .copyWith(color: black2),
+                                          ),
+                                        );
+                                      }
                                     ),
                                   ]),
-                            )),
+                            );
+                        }),
                     crossAxisCount: 2,
                   );
                 return Center(

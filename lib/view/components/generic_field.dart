@@ -29,6 +29,7 @@ class GenericField extends StatefulWidget {
   final double borderRaduis;
   final BoxShadow? boxShadow;
   final BoxConstraints? suffixConstraints;
+  final EdgeInsets? contentPadding;
 
   GenericField({
     super.key,
@@ -54,7 +55,7 @@ class GenericField extends StatefulWidget {
     this.hintStyle,
     this.onTap,
     this.boxShadow,
-    this.suffixConstraints, this.fillColor,
+    this.suffixConstraints, this.fillColor, this.contentPadding,
   });
 
   @override
@@ -115,6 +116,7 @@ class _GenericFieldState extends State<GenericField> {
           hintText: widget.hintText,
           labelText: widget.labeltext,
           fillColor: widget.fillColor ?? Colors.white,
+          contentPadding: widget.contentPadding,
           // suffixIconConstraints: widget.suffixConstraints ?? BoxConstraints.tight(Size.square(40)),
           suffixIconConstraints: widget.suffixConstraints,
           labelStyle: const TextStyle(fontSize: 16, color: Color(0xff343434)),

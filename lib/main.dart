@@ -39,16 +39,13 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-/*   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent, // transparent status bar
-  )); */
+
   await SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp],
   );
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // print(await FirebaseAppCheck.instance.getToken());
   await FirebaseAppCheck.instance.activate(
       );
   var notificationMessage =
@@ -61,7 +58,6 @@ Future<void> main() async {
 
   await SentryFlutter.init(
     (options) {
-      // options.dsn = 'https://9ac26c76cf0349d59d82538e91345ada@o4504179587940352.ingest.sentry.io/4504831610126336' ;
       options.dsn = kReleaseMode
           ? 'https://9ac26c76cf0349d59d82538e91345ada@o4504179587940352.ingest.sentry.io/4504831610126336'
           : '';

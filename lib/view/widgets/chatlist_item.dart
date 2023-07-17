@@ -1,4 +1,5 @@
 import 'package:bargainb/utils/empty_padding.dart';
+import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/widgets/product_dialog.dart';
 import 'package:bargainb/view/widgets/size_container.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,6 +7,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../utils/app_colors.dart';
 import '../../utils/icons_manager.dart';
@@ -78,10 +80,20 @@ class _ChatlistItemState extends State<ChatlistItem> {
                   });
                 },
               ),
-              Text(
-                text,
-                style: TextStylesInter.textViewRegular16.copyWith(color: black2),
+              TextButton(
+                onPressed: () async {
+                  var pref = await SharedPreferences.getInstance();
+                  showSearch(context: context, delegate: MySearchDelegate(pref: pref),query: text);
+                },
+                child: Text(
+                  text,
+                  style: TextStylesInter.textViewRegular16.copyWith(decoration: TextDecoration.underline),
+                ),
               ),
+              Spacer(),
+              IconButton(onPressed: (){
+                FirebaseFirestore.instance.collection('/lists/${widget.item.reference.parent.parent!.id}/items').doc(widget.item.id).delete();
+              }, icon: Icon(Icons.delete_forever,color: Colors.red,))
             ],
           )
         : Column(

@@ -1,5 +1,6 @@
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/widgets/size_container.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -194,13 +195,12 @@ class DiscountItem extends StatelessWidget {
                 5.ph,
                 Text(
                   getProductName(product),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStylesInter.textViewRegular12.copyWith(color: blackSecondary),
                 ),
                 5.ph,
-                Text(
-                  selectedStore == "Albert" ? "Albert Heijn" : selectedStore,
-                  style: TextStylesInter.textViewSemiBold12.copyWith(color: Colors.lightBlue),
-                ),
+                Image.asset(getStoreLogoPath(),width: 60,height: 20,),
                 5.ph,
                 Text(
                   "€${getPrice(product)}",
@@ -246,6 +246,17 @@ class DiscountItem extends StatelessWidget {
             size1: product.size,
             size2: product.size2 ?? "",
           ));
+  }
+
+  String getStoreLogoPath(){
+    if(selectedStore == "Albert"){
+      return albertLogo;
+    }if(selectedStore == "Jumbo"){
+      return jumbo;
+    }if(selectedStore == "Hoogvliet"){
+      return hoogvlietLogo;
+    }
+    return imageError;
   }
 
 }

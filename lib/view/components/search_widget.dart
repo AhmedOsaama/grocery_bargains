@@ -47,7 +47,7 @@ class SearchWidget extends StatelessWidget {
               await SharedPreferences.getInstance();
               return showSearch(
                   context: context,
-                  delegate: MySearchDelegate(pref, true));
+                  delegate: MySearchDelegate(pref: pref));
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 10.w,vertical: 12.h),

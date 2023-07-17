@@ -412,7 +412,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<int> getAllCategories() async {
-    var response = await NetworkServices.getAllAlbertCategories();
+    var response = await NetworkServices.getAllCategories();
 
     categories = productCategoryFromJson(response.body);
 
@@ -421,129 +421,11 @@ class ProductsProvider with ChangeNotifier {
     return response.statusCode;
   }
 
-  Future<List<Product>> getProductsByCategory(String category, String store, String brand) async {
+  List<Product> getProductsByCategory(String category) {
     List<Product> products = [];
-    if (category == "Baby en kind") {
-      category = "baby-en-kind";
-    }
-    if (category == "Sport- en dieetvoeding") {
-      category = "sport-en-dieetvoeding";
-    }
-
-    if (store == "Store" && brand == "Brand") {
-      var response = await NetworkServices.getLimitedAlbertProductsByCategory(category);
-      products = convertToProductListFromJson(jsonDecode(response.body));
-      // albertProducts.forEach((element) {
-      //   if (element.category != "") {
-      //     if (element.category.toLowerCase() == category.toLowerCase()) {
-      //       products.add(element);
-      //     }
-      //   }
-      // });
-
-      jumboProducts.forEach((element) {
-        if (element.category != "") {
-          if (element.category.toLowerCase() == category.toLowerCase()) {
-            products.add(element);
-          }
-        }
-      });
-      hoogvlietProducts.forEach((element) {
-        if (element.category != "") {
-          if (element.category.toLowerCase() == category.toLowerCase()) {
-            products.add(element);
-          }
-        }
-      });
-    } else if (store != "Store" && brand == "Brand") {
-      switch (store) {
-        case "Albert":
-          albertProducts.forEach((element) {
-            if (element.category != "") {
-              if (element.category.toLowerCase() == category.toLowerCase()) {
-                products.add(element);
-              }
-            }
-          });
-          break;
-        case "Jumbo":
-          jumboProducts.forEach((element) {
-            if (element.category != "") {
-              if (element.category.toLowerCase() == category.toLowerCase()) {
-                products.add(element);
-              }
-            }
-          });
-          break;
-        case "Hoogvliet":
-          hoogvlietProducts.forEach((element) {
-            if (element.category != "") {
-              if (element.category.toLowerCase() == category.toLowerCase()) {
-                products.add(element);
-              }
-            }
-          });
-          break;
-      }
-    } else if (store == "Store" && brand != "Brand") {
-      albertProducts.forEach((element) {
-        if (element.storeName != "") {
-          if (element.storeName.toLowerCase() == brand.toLowerCase() &&
-              (element.category.toLowerCase() == category.toLowerCase())) {
-            products.add(element);
-          }
-        }
-      });
-      jumboProducts.forEach((element) {
-        if (element.storeName != "") {
-          if (element.storeName.toLowerCase() == brand.toLowerCase() &&
-              (element.category.toLowerCase() == category.toLowerCase())) {
-            products.add(element);
-          }
-        }
-      });
-      hoogvlietProducts.forEach((element) {
-        if (element.storeName != "") {
-          if (element.storeName.toLowerCase() == brand.toLowerCase() &&
-              (element.category.toLowerCase() == category.toLowerCase())) {
-            products.add(element);
-          }
-        }
-      });
-    } else {
-      switch (store) {
-        case "Albert":
-          albertProducts.forEach((element) {
-            if (element.storeName != "") {
-              if (element.storeName.toLowerCase() == brand.toLowerCase() &&
-                  (element.category.toLowerCase() == category.toLowerCase())) {
-                products.add(element);
-              }
-            }
-          });
-          break;
-        case "Jumbo":
-          jumboProducts.forEach((element) {
-            if (element.storeName != "") {
-              if (element.storeName.toLowerCase() == brand.toLowerCase() &&
-                  (element.category.toLowerCase() == category.toLowerCase())) {
-                products.add(element);
-              }
-            }
-          });
-          break;
-        case "Hoogvliet":
-          hoogvlietProducts.forEach((element) {
-            if (element.storeName != "") {
-              if (element.storeName.toLowerCase() == brand.toLowerCase() &&
-                  (element.category.toLowerCase() == category.toLowerCase())) {
-                products.add(element);
-              }
-            }
-          });
-          break;
-      }
-    }
+    products.addAll(albertProducts.where((product) => product.category.trim() == category.trim()));
+    products.addAll(jumboProducts.where((product) => product.category.trim() == category.trim()));
+    products.addAll(hoogvlietProducts.where((product) => product.category.trim() == category.trim()));
     return products;
   }
 
@@ -569,123 +451,11 @@ class ProductsProvider with ChangeNotifier {
     return sortedProducts;
   }
 
-  Future<List<Product>> getProductsBySubCategory(String subCategory, String store, String brand) async {
+  List<Product> getProductsBySubCategory(String subCategory) {
     List<Product> products = [];
-
-    if (store == "Store" && brand == "Brand") {
-      // var response =
-      // await NetworkServices.getLimitedAlbertProductsBySubCategory(category);
-      // products = convertToProductListFromJson(jsonDecode(response.body));
-      albertProducts.forEach((element) {
-        if (element.subCategory != null) {
-          if (element.subCategory!.toLowerCase() == subCategory.toLowerCase()) {
-            products.add(element);
-          }
-        }
-      });
-      jumboProducts.forEach((element) {
-        if (element.subCategory != null) {
-          if (element.subCategory!.toLowerCase() == subCategory.toLowerCase()) {
-            products.add(element);
-          }
-        }
-      });
-      hoogvlietProducts.forEach((element) {
-        if (element.subCategory != null) {
-          if (element.subCategory!.toLowerCase() == subCategory.toLowerCase()) {
-            products.add(element);
-          }
-        }
-      });
-    } else if (store != "Store" && brand == "Brand") {
-      switch (store) {
-        case "Albert":
-          albertProducts.forEach((element) {
-            if (element.subCategory != null) {
-              if (element.subCategory!.toLowerCase() == subCategory.toLowerCase()) {
-                products.add(element);
-              }
-            }
-          });
-          break;
-        case "Jumbo":
-          jumboProducts.forEach((element) {
-            if (element.subCategory != null) {
-              if (element.subCategory!.toLowerCase() == subCategory.toLowerCase()) {
-                products.add(element);
-              }
-            }
-          });
-          break;
-        case "Hoogvliet":
-          hoogvlietProducts.forEach((element) {
-            if (element.subCategory != null) {
-              if (element.subCategory!.toLowerCase() == subCategory.toLowerCase()) {
-                products.add(element);
-              }
-            }
-          });
-          break;
-      }
-    } else if (store == "Store" && brand != "Brand") {
-      albertProducts.forEach((element) {
-        if (element.storeName != "" && (element.subCategory != null)) {
-          if (element.storeName.toLowerCase() == brand.toLowerCase() &&
-              (element.subCategory!.toLowerCase() == subCategory.toLowerCase())) {
-            products.add(element);
-          }
-        }
-      });
-      jumboProducts.forEach((element) {
-        if (element.storeName != "" && (element.subCategory != null)) {
-          if (element.storeName.toLowerCase() == brand.toLowerCase() &&
-              (element.subCategory!.toLowerCase() == subCategory.toLowerCase())) {
-            products.add(element);
-          }
-        }
-      });
-      hoogvlietProducts.forEach((element) {
-        if (element.storeName != "" && (element.subCategory != null)) {
-          if (element.storeName.toLowerCase() == brand.toLowerCase() &&
-              (element.subCategory!.toLowerCase() == subCategory.toLowerCase())) {
-            products.add(element);
-          }
-        }
-      });
-    } else {
-      switch (store) {
-        case "Albert":
-          albertProducts.forEach((element) {
-            if (element.storeName != "" && (element.subCategory != null)) {
-              if (element.storeName.toLowerCase() == brand.toLowerCase() &&
-                  (element.subCategory!.toLowerCase() == subCategory.toLowerCase())) {
-                products.add(element);
-              }
-            }
-          });
-          break;
-        case "Jumbo":
-          jumboProducts.forEach((element) {
-            if (element.storeName != "" && (element.subCategory != null)) {
-              if (element.storeName.toLowerCase() == brand.toLowerCase() &&
-                  (element.subCategory!.toLowerCase() == subCategory.toLowerCase())) {
-                products.add(element);
-              }
-            }
-          });
-          break;
-        case "Hoogvliet":
-          hoogvlietProducts.forEach((element) {
-            if (element.storeName != "" && (element.subCategory != null)) {
-              if (element.storeName.toLowerCase() == brand.toLowerCase() &&
-                  (element.subCategory!.toLowerCase() == subCategory.toLowerCase())) {
-                products.add(element);
-              }
-            }
-          });
-          break;
-      }
-    }
+      products.addAll(albertProducts.where((product) => product.subCategory!.trim() == subCategory.trim()));
+      products.addAll(jumboProducts.where((product) => product.subCategory!.trim() == subCategory.trim()));
+      products.addAll(hoogvlietProducts.where((product) => product.subCategory!.trim() == subCategory.trim()));
     return products;
   }
 

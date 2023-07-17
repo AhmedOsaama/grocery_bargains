@@ -18,10 +18,12 @@ import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/generic_field.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/screens/product_detail_screen.dart';
+import 'package:translator/translator.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../models/product.dart';
 import '../../utils/tracking_utils.dart';
+import '../widgets/discountItem.dart';
 
 class CategoryScreen extends StatefulWidget {
   const CategoryScreen({Key? key, required this.category}) : super(key: key);
@@ -31,7 +33,6 @@ class CategoryScreen extends StatefulWidget {
 }
 
 class _CategoryScreenState extends State<CategoryScreen> {
-  late Future getProductsByCategoryFuture;
 
   var isLoading = false;
   TextStyle textButtonStyle = TextStylesInter.textViewRegular16.copyWith(color: mainPurple);
@@ -46,11 +47,14 @@ class _CategoryScreenState extends State<CategoryScreen> {
   List<Widget> chips = [];
   List<Widget> chipsToShow = [];
   int maxChipsToShow = 6;
+  List<Product> products = [];
+  List results = [];
+
   @override
   void initState() {
     TrackingUtils().trackPageVisited("Category screen", FirebaseAuth.instance.currentUser!.uid);
-    getProductsByCategoryFuture =
-        Provider.of<ProductsProvider>(context, listen: false).getProductsByCategory(widget.category, "Store", "Brand");
+    var productProvider = Provider.of<ProductsProvider>(context,listen: false);
+    products = productProvider.getProductsByCategory(widget.category);
     super.initState();
   }
 
@@ -58,19 +62,36 @@ class _CategoryScreenState extends State<CategoryScreen> {
   void didChangeDependencies() {
     Provider.of<ProductsProvider>(context, listen: false).categories.forEach((element) {
       if (element.category == widget.category) {
-        categoryName = context.locale.languageCode == "nl" ? element.category : element.englishCategory;
+        categoryName = element.category;
         var subCategoriesList = element.subcategories.split(","); //dutch subcategories
-        var subCategoriesEnglishList = element.subCategoriesEnglish.split(",");
         if (subCategoriesList.isNotEmpty) {
           subCategoriesList.forEach((subCategory) {
             var subCategoryIndex = subCategoriesList.indexOf(subCategory);
-            var subCategoryLabel = context.locale.languageCode == "nl"
-                ? subCategory
-                : subCategoriesEnglishList.elementAt(subCategoryIndex);
+            var subCategoryLabel = subCategory;
             chips.add(Padding(
               padding: const EdgeInsets.only(right: 8),
               child: ChoiceChip(
-                label: Text(subCategoryLabel),
+                label: FutureBuilder(
+                    future: GoogleTranslator().translate(subCategoryLabel, to: "nl"),
+                    builder: (context, snapshot) {
+                      if(snapshot.connectionState == ConnectionState.waiting) return Container();
+                      var translatedSubCategory = "";
+                      try {
+                        translatedSubCategory = snapshot.data!.text;
+                      }catch(e){
+                        translatedSubCategory = "N/A";
+                        print(e);
+                      }
+                      if (context.locale.languageCode == "nl") {
+                        return Flexible(
+                          child: Text(
+                            translatedSubCategory,
+                          ),
+                        );
+                      }
+
+                      return Text(subCategoryLabel);
+                    }),
                 labelStyle: const TextStyle(color: mainPurple),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(6))),
                 backgroundColor: purple10,
@@ -164,12 +185,46 @@ class _CategoryScreenState extends State<CategoryScreen> {
     );
   }
 
-  List<Product> products = [];
+  List filterProducts(List results, List products, ProductsProvider productProvider) {
+    if (sortDropdownValue == "Sort" && storeDropdownValue == "Store") {
+      results = List.from(products);
+    }
+    if (sortDropdownValue != "Sort" && storeDropdownValue == "Store") {
+      results = productProvider.sortProducts(sortDropdownValue, results);
+    }
+    if (sortDropdownValue == "Sort" && storeDropdownValue != "Store") {
+      if (storeDropdownValue == "Albert Heijn") {
+        results =
+            products.where((product) => product?.storeName == "Albert").toList();
+      }else{
+        results =
+            products.where((product) => product?.storeName == storeDropdownValue).toList();
+      }
+    }
+    if (sortDropdownValue != "Sort" && storeDropdownValue != "Store") {
+      if (storeDropdownValue == "Albert Heijn") {
+        results =
+            products.where((product) => product?.storeName == "Albert").toList();
+      }else{
+        results =
+            products.where((product) => product?.storeName == storeDropdownValue).toList();
+      }
+      results = productProvider.sortProducts(sortDropdownValue, results);
+    }
+    TrackingUtils().trackSearchPerformed("$sortDropdownValue, $storeDropdownValue", FirebaseAuth.instance.currentUser!.uid, "");
+    return results;
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    var productProvider = Provider.of<ProductsProvider>(context,listen: false);
+    results = filterProducts(results, products, productProvider);
     return Scaffold(
       backgroundColor: white,
-      appBar: SearchAppBar(isBackButton: true,),
+      appBar: SearchAppBar(
+        isBackButton: true,
+      ),
       body: WillPopScope(
         onWillPop: () {
           FocusScope.of(context).unfocus();
@@ -182,7 +237,101 @@ class _CategoryScreenState extends State<CategoryScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                30.ph,
+                FutureBuilder(
+                    future: GoogleTranslator().translate(categoryName, to: "nl"),
+                    builder: (context, snapshot) {
+                      if(snapshot.connectionState == ConnectionState.waiting) return Container();
+                      var translatedCategory = "";
+                      try{
+                        translatedCategory = snapshot.data!.text;
+                      }catch(e){
+                        translatedCategory = "N/A";
+                        print(e);
+                      }
+                      if (context.locale.languageCode == "nl") {
+                        return Flexible(
+                          child: Text(
+                            translatedCategory,
+                            style: TextStylesInter.textViewSemiBold16.copyWith(color: black2),
+                          ),
+                        );
+                      }
+                      return Text(
+                        categoryName,
+                        style: TextStylesInter.textViewSemiBold16.copyWith(color: black2),
+                      );
+                    }),
+                16.ph,
+                Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 15.w),
+                        decoration: BoxDecoration(color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r))),
+                        child: DropdownButton<String>(
+                          value: sortDropdownValue,
+                          icon: Icon(
+                            Icons.keyboard_arrow_down,
+                            color: white,
+                          ),
+                          iconSize: 24,
+                          underline: Container(),
+                          dropdownColor: orange70,
+                          style: TextStyles.textViewMedium12,
+                          borderRadius: BorderRadius.circular(4.r),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              sortDropdownValue = newValue!;
+                            });
+                          },
+                          items:
+                          <String>['Sort', 'Low price', 'High price'].map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(
+                                value,
+                                style: TextStyles.textViewMedium12,
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      8.pw,
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 15.w),
+                        decoration: BoxDecoration(color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r))),
+                        child: Center(
+                          child: DropdownButton<String>(
+                            value: storeDropdownValue,
+                            icon: Icon(
+                              Icons.keyboard_arrow_down,
+                              color: white,
+                            ),
+                            iconSize: 24,
+                            dropdownColor: orange70,
+                            underline: Container(),
+                            style: TextStyles.textViewMedium12,
+                            borderRadius: BorderRadius.circular(4.r),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                storeDropdownValue = newValue!;
+                              });
+                            },
+                            items: <String>['Store', 'Albert Heijn', 'Jumbo', 'Hoogvliet']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(
+                                  value,
+                                  style: TextStyles.textViewMedium12,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                      8.pw,
+                    ]),
+                20.ph,
                 Text(
                   "Subcategories".tr(),
                   style: TextStylesInter.textViewSemiBold16.copyWith(color: black2),
@@ -195,336 +344,39 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           style: TextStylesInter.textViewMedium10.copyWith(color: black),
                         ),
                       ),
-                16.ph,
-                16.ph,
-                Text(
-                  categoryName,
-                  style: TextStylesInter.textViewSemiBold16.copyWith(color: black2),
-                ),
                 10.ph,
-                SingleChildScrollView(
-                  child: Container(
-                    //  height: ScreenUtil().screenHeight,
-                    child: FutureBuilder(
-                      future: getProductsByCategoryFuture,
-                      builder: (ctx, snapshot) {
-                        products = snapshot.data ?? [];
-                        if (sortDropdownValue == "Sort" &&
-                            brandDropdownValue == "Brand" &&
-                            storeDropdownValue == "Store") {
-                          // products = Provider.of<ProductsProvider>(context)
-                          //     .getProductsByCategory(
-                          //         widget.category, "Store", "Brand");
-                        }
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          // if (Provider.of<ProductsProvider>(context,
-                          //             listen: false)
-                          //         .albertProducts
-                          //         .isEmpty &&
-                          //     Provider.of<ProductsProvider>(context,
-                          //             listen: false)
-                          //         .jumboProducts
-                          //         .isEmpty &&
-                          //     Provider.of<ProductsProvider>(context,
-                          //             listen: false)
-                          //         .hoogvlietProducts
-                          //         .isEmpty) {
-                          return Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        } else if (products.isEmpty)
-                          return Column(
-                            children: [30.ph, Center(child: Text("NoProductsFound".tr()))],
-                          );
-                        return GridView.builder(
-                            physics: ScrollPhysics(),
-                            shrinkWrap: true,
-                            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                                maxCrossAxisExtent: 200,
-                                mainAxisExtent: 260,
-                                childAspectRatio: 0.67,
-                                crossAxisSpacing: 5,
-                                mainAxisSpacing: 5),
-                            itemCount: products.length,
-                            itemBuilder: (BuildContext ctx, index) {
-                              var oldPriceExists = true;
-                              if (products.elementAt(index).oldPrice == null) {
-                                products.elementAt(index).oldPrice = "";
-                                oldPriceExists = false;
-                              }
-                              if (products.elementAt(index).oldPrice == "") {
-                                oldPriceExists = false;
-                              }
-                              if (oldPriceExists) {
-                                if ((double.parse(products.elementAt(index).oldPrice!) -
-                                        double.parse(products.elementAt(index).price ?? products[index].price2!)) <=
-                                    0) {
-                                  oldPriceExists = false;
-                                }
-                              }
-
-                              if (products.elementAt(index).size2 == null) {
-                                products.elementAt(index).size2 = "";
-                              }
-
-                              Product p = Product(
-                                id: products.elementAt(index).id,
-                                oldPrice: products.elementAt(index).oldPrice ?? "",
-                                storeName: products.elementAt(index).storeName,
-                                name: products.elementAt(index).name,
-                                url: products.elementAt(index).url,
-                                category: products.elementAt(index).category,
-                                price: products.elementAt(index).price,
-                                size: products.elementAt(index).size,
-                                brand: products.elementAt(index).brand,
-                                imageURL: products.elementAt(index).imageURL,
-                                description: products.elementAt(index).description,
-                                size2: products.elementAt(index).size2 ?? "",
-                              );
-                              return GestureDetector(
-                                onTap: () async {
-                                  AppNavigator.push(
-                                      context: context,
-                                      screen: ProductDetailScreen(
-                                        productId: p.id,
-                                        productBrand: p.brand,
-                                        oldPrice: p.oldPrice ?? "",
-                                        storeName: p.storeName,
-                                        productName: p.name,
-                                        imageURL: p.imageURL,
-                                        description: p.description,
-                                        size1: p.size,
-                                        size2: p.size2 ?? "",
-                                        price1: double.tryParse(p.price ?? "") ?? 0.0,
-                                        price2: double.tryParse(p.price2 ?? "") ?? 0.0,
-                                      ));
-                                },
-                                child: Container(
-                                  height: 250.h,
-                                  width: 175.w,
-                                  decoration: BoxDecoration(
-                                    boxShadow: [
-                                      new BoxShadow(color: shadowColor, blurRadius: 20.0, offset: Offset(0, 20)),
-                                    ],
-                                  ),
-                                  child: Card(
-                                    elevation: 50,
-                                    shadowColor: shadowColor,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          flex: 4,
-                                          child: Column(
-                                            children: [
-                                              23.ph,
-                                              Row(
-                                                children: [
-                                                  40.pw,
-                                                  Container(
-                                                    width: 52.w,
-                                                    height: 42.h,
-                                                    child: CachedNetworkImage(
-                                                      imageUrl: products.elementAt(index).imageURL,
-                                                      placeholder: (context, url) => CircularProgressIndicator(),
-                                                      errorWidget: (context, url, error) =>
-                                                          Icon(Icons.no_photography),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              Expanded(
-                                                child: Column(
-                                                  mainAxisAlignment: MainAxisAlignment.start,
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    15.ph,
-                                                    Row(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      children: [
-                                                        25.pw,
-                                                        Expanded(
-                                                          child: SizedBox(
-                                                            height: 40.h,
-                                                            width: ScreenUtil().screenWidth * 0.3,
-                                                            child: Text(
-                                                              products.elementAt(index).name,
-                                                              style: TextStylesInter.textViewBold16
-                                                                  .copyWith(color: black2),
-                                                              maxLines: 2,
-                                                              overflow: TextOverflow.ellipsis,
-                                                              textAlign: TextAlign.start,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    5.ph,
-                                                    Row(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      children: [
-                                                        25.pw,
-                                                        Text(
-                                                          products.elementAt(index).size,
-                                                          style: TextStylesInter.textViewMedium12
-                                                              .copyWith(color: darkGrey),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    30.ph,
-                                                    Row(
-                                                      mainAxisAlignment: MainAxisAlignment.start,
-                                                      children: [
-                                                        20.pw,
-                                                        Text(
-                                                          "€" +
-                                                              (products.elementAt(index).price ??
-                                                                  products[index].price2!),
-                                                          style: TextStylesInter.textViewMedium15
-                                                              .copyWith(color: black2),
-                                                          textAlign: TextAlign.left,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    5.ph,
-                                                    oldPriceExists
-                                                        ? Row(
-                                                            mainAxisAlignment: MainAxisAlignment.start,
-                                                            children: [
-                                                              20.pw,
-                                                              Text(
-                                                                "€" + products.elementAt(index).oldPrice!,
-                                                                style: TextStylesInter.textViewMedium10.copyWith(
-                                                                    color: black2,
-                                                                    decoration: TextDecoration.lineThrough),
-                                                              ),
-                                                              (double.parse(products.elementAt(index).oldPrice!) -
-                                                                          double.parse(
-                                                                              products.elementAt(index).price ??
-                                                                                  products[index].price2!)) >
-                                                                      0
-                                                                  ? Text(
-                                                                      " €" +
-                                                                          (double.parse(products
-                                                                                      .elementAt(index)
-                                                                                      .oldPrice!) -
-                                                                                  double.parse(products
-                                                                                          .elementAt(index)
-                                                                                          .price ??
-                                                                                      products[index].price2!))
-                                                                              .toStringAsFixed(2) +
-                                                                          "Less".tr(),
-                                                                      style: TextStylesInter.textViewMedium10
-                                                                          .copyWith(color: green),
-                                                                    )
-                                                                  : Container()
-                                                            ],
-                                                          )
-                                                        : Container(),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Expanded(
-                                          flex: 2,
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Padding(
-                                                padding: const EdgeInsets.only(top: 15.0),
-                                                child: PopupMenuButton(
-                                                    position: PopupMenuPosition.under,
-                                                    color: white,
-                                                    shape: RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(8.r)),
-                                                    child: SvgPicture.asset(chatShare),
-                                                    itemBuilder: (context) {
-                                                      List<PopupMenuEntry<dynamic>> items = [];
-                                                      Provider.of<ChatlistsProvider>(context, listen: false)
-                                                          .chatlists
-                                                          .forEach((e) => items.add(PopupMenuItem(
-                                                                onTap: () async {
-                                                                  await Provider.of<ChatlistsProvider>(context,
-                                                                          listen: false)
-                                                                      .shareItemAsMessage(
-                                                                          itemName: products[index].name,
-                                                                          itemImage:
-                                                                              products.elementAt(index).imageURL,
-                                                                          storeName:
-                                                                              products.elementAt(index).storeName,
-                                                                          itemSize: products.elementAt(index).size,
-                                                                          itemPrice:
-                                                                              products.elementAt(index).price,
-                                                                          itemDescription:
-                                                                              products.elementAt(index).description,
-                                                                          itemId: products.elementAt(index).id,
-                                                                          itemOldPrice:
-                                                                              products.elementAt(index).oldPrice,
-                                                                          listId: e.id);
-                                                                },
-                                                                child: Text(
-                                                                  e.name,
-                                                                  style: TextStyles.textViewSemiBold12
-                                                                      .copyWith(color: black2),
-                                                                ),
-                                                              )));
-                                                      return items;
-                                                    }),
-                                              ),
-                                              Column(
-                                                children: [
-                                                  GestureDetector(
-                                                    onTap: () {
-                                                      AppNavigator.push(
-                                                          context: context,
-                                                          screen: ProductDetailScreen(
-                                                            productId: p.id,
-                                                            productBrand: p.brand,
-                                                            oldPrice: p.oldPrice ?? "",
-                                                            storeName: p.storeName,
-                                                            productName: p.name,
-                                                            imageURL: p.imageURL,
-                                                            description: p.description,
-                                                            size1: p.size,
-                                                            size2: p.size2 ?? "",
-                                                            price1: double.tryParse(p.price ?? "") ?? 0.0,
-                                                            price2: double.tryParse(p.price2 ?? "") ?? 0.0,
-                                                          ));
-                                                    },
-                                                    child: Container(
-                                                      padding: EdgeInsets.all(5),
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(10),
-                                                        border: Border.all(color: borderColor),
-                                                      ),
-                                                      child: Icon(
-                                                        Icons.arrow_forward_ios,
-                                                        color: mainPurple,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  20.ph
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        10.pw
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              );
-                            });
-                      },
-                    ),
-                  ),
-                ),
+                    products.isEmpty ?
+                       Column(
+                        children: [30.ph, Center(child: Text("NoProductsFound".tr()))],
+                      ) :
+                    GridView.builder(
+                        physics: ScrollPhysics(), // to disable GridView's scrolling
+                        shrinkWrap: true,
+                        // padding: EdgeInsets.symmetric(horizontal: 15.w),
+                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 200,
+                            mainAxisExtent: 260,
+                            childAspectRatio: 0.67,
+                            crossAxisSpacing: 5,
+                            mainAxisSpacing: 5),
+                        itemCount: results.length,
+                        itemBuilder: (BuildContext ctx, index) {
+                          Product p = Product(
+                              id: results.elementAt(index).id,
+                              oldPrice: results.elementAt(index).oldPrice ?? "",
+                              storeName: results.elementAt(index).storeName,
+                              name: results.elementAt(index).name,
+                              brand: results.elementAt(index).brand,
+                              url: results.elementAt(index).url,
+                              category: results.elementAt(index).category,
+                              price: results.elementAt(index).price,
+                              price2: results.elementAt(index).price2 ?? "",
+                              size: results.elementAt(index).size,
+                              imageURL: results.elementAt(index).imageURL,
+                              description: results.elementAt(index).description,
+                              size2: results.elementAt(index).size2 ?? "");
+                          return DiscountItem(product: p, inGridView: false,);
+                        }),
                 10.ph,
               ],
             ),
@@ -542,7 +394,4 @@ class _CategoryScreenState extends State<CategoryScreen> {
     );
   }
 
-  Future fetch(int startingIndex) {
-    return Provider.of<ProductsProvider>(context, listen: false).getProducts(startingIndex);
-  }
 }

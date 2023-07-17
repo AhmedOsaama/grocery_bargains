@@ -28,3 +28,5 @@ const String signinDialog = "$imgPath/signindialog.png";
 const String personAva = "$imgPath/personAva.png";
 const String groceryList = "$imgPath/grocery_list.png";
 const String messagesPlaceholder = "$imgPath/messages.svg";
+const String albertLogo = "$imgPath/albert_logo.png";
+const String hoogvlietLogo = "$imgPath/hoogvliet_logo_2.png";

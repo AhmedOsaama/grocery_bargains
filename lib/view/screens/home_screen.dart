@@ -37,6 +37,7 @@ import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:bargainb/view/screens/product_detail_screen.dart';
 import 'package:shimmer_animation/shimmer_animation.dart';
 import 'package:showcaseview/showcaseview.dart';
+import 'package:translator/translator.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../models/product.dart';
@@ -345,18 +346,36 @@ class _HomeScreenState extends State<HomeScreen> {
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
-                                              Image.asset(
+                                              Image.network(
                                                 element.image,
                                                 width: 65.w,
                                                 height: 65.h,
+                                                errorBuilder: (_,p,ctx){
+                                                  return SvgPicture.asset(imageError);
+                                                },
                                               ),
-                                              Text(
-                                                context.locale.languageCode != "nl"
-                                                    ? element.englishCategory
-                                                    : element.category,
-                                                style: TextStyles.textViewMedium10.copyWith(color: gunmetal),
-                                                textAlign: TextAlign.center,
-                                                maxLines: 3,
+                                              FutureBuilder(
+                                                  future: GoogleTranslator().translate(element.category, to: "nl"),
+                                                  builder: (context, snapshot) {
+                                                    if(snapshot.connectionState == ConnectionState.waiting) return Container();
+                                                    var translatedCategory = snapshot.data!.text;
+                                                    if(context.locale.languageCode == "nl"){
+                                                      return Flexible(
+                                                        child: Text(
+                                                          translatedCategory,
+                                                          maxLines: 3,
+                                                          textAlign: TextAlign.center,
+                                                          style: TextStyles.textViewMedium10.copyWith(color: gunmetal),
+                                                        ),
+                                                      );
+                                                    }
+                                                  return Text(
+                                                    element.category,
+                                                    style: TextStyles.textViewMedium10.copyWith(color: gunmetal),
+                                                    textAlign: TextAlign.center,
+                                                    maxLines: 3,
+                                                  );
+                                                }
                                               )
                                             ],
                                           ),

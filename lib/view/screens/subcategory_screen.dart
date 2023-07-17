@@ -40,99 +40,174 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
 
   int? _selectedIndex;
   String sortDropdownValue = 'Sort';
-  String brandDropdownValue = 'Brand';
   String storeDropdownValue = 'Store';
+  List products = [];
+  List results = [];
 
   @override
   void initState() {
-    getProductsBySubCategoryFuture = Provider.of<ProductsProvider>(context, listen: false)
-        .getProductsBySubCategory(widget.subCategory, "Store", "Brand");
+    var productProvider = Provider.of<ProductsProvider>(context,listen: false);
+    products = productProvider.getProductsBySubCategory(widget.subCategory);
     TrackingUtils().trackPageVisited("Subcategory Screen", FirebaseAuth.instance.currentUser!.uid);
     super.initState();
   }
 
-  List<Product> products = [];
+  List filterProducts(List results, List products, ProductsProvider productProvider) {
+    if (sortDropdownValue == "Sort" && storeDropdownValue == "Store") {
+      results = List.from(products);
+    }
+    if (sortDropdownValue != "Sort" && storeDropdownValue == "Store") {
+      results = productProvider.sortProducts(sortDropdownValue, results);
+    }
+    if (sortDropdownValue == "Sort" && storeDropdownValue != "Store") {
+      if (storeDropdownValue == "Albert Heijn") {
+        results =
+            products.where((product) => product?.storeName == "Albert").toList();
+      }else{
+        results =
+            products.where((product) => product?.storeName == storeDropdownValue).toList();
+      }
+    }
+    if (sortDropdownValue != "Sort" && storeDropdownValue != "Store") {
+      if (storeDropdownValue == "Albert Heijn") {
+        results =
+            products.where((product) => product?.storeName == "Albert").toList();
+      }else{
+        results =
+            products.where((product) => product?.storeName == storeDropdownValue).toList();
+      }
+      results = productProvider.sortProducts(sortDropdownValue, results);
+    }
+    TrackingUtils().trackSearchPerformed("$sortDropdownValue, $storeDropdownValue", FirebaseAuth.instance.currentUser!.uid, "");
+    return results;
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    var productProvider = Provider.of<ProductsProvider>(context,listen: false);
+     results = filterProducts(results, products, productProvider);
     return Scaffold(
       backgroundColor: white,
       appBar: SearchAppBar(isBackButton: true,),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.only(right: 15.w),
+          padding: EdgeInsets.symmetric(horizontal: 15.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 30.h,
-              ),
-              15.ph,
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15.w),
-                child: Text(
-                  widget.subCategoryLabel,
-                  style: TextStylesInter.textViewSemiBold16.copyWith(color: black2),
-                ),
-              ),
-              10.ph,
-              Container(
-                //  height: ScreenUtil().screenHeight,
-                child: FutureBuilder(
-                  future: getProductsBySubCategoryFuture,
-                  builder: (ctx, snapshot) {
-                    products = snapshot.data ?? [];
-                    if (sortDropdownValue == "Sort" && brandDropdownValue == "Brand" && storeDropdownValue == "Store") {
-                      // products = provider.getProductsBySubCategory(
-                      //     widget.subCategory,
-                      //     storeDropdownValue,
-                      //     brandDropdownValue);
-                    }
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (products.isEmpty) {
-                      return Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            50.ph,
-                            Text("NoProductsFound".tr()),
-                          ],
+              Row(
+                  children: [
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15.w),
+                  decoration: BoxDecoration(color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r))),
+                  child: DropdownButton<String>(
+                    value: sortDropdownValue,
+                    icon: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: white,
+                    ),
+                    iconSize: 24,
+                    underline: Container(),
+                    dropdownColor: orange70,
+                    style: TextStyles.textViewMedium12,
+                    borderRadius: BorderRadius.circular(4.r),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        sortDropdownValue = newValue!;
+                      });
+                    },
+                    items:
+                    <String>['Sort', 'Low price', 'High price'].map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(
+                          value,
+                          style: TextStyles.textViewMedium12,
                         ),
                       );
-                    }
-                    return GridView.builder(
-                        physics: ScrollPhysics(), // to disable GridView's scrolling
-                        shrinkWrap: true,
-                        padding: EdgeInsets.symmetric(horizontal: 15.w),
-                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 200,
-                            mainAxisExtent: 260,
-                            childAspectRatio: 0.67,
-                            crossAxisSpacing: 5,
-                            mainAxisSpacing: 5),
-                        itemCount: products.length,
-                        itemBuilder: (BuildContext ctx, index) {
-                          Product p = Product(
-                              id: products.elementAt(index).id,
-                              oldPrice: products.elementAt(index).oldPrice ?? "",
-                              storeName: products.elementAt(index).storeName,
-                              name: products.elementAt(index).name,
-                              brand: products.elementAt(index).brand,
-                              url: products.elementAt(index).url,
-                              category: products.elementAt(index).category,
-                              price: products.elementAt(index).price,
-                              price2: products.elementAt(index).price2 ?? "",
-                              size: products.elementAt(index).size,
-                              imageURL: products.elementAt(index).imageURL,
-                              description: products.elementAt(index).description,
-                              size2: products.elementAt(index).size2 ?? "");
-                          return DiscountItem(product: p, inGridView: false,);
-                        });
-                  },
+                    }).toList(),
+                  ),
                 ),
+                8.pw,
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15.w),
+                  decoration: BoxDecoration(color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r))),
+                  child: Center(
+                    child: DropdownButton<String>(
+                      value: storeDropdownValue,
+                      icon: Icon(
+                        Icons.keyboard_arrow_down,
+                        color: white,
+                      ),
+                      iconSize: 24,
+                      dropdownColor: orange70,
+                      underline: Container(),
+                      style: TextStyles.textViewMedium12,
+                      borderRadius: BorderRadius.circular(4.r),
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          storeDropdownValue = newValue!;
+                        });
+                      },
+                      items: <String>['Store', 'Albert Heijn', 'Jumbo', 'Hoogvliet']
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(
+                            value,
+                            style: TextStyles.textViewMedium12,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+                8.pw,
+              ]),
+              15.ph,
+              Text(
+                widget.subCategoryLabel,
+                style: TextStylesInter.textViewSemiBold16.copyWith(color: black2),
               ),
+              10.ph,
+              results.isEmpty ?
+                     Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          50.ph,
+                          Text("NoProductsFound".tr()),
+                        ],
+                      ),
+                    ) :
+                   GridView.builder(
+                      physics: ScrollPhysics(), // to disable GridView's scrolling
+                      shrinkWrap: true,
+                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 200,
+                          mainAxisExtent: 260,
+                          childAspectRatio: 0.67,
+                          crossAxisSpacing: 5,
+                          mainAxisSpacing: 5),
+                      itemCount: results.length,
+                      itemBuilder: (BuildContext ctx, index) {
+                        Product p = Product(
+                            id: results.elementAt(index).id,
+                            oldPrice: results.elementAt(index).oldPrice ?? "",
+                            storeName: results.elementAt(index).storeName,
+                            name: results.elementAt(index).name,
+                            brand: results.elementAt(index).brand,
+                            url: results.elementAt(index).url,
+                            category: results.elementAt(index).category,
+                            price: results.elementAt(index).price,
+                            price2: results.elementAt(index).price2 ?? "",
+                            size: results.elementAt(index).size,
+                            imageURL: results.elementAt(index).imageURL,
+                            description: results.elementAt(index).description,
+                            size2: results.elementAt(index).size2 ?? "");
+                        return DiscountItem(product: p, inGridView: false,);
+                      }),
               10.ph,
             ],
           ),

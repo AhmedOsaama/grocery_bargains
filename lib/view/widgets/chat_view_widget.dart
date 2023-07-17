@@ -44,8 +44,9 @@ import 'message_bubble.dart';
 class ChatView extends StatefulWidget {
   final String listId;
   final Function showInviteMembersDialog;
+  final bool? isExpandingChatlist;
 
-  ChatView({Key? key, required this.listId, required this.showInviteMembersDialog}) : super(key: key);
+  ChatView({Key? key, required this.listId, required this.showInviteMembersDialog, this.isExpandingChatlist}) : super(key: key);
 
   @override
   State<ChatView> createState() => _ChatViewState();
@@ -75,6 +76,8 @@ class _ChatViewState extends State<ChatView> {
     final fbm = FirebaseMessaging.instance;
     fbm.requestPermission();
     fbm.subscribeToTopic(widget.listId);
+    isExpandingChatlist = widget.isExpandingChatlist ?? false;
+
 
     super.initState();
   }
@@ -380,7 +383,7 @@ class _ChatViewState extends State<ChatView> {
                                                 onPressed: () async {
                                                   SharedPreferences pref = await SharedPreferences.getInstance();
                                                   return showSearch(
-                                                      context: context, delegate: MySearchDelegate(pref, true));
+                                                      context: context, delegate: MySearchDelegate(pref: pref));
                                                 },
                                                 child: Text(LocaleKeys.addItem.tr()),
                                                 color: mainPurple,
@@ -587,7 +590,7 @@ class _ChatViewState extends State<ChatView> {
                                                     onPressed: () async {
                                                       SharedPreferences pref = await SharedPreferences.getInstance();
                                                       return showSearch(
-                                                          context: context, delegate: MySearchDelegate(pref, true));
+                                                          context: context, delegate: MySearchDelegate(pref: pref));
                                                     },
                                                     child: Text(LocaleKeys.addItem.tr()),
                                                     color: mainPurple,
@@ -616,6 +619,61 @@ class _ChatViewState extends State<ChatView> {
                                             child: ListView(
                                               padding: EdgeInsets.zero,
                                               children: [
+                                                Column(
+                                                  children: quicklyAddedItems.map((item) {
+                                                    return ChatlistItem(item: item);
+                                                  }).toList(),
+                                                ),
+                                                5.ph,
+                                                GenericField(
+                                                  controller: quickItemController,
+                                                  onSubmitted: (value) {
+                                                    Provider.of<ChatlistsProvider>(context, listen: false).addItemToList(
+                                                        ListItem(
+                                                            id: -1,
+                                                            storeName: "",
+                                                            imageURL: '',
+                                                            isChecked: false,
+                                                            name: value.trim(),
+                                                            price: "0.0",
+                                                            quantity: 0,
+                                                            size: '',
+                                                            text: value.trim(),
+                                                            brand: ''),
+                                                        widget.listId);
+                                                    quickItemController.clear();
+                                                  },
+                                                  hintText: LocaleKeys.addSomethingQuickly.tr(),
+                                                  contentPadding: EdgeInsets.only(left: 10),
+                                                  hintStyle:
+                                                      TextStylesInter.textViewRegular12.copyWith(color: blackSecondary),
+                                                  fillColor: lightPurple,
+                                                  suffixIcon: TextButton(
+                                                    onPressed: () async {
+                                                      await Provider.of<ChatlistsProvider>(context, listen: false)
+                                                          .addItemToList(
+                                                              ListItem(
+                                                                  id: -1,
+                                                                  storeName: "",
+                                                                  imageURL: '',
+                                                                  isChecked: false,
+                                                                  name: quickItemController.text.trim(),
+                                                                  price: "0.0",
+                                                                  quantity: 0,
+                                                                  size: '',
+                                                                  text: quickItemController.text.trim(),
+                                                                  brand: ''),
+                                                              widget.listId);
+                                                      quickItemController.clear();
+                                                      TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Add quick item", DateTime.now().toUtc().toString());
+                                                    },
+                                                    child: Text(
+                                                      LocaleKeys.add.tr(),
+                                                      style: TextStylesDMSans.textViewBold12.copyWith(color: mainPurple),
+                                                    ),
+                                                  ),
+                                                ),
+                                                15.ph,
                                                 if (albertItems.isNotEmpty) ...[
                                                   Text(
                                                     "Albert Heijn",
@@ -655,74 +713,6 @@ class _ChatViewState extends State<ChatView> {
                                                     }).toList(),
                                                   ),
                                                 ],
-                                                Divider(
-                                                  thickness: 2,
-                                                  color: Colors.black,
-                                                ),
-                                                Text(
-                                                  "Quick Items",
-                                                  style: TextStylesInter.textViewRegular12.copyWith(color: greyText),
-                                                ),
-                                                Column(
-                                                  children: quicklyAddedItems.map((item) {
-                                                    return ChatlistItem(item: item);
-                                                  }).toList(),
-                                                ),
-                                                5.ph,
-                                                Text(
-                                                  LocaleKeys.quickAdd.tr(),
-                                                  style:
-                                                      TextStylesInter.textViewSemiBold12.copyWith(color: blackSecondary),
-                                                ),
-                                                5.ph,
-                                                GenericField(
-                                                  controller: quickItemController,
-                                                  onSubmitted: (value) {
-                                                    Provider.of<ChatlistsProvider>(context, listen: false).addItemToList(
-                                                        ListItem(
-                                                            id: -1,
-                                                            storeName: "",
-                                                            imageURL: '',
-                                                            isChecked: false,
-                                                            name: value.trim(),
-                                                            price: "0.0",
-                                                            quantity: 0,
-                                                            size: '',
-                                                            text: value.trim(),
-                                                            brand: ''),
-                                                        widget.listId);
-                                                    quickItemController.clear();
-                                                  },
-                                                  hintText: LocaleKeys.addSomethingQuickly.tr(),
-                                                  hintStyle:
-                                                      TextStylesInter.textViewRegular12.copyWith(color: blackSecondary),
-                                                  fillColor: lightPurple,
-                                                  suffixIcon: TextButton(
-                                                    onPressed: () async {
-                                                      await Provider.of<ChatlistsProvider>(context, listen: false)
-                                                          .addItemToList(
-                                                              ListItem(
-                                                                  id: -1,
-                                                                  storeName: "",
-                                                                  imageURL: '',
-                                                                  isChecked: false,
-                                                                  name: quickItemController.text.trim(),
-                                                                  price: "0.0",
-                                                                  quantity: 0,
-                                                                  size: '',
-                                                                  text: quickItemController.text.trim(),
-                                                                  brand: ''),
-                                                              widget.listId);
-                                                      quickItemController.clear();
-                                                      TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Add quick item", DateTime.now().toUtc().toString());
-                                                    },
-                                                    child: Text(
-                                                      LocaleKeys.add.tr(),
-                                                      style: TextStylesDMSans.textViewBold12.copyWith(color: mainPurple),
-                                                    ),
-                                                  ),
-                                                ),
-                                                15.ph,
                                               ],
                                             ),
                                           );
@@ -753,6 +743,7 @@ class _ChatViewState extends State<ChatView> {
                             suffixIcon: Icon(
                               Icons.emoji_emotions_outlined,
                             ),
+                            contentPadding: EdgeInsets.only(left: 10),
                             borderRaduis: 99999,
                             onSubmitted: (_) async {
                               await Provider.of<ChatlistsProvider>(context, listen: false)
