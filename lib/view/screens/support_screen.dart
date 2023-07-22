@@ -97,7 +97,7 @@ class _SupportScreenState extends State<SupportScreen> {
                     userMessage = value!;
                   },
                   boxShadow: Utils.boxShadow[0],
-                  validation: (value) => Validator.text(value),
+                  validation: (value) => Validator.defaultValidator(value),
                   colorStyle: Color.fromRGBO(237, 237, 237, 1),
                 ),
                 30.ph,

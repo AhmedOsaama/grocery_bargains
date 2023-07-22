@@ -87,7 +87,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
                 Expanded(
                     child: GenericButton(
                   height: 60.h,
-                  onPressed: () async {
+                  onPressed: canCreate ? () async {
                     var id = await Provider.of<ChatlistsProvider>(context, listen: false)
                         .createChatList([], name: chatlistNameController.text.trim());
                     await pushNewScreen(context,
@@ -96,7 +96,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
                         ),
                         withNavBar: false);
                     AppNavigator.pop(context: context);
-                  },
+                  } : (){},
                   color: canCreate ? mainOrange : Colors.white,
                   borderRadius: BorderRadius.circular(6),
                   borderColor: grey,

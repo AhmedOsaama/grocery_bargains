@@ -99,8 +99,8 @@ class _HomeScreenState extends State<HomeScreen> {
     if (FirebaseAuth.instance.currentUser != null) {
       getUserDataFuture =
           FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
-    }
     TrackingUtils().trackPageVisited("Home screen", FirebaseAuth.instance.currentUser!.uid);
+    }
 
     getFirstTime();
   }
@@ -346,7 +346,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
-                                              Image.network(
+                                              Image.asset(
                                                 element.image,
                                                 width: 65.w,
                                                 height: 65.h,

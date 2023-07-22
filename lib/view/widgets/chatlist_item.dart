@@ -34,6 +34,8 @@ class _ChatlistItemState extends State<ChatlistItem> {
   var itemId;
   var itemBrand;
 
+  bool isClicked = false;
+
   @override
   void initState() {
     try {
@@ -82,18 +84,25 @@ class _ChatlistItemState extends State<ChatlistItem> {
               ),
               TextButton(
                 onPressed: () async {
-                  var pref = await SharedPreferences.getInstance();
-                  showSearch(context: context, delegate: MySearchDelegate(pref: pref),query: text);
+                  setState(() {
+                  isClicked = !isClicked;
+                  });
                 },
                 child: Text(
                   text,
-                  style: TextStylesInter.textViewRegular16.copyWith(decoration: TextDecoration.underline),
+                  style: TextStylesInter.textViewRegular16,
                 ),
               ),
+              if(isClicked)
+                IconButton(onPressed: () async {
+                  var pref = await SharedPreferences.getInstance();
+                  showSearch(context: context, delegate: MySearchDelegate(pref: pref),query: text);
+                }, icon: Icon(Icons.arrow_right,color: greyText,)),
               Spacer(),
-              IconButton(onPressed: (){
+              if(isClicked)
+                IconButton(onPressed: (){
                 FirebaseFirestore.instance.collection('/lists/${widget.item.reference.parent.parent!.id}/items').doc(widget.item.id).delete();
-              }, icon: Icon(Icons.delete_forever,color: Colors.red,))
+              }, icon: Icon(Icons.close,color: greyText,size: 18,))
             ],
           )
         : Column(
@@ -151,7 +160,7 @@ class _ChatlistItemState extends State<ChatlistItem> {
                                 ),
                               ),
                               Container(
-                                width: 130.w,
+                                width: 100.w,
                                 child: Text(
                                   itemName,
                                   overflow: TextOverflow.ellipsis,

@@ -86,14 +86,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ItemSize(price: widget.price1.toString(), size: widget.size1),
       ItemSize(price: widget.price2.toString(), size: widget.size2),
     ]);
-    // if (widget.price1 != null && widget.price2 != null) {
-    //   if (widget.price1! < widget.price2!) cheapest = widget.price1.toString();
-    //   if (widget.price2! < widget.price1!) cheapest = widget.price2.toString();
-    // }
-    // defaultPrice = widget.price1 == null ? widget.price2 as double : widget.price1 as double;
-    // print("CHEAPEST: $cheapest");
+    try{
     TrackingUtils().trackProductViewed(widget.productId.toString(), widget.storeName, FirebaseAuth.instance.currentUser!.uid);
     TrackingUtils().trackPageVisited("Product Screen", FirebaseAuth.instance.currentUser!.uid);
+
+    }catch(e){
+    }
 
     super.initState();
   }
@@ -125,6 +123,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void getComparisons() {
+    comparisonItems.clear();
     try {
       var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
       var chatlistsProvider = Provider.of<ChatlistsProvider>(context, listen: false);
@@ -135,7 +134,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           name: widget.productName,
           brand: widget.productBrand,
           oldPrice: widget.oldPrice,
-          price: defaultPrice.toString(),
+          price: widget.price1.toString(),
           isChecked: false,
           quantity: quantity,
           imageURL: widget.imageURL,
@@ -288,11 +287,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             increaseQuantity: () {
                               setState(() {
                                 ++quantity;
+                                getComparisons();
                               });
                             },
                             decreaseQuantity: () {
                               setState(() {
                                 quantity--;
+                                getComparisons();
                               });
                             },
                           ),

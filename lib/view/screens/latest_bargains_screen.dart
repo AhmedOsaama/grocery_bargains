@@ -37,7 +37,9 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
     _pagingController.addPageRequestListener((pageKey) {
       _fetchPage(pageKey);
     });
+    try{
     TrackingUtils().trackPageVisited("Latest bargains screen", FirebaseAuth.instance.currentUser!.uid);
+    }catch(e){}
     super.initState();
   }
 

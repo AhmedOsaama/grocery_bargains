@@ -54,7 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   var resendToken = null;
   initState(){
-    TrackingUtils().trackPageVisited("Register Screen", FirebaseAuth.instance.currentUser!.uid);
+    // TrackingUtils().trackPageVisited("Register Screen", FirebaseAuth.instance.currentUser!.uid);
     super.initState();
   }
 

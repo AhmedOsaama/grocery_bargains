@@ -357,38 +357,37 @@ class _ChatViewState extends State<ChatView> {
                                   final messages = snapshot.data?.docs ?? [];
                                   if (messages.isEmpty || !snapshot.hasData) {
                                     return Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        SvgPicture.asset(messagesPlaceholder),
+                                        Image.asset(messagesPlaceholder,width: 170),
                                         15.ph,
                                         Padding(
                                           padding: const EdgeInsets.symmetric(horizontal: 40),
                                           child: Text(
                                             LocaleKeys.addYourFriendsAndFamily.tr(),
                                             textAlign: TextAlign.center,
-                                            style: TextStylesInter.textViewMedium15.copyWith(color: blackSecondary),
+                                            style: TextStylesInter.textViewBold22.copyWith(color: blackSecondary, ),
                                           ),
                                         ),
                                         20.ph,
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            GenericButton(
-                                              onPressed: () => widget.showInviteMembersDialog(context),
-                                              child: Text(LocaleKeys.addContacts.tr()),
-                                              color: mainPurple,
-                                              borderRadius: BorderRadius.circular(6),
+                                        GenericButton(
+                                          onPressed: () => widget.showInviteMembersDialog(context),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(15),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text(LocaleKeys.add.tr(), style: TextStyles.textViewSemiBold16.copyWith(color: Colors.white),),
+                                                10.pw,
+                                                SvgPicture.asset(
+                                                  newperson,
+                                                  color: Colors.white,
+                                                ),
+                                              ],
                                             ),
-                                            25.pw,
-                                            GenericButton(
-                                                onPressed: () async {
-                                                  SharedPreferences pref = await SharedPreferences.getInstance();
-                                                  return showSearch(
-                                                      context: context, delegate: MySearchDelegate(pref: pref));
-                                                },
-                                                child: Text(LocaleKeys.addItem.tr()),
-                                                color: mainPurple,
-                                                borderRadius: BorderRadius.circular(6)),
-                                          ],
+                                          ),
+                                          color: brightOrange,
+                                          borderRadius: BorderRadius.circular(6),
                                         )
                                       ],
                                     );

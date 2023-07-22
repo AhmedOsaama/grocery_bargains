@@ -48,7 +48,10 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
   void initState() {
     var productProvider = Provider.of<ProductsProvider>(context,listen: false);
     products = productProvider.getProductsBySubCategory(widget.subCategory);
+    try{
     TrackingUtils().trackPageVisited("Subcategory Screen", FirebaseAuth.instance.currentUser!.uid);
+    }catch(e){
+    }
     super.initState();
   }
 

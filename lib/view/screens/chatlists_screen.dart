@@ -50,7 +50,9 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
 
   @override
   void initState() {
+    try{
     TrackingUtils().trackPageVisited("All chatlists screen", FirebaseAuth.instance.currentUser!.uid);
+    }catch(e){}
     super.initState();
   }
 

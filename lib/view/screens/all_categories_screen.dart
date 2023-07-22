@@ -31,7 +31,11 @@ class AllCategoriesScreen extends StatefulWidget {
 class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
   @override
   void initState() {
+    try{
     TrackingUtils().trackPageVisited("All categories screen", FirebaseAuth.instance.currentUser!.uid);
+    }catch(e){
+
+    }
     super.initState();
   }
 
@@ -81,7 +85,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                     Container(
                                       width: 174.w,
                                       height: 174.h,
-                                      child: Image.network(
+                                      child: Image.asset(
                                         provider.categories
                                             .elementAt(index)
                                             .image,

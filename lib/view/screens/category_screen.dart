@@ -52,7 +52,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
   @override
   void initState() {
-    TrackingUtils().trackPageVisited("Category screen", FirebaseAuth.instance.currentUser!.uid);
+    try{
+      TrackingUtils().trackPageVisited("Category screen", FirebaseAuth.instance.currentUser!.uid);
+    }catch(e){
+
+    }
     var productProvider = Provider.of<ProductsProvider>(context,listen: false);
     products = productProvider.getProductsByCategory(widget.category);
     super.initState();
@@ -211,7 +215,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
       }
       results = productProvider.sortProducts(sortDropdownValue, results);
     }
+    try{
     TrackingUtils().trackSearchPerformed("$sortDropdownValue, $storeDropdownValue", FirebaseAuth.instance.currentUser!.uid, "");
+    }catch(e){
+
+    }
     return results;
   }
 
