@@ -158,17 +158,23 @@ class ChatCard extends StatelessWidget {
   String getTotalListPrice(List storeItems) {
     var total = 0.0;
     for (var item in storeItems) {
-      if (item.data().containsKey('item_price') && item['item_price'].runtimeType == String) {
-        if (item['item_price'] != null && item['item_price'] != "null" && item['item_price'] != "") {
-          total += double.parse(item['item_price']);
-        } else {
-          total += 0;
-        }
-      } else if (item.data().containsKey('item_price') && item['item_price'].runtimeType == double) {
-        total += item['item_price'] ?? 0;
-      } else {
-        total += 0;
+      try {
+        total +=
+            (item['item_price'].runtimeType == String ? double.parse(item['item_price']) : item['item_price'] ?? 99999) * item['item_quantity'];
+      } catch (e) {
+        total += 0.0;
       }
+      // if (item.data().containsKey('item_price') && item['item_price'].runtimeType == String) {
+      //   if (item['item_price'] != null && item['item_price'] != "null" && item['item_price'] != "") {
+      //     total += double.parse(item['item_price']);
+      //   } else {
+      //     total += 0;
+      //   }
+      // } else if (item.data().containsKey('item_price') && item['item_price'].runtimeType == double) {
+      //   total += item['item_price'] ?? 0;
+      // } else {
+      //   total += 0;
+      // }
     }
 
     return total.toStringAsFixed(2);
@@ -178,9 +184,9 @@ class ChatCard extends StatelessWidget {
     var total = 0.0;
     for (var item in items) {
       try {
-        total += item['item_oldPrice'].runtimeType == String
-            ? (double.parse(item['item_oldPrice']) - double.parse(item['item_price']) )
-            : (item['item_oldPrice'] - item['item_price'] );
+        total += (item['item_oldPrice'].runtimeType == String
+            ? (double.parse(item['item_oldPrice']) - double.parse(item['item_price']))
+            : (item['item_oldPrice'] - item['item_price'])) * item['item_quantity'];
       } catch (e) {
         total += 0.0;
       }

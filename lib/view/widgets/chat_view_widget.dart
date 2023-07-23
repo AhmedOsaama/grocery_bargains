@@ -102,7 +102,7 @@ class _ChatViewState extends State<ChatView> {
     for (var item in items) {
       try {
         total +=
-            item['item_price'].runtimeType == String ? double.parse(item['item_price']) : item['item_price'] ?? 99999;
+        (item['item_price'].runtimeType == String ? double.parse(item['item_price']) : item['item_price'] ?? 99999) * item['item_quantity'];
       } catch (e) {
         total += 0.0;
       }
@@ -114,9 +114,9 @@ class _ChatViewState extends State<ChatView> {
     var total = 0.0;
     for (var item in items) {
       try {
-        total += item['item_oldPrice'].runtimeType == String
+        total += (item['item_oldPrice'].runtimeType == String
             ? (double.parse(item['item_oldPrice']) - double.parse(item['item_price']))
-            : (item['item_oldPrice'] - item['item_price']);
+            : (item['item_oldPrice'] - item['item_price'])) * item['item_quantity'];
       } catch (e) {
         total += 0.0;
       }
