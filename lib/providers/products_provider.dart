@@ -15,6 +15,7 @@ import '../config/routes/app_navigator.dart';
 import '../models/bestValue_item.dart';
 import '../models/product.dart';
 import '../utils/assets_manager.dart';
+import '../utils/icons_manager.dart';
 import '../utils/tracking_utils.dart';
 import '../view/screens/product_detail_screen.dart';
 
@@ -594,5 +595,15 @@ class ProductsProvider with ChangeNotifier {
     if (storeName == 'Jumbo') return jumbo;
     if (storeName == 'Hoogvliet') return hoogLogo;
     return albert;
+  }
+  String getStoreLogoPath(String selectedStore){
+    if(selectedStore == "Albert"){
+      return albertLogo;
+    }if(selectedStore == "Jumbo"){
+      return jumbo;
+    }if(selectedStore == "Hoogvliet"){
+      return hoogvlietLogo;
+    }
+    return imageError;
   }
 }

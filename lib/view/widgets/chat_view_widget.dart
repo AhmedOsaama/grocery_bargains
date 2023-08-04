@@ -46,7 +46,8 @@ class ChatView extends StatefulWidget {
   final Function showInviteMembersDialog;
   final bool? isExpandingChatlist;
 
-  ChatView({Key? key, required this.listId, required this.showInviteMembersDialog, this.isExpandingChatlist}) : super(key: key);
+  ChatView({Key? key, required this.listId, required this.showInviteMembersDialog, this.isExpandingChatlist})
+      : super(key: key);
 
   @override
   State<ChatView> createState() => _ChatViewState();
@@ -70,23 +71,32 @@ class _ChatViewState extends State<ChatView> {
 
   TextEditingController quickItemController = TextEditingController();
 
-  @override
-  void initState() {
-    getFirstTime();
-    final fbm = FirebaseMessaging.instance;
-    fbm.requestPermission();
-    fbm.subscribeToTopic(widget.listId);
-    isExpandingChatlist = widget.isExpandingChatlist ?? false;
-
-
-    super.initState();
-  }
+  bool isFirstTimeChatlist = false;
 
   Future<Null> getFirstTime() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       isFirstTime = prefs.getBool("firstTime") ?? true;
     });
+  }
+
+  Future getFirstTimeChatlist() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // setState(() {
+    //   isFirstTimeChatlist = true;
+    // });
+    if(prefs.containsKey('firstTimeChatlist')){
+      setState(() {
+        isFirstTimeChatlist = prefs.getBool("firstTimeChatlist") ?? true;
+        isExpandingChatlist = isFirstTimeChatlist;
+      });
+    }else{
+      prefs.setBool('firstTimeChatlist', true);
+      setState(() {
+        isFirstTimeChatlist = true;
+        isExpandingChatlist = true;
+      });
+    }
   }
 
   Future<Null> turnOffFirstTime() async {
@@ -97,12 +107,23 @@ class _ChatViewState extends State<ChatView> {
     });
   }
 
+  Future turnOffFirstTimeChatlist() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setBool('firstTimeChatlist', false);
+    // setState(() {
+    //   isFirstTimeChatlist = false;
+    // });
+    print('turned off first time');
+  }
+
   String getTotalListPrice(List items) {
     var total = 0.0;
     for (var item in items) {
       try {
-        total +=
-        (item['item_price'].runtimeType == String ? double.parse(item['item_price']) : item['item_price'] ?? 99999) * item['item_quantity'];
+        total += (item['item_price'].runtimeType == String
+                ? double.parse(item['item_price'])
+                : item['item_price'] ?? 99999) *
+            item['item_quantity'];
       } catch (e) {
         total += 0.0;
       }
@@ -115,13 +136,32 @@ class _ChatViewState extends State<ChatView> {
     for (var item in items) {
       try {
         total += (item['item_oldPrice'].runtimeType == String
-            ? (double.parse(item['item_oldPrice']) - double.parse(item['item_price']))
-            : (item['item_oldPrice'] - item['item_price'])) * item['item_quantity'];
+                ? (double.parse(item['item_oldPrice']) - double.parse(item['item_price']))
+                : (item['item_oldPrice'] - item['item_price'])) *
+            item['item_quantity'];
       } catch (e) {
         total += 0.0;
       }
     }
     return total.toStringAsFixed(2);
+  }
+
+  @override
+  void dispose() {
+    turnOffFirstTimeChatlist();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    getFirstTime();
+    getFirstTimeChatlist();
+    final fbm = FirebaseMessaging.instance;
+    fbm.requestPermission();
+    fbm.subscribeToTopic(widget.listId);
+    isExpandingChatlist = widget.isExpandingChatlist ?? false;
+
+    super.initState();
   }
 
   @override
@@ -236,7 +276,8 @@ class _ChatViewState extends State<ChatView> {
                                       itemName: "",
                                       itemImage: "",
                                       userName: "Ahmed",
-                                      userImage: "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1084",
+                                      userImage:
+                                          "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1084",
                                       isMe: false,
                                       message: "Hey I made the grocery list, check it out.",
                                       isAddedToList: false,
@@ -247,11 +288,13 @@ class _ChatViewState extends State<ChatView> {
                                       userId: "",
                                       itemId: -1,
                                       itemBrand: "",
-                                      itemQuantity: 0),   MessageBubble(
+                                      itemQuantity: 0),
+                                  MessageBubble(
                                       itemName: "",
                                       itemImage: "",
                                       userName: "Ahmed",
-                                      userImage: "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1084",
+                                      userImage:
+                                          "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1084",
                                       isMe: false,
                                       message: "Hey, do we need butter?",
                                       isAddedToList: false,
@@ -267,7 +310,8 @@ class _ChatViewState extends State<ChatView> {
                                       itemName: "",
                                       itemImage: "",
                                       userName: "Ahmed",
-                                      userImage: "https://www.himalmag.com/wp-content/uploads/2019/07/sample-profile-picture.png",
+                                      userImage:
+                                          "https://www.himalmag.com/wp-content/uploads/2019/07/sample-profile-picture.png",
                                       isMe: true,
                                       message: "yes we do",
                                       isAddedToList: false,
@@ -283,7 +327,8 @@ class _ChatViewState extends State<ChatView> {
                                       itemName: "",
                                       itemImage: "",
                                       userName: "Ahmed",
-                                      userImage: "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1084",
+                                      userImage:
+                                          "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1084",
                                       isMe: false,
                                       message: "Can you add it to the list? i am not sure which one.",
                                       isAddedToList: false,
@@ -294,11 +339,13 @@ class _ChatViewState extends State<ChatView> {
                                       userId: "",
                                       itemId: -1,
                                       itemBrand: "",
-                                      itemQuantity: 0),  MessageBubble(
+                                      itemQuantity: 0),
+                                  MessageBubble(
                                       itemName: "",
                                       itemImage: "",
                                       userName: "Ahmed",
-                                      userImage: "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1084",
+                                      userImage:
+                                          "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1084",
                                       isMe: false,
                                       message: "Anything else not on the list ?",
                                       isAddedToList: false,
@@ -312,9 +359,11 @@ class _ChatViewState extends State<ChatView> {
                                       itemQuantity: 0),
                                   MessageBubble(
                                       itemName: "Spreadable Blend of Butter & Rapeseed Oil",
-                                      itemImage: "https://images.arla.com/recordid/520C13F1-C489-4BBC-9590546669B7C3FE/picture.png?width=1200&height=630",
+                                      itemImage:
+                                          "https://images.arla.com/recordid/520C13F1-C489-4BBC-9590546669B7C3FE/picture.png?width=1200&height=630",
                                       userName: "Ahmed",
-                                      userImage: "https://www.himalmag.com/wp-content/uploads/2019/07/sample-profile-picture.png",
+                                      userImage:
+                                          "https://www.himalmag.com/wp-content/uploads/2019/07/sample-profile-picture.png",
                                       isMe: true,
                                       message: "",
                                       isAddedToList: true,
@@ -330,7 +379,8 @@ class _ChatViewState extends State<ChatView> {
                                       itemName: "",
                                       itemImage: "",
                                       userName: "Ahmed",
-                                      userImage: "https://www.himalmag.com/wp-content/uploads/2019/07/sample-profile-picture.png",
+                                      userImage:
+                                          "https://www.himalmag.com/wp-content/uploads/2019/07/sample-profile-picture.png",
                                       isMe: true,
                                       message: "Stop by at the dry cleaners to pick up clothes",
                                       isAddedToList: true,
@@ -342,7 +392,6 @@ class _ChatViewState extends State<ChatView> {
                                       itemId: -1,
                                       itemBrand: "",
                                       itemQuantity: 0),
-
                                 ],
                               )
                             : StreamBuilder<QuerySnapshot>(
@@ -357,38 +406,23 @@ class _ChatViewState extends State<ChatView> {
                                   final messages = snapshot.data?.docs ?? [];
                                   if (messages.isEmpty || !snapshot.hasData) {
                                     return Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
-                                        Image.asset(messagesPlaceholder,width: 170),
+                                        Image.asset(
+                                          messagesPlaceholder,
+                                          width: 100,
+                                        ),
                                         15.ph,
                                         Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 40),
+                                          padding: const EdgeInsets.symmetric(horizontal: 60),
                                           child: Text(
                                             LocaleKeys.addYourFriendsAndFamily.tr(),
                                             textAlign: TextAlign.center,
-                                            style: TextStylesInter.textViewBold22.copyWith(color: blackSecondary, ),
-                                          ),
-                                        ),
-                                        20.ph,
-                                        GenericButton(
-                                          onPressed: () => widget.showInviteMembersDialog(context),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(15),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text(LocaleKeys.add.tr(), style: TextStyles.textViewSemiBold16.copyWith(color: Colors.white),),
-                                                10.pw,
-                                                SvgPicture.asset(
-                                                  newperson,
-                                                  color: Colors.white,
-                                                ),
-                                              ],
+                                            style: TextStylesInter.textViewMedium14.copyWith(
+                                              color: blackSecondary,
                                             ),
                                           ),
-                                          color: brightOrange,
-                                          borderRadius: BorderRadius.circular(6),
-                                        )
+                                        ),
                                       ],
                                     );
                                   }
@@ -418,7 +452,8 @@ class _ChatViewState extends State<ChatView> {
                                               itemOldPrice: messages[index]['item_oldPrice'] ?? "0.0",
                                               itemImage: messages[index]['item_image'],
                                               storeName: messages[index]['store_name'] ?? "",
-                                              isMe: messages[index]['userId'] == FirebaseAuth.instance.currentUser!.uid,
+                                              isMe:
+                                                  messages[index]['userId'] == FirebaseAuth.instance.currentUser!.uid,
                                               message: messages[index]['message'],
                                               messageDocPath: messages[index].reference,
                                               userName: messages[index]['username'],
@@ -430,7 +465,7 @@ class _ChatViewState extends State<ChatView> {
                                           ));
                                 }),
                         Consumer<ChatlistsProvider>(
-                          builder: (ctx,chatlistProvider,_) => StreamBuilder(
+                          builder: (ctx, chatlistProvider, _) => StreamBuilder(
                               //chatlist header
                               stream: FirebaseFirestore.instance
                                   .collection("/lists/${widget.listId}/items")
@@ -442,25 +477,21 @@ class _ChatViewState extends State<ChatView> {
                                   return Container();
                                 }
                                 int height = 400;
-                                switch (items.length) {
-                                  case 1:
-                                    height = 120;
-                                    break;
-                                  case 2:
-                                    height = 200;
-                                    break;
-                                  case 3:
-                                    height = 270;
-                                    break;
-                                  case 4:
-                                    height = 350;
-                                    break;
-                                  default:
-                                    height = 400;
+                                if (isFirstTimeChatlist) {
+                                  if (items.isEmpty) height = 180;
+                                  if (items.isNotEmpty) height = 450;
+                                } else {
+                                  if (items.isEmpty) height = 180;
+                                  if (items.length > 0 && items.length < 2) height = 200;
+                                  if (items.length > 1 && items.length < 3) height = 250;
+                                  if (items.length >= 3 && items.length < 5) height = 350;
+                                  if (items.length >= 5 && items.length < 10) height = 500;
+                                  if (items.length >= 10) height = 1000;
                                 }
                                 return Container(
-                                  height: isExpandingChatlist ? double.infinity : 55.h,
-                                  padding: EdgeInsets.symmetric(horizontal: 15),
+                                  height: isExpandingChatlist ? height.h : 55.h,
+                                  padding: EdgeInsets.symmetric(horizontal: 15.w),
+                                  margin: EdgeInsets.symmetric(horizontal: 10.w),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     color: Colors.white,
@@ -475,8 +506,11 @@ class _ChatViewState extends State<ChatView> {
                                               style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
                                               children: [
                                                 TextSpan(
-                                                    text: isFirstTime ? "9 items" : " ${items.length} ${LocaleKeys.items.tr()}",
-                                                    style: TextStylesInter.textViewBold12.copyWith(color: blackSecondary))
+                                                    text: isFirstTime
+                                                        ? "9 items"
+                                                        : " ${items.length} ${LocaleKeys.items.tr()}",
+                                                    style: TextStylesInter.textViewBold12
+                                                        .copyWith(color: blackSecondary))
                                               ])),
                                           15.pw,
                                           Text.rich(TextSpan(
@@ -494,7 +528,8 @@ class _ChatViewState extends State<ChatView> {
                                               children: [
                                                 TextSpan(
                                                     text: isFirstTime ? "€4.32" : " €${getTotalListSavings(items)}",
-                                                    style: TextStylesInter.textViewBold12.copyWith(color: greenSecondary))
+                                                    style: TextStylesInter.textViewBold12
+                                                        .copyWith(color: greenSecondary))
                                               ])),
                                           Spacer(),
                                           IconButton(
@@ -502,7 +537,10 @@ class _ChatViewState extends State<ChatView> {
                                                 setState(() {
                                                   isExpandingChatlist = !isExpandingChatlist;
                                                 });
-                                                TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Expand/collapse chatlist items", DateTime.now().toUtc().toString());
+                                                TrackingUtils().trackChatlistAction(
+                                                    FirebaseAuth.instance.currentUser!.uid,
+                                                    "Expand/collapse chatlist items",
+                                                    DateTime.now().toUtc().toString());
                                               },
                                               icon: isExpandingChatlist
                                                   ? Icon(
@@ -519,83 +557,133 @@ class _ChatViewState extends State<ChatView> {
                                       ),
                                       if (isExpandingChatlist)
                                         Builder(builder: (ctx) {
-                                          if (items.isEmpty)
+                                          if (isFirstTimeChatlist && items.isEmpty)
+                                            return Column(
+                                              children: [
+                                                quickItemField(),
+                                                20.ph,
+                                                Text(
+                                                  LocaleKeys.buildYourChatlist.tr(),
+                                                  style: TextStyles.textViewRegular10,
+                                                ),
+                                              ],
+                                            );
+                                          if (isFirstTimeChatlist && items.isNotEmpty) {
+                                            albertItems.clear();
+                                            jumboItems.clear();
+                                            hoogvlietItems.clear();
+                                            quicklyAddedItems.clear();
+                                            for (var item in items) {
+                                              if (item['store_name'] == "Albert") {
+                                                albertItems.add(item);
+                                              }
+                                              if (item['store_name'] == "Jumbo") {
+                                                jumboItems.add(item);
+                                              }
+                                              if (item['store_name'] == "Hoogvliet") {
+                                                hoogvlietItems.add(item);
+                                              }
+                                              if (item['store_name'].isEmpty) {
+                                                quicklyAddedItems.add(item);
+                                              }
+                                            }
+                                            if (albertItems.isEmpty && jumboItems.isEmpty && hoogvlietItems.isEmpty)
+                                              return Column(children: [
+                                                ...quicklyAddedItems.map((item) {
+                                                  return ChatlistItem(item: item);
+                                                }).toList(),
+                                                // 20.ph,
+                                                quickItemField(),
+                                                10.ph,
+                                                Text(
+                                                  LocaleKeys.tapOnAListItemToFind.tr(),
+                                                  style: TextStylesInter.textViewRegular10.copyWith(color: phoneText),
+                                                ),
+                                                10.ph,
+                                                ...getItemsPlaceholder(),
+                                              ]);
+                                            return Flexible(
+                                              child: ListView(
+                                                padding: EdgeInsets.zero,
+                                                children: [
+                                                  Column(
+                                                    children: quicklyAddedItems.map((item) {
+                                                      return ChatlistItem(item: item);
+                                                    }).toList(),
+                                                  ),
+                                                  5.ph,
+                                                  quickItemField(),
+                                                  15.ph,
+                                                  if (albertItems.isNotEmpty) ...[
+                                                    Align(
+                                                      alignment: Alignment.centerLeft,
+                                                      child: Image.asset(
+                                                      Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Albert"),
+                                                        width: 60,height: 30,
+                                                      ),
+                                                    ),
+                                                    5.ph,
+                                                    Column(
+                                                      children: albertItems.map((item) {
+                                                        return ChatlistItem(item: item);
+                                                      }).toList(),
+                                                    ),
+                                                  ],
+                                                  if (jumboItems.isNotEmpty) ...[
+                                                    Align(
+                                                      alignment: Alignment.centerLeft,
+                                                      child: Image.asset(
+                                                        Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Jumbo"),
+                                                        width: 60,height: 30,
+                                                      ),
+                                                    ),
+                                                    5.ph,
+                                                    Column(
+                                                      children: jumboItems.map((item) {
+                                                        return ChatlistItem(item: item);
+                                                      }).toList(),
+                                                    ),
+                                                  ],
+                                                  if (hoogvlietItems.isNotEmpty) ...[
+                                                    Align(
+                                                      alignment: Alignment.centerLeft,
+                                                      child: Image.asset(
+                                                        Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Hoogvliet"),
+                                                        width: 60,height: 30,
+                                                      ),
+                                                    ),
+                                                    5.ph,
+                                                    Column(
+                                                      children: hoogvlietItems.map((item) {
+                                                        return ChatlistItem(item: item);
+                                                      }).toList(),
+                                                    ),
+                                                  ],
+                                                ],
+                                              ),
+                                            );
+                                          }
+
+                                          if (!isFirstTimeChatlist && items.isEmpty)
                                             return Column(
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                ...List.generate(
-                                                    3,
-                                                    (index) => Row(
-                                                          children: [
-                                                            Container(
-                                                              padding: EdgeInsets.all(15),
-                                                              margin: EdgeInsets.symmetric(vertical: 7),
-                                                              decoration: BoxDecoration(
-                                                                color: purple30,
-                                                                borderRadius: BorderRadius.circular(20),
-                                                              ),
-                                                              child: SvgPicture.asset(
-                                                                cheese,
-                                                                width: 27,
-                                                                height: 27,
-                                                              ),
-                                                            ),
-                                                            10.pw,
-                                                            Column(
-                                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                                              children: [
-                                                                Container(
-                                                                  width: 75.w,
-                                                                  height: 10.h,
-                                                                  decoration: BoxDecoration(
-                                                                      color: purple50,
-                                                                      borderRadius: BorderRadius.circular(6)),
-                                                                ),
-                                                                5.ph,
-                                                                Container(
-                                                                  width: 220.w,
-                                                                  height: 8.h,
-                                                                  decoration: BoxDecoration(
-                                                                      color: purple10,
-                                                                      borderRadius: BorderRadius.circular(6)),
-                                                                ),
-                                                                5.ph,
-                                                                Container(
-                                                                  width: 220.w,
-                                                                  height: 8.h,
-                                                                  decoration: BoxDecoration(
-                                                                      color: purple10,
-                                                                      borderRadius: BorderRadius.circular(6)),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            Spacer(),
-                                                            Text("€ 1.25"),
-                                                          ],
-                                                        )),
-                                                10.ph,
+                                                quickItemField(),
+                                                // 10.ph,
                                                 Text(
-                                                  "Add your first item to your chatlist",
-                                                  style:
-                                                      TextStylesInter.textViewSemiBold20.copyWith(color: blackSecondary),
+                                                  LocaleKeys.addYourFirstItem.tr(),
+                                                  style: TextStylesInter.textViewSemiBold20
+                                                      .copyWith(color: blackSecondary),
                                                 ),
                                                 15.ph,
                                                 Text(
-                                                  "Add items to your chatlist to see which supermarkets are cheapest",
+                                                  LocaleKeys.addItemsToYourChatlist.tr(),
                                                   style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
                                                 ),
-                                                15.ph,
-                                                GenericButton(
-                                                    onPressed: () async {
-                                                      SharedPreferences pref = await SharedPreferences.getInstance();
-                                                      return showSearch(
-                                                          context: context, delegate: MySearchDelegate(pref: pref));
-                                                    },
-                                                    child: Text(LocaleKeys.addItem.tr()),
-                                                    color: mainPurple,
-                                                    borderRadius: BorderRadius.circular(6)),
+                                                // 15.ph,
                                               ],
                                             );
+
                                           albertItems.clear();
                                           jumboItems.clear();
                                           hoogvlietItems.clear();
@@ -624,60 +712,15 @@ class _ChatViewState extends State<ChatView> {
                                                   }).toList(),
                                                 ),
                                                 5.ph,
-                                                GenericField(
-                                                  controller: quickItemController,
-                                                  onSubmitted: (value) {
-                                                    Provider.of<ChatlistsProvider>(context, listen: false).addItemToList(
-                                                        ListItem(
-                                                            id: -1,
-                                                            storeName: "",
-                                                            imageURL: '',
-                                                            isChecked: false,
-                                                            name: value.trim(),
-                                                            price: "0.0",
-                                                            quantity: 0,
-                                                            size: '',
-                                                            text: value.trim(),
-                                                            brand: ''),
-                                                        widget.listId);
-                                                    quickItemController.clear();
-                                                  },
-                                                  hintText: LocaleKeys.addSomethingQuickly.tr(),
-                                                  contentPadding: EdgeInsets.only(left: 10),
-                                                  hintStyle:
-                                                      TextStylesInter.textViewRegular12.copyWith(color: blackSecondary),
-                                                  fillColor: lightPurple,
-                                                  suffixIcon: TextButton(
-                                                    onPressed: () async {
-                                                      await Provider.of<ChatlistsProvider>(context, listen: false)
-                                                          .addItemToList(
-                                                              ListItem(
-                                                                  id: -1,
-                                                                  storeName: "",
-                                                                  imageURL: '',
-                                                                  isChecked: false,
-                                                                  name: quickItemController.text.trim(),
-                                                                  price: "0.0",
-                                                                  quantity: 0,
-                                                                  size: '',
-                                                                  text: quickItemController.text.trim(),
-                                                                  brand: ''),
-                                                              widget.listId);
-                                                      quickItemController.clear();
-                                                      TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Add quick item", DateTime.now().toUtc().toString());
-                                                    },
-                                                    child: Text(
-                                                      LocaleKeys.add.tr(),
-                                                      style: TextStylesDMSans.textViewBold12.copyWith(color: mainPurple),
-                                                    ),
-                                                  ),
-                                                ),
+                                                quickItemField(),
                                                 15.ph,
                                                 if (albertItems.isNotEmpty) ...[
-                                                  Text(
-                                                    "Albert Heijn",
-                                                    style: TextStylesInter.textViewRegular16
-                                                        .copyWith(color: Colors.lightBlue),
+                                                  Align(
+                                                    alignment: Alignment.centerLeft,
+                                                    child: Image.asset(
+                                                      Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Albert"),
+                                                      width: 60,height: 30,
+                                                    ),
                                                   ),
                                                   5.ph,
                                                   Column(
@@ -687,10 +730,12 @@ class _ChatViewState extends State<ChatView> {
                                                   ),
                                                 ],
                                                 if (jumboItems.isNotEmpty) ...[
-                                                  Text(
-                                                    "Jumbo",
-                                                    style: TextStylesInter.textViewRegular16
-                                                        .copyWith(color: Colors.lightBlue),
+                                                  Align(
+                                                    alignment: Alignment.centerLeft,
+                                                    child: Image.asset(
+                                                      Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Jumbo"),
+                                                      width: 60,height: 30,
+                                                    ),
                                                   ),
                                                   5.ph,
                                                   Column(
@@ -700,10 +745,12 @@ class _ChatViewState extends State<ChatView> {
                                                   ),
                                                 ],
                                                 if (hoogvlietItems.isNotEmpty) ...[
-                                                  Text(
-                                                    "Hoogvliet",
-                                                    style: TextStylesInter.textViewRegular16
-                                                        .copyWith(color: Colors.lightBlue),
+                                                  Align(
+                                                    alignment: Alignment.centerLeft,
+                                                    child: Image.asset(
+                                                      Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Hoogvliet"),
+                                                      width: 60,height: 30,
+                                                    ),
                                                   ),
                                                   5.ph,
                                                   Column(
@@ -730,12 +777,12 @@ class _ChatViewState extends State<ChatView> {
                       children: [
                         Expanded(
                           child:
-                          // TextField(
-                          //   decoration: InputDecoration(fillColor: Colors.white,
-                          //     filled: true
-                          //   ),
-                          // ),
-                          GenericField(
+                              // TextField(
+                              //   decoration: InputDecoration(fillColor: Colors.white,
+                              //     filled: true
+                              //   ),
+                              // ),
+                              GenericField(
                             controller: messageController,
                             hintText: LocaleKeys.textHere.tr(),
                             hintStyle: TextStylesInter.textViewRegular14.copyWith(color: blackSecondary),
@@ -776,4 +823,101 @@ class _ChatViewState extends State<ChatView> {
     );
   }
 
+  Widget quickItemField() {
+    return GenericField(
+      controller: quickItemController,
+      onSubmitted: (value) {
+        Provider.of<ChatlistsProvider>(context, listen: false).addItemToList(
+            ListItem(
+                id: -1,
+                storeName: "",
+                imageURL: '',
+                isChecked: false,
+                name: value.trim(),
+                price: "0.0",
+                quantity: 0,
+                size: '',
+                text: value.trim(),
+                brand: ''),
+            widget.listId);
+        quickItemController.clear();
+      },
+      hintText: LocaleKeys.addSomethingQuickly.tr(),
+      contentPadding: EdgeInsets.only(left: 10),
+      hintStyle: TextStylesInter.textViewRegular12.copyWith(color: purple70),
+      colorStyle: Colors.transparent,
+      fillColor: lightPurple,
+      suffixIcon: TextButton(
+        onPressed: () async {
+          await Provider.of<ChatlistsProvider>(context, listen: false).addItemToList(
+              ListItem(
+                  id: -1,
+                  storeName: "",
+                  imageURL: '',
+                  isChecked: false,
+                  name: quickItemController.text.trim(),
+                  price: "0.0",
+                  quantity: 0,
+                  size: '',
+                  text: quickItemController.text.trim(),
+                  brand: ''),
+              widget.listId);
+          quickItemController.clear();
+          TrackingUtils().trackChatlistAction(
+              FirebaseAuth.instance.currentUser!.uid, "Add quick item", DateTime.now().toUtc().toString());
+        },
+        child: Text(
+          LocaleKeys.add.tr(),
+          style: TextStylesDMSans.textViewBold12.copyWith(color: mainPurple),
+        ),
+      ),
+    );
+  }
+
+  List<Widget> getItemsPlaceholder() {
+    return List.generate(
+        3,
+        (index) => Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(15),
+                  margin: EdgeInsets.symmetric(vertical: 7),
+                  decoration: BoxDecoration(
+                    color: purple30,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: SvgPicture.asset(
+                    cheese,
+                    width: 27,
+                    height: 27,
+                  ),
+                ),
+                10.pw,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 75.w,
+                      height: 10.h,
+                      decoration: BoxDecoration(color: purple50, borderRadius: BorderRadius.circular(6)),
+                    ),
+                    5.ph,
+                    Container(
+                      width: 220.w,
+                      height: 8.h,
+                      decoration: BoxDecoration(color: purple10, borderRadius: BorderRadius.circular(6)),
+                    ),
+                    5.ph,
+                    Container(
+                      width: 220.w,
+                      height: 8.h,
+                      decoration: BoxDecoration(color: purple10, borderRadius: BorderRadius.circular(6)),
+                    ),
+                  ],
+                ),
+                Spacer(),
+                Text("€ 1.25"),
+              ],
+            ));
+  }
 }

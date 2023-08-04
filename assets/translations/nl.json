@@ -255,6 +255,13 @@
   "messageSentSuccessfully"          : "Bericht succesvol verzonden",
   "somethingWentWrong"             : "Er is iets mis gegaan, probeer het alstublieft nogmaals",
   "areYouSureToDelete"                          : "Weet u zeker dat u deze lijst wilt verwijderen?",
-  "cancelAndExit"                             : "Cancel & exit"
+  "cancelAndExit"                             : "Cancel & exit",
+  "buildYourChatlist":                          "Build your chatlist and start bargain hunting",
+  "tapOnAListItemToFind":                       "Tap on a list item to find the best bargain and add it to your grocery list automatically",
+  "addItemsToYourChatlist":                      "Add items to your chatlist to search for the best bargains",
+  "addYourFirstItem":                              "Add your first item to your chatlist"
+
+
+
 
 }

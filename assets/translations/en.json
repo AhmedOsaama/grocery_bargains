@@ -248,7 +248,7 @@
   "didYouKnowWhenYouShareChatlists"                   : "Did you know that when you share chatlists with friends and family, you can chat with them about the items on the lists, add items while they are at the store, and do more!",
   "create"                                        : "Create",
   "back"                                          : "Back",
-  "addYourFriendsAndFamily"                       : "Add your friends and family to start chatting, or add items to your lists",
+  "addYourFriendsAndFamily"                       : "Add your friends and family to start chatting or drop a message for yourself for later",
   "addItem"                                       : "Add Item",
   "addContacts"                                       : "Add Contacts",
   "inviteMembers"                                       : "Invite Members",
@@ -256,7 +256,7 @@
   "addedToList"                                         : "Added to List",
   "greatNews"                                         : "Great news! The invited user has been added to your list. They can now view and contribute to the list. Happy collaborating!",
 
-  "addSomethingQuickly"                             : "Add something quickly",
+  "addSomethingQuickly"                             : "Add something",
   "quickAdd"                             : "Quick Add",
 
   "whereToBuy"                            : "Where To Buy",
@@ -270,6 +270,10 @@
   "messageSentSuccessfully"                   : "Message sent successfully",
   "somethingWentWrong"                         : "Something went wrong, please try again",
   "areYouSureToDelete"                          : "Are you sure to delete this list?",
-  "cancelAndExit"                             : "Cancel & exit"
+  "cancelAndExit"                             : "Cancel & exit",
+  "buildYourChatlist":                          "Build your chatlist and start bargain hunting",
+  "tapOnAListItemToFind":                       "Tap on a list item to find the best bargain and add it to your grocery list automatically",
+  "addItemsToYourChatlist":                      "Add items to your chatlist to search for the best bargains",
+  "addYourFirstItem":                              "Add your first item to your chatlist"
 
 }

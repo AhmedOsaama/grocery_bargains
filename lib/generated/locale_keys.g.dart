@@ -253,5 +253,9 @@ abstract class  LocaleKeys {
   static const somethingWentWrong = 'somethingWentWrong';
   static const areYouSureToDelete = 'areYouSureToDelete';
   static const cancelAndExit = 'cancelAndExit';
+  static const buildYourChatlist = 'buildYourChatlist';
+  static const tapOnAListItemToFind = 'tapOnAListItemToFind';
+  static const addItemsToYourChatlist = 'addItemsToYourChatlist';
+  static const addYourFirstItem = 'addYourFirstItem';
 
 }
