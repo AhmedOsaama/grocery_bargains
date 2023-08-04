@@ -182,10 +182,11 @@
   "gotAnyIdeas"                                   : "Heb je ideeën voor het plan",
   "readtimestamp"                                  : "Lees 10:02",
   "latestValueBargains"                             : "Laatste waardekoopjes",
-  "dataAccess"                                        : "Data toegang",
+  "dataAccess"                                        : "Your Privacy Matters to Us!",
   "privacyPolicy"                                     : "Privacybeleid",
-  "itIsImportantToUnderstandWhy"                      : "Het is belangrijk om te begrijpen waarom BargainB verzoekt om uw locatiegegevens te verzamelen en te gebruiken. We leggen dit in detail uit in onze",
-  "bargainBUsesLocationData"                          : "BargainB gebruikt locatiegegevens om u te helpen navigeren naar onze dichtstbijzijnde locaties. Bovendien helpen uw locatiegegevens ons om u relevante promoties voor uw regio te bieden. Wij zullen uw persoonlijke gegevens nooit aan derden verkopen.",
+  "itIsImportantToUnderstandWhy"                      : "At Bargainb, we are committed to ensuring the utmost privacy and transparency in how we handle your data. Before you continue, we need your affirmative consent to access, collect, use, and share certain information for a seamless app experience. By clicking \"Accept,\" you agree to the following:\n",
+  "bargainBUsesLocationData"                          : "Contact List: To enhance social features, Bargainb requests access to your contact list. This allows you to connect and share shopping moments with friends within the app. We never upload or use your contact list data without your explicit permission.\nLocation: Bargainb accesses your device's location to provide personalized deals and store recommendations near you. Rest assured, your location data is used solely for this purpose and is not shared with third parties.\nUser Analytics: We collect anonymous and aggregated data to improve our app's performance and enhance your shopping experience. This data is used for internal purposes only and does not include personal identifiers.\nSecure & Limited: We prioritize your security. Any data shared with third parties is strictly for essential app services and will never compromise your privacy.\n\n",
+  "forFullDetailsOnDataUsage"                         : "For full details on data usage and privacy practices, please review our",
   "accept"                                            : "Accepteren",
   "notNow"                                            : "Niet Nu",
   "youHaveToBeSignedIn"                               : "U moet aangemeld zijn om deze functie te gebruiken.",
@@ -253,5 +254,7 @@
   "toAddFamilyAndFriends"           : "Om familie en vrienden toe te voegen, klikt u op het personenpictogram op de boodschappenlijstjes en voegt u de contacten toe die BargainB hebben of via een link zijn uitgenodigd.",
   "messageSentSuccessfully"          : "Bericht succesvol verzonden",
   "somethingWentWrong"             : "Er is iets mis gegaan, probeer het alstublieft nogmaals",
-  "areYouSureToDelete"                          : "Weet u zeker dat u deze lijst wilt verwijderen?"
+  "areYouSureToDelete"                          : "Weet u zeker dat u deze lijst wilt verwijderen?",
+  "cancelAndExit"                             : "Cancel & exit"
+
 }

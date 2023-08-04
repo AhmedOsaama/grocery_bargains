@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:bargainb/config/routes/app_navigator.dart';
@@ -34,18 +35,26 @@ class LocationAccessScreen extends StatelessWidget {
                 height: 70.h,
               ),
               SvgPicture.asset(bargainbIcon),
-              Image.asset(onboarding4),
-              30.ph,
+              25.ph,
               Text(
                 LocaleKeys.dataAccess.tr(),
-                style: TextStyles.textViewSemiBold30.copyWith(color: prussian),
+                style: TextStyles.textViewSemiBold28.copyWith(color: blackSecondary),
                 textAlign: TextAlign.center,
               ),
               SizedBox(
                 height: 20.h,
               ),
+              Text(
+                  LocaleKeys.itIsImportantToUnderstandWhy.tr(),
+                  style: TextStyles.textViewRegular14.copyWith(color: gunmetal),
+              ),
+              // 16.ph,
+              Text(
+                  LocaleKeys.bargainBUsesLocationData.tr(),
+                style: TextStyles.textViewRegular14.copyWith(color: gunmetal),
+              ),
               RichText(
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.left,
                 text: TextSpan(
                     children: [
                       TextSpan(
@@ -65,15 +74,15 @@ class LocationAccessScreen extends StatelessWidget {
                     ],
                     style: TextStyles.textViewRegular14.copyWith(color: gunmetal),
                     text:
-                    LocaleKeys.itIsImportantToUnderstandWhy.tr()),
+                    LocaleKeys.forFullDetailsOnDataUsage.tr(),
+                ),
               ),
-              16.ph,
-              Text(
-                  LocaleKeys.bargainBUsesLocationData.tr(),
-                style: TextStyles.textViewRegular14.copyWith(color: gunmetal),
-                textAlign: TextAlign.center,
-              ),
-              50.ph,
+              // Text(
+              //   LocaleKeys.forFullDetailsOnDataUsage.tr(),
+              //   style: TextStyles.textViewRegular14.copyWith(color: gunmetal),
+              //   textAlign: TextAlign.center,
+              // ),
+              20.ph,
               GenericButton(
                 borderRadius: BorderRadius.circular(6),
                 // borderColor: borderColor,
@@ -83,7 +92,6 @@ class LocationAccessScreen extends StatelessWidget {
                 onPressed: () async {
                   if (await AppTrackingTransparency.trackingAuthorizationStatus ==
                       TrackingStatus.notDetermined) {
-                    // Request system's tracking authorization dialog
                     await AppTrackingTransparency.requestTrackingAuthorization();
                   }
                   AppNavigator.pushReplacement(
@@ -102,19 +110,14 @@ class LocationAccessScreen extends StatelessWidget {
                 height: 60.h,
                 width: double.infinity,
                 onPressed: () async {
-                  if (await AppTrackingTransparency.trackingAuthorizationStatus ==
-                      TrackingStatus.notDetermined) {
-                    // Request system's tracking authorization dialog
-                    await AppTrackingTransparency.requestTrackingAuthorization();
-                  }
-                  AppNavigator.pushReplacement(
-                      context: context, screen: MainScreen());
+                  exit(1);
                 },
                 child: Text(
-                  LocaleKeys.notNow.tr(),
+                  LocaleKeys.cancelAndExit.tr(),
                   style: TextStyles.textViewSemiBold16.copyWith(color: black),
                 ),
               ),
+              30.ph,
               // Spacer(),
             ],
           ),

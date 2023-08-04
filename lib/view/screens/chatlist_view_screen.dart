@@ -357,7 +357,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                             Expanded(
                                                 child: GenericButton(
                                               height: 60.h,
-                                              onPressed: () => AppNavigator.pop(context: context),
+                                              onPressed: () => AppNavigator.pop(context: ctx),
                                               color: Colors.white,
                                               borderRadius: BorderRadius.circular(6),
                                               borderColor: grey,
@@ -371,8 +371,11 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                                 child: GenericButton(
                                               height: 60.h,
                                               onPressed: () async {
-                                                deleteList(context);
-                                                AppNavigator.pop(context: context);
+                                                await deleteList(context);
+                                                AppNavigator.pushReplacement(context: context, screen: ChatlistsScreen());
+                                                AppNavigator.pop(context: ctx);
+                                                // AppNavigator.pop(context: context);
+                                                // return Future.value(1);
                                               },
                                               color: brightOrange,
                                               borderRadius: BorderRadius.circular(6),
@@ -492,7 +495,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
   Future<void> deleteList(BuildContext context) async {
     Provider.of<ChatlistsProvider>(context, listen: false).deleteList(context, widget.listId);
-    await pushDynamicScreen(context, screen: ChatlistsScreen());
+    // await pushDynamicScreen(context, screen: ChatlistsScreen());
   }
 
   shareListViaDeepLink() async {

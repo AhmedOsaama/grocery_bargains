@@ -195,10 +195,11 @@
   "gotAnyIdeas"                                   : "Got any ideas for the plan",
   "readTimeStamp"                                  : "Read 10:02",
   "latestValueBargains"                             : "Latest Value Bargains",
-  "dataAccess"                                        : "Data access",
+  "dataAccess"                                        : "Your Privacy Matters to Us!",
   "privacyPolicy"                                     : "Privacy Policy.",
-  "itIsImportantToUnderstandWhy"                      : "It is important to understand why BargainB requests to collect and use your location data. We explain this in details in our",
-  "bargainBUsesLocationData"                          : "BargainB uses location data to help you navigate to our nearest lacations. Additionally, your location data helps us provide you with relevant promotions for your area. We will never sell your personal information to third parties.",
+  "itIsImportantToUnderstandWhy"                      : "At Bargainb, we are committed to ensuring the utmost privacy and transparency in how we handle your data. Before you continue, we need your affirmative consent to access, collect, use, and share certain information for a seamless app experience. By clicking \"Accept,\" you agree to the following:\n",
+  "bargainBUsesLocationData"                          : "Contact List: To enhance social features, Bargainb requests access to your contact list. This allows you to connect and share shopping moments with friends within the app. We never upload or use your contact list data without your explicit permission.\nLocation: Bargainb accesses your device's location to provide personalized deals and store recommendations near you. Rest assured, your location data is used solely for this purpose and is not shared with third parties.\nUser Analytics: We collect anonymous and aggregated data to improve our app's performance and enhance your shopping experience. This data is used for internal purposes only and does not include personal identifiers.\nSecure & Limited: We prioritize your security. Any data shared with third parties is strictly for essential app services and will never compromise your privacy.\n\n",
+  "forFullDetailsOnDataUsage"                         : "For full details on data usage and privacy practices, please review our",
   "accept"                                            : "Accept",
   "notNow"                                            : "Not Now",
   "youHaveToBeSignedIn"                               : "You have to be signed in to use this feature.",
@@ -268,6 +269,7 @@
   "toAddFamilyAndFriends"                     : "To add family and friends, click the people icon on the grocery lists and add the contacts who have BargainB or invited via a  link.",
   "messageSentSuccessfully"                   : "Message sent successfully",
   "somethingWentWrong"                         : "Something went wrong, please try again",
-  "areYouSureToDelete"                          : "Are you sure to delete this list?"
+  "areYouSureToDelete"                          : "Are you sure to delete this list?",
+  "cancelAndExit"                             : "Cancel & exit"
 
 }

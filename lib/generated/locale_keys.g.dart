@@ -186,6 +186,7 @@ abstract class  LocaleKeys {
   static const privacyPolicy = 'privacyPolicy';
   static const itIsImportantToUnderstandWhy = 'itIsImportantToUnderstandWhy';
   static const bargainBUsesLocationData = 'bargainBUsesLocationData';
+  static const forFullDetailsOnDataUsage = 'forFullDetailsOnDataUsage';
   static const accept = 'accept';
   static const notNow = 'notNow';
   static const youHaveToBeSignedIn = 'youHaveToBeSignedIn';
@@ -251,5 +252,6 @@ abstract class  LocaleKeys {
   static const messageSentSuccessfully = 'messageSentSuccessfully';
   static const somethingWentWrong = 'somethingWentWrong';
   static const areYouSureToDelete = 'areYouSureToDelete';
+  static const cancelAndExit = 'cancelAndExit';
 
 }
