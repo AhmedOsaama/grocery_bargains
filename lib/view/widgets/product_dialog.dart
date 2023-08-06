@@ -129,36 +129,7 @@ class _ProductDialogState extends State<ProductDialog> {
                     IconButton(
                         onPressed: () {
                           var productProvider = Provider.of<ProductsProvider>(context, listen: false);
-                          late Product product;
-                          switch (widget.storeName) {
-                            case 'Hoogvliet':
-                              product = productProvider.hoogvlietProducts
-                                  .firstWhere((product) => product.id == widget.itemId);
-                              break;
-                            case 'Jumbo':
-                              product =
-                                  productProvider.jumboProducts.firstWhere((product) => product.id == widget.itemId);
-                              break;
-                            case 'Albert':
-                              product =
-                                  productProvider.albertProducts.firstWhere((product) => product.id == widget.itemId);
-                              break;
-                          }
-                          AppNavigator.push(
-                              context: context,
-                              screen: ProductDetailScreen(
-                                productId: product.id,
-                                productBrand: product.brand,
-                                oldPrice: product.oldPrice,
-                                storeName: product.storeName,
-                                productName: product.name,
-                                imageURL: product.imageURL,
-                                description: product.description,
-                                size1: product.size,
-                                size2: product.size2 ?? "",
-                                price1: double.tryParse(product.price ?? "") ?? 0.0,
-                                price2: double.tryParse(product.price2 ?? "") ?? 0.0,
-                              ));
+                          productProvider.goToProductPage(widget.storeName, context, widget.itemId);
                           TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "View item in chatlist", DateTime.now().toUtc().toString());
                         },
                         splashRadius: 25,

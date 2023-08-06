@@ -20,19 +20,16 @@ import '../../utils/style_utils.dart';
 import '../screens/product_detail_screen.dart';
 
 class DiscountItem extends StatelessWidget {
-  final ComparisonProduct? comparisonProduct;
-  final Product? product;
+  final Product product;
   final bool inGridView;
-  DiscountItem(
-      {Key? key, this.comparisonProduct, required this.inGridView, this.product})
-      : super(key: key);
+  DiscountItem({Key? key, required this.inGridView, required this.product}) : super(key: key);
 
   var selectedStore = (['Albert', "Jumbo", "Hoogvliet"]..shuffle()).first;
 
   String getProductImage(Product product) {
     try {
-      return product.imageURL;
-    }catch(e){
+      return product.image;
+    } catch (e) {
       print(e);
       print(product.id);
       return "N/A";
@@ -45,8 +42,8 @@ class DiscountItem extends StatelessWidget {
 
   String getProductSize(Product product) {
     try {
-      return product.size.isNotEmpty ? product.size : product.size2!;
-    }catch(e){
+      return product.unit;
+    } catch (e) {
       print(e);
       print(product.id);
       return "N/A";
@@ -57,7 +54,7 @@ class DiscountItem extends StatelessWidget {
     return product.name;
   }
 
-  String getPrice(Product product){
+  String getPrice(Product product) {
     try {
       return product.price ?? "N/A";
     } catch (e) {
@@ -66,6 +63,7 @@ class DiscountItem extends StatelessWidget {
     }
     return "0.00";
   }
+
   String getOldPrice(Product product) {
     return product.oldPrice!;
   }
@@ -74,14 +72,8 @@ class DiscountItem extends StatelessWidget {
     try {
       if (product.oldPrice == null) return null;
       var oldPrice = double.tryParse(product.oldPrice ?? "") ?? 0;
-      var currentPrice = double.parse(product.price ?? product.price2!);
-      var price2 = double.tryParse(product.price2 ?? "") ?? 0;
-      // print("oldPrice: " + oldPrice.toString());
-      // print("currentPrice: " + currentPrice.toString());
-      // print("currentPrice: " + price2.toString());
-      if (oldPrice > currentPrice)
-        return (oldPrice - currentPrice).toStringAsFixed(2);
-      if (oldPrice > price2) return (oldPrice - price2).toStringAsFixed(2);
+      var currentPrice = double.parse(product.price);
+      if (oldPrice > currentPrice) return (oldPrice - currentPrice).toStringAsFixed(2);
     } catch (e) {
       print("Error in latest bargains: $e");
     }
@@ -90,29 +82,10 @@ class DiscountItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var productsProvider =
-        Provider.of<ProductsProvider>(context, listen: false);
+    var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
     late Product product;
-    if(this.product != null){
-      product = this.product!;
-      selectedStore = product.storeName;
-    }else {
-      try {
-        if (selectedStore == "Albert") {
-          product = productsProvider.albertProducts.firstWhere((product) => product.id == comparisonProduct!.albertId);
-        }
-        if (selectedStore == "Jumbo") {
-          product = productsProvider.jumboProducts.firstWhere((product) => product.id == comparisonProduct!.jumboId);
-        }
-        if (selectedStore == "Hoogvliet") {
-          product =
-              productsProvider.hoogvlietProducts.firstWhere((product) => product.id == comparisonProduct!.hoogvlietId);
-        }
-      } catch (e) {
-        // print(comparisonProduct.hoogvlietId);
-        print("Error in discountItem: $e");
-      }
-    }
+    product = this.product;
+    selectedStore = productsProvider.getStoreName(product.storeId);
     return GestureDetector(
       onTap: () {
         goToStoreProductPage(product, context);
@@ -124,28 +97,29 @@ class DiscountItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           color: white,
           boxShadow: [
-            BoxShadow(
-                color: shadowColor,
-                blurRadius: 10,
-                offset: Offset(0, -1),
-                blurStyle: BlurStyle.solid),
-            BoxShadow(
-                color: shadowColor,
-                blurRadius: 10,
-                offset: Offset(0, 5),
-                blurStyle: BlurStyle.solid),
+            BoxShadow(color: shadowColor, blurRadius: 10, offset: Offset(0, -1), blurStyle: BlurStyle.solid),
+            BoxShadow(color: shadowColor, blurRadius: 10, offset: Offset(0, 5), blurStyle: BlurStyle.solid),
           ],
         ),
-        margin: EdgeInsets.symmetric(
-            vertical: inGridView ? 0 : 10, horizontal: inGridView ? 0 : 5),
+        margin: EdgeInsets.symmetric(vertical: inGridView ? 0 : 10, horizontal: inGridView ? 0 : 5),
         padding: EdgeInsets.symmetric(horizontal: inGridView ? 10 : 15.w),
         child: Stack(
           alignment: Alignment.bottomRight,
           children: [
             GestureDetector(
-              onTap: (){
-                var listItem = ListItem(storeName: selectedStore, brand: product.brand, id: product.id, name: product.name, price: getPrice(product), text: "", isChecked: false, quantity: 1, imageURL: product.imageURL, size: getProductSize(product));
-                Provider.of<ChatlistsProvider>(context,listen: false).addProductToList(context, listItem);
+              onTap: () {
+                var listItem = ListItem(
+                    storeName: selectedStore,
+                    brand: product.brand,
+                    id: product.id,
+                    name: product.name,
+                    price: getPrice(product),
+                    text: "",
+                    isChecked: false,
+                    quantity: 1,
+                    imageURL: product.image,
+                    size: getProductSize(product));
+                Provider.of<ChatlistsProvider>(context, listen: false).addProductToList(context, listItem);
               },
               child: Container(
                 margin: EdgeInsets.only(bottom: 10.h),
@@ -183,15 +157,15 @@ class DiscountItem extends StatelessWidget {
                 ),
                 SizeContainer(itemSize: getProductSize(product)),
                 10.ph,
-                if(getProductBrand(product).isNotEmpty)
-                SizedBox(
-                  width: 105.w,
-                  child: Text(
-                    getProductBrand(product),
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStylesInter.textViewSemiBold13,
+                if (getProductBrand(product).isNotEmpty)
+                  SizedBox(
+                    width: 105.w,
+                    child: Text(
+                      getProductBrand(product),
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStylesInter.textViewSemiBold13,
+                    ),
                   ),
-                ),
                 5.ph,
                 Text(
                   getProductName(product),
@@ -200,7 +174,11 @@ class DiscountItem extends StatelessWidget {
                   style: TextStylesInter.textViewRegular12.copyWith(color: blackSecondary),
                 ),
                 5.ph,
-                Image.asset(getStoreLogoPath(),width: 60,height: 20,),
+                Image.asset(
+                  getStoreLogoPath(),
+                  width: 60,
+                  height: 20,
+                ),
                 5.ph,
                 Text(
                   "€${getPrice(product)}",
@@ -212,13 +190,13 @@ class DiscountItem extends StatelessWidget {
                     children: [
                       Text(
                         "€" + getOldPrice(product),
-                        style: TextStylesInter.textViewMedium10.copyWith(color: greyText, decoration: TextDecoration.lineThrough),
+                        style: TextStylesInter.textViewMedium10
+                            .copyWith(color: greyText, decoration: TextDecoration.lineThrough),
                       ),
                       3.pw,
                       Text(
                         "${LocaleKeys.save.tr()} €${getDiscountValue(product)}",
-                        style: TextStylesInter.textViewMedium10.copyWith(
-                            color: Color.fromRGBO(24, 195, 54, 1)),
+                        style: TextStylesInter.textViewMedium10.copyWith(color: Color.fromRGBO(24, 195, 54, 1)),
                       ),
                     ],
                   ),
@@ -231,33 +209,31 @@ class DiscountItem extends StatelessWidget {
   }
 
   void goToStoreProductPage(Product product, BuildContext context) {
-     AppNavigator.push(
-          context: context,
-          screen: ProductDetailScreen(
-            productId: product.id,
-            productBrand: product.brand,
-            storeName: selectedStore,
-            productName: product.name,
-            imageURL: product.imageURL,
-            description: product.description,
-            oldPrice: product.oldPrice,
-            price1: double.tryParse(product.price ?? "") ?? 0.0,
-            price2: double.tryParse(product.price2 ?? "") ?? 0.0,
-            size1: product.size,
-            size2: product.size2 ?? "",
-          ));
+    AppNavigator.push(
+        context: context,
+        screen: ProductDetailScreen(
+          productId: product.id,
+          productBrand: product.brand,
+          storeName: selectedStore,
+          productName: product.name,
+          imageURL: product.image,
+          description: product.description,
+          oldPrice: product.oldPrice,
+          price1: double.tryParse(product.price ?? "") ?? 0.0,
+          size1: product.unit, gtin: product.gtin,
+        ));
   }
 
-  String getStoreLogoPath(){
-    if(selectedStore == "Albert"){
+  String getStoreLogoPath() {
+    if (selectedStore == "Albert") {
       return albertLogo;
-    }if(selectedStore == "Jumbo"){
+    }
+    if (selectedStore == "Jumbo") {
       return jumbo;
-    }if(selectedStore == "Hoogvliet"){
+    }
+    if (selectedStore == "Hoogvliet") {
       return hoogvlietLogo;
     }
     return imageError;
   }
-
 }
-

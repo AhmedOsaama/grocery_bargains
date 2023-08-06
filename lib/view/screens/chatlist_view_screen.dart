@@ -7,7 +7,6 @@ import 'package:bargainb/models/user_info.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/button.dart';
-import 'package:bargainb/view/components/draggable_list.dart';
 import 'package:bargainb/view/components/search_widget.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:bargainb/view/screens/contact_profile_screen.dart';

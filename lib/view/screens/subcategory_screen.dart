@@ -196,19 +196,26 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                       itemCount: results.length,
                       itemBuilder: (BuildContext ctx, index) {
                         Product p = Product(
-                            id: results.elementAt(index).id,
-                            oldPrice: results.elementAt(index).oldPrice ?? "",
-                            storeName: results.elementAt(index).storeName,
-                            name: results.elementAt(index).name,
-                            brand: results.elementAt(index).brand,
-                            url: results.elementAt(index).url,
-                            category: results.elementAt(index).category,
-                            price: results.elementAt(index).price,
-                            price2: results.elementAt(index).price2 ?? "",
-                            size: results.elementAt(index).size,
-                            imageURL: results.elementAt(index).imageURL,
-                            description: results.elementAt(index).description,
-                            size2: results.elementAt(index).size2 ?? "");
+                          id: results.elementAt(index).id,
+                          oldPrice: results.elementAt(index).oldPrice ?? "",
+                          storeId: results.elementAt(index).storeId,
+                          name: results.elementAt(index).name,
+                          brand: results.elementAt(index).brand,
+                          link: results.elementAt(index).link,
+                          category: results.elementAt(index).category,
+                          price: results.elementAt(index).price,
+                          unit: results.elementAt(index).unit,
+                          image: results.elementAt(index).image,
+                          description: results.elementAt(index).description,
+                          gtin: results.elementAt(index).gtin,
+                          subCategory: results.elementAt(index).subCategory,
+                          offer: results.elementAt(index).offer,
+                          englishName: results.elementAt(index).englishName,
+                          similarId: results.elementAt(index).similarId,
+                          similarStId: results.elementAt(index).similarStId,
+                          availableNow: results.elementAt(index).availableNow,
+                          dateAdded: results.elementAt(index).dateAdded,
+                        );
                         return DiscountItem(product: p, inGridView: false,);
                       }),
               10.ph,
@@ -248,7 +255,4 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
     );
   }
 
-  Future fetch(int startingIndex) {
-    return Provider.of<ProductsProvider>(context, listen: false).getProducts(startingIndex);
-  }
 }

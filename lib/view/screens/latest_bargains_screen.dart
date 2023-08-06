@@ -14,6 +14,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../models/product.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
 import '../components/search_appBar.dart';
@@ -27,7 +28,7 @@ class LatestBargainsScreen extends StatefulWidget {
 }
 
 class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
-  final PagingController<int, ComparisonProduct> _pagingController =
+  final PagingController<int, Product> _pagingController =
       PagingController(firstPageKey: 0);
   static const _pageSize = 10000000;
   int startingIndex = 0;
@@ -46,7 +47,7 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
   @override
   Widget build(BuildContext context) {
     var comparisonProducts =
-        Provider.of<ProductsProvider>(context, listen: true).comparisonProducts;
+        Provider.of<ProductsProvider>(context, listen: true).products;
     return Scaffold(
         backgroundColor: white,
         appBar: SearchAppBar(isBackButton: true,),
@@ -60,7 +61,7 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
                   children: [
                     10.ph,
                     Expanded(
-                      child: PagedGridView<int, ComparisonProduct>(
+                      child: PagedGridView<int, Product>(
                         shrinkWrap: true,
                         gridDelegate:
                             const SliverGridDelegateWithMaxCrossAxisExtent(
@@ -75,7 +76,7 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
                             itemBuilder: ((context, item, index) {
                           return DiscountItem(
                             inGridView: true,
-                            comparisonProduct: item,
+                            product: item,
                           );
                         })),
                       ),
@@ -93,8 +94,7 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
         // await Provider.of<ProductsProvider>(context, listen: false)
         //     .getLimitedPriceComparisons(pageKey);
       }
-      final newProducts = Provider.of<ProductsProvider>(context, listen: false)
-          .comparisonProducts;
+      final newProducts = Provider.of<ProductsProvider>(context, listen: false).products;
 
       final isLastPage = newProducts.length < _pageSize;
       if (isLastPage) {

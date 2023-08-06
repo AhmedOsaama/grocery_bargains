@@ -5,7 +5,6 @@ import 'package:bargainb/utils/down_triangle_painter.dart';
 import 'package:bargainb/utils/tooltips_keys.dart';
 import 'package:bargainb/view/components/button.dart';
 import 'package:bargainb/view/components/close_button.dart';
-import 'package:bargainb/view/components/draggable_list.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/screens/category_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';

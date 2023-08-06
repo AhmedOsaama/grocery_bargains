@@ -55,7 +55,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final PagingController<int, ComparisonProduct> _pagingController = PagingController(firstPageKey: 0);
+  final PagingController<int, Product> _pagingController = PagingController(firstPageKey: 0);
   static const _pageSize = 100;
 
 
@@ -112,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // await Provider.of<ProductsProvider>(context, listen: false)
         //     .getLimitedProducts(pageKey);
       }
-      final newProducts = Provider.of<ProductsProvider>(context, listen: false).comparisonProducts;
+      final newProducts = Provider.of<ProductsProvider>(context, listen: false).products;
 
       final isLastPage = newProducts.length < _pageSize;
       if (isLastPage) {
@@ -522,11 +522,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       Expanded(
                         child: Consumer<ProductsProvider>(
                           builder: (ctx, provider, _) {
-                            var comparisonProducts = provider.comparisonProducts;
-                            if (comparisonProducts.isEmpty ||
-                                provider.albertProducts.isEmpty ||
-                                provider.jumboProducts.isEmpty ||
-                                provider.hoogvlietProducts.isEmpty) {
+                            var products = provider.products;
+                            if (products.isEmpty)
+                            {
                               return ListView(
                                 children: List<Widget>.generate(
                                     20,
@@ -545,18 +543,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                           ),
                                         )),
                               );
-                            } else {
-                              return PagedGridView<int, ComparisonProduct>(
+                            }
+                            else {
+                              return PagedGridView<int, Product>(
                                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 2,
                                     mainAxisSpacing: 15.h,
                                     // crossAxisSpacing: 5.w,
                                     childAspectRatio: 0.6),
                                 pagingController: _pagingController,
-                                builderDelegate: PagedChildBuilderDelegate<ComparisonProduct>(
-                                    itemBuilder: (context, item, index) => DiscountItem(
+                                builderDelegate: PagedChildBuilderDelegate<Product>(
+                                    itemBuilder: (context, item, index) =>
+                                        DiscountItem(
                                           inGridView: false,
-                                          comparisonProduct: item,
+                                          product: item,
                                         )),
                               );
                             }
@@ -575,27 +575,26 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> goToProductPageTutorial(BuildContext context, BuildContext builder) async {
+    var productsProvider = Provider.of<ProductsProvider>(context,listen: false);
      setState(() {
       isHomeFirstTime = false;
     });
      try {
        Product product = Provider
            .of<ProductsProvider>(context, listen: false)
-           .albertProducts
+           .products
            .first;
        await pushNewScreen(context,
            screen: ProductDetailScreen(
              productId: product.id,
              productBrand: product.brand,
-             storeName: product.storeName,
+             storeName: productsProvider.getStoreName(product.storeId),
              productName: product.name,
-             imageURL: product.imageURL,
+             imageURL: product.image,
              description: product.description,
              oldPrice: product.oldPrice,
-             price1: double.tryParse(product.price2 ?? "") ?? 0.0,
-             price2: 0,
-             size1: product.size,
-             size2: "",
+             price1: double.tryParse(product.price ?? "") ?? 0.0,
+             size1: product.unit, gtin: product.gtin,
            ));
 
        // NavigatorController.jumpToTab(1);

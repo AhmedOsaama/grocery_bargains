@@ -36,13 +36,12 @@ class ProductDetailScreen extends StatefulWidget {
   final String productBrand;
   final int productId;
   final String productName;
+  final String gtin;
   final String imageURL;
   final String description;
   final double? price1;
-  final double? price2;
   final String? oldPrice;
   final String size1;
-  final String size2;
   const ProductDetailScreen({
     Key? key,
     required this.storeName,
@@ -50,12 +49,10 @@ class ProductDetailScreen extends StatefulWidget {
     required this.imageURL,
     required this.description,
     required this.price1,
-    required this.price2,
     required this.size1,
-    required this.size2,
     required this.productId,
     this.oldPrice,
-    required this.productBrand,
+    required this.productBrand, required this.gtin,
   }) : super(key: key);
 
   @override
@@ -63,7 +60,6 @@ class ProductDetailScreen extends StatefulWidget {
 }
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
-  // final productImages = [milk, peach, spar];
   List<ItemSize> productSizes = [];
   var defaultPrice = 0.0;
   bool isLoading = false;
@@ -71,7 +67,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   final comparisonItems = [];
 
   var selectedIndex = 0;
-  // var selectedSizeIndex = 0;
   var bestValueSize = "";
   var cheapest = "";
 
@@ -79,13 +74,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   List<Map> allLists = [];
 
+  late Future getComparisonsFuture;
+
   @override
   void initState() {
     getFirstTime();
     productSizes.addAll([
       ItemSize(price: widget.price1.toString(), size: widget.size1),
-      ItemSize(price: widget.price2.toString(), size: widget.size2),
     ]);
+    getComparisonsFuture = getComparisons();
     try{
     TrackingUtils().trackProductViewed(widget.productId.toString(), widget.storeName, FirebaseAuth.instance.currentUser!.uid);
     TrackingUtils().trackPageVisited("Product Screen", FirebaseAuth.instance.currentUser!.uid);
@@ -117,17 +114,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
     print("BEST VALUE SIZE: $bestValueSize");
 
-    getComparisons();
-
     super.didChangeDependencies();
   }
 
-  void getComparisons() {
+  Future<void> getComparisons() async {
     comparisonItems.clear();
     try {
       var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
       var chatlistsProvider = Provider.of<ChatlistsProvider>(context, listen: false);
-      late ComparisonProduct productComparison;
       var listItem = ListItem(
           id: widget.productId,
           storeName: widget.storeName,
@@ -138,59 +132,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           isChecked: false,
           quantity: quantity,
           imageURL: widget.imageURL,
-          size: widget.size1.isEmpty ? widget.size2 : widget.size1,
+          size: widget.size1,
           text: '');
-      Product albertProduct;
-      Product jumboProduct;
-      Product hoogvlietProduct;
-      if (widget.storeName == "Albert") {
-        productComparison = productsProvider.comparisonProducts
-            .firstWhere((comparisonProduct) => widget.productId == comparisonProduct.albertId);
-      }
-      if (widget.storeName == "Jumbo") {
-        productComparison = productsProvider.comparisonProducts
-            .firstWhere((comparisonProduct) => widget.productId == comparisonProduct.jumboId);
-      }
-      if (widget.storeName == "Hoogvliet") {
-        productComparison = productsProvider.comparisonProducts
-            .firstWhere((comparisonProduct) => widget.productId == comparisonProduct.hoogvlietId);
-      }
-      albertProduct = productsProvider.albertProducts.firstWhere((product) => product.id == productComparison.albertId);
-      jumboProduct = productsProvider.jumboProducts.firstWhere((product) => product.id == productComparison.jumboId);
-      hoogvlietProduct =
-          productsProvider.hoogvlietProducts.firstWhere((product) => product.id == productComparison.hoogvlietId);
+      List<Product> similarProducts = await productsProvider.getSimilarProducts(widget.gtin);
 
-      comparisonItems.add(GestureDetector(
-        onTap: widget.storeName == "Jumbo"
-            ? () => chatlistsProvider.addProductToList(context, listItem)
-            : () => goToStoreProductPage(context, "Jumbo", jumboProduct),
-        child: PriceComparisonItem(
-            isSameStore: widget.storeName == "Jumbo",
-            price: jumboProduct.price ?? "N/A",
-            size: jumboProduct.size,
-            storeImagePath: jumbo),
-      ));
-      comparisonItems.add(
-          GestureDetector(
-            onTap: widget.storeName == "Albert"
+      for(var product in similarProducts){
+        var storeName = productsProvider.getStoreName(product.storeId);
+        if(product.availableNow == 1){
+          comparisonItems.add(GestureDetector(
+            onTap: widget.storeName == storeName
                 ? () => chatlistsProvider.addProductToList(context, listItem)
-                : () => goToStoreProductPage(context, "Albert", albertProduct),
+                : () => goToStoreProductPage(context, storeName, product),
             child: PriceComparisonItem(
-                isSameStore: widget.storeName == "Albert",
-                price: albertProduct.price ?? "N/A",
-                size: albertProduct.size,
-                storeImagePath: albert),
+                isSameStore: widget.storeName == storeName,
+                price: product.price ?? "N/A",
+                size: product.unit,
+                storeImagePath: productsProvider.getStoreLogoPath(storeName)),
           ));
-      comparisonItems.add(GestureDetector(
-        onTap: widget.storeName == "Hoogvliet"
-            ? () => chatlistsProvider.addProductToList(context, listItem)
-            : () => goToStoreProductPage(context, "Hoogvliet", hoogvlietProduct),
-        child: PriceComparisonItem(
-            isSameStore: widget.storeName == "Hoogvliet",
-            price: hoogvlietProduct.price ?? "N/A",
-            size: hoogvlietProduct.size,
-            storeImagePath: hoogLogo),
-      ));
+        }
+      }
     } catch (e) {
       print("Failed to get price comparisons in product detail");
       print(e);
@@ -205,12 +165,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           storeName: selectedStore,
           productBrand: product.brand,
           productName: product.name,
-          imageURL: product.imageURL,
+          imageURL: product.image,
           description: product.description,
           price1: double.tryParse(product.price ?? "") ?? 0.0,
-          price2: double.tryParse(product.price2 ?? "") ?? 0.0,
-          size1: product.size,
-          size2: product.size2 ?? "",
+          size1: product.unit, gtin: product.gtin,
         ));
   }
 
@@ -302,89 +260,95 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ],
                   ),
                   30.ph,
-                  if (comparisonItems.isNotEmpty) ...[
                     Text(
                       "whereToBuy".tr(),
                       style: TextStylesInter.textViewSemiBold16.copyWith(color: blackSecondary),
                     ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: comparisonItems.length,
-                      itemBuilder: (context, index) {
-                        return Showcase.withWidget(
-                          targetBorderRadius: BorderRadius.circular(10),
-                          key: isFirstTime && index == 1 ? TooltipKeys.showCase4 : new GlobalKey<State<StatefulWidget>>(),
-                          tooltipPosition: TooltipPosition.bottom,
-                          container: Container(
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: 11,
-                                  width: 13,
-                                  child: CustomPaint(
-                                    painter: TrianglePainter(
-                                      strokeColor: purple70,
-                                      strokeWidth: 1,
-                                      paintingStyle: PaintingStyle.fill,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(15),
-                                  width: 180.w,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8.r),
-                                    color: purple70,
-                                  ),
-                                  child: Column(
-                                      children: [
-                                        Text(
-                                          "toAddItemsInChat".tr(),
-                                          maxLines: 4,
-                                          style: TextStyles.textViewRegular13.copyWith(color: white),
+                    FutureBuilder(
+                      future: getComparisonsFuture,
+                      builder: (context, snapshot) {
+                        if(snapshot.connectionState == ConnectionState.waiting){
+                          return CircularProgressIndicator();
+                        }
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: comparisonItems.length,
+                          itemBuilder: (context, index) {
+                            return Showcase.withWidget(
+                              targetBorderRadius: BorderRadius.circular(10),
+                              key: isFirstTime && index == 1 ? TooltipKeys.showCase4 : new GlobalKey<State<StatefulWidget>>(),
+                              tooltipPosition: TooltipPosition.bottom,
+                              container: Container(
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height: 11,
+                                      width: 13,
+                                      child: CustomPaint(
+                                        painter: TrianglePainter(
+                                          strokeColor: purple70,
+                                          strokeWidth: 1,
+                                          paintingStyle: PaintingStyle.fill,
                                         ),
-                                        GestureDetector(
-                                          onTap: () async {
-                                            var id = await Provider.of<ChatlistsProvider>(context, listen: false).createChatList([]);
-                                            await pushNewScreen(context,
-                                                screen: ChatListViewScreen(
-                                                  listId: id,
-                                                ),
-                                                withNavBar: false);
-                                            NavigatorController.jumpToTab(1);
-                                            setState(() {
-                                              isFirstTime = false;
-                                            });
-                                            ShowCaseWidget.of(ctx).next();
-                                          },
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.end,
-                                            children: [
-                                              Text(
-                                                "Next".tr(),
-                                                style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                                      ),
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.all(15),
+                                      width: 180.w,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8.r),
+                                        color: purple70,
+                                      ),
+                                      child: Column(
+                                          children: [
+                                            Text(
+                                              "toAddItemsInChat".tr(),
+                                              maxLines: 4,
+                                              style: TextStyles.textViewRegular13.copyWith(color: white),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () async {
+                                                var id = await Provider.of<ChatlistsProvider>(context, listen: false).createChatList([]);
+                                                await pushNewScreen(context,
+                                                    screen: ChatListViewScreen(
+                                                      listId: id,
+                                                    ),
+                                                    withNavBar: false);
+                                                NavigatorController.jumpToTab(1);
+                                                setState(() {
+                                                  isFirstTime = false;
+                                                });
+                                                ShowCaseWidget.of(ctx).next();
+                                              },
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                children: [
+                                                  Text(
+                                                    "Next".tr(),
+                                                    style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                                                  ),
+                                                  Icon(
+                                                    Icons.arrow_forward_ios,
+                                                    color: white,
+                                                    size: 15.sp,
+                                                  )
+                                                ],
                                               ),
-                                              Icon(
-                                                Icons.arrow_forward_ios,
-                                                color: white,
-                                                size: 15.sp,
-                                              )
-                                            ],
-                                          ),
-                                        )
-                                      ]),
+                                            )
+                                          ]),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                          height: 50,
-                          width: 50,
-                          child: comparisonItems[index],
+                              ),
+                              height: 50,
+                              width: 50,
+                              child: comparisonItems[index],
+                            );
+                          },
                         );
-                      },
+                      }
                     ),
-                  ],
                   SizedBox(
                     height: 10.h,
                   ),

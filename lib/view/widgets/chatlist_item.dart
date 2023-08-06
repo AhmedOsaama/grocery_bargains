@@ -96,7 +96,7 @@ class _ChatlistItemState extends State<ChatlistItem> {
               if(isClicked)
                 IconButton(onPressed: () async {
                   var pref = await SharedPreferences.getInstance();
-                  showSearch(context: context, delegate: MySearchDelegate(pref: pref),query: text);
+                  // showSearch(context: context, delegate: MySearchDelegate(pref: pref),query: text);//TODO: uncomment
                 }, icon: Icon(Icons.arrow_right,color: greyText,)),
               Spacer(),
               if(isClicked)
