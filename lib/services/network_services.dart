@@ -57,9 +57,9 @@ class NetworkServices {
     return response;
   }
 
-  static Future<http.Response> getLimitedAlbertProductsByCategory(String category) async {
+  static Future<http.Response> getLimitedAlbertProductsByCategory(String category, int startingIndex) async {
     final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/getLimitedAlbertCategoryProducts?category=$category');
+        'https://europe-west1-discountly.cloudfunctions.net/getLimitedAlbertCategoryProducts?category=$category&startingIndex=$startingIndex');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;

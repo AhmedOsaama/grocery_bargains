@@ -21,8 +21,8 @@ class PriceComparisonItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: isSameStore ? BorderRadius.circular(3) : null,
-        border: isSameStore ? Border.all(color: mainPurple) : Border(bottom: BorderSide(color: purple30)),
+        // borderRadius: isSameStore ? BorderRadius.circular(3) : null,
+        border: Border(bottom: BorderSide(color: purple30)),
       ),
       padding: EdgeInsets.all(10),
       child: Row(
@@ -30,8 +30,8 @@ class PriceComparisonItem extends StatelessWidget {
         children: [
           Image.asset(
             storeImagePath,
-            width: 40,
-            height: 40,
+            width: 50,
+            height: 50,
           ),
           Spacer(),
           Column(

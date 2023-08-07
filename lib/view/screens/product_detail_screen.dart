@@ -245,13 +245,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             increaseQuantity: () {
                               setState(() {
                                 ++quantity;
-                                getComparisons();
+                                // getComparisons();
+                                getComparisonsFuture = getComparisons();
+
                               });
                             },
                             decreaseQuantity: () {
                               setState(() {
                                 quantity--;
-                                getComparisons();
+                                // getComparisons();
+                                getComparisonsFuture = getComparisons();
                               });
                             },
                           ),

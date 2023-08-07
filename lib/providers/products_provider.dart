@@ -37,7 +37,7 @@ class ProductsProvider with ChangeNotifier {
       var product = Product.fromJson(decodedProduct);
       products.add(product);
     }
-    products.shuffle();
+    // products.shuffle();
     this.products.addAll(products);
     notifyListeners();
   }
@@ -70,9 +70,15 @@ class ProductsProvider with ChangeNotifier {
     return response.statusCode;
   }
 
-  List<Product> getProductsByCategory(String category) {
+  Future<List<Product>> getProductsByCategory(String category, int startingIndex) async {
     List<Product> products = [];
-    products.addAll(this.products.where((product) => product.category.trim() == category.trim()));
+    var response = await NetworkServices.getLimitedAlbertProductsByCategory(category, startingIndex);
+    List productsList = jsonDecode(response.body);
+    for(var decodedProduct in productsList){
+      var product = Product.fromJson(decodedProduct);
+      products.add(product);
+    }
+    // products.addAll(this.products.where((product) => product.category.trim() == category.trim()));
     return products;
   }
 

@@ -48,6 +48,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   List<Widget> chipsToShow = [];
   int maxChipsToShow = 6;
   List<Product> products = [];
+  late Future getProductsByCategoryFuture;
   List results = [];
 
   @override
@@ -58,7 +59,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
     }
     var productProvider = Provider.of<ProductsProvider>(context,listen: false);
-    products = productProvider.getProductsByCategory(widget.category);
+    getProductsByCategoryFuture = productProvider.getProductsByCategory(widget.category, 0);
     super.initState();
   }
 
@@ -357,41 +358,51 @@ class _CategoryScreenState extends State<CategoryScreen> {
                        Column(
                         children: [30.ph, Center(child: Text("NoProductsFound".tr()))],
                       ) :
-                    GridView.builder(
-                        physics: ScrollPhysics(), // to disable GridView's scrolling
-                        shrinkWrap: true,
-                        // padding: EdgeInsets.symmetric(horizontal: 15.w),
-                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 200,
-                            mainAxisExtent: 260,
-                            childAspectRatio: 0.67,
-                            crossAxisSpacing: 5,
-                            mainAxisSpacing: 5),
-                        itemCount: results.length,
-                        itemBuilder: (BuildContext ctx, index) {
-                          Product p = Product(
-                              id: results.elementAt(index).id,
-                              oldPrice: results.elementAt(index).oldPrice ?? "",
-                              storeId: results.elementAt(index).storeId,
-                              name: results.elementAt(index).name,
-                              brand: results.elementAt(index).brand,
-                              link: results.elementAt(index).link,
-                              category: results.elementAt(index).category,
-                              price: results.elementAt(index).price,
-                              unit: results.elementAt(index).unit,
-                              image: results.elementAt(index).image,
-                              description: results.elementAt(index).description,
-                            gtin: results.elementAt(index).gtin,
-                            subCategory: results.elementAt(index).subCategory,
-                            offer: results.elementAt(index).offer,
-                            englishName: results.elementAt(index).englishName,
-                            similarId: results.elementAt(index).similarId,
-                            similarStId: results.elementAt(index).similarStId,
-                            availableNow: results.elementAt(index).availableNow,
-                            dateAdded: results.elementAt(index).dateAdded,
-                          );
-                          return DiscountItem(product: p, inGridView: false,);
-                        }),
+                    FutureBuilder(
+                      future: getProductsByCategoryFuture,
+                      builder: (context, snapshot) {
+                        if(snapshot.connectionState == ConnectionState.waiting){
+                          return Center(child: CircularProgressIndicator(),);
+                        }
+                        List products = snapshot.data ?? [];
+                        if(products.isEmpty) return Center(child: Text("NoProductsFound".tr()));
+                        return GridView.builder(
+                            physics: ScrollPhysics(), // to disable GridView's scrolling
+                            shrinkWrap: true,
+                            // padding: EdgeInsets.symmetric(horizontal: 15.w),
+                            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 200,
+                                mainAxisExtent: 260,
+                                childAspectRatio: 0.67,
+                                crossAxisSpacing: 5,
+                                mainAxisSpacing: 5),
+                            itemCount: results.length,
+                            itemBuilder: (BuildContext ctx, index) {
+                              Product p = Product(
+                                  id: results.elementAt(index).id,
+                                  oldPrice: results.elementAt(index).oldPrice ?? "",
+                                  storeId: results.elementAt(index).storeId,
+                                  name: results.elementAt(index).name,
+                                  brand: results.elementAt(index).brand,
+                                  link: results.elementAt(index).link,
+                                  category: results.elementAt(index).category,
+                                  price: results.elementAt(index).price,
+                                  unit: results.elementAt(index).unit,
+                                  image: results.elementAt(index).image,
+                                  description: results.elementAt(index).description,
+                                gtin: results.elementAt(index).gtin,
+                                subCategory: results.elementAt(index).subCategory,
+                                offer: results.elementAt(index).offer,
+                                englishName: results.elementAt(index).englishName,
+                                similarId: results.elementAt(index).similarId,
+                                similarStId: results.elementAt(index).similarStId,
+                                availableNow: results.elementAt(index).availableNow,
+                                dateAdded: results.elementAt(index).dateAdded,
+                              );
+                              return DiscountItem(product: p, inGridView: false,);
+                            });
+                      }
+                    ),
                 10.ph,
               ],
             ),
