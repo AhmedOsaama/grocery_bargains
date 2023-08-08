@@ -30,8 +30,7 @@ class LatestBargainsScreen extends StatefulWidget {
 class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
   final PagingController<int, Product> _pagingController =
       PagingController(firstPageKey: 0);
-  static const _pageSize = 10000000;
-  int startingIndex = 0;
+  static const _pageSize = 100;
 
   @override
   void initState() {
@@ -62,7 +61,7 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
                     10.ph,
                     Expanded(
                       child: PagedGridView<int, Product>(
-                        shrinkWrap: true,
+                        // shrinkWrap: true,
                         gridDelegate:
                             const SliverGridDelegateWithMaxCrossAxisExtent(
                                 maxCrossAxisExtent: 200,
@@ -89,12 +88,11 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
   Future<void> _fetchPage(int pageKey) async {
     try {
       print("PAGE KEY: " + pageKey.toString());
-      log("new page $pageKey");
       if (pageKey > 0) {
         // await Provider.of<ProductsProvider>(context, listen: false)
         //     .getLimitedPriceComparisons(pageKey);
       }
-      final newProducts = Provider.of<ProductsProvider>(context, listen: false).products;
+      final newProducts = await Provider.of<ProductsProvider>(context, listen: false).getProducts(pageKey + 214354);
 
       final isLastPage = newProducts.length < _pageSize;
       if (isLastPage) {
@@ -103,7 +101,6 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
         int nextPageKey = pageKey + newProducts.length;
         _pagingController.appendPage(newProducts, nextPageKey);
       }
-      startingIndex++;
     } catch (error) {
       _pagingController.error = "Something wrong ! Please try again";
     }

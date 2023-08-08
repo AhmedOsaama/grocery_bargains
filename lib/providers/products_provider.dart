@@ -57,7 +57,7 @@ class ProductsProvider with ChangeNotifier {
   Future<Product> getProductById(int id) async {
     var response = await NetworkServices.getProductById(id);
     List productsList = jsonDecode(response.body);
-      var product = Product.fromJson(productsList[0]);
+    var product = Product.fromJson(productsList[0]);
     return product;
   }
 

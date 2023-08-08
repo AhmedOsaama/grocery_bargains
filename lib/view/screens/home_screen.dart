@@ -526,6 +526,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           if (products.isEmpty)
                           {
                             return ListView(
+                              shrinkWrap: true,
                               children: List<Widget>.generate(
                                   20,
                                   (index) => Shimmer(

@@ -48,7 +48,7 @@ class NetworkServices {
 
   static Future<http.Response> getProductById(int id) async {
     final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/get_new_product_by_id?id=$id');
+        'https://europe-west1-discountly.cloudfunctions.net/get_new_products_by_id?id=$id');
     var response =
     await http.get(url, headers: {'Content-Type': 'application/json'});
     return response;
@@ -85,27 +85,30 @@ class NetworkServices {
   //searches
 
   static Future<http.Response> searchAlbertProducts(String searchTerm,  bool isRelevant) async {
-    var relevant = isRelevant ? 1 : 0;
+    // var relevant = isRelevant ? 1 : 0;
+    var relevant = 1;
     final url = Uri.parse(
-        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new/?tableName=albert&searchIndex=$searchTerm&relevant=$relevant&limit=100');
+        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new/?tableName=albert&searchIndex=$searchTerm&relevant=$relevant&limit=150');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;
   }
 
   static Future<http.Response> searchJumboProducts(String searchTerm, bool isRelevant) async {
-    var relevant = isRelevant ? 1 : 0;
+    // var relevant = isRelevant ? 1 : 0;
+    var relevant = 1;
     final url = Uri.parse(
-        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new/?tableName=jumbo&searchIndex=$searchTerm&relevant=$relevant&limit=100');
+        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new/?tableName=jumbo&searchIndex=$searchTerm&relevant=$relevant&limit=150');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;
   }
 
   static Future<http.Response> searchHoogvlietProducts(String searchTerm,  bool isRelevant) async {
-    var relevant = isRelevant ? 1 : 0;
+    // var relevant = isRelevant ? 1 : 0;
+    var relevant = 1;
     final url = Uri.parse(
-        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new/?tableName=hoogvliet&searchIndex=$searchTerm&relevant=$relevant&limit=100');
+        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new/?tableName=hoogvliet&searchIndex=$searchTerm&relevant=$relevant&limit=150');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;

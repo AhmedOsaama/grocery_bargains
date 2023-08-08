@@ -122,7 +122,8 @@ class MySearchDelegate extends SearchDelegate {
                               });
                             },
                             items:
-                                <String>['Sort', "Relevance", 'Low price', 'High price'].map<DropdownMenuItem<String>>((String value) {
+                                // <String>['Sort', "Relevance", 'Low price', 'High price'].map<DropdownMenuItem<String>>((String value) {
+                                <String>['Sort', 'Low price', 'High price'].map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Text(
@@ -175,6 +176,7 @@ class MySearchDelegate extends SearchDelegate {
                               crossAxisCount: 2, mainAxisSpacing: 15.h, childAspectRatio: 0.6),
                           itemCount: results.length,
                           itemBuilder: (ctx, i) {
+                            // return Text(results[i].id.toString());
                             return DiscountItem(
                               inGridView: false,
                               product: results[i],
@@ -182,6 +184,36 @@ class MySearchDelegate extends SearchDelegate {
                           },
                         ),
                       ),
+                      // isFetching ? Center(child: CircularProgressIndicator()) :
+                      // GenericButton(
+                      //     borderRadius: BorderRadius.circular(10),
+                      //     borderColor: mainPurple,
+                      //     color: Colors.white,
+                      //     onPressed: () async {
+                      //       var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
+                      //       setState(() {
+                      //         isFetching = true;
+                      //       });
+                      //       try {
+                      //         var startingIndex = allProducts.last.id + 1;
+                      //         print("StartingIndex: " + startingIndex.toString());
+                      //         await productsProvider.getProducts(startingIndex);
+                      //         // all.addAll(newProducts);
+                      //       }catch(e){
+                      //         print(e);
+                      //       }
+                      //       setState(() {
+                      //         isFetching = false;
+                      //       });
+                      //     },
+                      //     child: Row(
+                      //       mainAxisAlignment: MainAxisAlignment.center,
+                      //       children: [
+                      //         Text("SEE MORE",style: TextStyles.textViewMedium12.copyWith(color: blackSecondary),),
+                      //         10.pw,
+                      //         Icon(Icons.keyboard_arrow_down,color: Colors.black,),
+                      //       ],
+                      //     )),
                     ],
                   );
                 }),
@@ -201,15 +233,16 @@ class MySearchDelegate extends SearchDelegate {
       results = List.from(searchResults);
     }
     if (sortDropdownValue != "Sort" && storeDropdownValue == "Store") {
-      if(sortDropdownValue != 'Relevance'){
         results = productProvider.sortProducts(sortDropdownValue, results);
-      }else{
-        // setState((){
-        // print("SHOWING RESULTS");
-        // buildResults(context);
-          // getSearchResultsFuture = Provider.of<ProductsProvider>(context, listen: false).searchProducts(query, true);
-        // });
-      }
+      // if(sortDropdownValue != 'Relevance'){
+      //   results = productProvider.sortProducts(sortDropdownValue, results);
+      // }else{
+      //   // setState((){
+      //   // print("SHOWING RESULTS");
+      //   // buildResults(context);
+      //     // getSearchResultsFuture = Provider.of<ProductsProvider>(context, listen: false).searchProducts(query, true);
+      //   // });
+      // }
     }
     if (sortDropdownValue == "Sort" && storeDropdownValue != "Store") {
       if (storeDropdownValue == "Albert Heijn") {
@@ -228,13 +261,14 @@ class MySearchDelegate extends SearchDelegate {
         results =
             searchResults.where((searchResult) => productProvider.getStoreName(searchResult?.storeId ?? 0) == storeDropdownValue).toList();
       }
-      if(sortDropdownValue != 'Relevance'){
         results = productProvider.sortProducts(sortDropdownValue, results);
-      }else{
-        // setState((){
-        //   showResults(context);
-        // });
-      }
+      // if(sortDropdownValue != 'Relevance'){
+      //   results = productProvider.sortProducts(sortDropdownValue, results);
+      // }else{
+      //   // setState((){
+      //   //   showResults(context);
+      //   // });
+      // }
     }
     TrackingUtils().trackSearchPerformed("$sortDropdownValue, $storeDropdownValue", FirebaseAuth.instance.currentUser!.uid, "");
     return results;
