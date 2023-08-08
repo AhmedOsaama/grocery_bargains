@@ -45,6 +45,7 @@ import '../../services/dynamic_link_service.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/icons_manager.dart';
 import '../../utils/tracking_utils.dart';
+import '../components/button.dart';
 import '../widgets/discountItem.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -57,6 +58,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PagingController<int, Product> _pagingController = PagingController(firstPageKey: 0);
   static const _pageSize = 100;
+  static const _startingIndex = 214354;
 
 
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
@@ -72,6 +74,10 @@ class _HomeScreenState extends State<HomeScreen> {
   // int startingIndex = 0;
   bool isHomeFirstTime = false;
   bool dialogOpened = false;
+
+  var isFetching = false;
+
+  late Future getProductsFuture;
 
 
   Future<Null> getFirstTime() async {
@@ -91,10 +97,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    _pagingController.addPageRequestListener((pageKey) {
-      _fetchPage(pageKey);
-    });
+    // _pagingController.addPageRequestListener((pageKey) {
+    //   _fetchPage(pageKey);
+    // });
     super.initState();
+    getProductsFuture = Provider.of<ProductsProvider>(context, listen: false).getProducts(_startingIndex);
     getAllListsFuture = Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlistsFuture();
     if (FirebaseAuth.instance.currentUser != null) {
       getUserDataFuture =
@@ -210,27 +217,20 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           body: SafeArea(
-            child: Container(
-              /*  decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                begin: Alignment(0, 0.2),
-                end: Alignment.bottomCenter,
-                //stops: [0.5, 0.7, 0.9, 1],
-                colors: [white, shadowColor, shadowColor],
-              )), */
-              child: RefreshIndicator(
-                onRefresh: () {
-                  setState(() {
-                    getAllListsFuture = Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlistsFuture();
-                    if (FirebaseAuth.instance.currentUser != null) {
-                      getUserDataFuture = FirebaseFirestore.instance
-                          .collection('/users')
-                          .doc(FirebaseAuth.instance.currentUser!.uid)
-                          .get();
-                    }
-                  });
-                  return Future.value();
-                },
+            child: RefreshIndicator(
+              onRefresh: () {
+                setState(() {
+                  getAllListsFuture = Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlistsFuture();
+                  if (FirebaseAuth.instance.currentUser != null) {
+                    getUserDataFuture = FirebaseFirestore.instance
+                        .collection('/users')
+                        .doc(FirebaseAuth.instance.currentUser!.uid)
+                        .get();
+                  }
+                });
+                return Future.value();
+              },
+              child: SingleChildScrollView(
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15.w),
                   child: Column(
@@ -519,50 +519,166 @@ class _HomeScreenState extends State<HomeScreen> {
                               ))
                         ],
                       ),
-                      Expanded(
-                        child: Consumer<ProductsProvider>(
-                          builder: (ctx, provider, _) {
-                            var products = provider.products;
-                            if (products.isEmpty)
-                            {
-                              return ListView(
-                                children: List<Widget>.generate(
-                                    20,
-                                    (index) => Shimmer(
-                                          duration: Duration(seconds: 2),
-                                          colorOpacity: 0.7,
-                                          child: Container(
-                                            height: 253.h,
-                                            width: 174.w,
-                                            margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                                            padding: EdgeInsets.symmetric(horizontal: 15.w),
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(10),
-                                              color: purple10,
-                                            ),
+                      Consumer<ProductsProvider>(
+                        builder: (ctx, provider, _) {
+                          var products = provider.products;
+                          allProducts = products;
+                          if (products.isEmpty)
+                          {
+                            return ListView(
+                              children: List<Widget>.generate(
+                                  20,
+                                  (index) => Shimmer(
+                                        duration: Duration(seconds: 2),
+                                        colorOpacity: 0.7,
+                                        child: Container(
+                                          height: 253.h,
+                                          width: 174.w,
+                                          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                                          padding: EdgeInsets.symmetric(horizontal: 15.w),
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(10),
+                                            color: purple10,
                                           ),
-                                        )),
-                              );
-                            }
-                            else {
-                              return PagedGridView<int, Product>(
-                                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    mainAxisSpacing: 15.h,
-                                    // crossAxisSpacing: 5.w,
-                                    childAspectRatio: 0.6),
-                                pagingController: _pagingController,
-                                builderDelegate: PagedChildBuilderDelegate<Product>(
-                                    itemBuilder: (context, item, index) =>
-                                        DiscountItem(
-                                          inGridView: false,
-                                          product: item,
-                                        )),
-                              );
-                            }
-                          },
-                        ),
+                                        ),
+                                      )),
+                            );
+                          }
+                          else {
+                            return GridView.builder(
+                                physics: ScrollPhysics(), // to disable GridView's scrolling
+                                shrinkWrap: true,
+                                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                                    maxCrossAxisExtent: 200,
+                                    mainAxisExtent: 260,
+                                    childAspectRatio: 0.67,
+                                    crossAxisSpacing: 5,
+                                    mainAxisSpacing: 5),
+                                itemCount: products.length,
+                                itemBuilder: (BuildContext ctx, index) {
+                                  Product p = Product(
+                                    id: products.elementAt(index).id,
+                                    oldPrice: products.elementAt(index).oldPrice ?? "",
+                                    storeId: products.elementAt(index).storeId,
+                                    name: products.elementAt(index).name,
+                                    brand: products.elementAt(index).brand,
+                                    link: products.elementAt(index).link,
+                                    category: products.elementAt(index).category,
+                                    price: products.elementAt(index).price,
+                                    unit: products.elementAt(index).unit,
+                                    image: products.elementAt(index).image,
+                                    description: products.elementAt(index).description,
+                                    gtin: products.elementAt(index).gtin,
+                                    subCategory: products.elementAt(index).subCategory,
+                                    offer: products.elementAt(index).offer,
+                                    englishName: products.elementAt(index).englishName,
+                                    similarId: products.elementAt(index).similarId,
+                                    similarStId: products.elementAt(index).similarStId,
+                                    availableNow: products.elementAt(index).availableNow,
+                                    dateAdded: products.elementAt(index).dateAdded,
+                                  );
+                                  return DiscountItem(
+                                    product: p,
+                                    inGridView: false,
+                                  );
+                                });
+
+                            // return FutureBuilder(
+                            //     future: getProductsFuture,
+                            //     builder: (context, snapshot) {
+                            //       if (snapshot.connectionState == ConnectionState.waiting) {
+                            //         return Center(
+                            //           child: CircularProgressIndicator(),
+                            //         );
+                            //       }
+                            //       if (products.isEmpty) products.addAll(snapshot.data ?? []);
+                            //       return GridView.builder(
+                            //           physics: ScrollPhysics(), // to disable GridView's scrolling
+                            //           shrinkWrap: true,
+                            //           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                            //               maxCrossAxisExtent: 200,
+                            //               mainAxisExtent: 260,
+                            //               childAspectRatio: 0.67,
+                            //               crossAxisSpacing: 5,
+                            //               mainAxisSpacing: 5),
+                            //           itemCount: results.length,
+                            //           itemBuilder: (BuildContext ctx, index) {
+                            //             Product p = Product(
+                            //               id: results.elementAt(index).id,
+                            //               oldPrice: results.elementAt(index).oldPrice ?? "",
+                            //               storeId: results.elementAt(index).storeId,
+                            //               name: results.elementAt(index).name,
+                            //               brand: results.elementAt(index).brand,
+                            //               link: results.elementAt(index).link,
+                            //               category: results.elementAt(index).category,
+                            //               price: results.elementAt(index).price,
+                            //               unit: results.elementAt(index).unit,
+                            //               image: results.elementAt(index).image,
+                            //               description: results.elementAt(index).description,
+                            //               gtin: results.elementAt(index).gtin,
+                            //               subCategory: results.elementAt(index).subCategory,
+                            //               offer: results.elementAt(index).offer,
+                            //               englishName: results.elementAt(index).englishName,
+                            //               similarId: results.elementAt(index).similarId,
+                            //               similarStId: results.elementAt(index).similarStId,
+                            //               availableNow: results.elementAt(index).availableNow,
+                            //               dateAdded: results.elementAt(index).dateAdded,
+                            //             );
+                            //             return DiscountItem(
+                            //               product: p,
+                            //               inGridView: false,
+                            //             );
+                            //           });
+                            //     });
+
+
+                            // return PagedGridView<int, Product>(
+                            //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            //       crossAxisCount: 2,
+                            //       mainAxisSpacing: 15.h,
+                            //       // crossAxisSpacing: 5.w,
+                            //       childAspectRatio: 0.6),
+                            //   pagingController: _pagingController,
+                            //   builderDelegate: PagedChildBuilderDelegate<Product>(
+                            //       itemBuilder: (context, item, index) =>
+                            //           DiscountItem(
+                            //             inGridView: false,
+                            //             product: item,
+                            //           )),
+                            // );
+                          }
+                        },
                       ),
+                      isFetching ? Center(child: CircularProgressIndicator()) :
+                      GenericButton(
+                          borderRadius: BorderRadius.circular(10),
+                          borderColor: mainPurple,
+                          color: Colors.white,
+                          onPressed: () async {
+                            var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
+                            setState(() {
+                              isFetching = true;
+                            });
+                            try {
+                              var startingIndex = allProducts.last.id + 1;
+                              print("StartingIndex: " + startingIndex.toString());
+                              await productsProvider.getProducts(startingIndex);
+                              // all.addAll(newProducts);
+                            }catch(e){
+                              print(e);
+                            }
+                            setState(() {
+                              isFetching = false;
+                            });
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text("SEE MORE",style: TextStyles.textViewMedium12.copyWith(color: blackSecondary),),
+                              10.pw,
+                              Icon(Icons.keyboard_arrow_down,color: Colors.black,),
+                            ],
+                          )),
                     ],
                   ),
                 ),

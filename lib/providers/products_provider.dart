@@ -54,6 +54,13 @@ class ProductsProvider with ChangeNotifier {
     return products;
   }
 
+  Future<Product> getProductById(int id) async {
+    var response = await NetworkServices.getProductById(id);
+    List productsList = jsonDecode(response.body);
+      var product = Product.fromJson(productsList[0]);
+    return product;
+  }
+
   Future<void> getAllProducts() async {
     await getProducts(0).catchError((e) => print(e));
     print("Total number of products: ${products.length}");
@@ -172,8 +179,9 @@ class ProductsProvider with ChangeNotifier {
   }
 
 
-  void goToProductPage(String storeName, BuildContext context, int productId) {
-    var product = products.firstWhere((element) => element.id == productId);
+  Future<void> goToProductPage(String storeName, BuildContext context, int productId) async {
+    var product = await getProductById(productId);
+    // var product = products.firstWhere((element) => element.id == productId);
     AppNavigator.push(
         context: context,
         screen: ProductDetailScreen(

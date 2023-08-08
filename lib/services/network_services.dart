@@ -36,15 +36,23 @@ class NetworkServices {
     return response;
   }
 
+  //by id
 
   static Future<http.Response> getSimilarProducts(String gtin) async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/get_products_by_gtin?gtin=$gtin');
     var response =
-        await http.get(url, headers: {'Content-Type': 'application/json'});
+    await http.get(url, headers: {'Content-Type': 'application/json'});
     return response;
   }
 
+  static Future<http.Response> getProductById(int id) async {
+    final url = Uri.parse(
+        'https://europe-west1-discountly.cloudfunctions.net/get_new_product_by_id?id=$id');
+    var response =
+    await http.get(url, headers: {'Content-Type': 'application/json'});
+    return response;
+  }
 
   //"limited" requests
 
