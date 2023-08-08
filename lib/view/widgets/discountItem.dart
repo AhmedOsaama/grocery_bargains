@@ -169,7 +169,7 @@ class DiscountItem extends StatelessWidget {
                 5.ph,
                 Text(
                   getProductName(product),
-                  maxLines: 3,
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStylesInter.textViewRegular12.copyWith(color: blackSecondary),
                 ),

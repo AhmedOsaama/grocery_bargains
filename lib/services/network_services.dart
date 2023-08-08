@@ -65,9 +65,9 @@ class NetworkServices {
     return response;
   }
 
-  static Future<http.Response> getLimitedAlbertProductsBySubCategory(String subCategory) async {
+  static Future<http.Response> getLimitedAlbertProductsBySubCategory(String subCategory, int startingIndex) async {
     final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/getLimitedAlbertSubCategoryProducts?sub=$subCategory');
+        'https://europe-west1-discountly.cloudfunctions.net/getLimitedAlbertSubCategoryProducts?subCategory=$subCategory&startingIndex=$startingIndex');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;
@@ -76,25 +76,28 @@ class NetworkServices {
 
   //searches
 
-  static Future<http.Response> searchAlbertProducts(String searchTerm) async {
+  static Future<http.Response> searchAlbertProducts(String searchTerm,  bool isRelevant) async {
+    var relevant = isRelevant ? 1 : 0;
     final url = Uri.parse(
-        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new?tableName=products&searchIndex=$searchTerm');
+        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new/?tableName=albert&searchIndex=$searchTerm&relevant=$relevant&limit=100');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;
   }
 
-  static Future<http.Response> searchJumboProducts(String searchTerm) async {
+  static Future<http.Response> searchJumboProducts(String searchTerm, bool isRelevant) async {
+    var relevant = isRelevant ? 1 : 0;
     final url = Uri.parse(
-        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new?tableName=jumbo&searchIndex=$searchTerm');
+        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new/?tableName=jumbo&searchIndex=$searchTerm&relevant=$relevant&limit=100');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;
   }
 
-  static Future<http.Response> searchHoogvlietProducts(String searchTerm) async {
+  static Future<http.Response> searchHoogvlietProducts(String searchTerm,  bool isRelevant) async {
+    var relevant = isRelevant ? 1 : 0;
     final url = Uri.parse(
-        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new?tableName=hoogvliet&searchIndex=$searchTerm');
+        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new/?tableName=hoogvliet&searchIndex=$searchTerm&relevant=$relevant&limit=100');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;

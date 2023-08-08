@@ -45,26 +45,26 @@ class Product {
 
 
   Product.fromJson(Map<String, dynamic> json){
-    id = json['id'];
-    name = json['name'];
-    gtin = json['gtin'];
-    link = json['link'];
-    category = json['category'];
-    subCategory = json['sub_category'];
-    price = json['price'];
-    unit = json['unit'];
-    pricePerUnit = json['price_per_unit'];
-    oldPrice = json['old_price'];
-    offer = json['offer'];
+    id = json['id'] ?? -1;
+    name = json['name'] ?? 'N/A';
+    gtin = json['gtin'] ?? 'N/A';
+    link = json['link'] ?? 'N/A';
+    category = json['category'] ?? 'N/A';
+    subCategory = json['sub_category'] ?? 'N/A';
+    price = json['price'] ?? 'N/A';
+    unit = json['unit'] ?? 'N/A';
+    pricePerUnit = json['price_per_unit'] ?? 'N/A';
+    oldPrice = json['old_price'] ?? 'N/A';
+    offer = json['offer'] ?? 'N/A';
     brand = json['brand'] ?? 'N/A';
-    image = json['image'];
-    description = json['description'];
-    englishName = json['english_name'];
-    storeId = json['store_id'];
-    similarId = json['similar_id'];
-    similarStId = json['similar_st_id'];
-    availableNow = json['available_now'];
-    dateAdded = json['date_added'];
+    image = json['image'] ?? 'N/A';
+    description = json['description'] ?? 'N/A';
+    englishName = json['english_name'] ?? 'N/A';
+    storeId = json['store_id'] ?? -1;
+    similarId = json['similar_id'] ?? 'N/A';
+    similarStId = json['similar_st_id'] ?? 'N/A';
+    availableNow = json['available_now'] ?? -1;
+    dateAdded = json['date_added'] ?? 'N/A';
   }
 
   Map<String, dynamic> toJson() {

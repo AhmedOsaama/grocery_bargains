@@ -29,7 +29,7 @@ class ProductsProvider with ChangeNotifier {
 
   ///gettingAll
 
-  Future<void> getProducts(int startingIndex) async {
+  Future<List<Product>> getProducts(int startingIndex) async {
     List<Product> products = [];
     var response = await NetworkServices.getLimitedProducts(startingIndex);
     List productsList = jsonDecode(response.body);
@@ -40,6 +40,7 @@ class ProductsProvider with ChangeNotifier {
     // products.shuffle();
     this.products.addAll(products);
     notifyListeners();
+    return products;
   }
 
   Future<List<Product>> getSimilarProducts(String gtin) async {
@@ -72,19 +73,23 @@ class ProductsProvider with ChangeNotifier {
 
   Future<List<Product>> getProductsByCategory(String category, int startingIndex) async {
     List<Product> products = [];
-    var response = await NetworkServices.getLimitedAlbertProductsByCategory(category, startingIndex);
+    var response = await NetworkServices.getLimitedAlbertProductsByCategory(category.trim(), startingIndex);
     List productsList = jsonDecode(response.body);
-    for(var decodedProduct in productsList){
+    for(var decodedProduct in productsList) {
       var product = Product.fromJson(decodedProduct);
       products.add(product);
     }
-    // products.addAll(this.products.where((product) => product.category.trim() == category.trim()));
     return products;
   }
 
-  List<Product> getProductsBySubCategory(String subCategory) {
+  Future<List<Product>> getProductsBySubCategory(String subCategory, int startingIndex) async {
     List<Product> products = [];
-    products.addAll(this.products.where((product) => product.subCategory.trim() == subCategory.trim()));
+    var response = await NetworkServices.getLimitedAlbertProductsBySubCategory(subCategory.trim(), startingIndex);
+    List productsList = jsonDecode(response.body);
+    for(var decodedProduct in productsList) {
+      var product = Product.fromJson(decodedProduct);
+      products.add(product);
+    }
     return products;
   }
 
@@ -127,28 +132,44 @@ class ProductsProvider with ChangeNotifier {
 
 
 
-  // Future<List<Product?>> searchProducts(String searchTerm) async {
-  //   var response = await Future.wait([
-  //     NetworkServices.searchAlbertProducts(searchTerm),
-  //     NetworkServices.searchJumboProducts(searchTerm),
-  //     NetworkServices.searchHoogvlietProducts(searchTerm),
-  //   ]);
-  //   var albertProducts = convertToProductListFromJson(jsonDecode(response[0].body));
-  //
-  //   List decodedProductsList = jsonDecode(response[1].body);
-  //   var jumboProducts = decodedProductsList.map((decodedProduct) {
-  //     var jumboProduct = convertToJumboProductFromJson(decodedProduct);
-  //     if (jumboProduct != null) {
-  //       return jumboProduct;
-  //     }
-  //   }).toList();
-  //
-  //   var hoogvlietProducts = convertToHoogvlietProductListFromJson(jsonDecode(response[2].body));
-  //
-  //   var searchResult = [...jumboProducts, ...albertProducts, ...hoogvlietProducts];
-  //   TrackingUtils().trackSearchPerformed("filter", FirebaseAuth.instance.currentUser!.uid, searchTerm);
-  //   return searchResult;
-  // }
+  Future<List<Product?>> searchProducts(String searchTerm, bool isRelevant) async {
+    try {
+      var response = await Future.wait([
+        NetworkServices.searchAlbertProducts(searchTerm, isRelevant),
+        NetworkServices.searchJumboProducts(searchTerm, isRelevant),
+        NetworkServices.searchHoogvlietProducts(searchTerm, isRelevant),
+      ]);
+
+      List<Product> albertProducts = [];
+      List decodedAlbert = jsonDecode(response[0].body);
+      for (var decodedProduct in decodedAlbert) {
+        var product = Product.fromJson(decodedProduct);
+        albertProducts.add(product);
+      }
+
+      List<Product> jumboProducts = [];
+      List decodedJumbo = jsonDecode(response[1].body);
+      for (var decodedProduct in decodedJumbo) {
+        var product = Product.fromJson(decodedProduct);
+        jumboProducts.add(product);
+      }
+
+      List<Product> hoogvlietProducts = [];
+      List decodedHoogvliet = jsonDecode(response[2].body);
+      for (var decodedProduct in decodedHoogvliet) {
+        var product = Product.fromJson(decodedProduct);
+        hoogvlietProducts.add(product);
+      }
+
+      var searchResult = [...jumboProducts, ...albertProducts, ...hoogvlietProducts];
+      TrackingUtils().trackSearchPerformed("filter", FirebaseAuth.instance.currentUser!.uid, searchTerm);
+      return searchResult;
+    }catch(e){
+      print(e);
+      return [];
+    }
+
+  }
 
 
   void goToProductPage(String storeName, BuildContext context, int productId) {

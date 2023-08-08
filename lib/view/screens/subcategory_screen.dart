@@ -20,6 +20,7 @@ import 'package:bargainb/view/screens/product_detail_screen.dart';
 import '../../config/routes/app_navigator.dart';
 import '../../models/product.dart';
 import '../../utils/tracking_utils.dart';
+import '../components/button.dart';
 import '../components/search_appBar.dart';
 import '../widgets/discountItem.dart';
 
@@ -32,8 +33,6 @@ class SubCategoryScreen extends StatefulWidget {
 }
 
 class _SubCategoryScreenState extends State<SubCategoryScreen> {
-  late Future getProductsBySubCategoryFuture;
-
   var isLoading = false;
   TextStyle textButtonStyle = TextStylesInter.textViewRegular16.copyWith(color: mainPurple);
   bool switchValue = false;
@@ -43,15 +42,17 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
   String storeDropdownValue = 'Store';
   List products = [];
   List results = [];
+  late Future getProductsBySubCategoryFuture;
+
+  var isFetching = false;
 
   @override
   void initState() {
-    var productProvider = Provider.of<ProductsProvider>(context,listen: false);
-    products = productProvider.getProductsBySubCategory(widget.subCategory);
-    try{
-    TrackingUtils().trackPageVisited("Subcategory Screen", FirebaseAuth.instance.currentUser!.uid);
-    }catch(e){
-    }
+    var productProvider = Provider.of<ProductsProvider>(context, listen: false);
+    try {
+      TrackingUtils().trackPageVisited("Subcategory Screen", FirebaseAuth.instance.currentUser!.uid);
+      getProductsBySubCategoryFuture = productProvider.getProductsBySubCategory(widget.subCategory, 0);
+    } catch (e) {}
     super.initState();
   }
 
@@ -64,43 +65,43 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
     }
     if (sortDropdownValue == "Sort" && storeDropdownValue != "Store") {
       if (storeDropdownValue == "Albert Heijn") {
+        results = products.where((product) => productProvider.getStoreName(product?.storeId) == "Albert").toList();
+      } else {
         results =
-            products.where((product) => product?.storeName == "Albert").toList();
-      }else{
-        results =
-            products.where((product) => product?.storeName == storeDropdownValue).toList();
+            products.where((product) => productProvider.getStoreName(product?.storeId) == storeDropdownValue).toList();
       }
     }
     if (sortDropdownValue != "Sort" && storeDropdownValue != "Store") {
       if (storeDropdownValue == "Albert Heijn") {
+        results = products.where((product) => productProvider.getStoreName(product?.storeId) == "Albert").toList();
+      } else {
         results =
-            products.where((product) => product?.storeName == "Albert").toList();
-      }else{
-        results =
-            products.where((product) => product?.storeName == storeDropdownValue).toList();
+            products.where((product) => productProvider.getStoreName(product?.storeId) == storeDropdownValue).toList();
       }
       results = productProvider.sortProducts(sortDropdownValue, results);
     }
-    TrackingUtils().trackSearchPerformed("$sortDropdownValue, $storeDropdownValue", FirebaseAuth.instance.currentUser!.uid, "");
+    try {
+      TrackingUtils()
+          .trackSearchPerformed("$sortDropdownValue, $storeDropdownValue", FirebaseAuth.instance.currentUser!.uid, "");
+    } catch (e) {}
     return results;
   }
 
-
   @override
   Widget build(BuildContext context) {
-    var productProvider = Provider.of<ProductsProvider>(context,listen: false);
-     results = filterProducts(results, products, productProvider);
+    var productProvider = Provider.of<ProductsProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: white,
-      appBar: SearchAppBar(isBackButton: true,),
+      appBar: SearchAppBar(
+        isBackButton: true,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 15.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                  children: [
+              Row(children: [
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 15.w),
                   decoration: BoxDecoration(color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r))),
@@ -120,8 +121,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                         sortDropdownValue = newValue!;
                       });
                     },
-                    items:
-                    <String>['Sort', 'Low price', 'High price'].map<DropdownMenuItem<String>>((String value) {
+                    items: <String>['Sort', 'Low price', 'High price'].map<DropdownMenuItem<String>>((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(
@@ -174,50 +174,95 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                 style: TextStylesInter.textViewSemiBold16.copyWith(color: black2),
               ),
               10.ph,
-              results.isEmpty ?
-                     Center(
+              FutureBuilder(
+                  future: getProductsBySubCategoryFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    if (products.isEmpty) products.addAll(snapshot.data ?? []);
+                    if (products.isEmpty) return Center(child: Text("NoProductsFound".tr()));
+                    results = filterProducts(results, products, productProvider);
+                    return GridView.builder(
+                        physics: ScrollPhysics(), // to disable GridView's scrolling
+                        shrinkWrap: true,
+                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 200,
+                            mainAxisExtent: 260,
+                            childAspectRatio: 0.67,
+                            crossAxisSpacing: 5,
+                            mainAxisSpacing: 5),
+                        itemCount: results.length,
+                        itemBuilder: (BuildContext ctx, index) {
+                          Product p = Product(
+                            id: results.elementAt(index).id,
+                            oldPrice: results.elementAt(index).oldPrice ?? "",
+                            storeId: results.elementAt(index).storeId,
+                            name: results.elementAt(index).name,
+                            brand: results.elementAt(index).brand,
+                            link: results.elementAt(index).link,
+                            category: results.elementAt(index).category,
+                            price: results.elementAt(index).price,
+                            unit: results.elementAt(index).unit,
+                            image: results.elementAt(index).image,
+                            description: results.elementAt(index).description,
+                            gtin: results.elementAt(index).gtin,
+                            subCategory: results.elementAt(index).subCategory,
+                            offer: results.elementAt(index).offer,
+                            englishName: results.elementAt(index).englishName,
+                            similarId: results.elementAt(index).similarId,
+                            similarStId: results.elementAt(index).similarStId,
+                            availableNow: results.elementAt(index).availableNow,
+                            dateAdded: results.elementAt(index).dateAdded,
+                          );
+                          return DiscountItem(
+                            product: p,
+                            inGridView: false,
+                          );
+                        });
+                  }),
+              isFetching
+                  ? Center(child: CircularProgressIndicator())
+                  : GenericButton(
+                      borderRadius: BorderRadius.circular(10),
+                      borderColor: mainPurple,
+                      color: Colors.white,
+                      onPressed: results.isEmpty
+                          ? () {}
+                          : () async {
+                              setState(() {
+                                isFetching = true;
+                              });
+                              try {
+                                var startingIndex = results.last.id + 1;
+                                print("StartingIndex: " + startingIndex.toString());
+                                var newProducts =
+                                    await productProvider.getProductsBySubCategory(widget.subCategory, startingIndex);
+                                products.addAll(newProducts);
+                              } catch (e) {
+                                print(e);
+                              }
+                              // results = filterProducts(results, products, productProvider);
+                              setState(() {
+                                isFetching = false;
+                              });
+                            },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          50.ph,
-                          Text("NoProductsFound".tr()),
+                          Text(
+                            "SEE MORE",
+                            style: TextStyles.textViewMedium12.copyWith(color: blackSecondary),
+                          ),
+                          10.pw,
+                          Icon(
+                            Icons.keyboard_arrow_down,
+                            color: Colors.black,
+                          ),
                         ],
-                      ),
-                    ) :
-                   GridView.builder(
-                      physics: ScrollPhysics(), // to disable GridView's scrolling
-                      shrinkWrap: true,
-                      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 200,
-                          mainAxisExtent: 260,
-                          childAspectRatio: 0.67,
-                          crossAxisSpacing: 5,
-                          mainAxisSpacing: 5),
-                      itemCount: results.length,
-                      itemBuilder: (BuildContext ctx, index) {
-                        Product p = Product(
-                          id: results.elementAt(index).id,
-                          oldPrice: results.elementAt(index).oldPrice ?? "",
-                          storeId: results.elementAt(index).storeId,
-                          name: results.elementAt(index).name,
-                          brand: results.elementAt(index).brand,
-                          link: results.elementAt(index).link,
-                          category: results.elementAt(index).category,
-                          price: results.elementAt(index).price,
-                          unit: results.elementAt(index).unit,
-                          image: results.elementAt(index).image,
-                          description: results.elementAt(index).description,
-                          gtin: results.elementAt(index).gtin,
-                          subCategory: results.elementAt(index).subCategory,
-                          offer: results.elementAt(index).offer,
-                          englishName: results.elementAt(index).englishName,
-                          similarId: results.elementAt(index).similarId,
-                          similarStId: results.elementAt(index).similarStId,
-                          availableNow: results.elementAt(index).availableNow,
-                          dateAdded: results.elementAt(index).dateAdded,
-                        );
-                        return DiscountItem(product: p, inGridView: false,);
-                      }),
+                      )),
               10.ph,
             ],
           ),
@@ -254,5 +299,4 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
       children: chips,
     );
   }
-
 }

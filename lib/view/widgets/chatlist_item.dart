@@ -96,7 +96,7 @@ class _ChatlistItemState extends State<ChatlistItem> {
               if(isClicked)
                 IconButton(onPressed: () async {
                   var pref = await SharedPreferences.getInstance();
-                  // showSearch(context: context, delegate: MySearchDelegate(pref: pref),query: text);//TODO: uncomment
+                  showSearch(context: context, delegate: MySearchDelegate(pref: pref),query: text);
                 }, icon: Icon(Icons.arrow_right,color: greyText,)),
               Spacer(),
               if(isClicked)
@@ -215,7 +215,7 @@ class _ChatlistItemState extends State<ChatlistItem> {
                   105.pw,
                   SizeContainer(itemSize: itemSize),
                   10.pw,
-                  if (itemOldPrice != null && itemOldPrice.isNotEmpty) ...[
+                  if (itemOldPrice != null && itemOldPrice.isNotEmpty && itemOldPrice != "N/A") ...[
                     Text(
                       "€ ${itemOldPrice}",
                       // "€ 2.33",

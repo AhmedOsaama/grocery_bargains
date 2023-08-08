@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
   TextStyle textButtonStyle = TextStylesInter.textViewRegular16.copyWith(color: mainPurple);
 
   List<BestValueItem> bestValueBargains = [];
-  int startingIndex = 0;
+  // int startingIndex = 0;
   bool isHomeFirstTime = false;
   bool dialogOpened = false;
 
@@ -110,9 +110,9 @@ class _HomeScreenState extends State<HomeScreen> {
       print("PAGE KEY: " + pageKey.toString());
       if (pageKey > 0) {
         // await Provider.of<ProductsProvider>(context, listen: false)
-        //     .getLimitedProducts(pageKey);
+        //     .getProducts(pageKey + 214354);
       }
-      final newProducts = Provider.of<ProductsProvider>(context, listen: false).products;
+      final newProducts = await Provider.of<ProductsProvider>(context, listen: false).getProducts(pageKey + 214354);
 
       final isLastPage = newProducts.length < _pageSize;
       if (isLastPage) {
@@ -121,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
         int nextPageKey = pageKey + newProducts.length;
         _pagingController.appendPage(newProducts, nextPageKey);
       }
-      startingIndex++;
+      // startingIndex++;
     } catch (error) {
       _pagingController.error = "Something wrong ! Please try again";
     }
