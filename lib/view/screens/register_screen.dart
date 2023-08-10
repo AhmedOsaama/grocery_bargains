@@ -515,6 +515,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               phoneNumber: phoneNumber,
               resendOtp: () =>
                   _submitAuthForm(email, username, phoneNumber, context),
+              canResend: true,
               isSignUp: true,
             ));
   }

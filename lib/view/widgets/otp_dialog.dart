@@ -13,11 +13,12 @@ class OtpDialog extends StatelessWidget {
   final String phoneNumber;
   final bool isSignUp;
   final Function resendOtp;
+  final bool canResend;
   OtpDialog(
       {Key? key,
       required this.phoneNumber,
       required this.resendOtp,
-      required this.isSignUp})
+      required this.isSignUp, required this.canResend})
       : super(key: key);
 
   var pin = '';
@@ -77,6 +78,7 @@ class OtpDialog extends StatelessWidget {
                   style: TextStylesInter.textViewSemiBold15,
                 )),
             30.ph,
+            if(canResend)
             GestureDetector(
               onTap: () async {
                 AppNavigator.pop(context: context);

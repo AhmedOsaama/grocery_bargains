@@ -440,6 +440,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               phoneNumber: phone,
               resendOtp: () => verifyPhoneNumber(phone),
               isSignUp: false,
+          canResend: true,
             ));
   }
 }
