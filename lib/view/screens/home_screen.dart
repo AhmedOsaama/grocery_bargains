@@ -138,11 +138,15 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     var chatlistProvider = Provider.of<ChatlistsProvider>(context,listen: false);
     return ShowCaseWidget(
-      // onFinish: (){
-      //   // print("TUTORIAL FINISHED");
-      //   // chatlistProvider.stopwatch.stop();
-      //   // print("STOPWATCH: " + chatlistProvider.stopwatch.elapsed.inSeconds.toString());
-      // },
+      onStart: (_,i){
+        var user = FirebaseAuth.instance.currentUser;
+        if(user != null){
+        var userId = user.uid;
+        TrackingUtils().trackOnboardingStarted(userId, DateTime.now().toUtc().toString(),);
+        }else{
+          TrackingUtils().trackOnboardingStarted("Guest", DateTime.now().toUtc().toString(),);
+        }
+      },
       builder: Builder(builder: (builder) {
         if (isHomeFirstTime && !dialogOpened) {
           WidgetsBinding.instance.addPostFrameCallback((_) {

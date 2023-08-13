@@ -146,12 +146,12 @@ class _SupportScreenState extends State<SupportScreen> {
         'user_message': userMessage,
       }
     })).then((value) {
+      TrackingUtils().trackUserFeedback(FirebaseAuth.instance.currentUser!.uid);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(LocaleKeys.messageSentSuccessfully.tr())));
       AppNavigator.pop(context: context);
     }
     ).catchError((e){
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(LocaleKeys.somethingWentWrong.tr())));
     });
-    TrackingUtils().trackUserFeedback(FirebaseAuth.instance.currentUser!.uid);
   }
 }

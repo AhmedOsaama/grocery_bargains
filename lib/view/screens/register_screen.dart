@@ -82,6 +82,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,
               content: Text("PhoneNumberAlready".tr())));
+          TrackingUtils().trackUserRegistrationFailed("PhoneNumberAlready".tr());
           return;
         }
         var result1 = await FirebaseFirestore.instance
@@ -92,6 +93,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,
               content: Text("EmailAlready".tr())));
+          TrackingUtils().trackUserRegistrationFailed("EmailAlready".tr());
           return;
         }
         var userCredential = await loginWithPhoneNumber(phoneNumber);
@@ -120,6 +122,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,
               content: Text("ThisPhoneNumber".tr())));
+          TrackingUtils().trackFailedLogin("credential error");
           return;
         }
         var userCredential = await loginWithPhoneNumber(phoneNumber);

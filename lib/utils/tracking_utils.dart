@@ -43,7 +43,7 @@ class TrackingUtils {
     FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(userRegistrationFailedEvent)..addCustomData(errorMessageKey, errorMessage));
   }
 
-  void trackOnboarding(String userId, String timeStamp, String duration){
+  void trackOnboardingFinished(String userId, String timeStamp, String duration){
     mixpanel.track(onboardingEvent, properties: {
       userIdKey: userId,
       timeStampKey: timeStamp,
@@ -53,6 +53,18 @@ class TrackingUtils {
       ..addCustomData(userIdKey, userId)
         ..addCustomData(timeStampKey, timeStamp)
         ..addCustomData("Onboarding duration", duration)
+    );
+
+  }
+
+  void trackOnboardingStarted(String userId, String timeStamp){
+    mixpanel.track(onboardingEvent, properties: {
+      userIdKey: userId,
+      timeStampKey: timeStamp,
+    });
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(onboardingEvent)
+      ..addCustomData(userIdKey, userId)
+        ..addCustomData(timeStampKey, timeStamp)
     );
 
   }

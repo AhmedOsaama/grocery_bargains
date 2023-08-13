@@ -80,7 +80,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
         chatlistsProvider.stopwatch.stop();
         var onboardingDuration = chatlistsProvider.stopwatch.elapsed.inSeconds.toString();
         print("Onboarding duration: " + onboardingDuration);
-        TrackingUtils().trackOnboarding(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), onboardingDuration);
+        TrackingUtils().trackOnboardingFinished(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), onboardingDuration);
       },
       builder: Builder(builder: (showCaseContext){
         WidgetsBinding.instance.addPostFrameCallback((_) async {
