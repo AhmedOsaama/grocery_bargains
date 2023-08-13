@@ -179,8 +179,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       body: ShowCaseWidget(
         builder: Builder(builder: (ctx){
           WidgetsBinding.instance.addPostFrameCallback((_) async {
-            if (isFirstTime && FirebaseAuth.instance.currentUser != null) {
+            if (isFirstTime && FirebaseAuth.instance.currentUser != null ) {
+              getComparisonsFuture.whenComplete((){
               ShowCaseWidget.of(ctx).startShowCase([TooltipKeys.showCase4]);
+              });
             }
           });
          return SingleChildScrollView(
@@ -271,7 +273,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       future: getComparisonsFuture,
                       builder: (context, snapshot) {
                         if(snapshot.connectionState == ConnectionState.waiting){
-                          return CircularProgressIndicator();
+                          return Center(child: CircularProgressIndicator());
                         }
                         return ListView.builder(
                           shrinkWrap: true,
@@ -280,7 +282,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           itemBuilder: (context, index) {
                             return Showcase.withWidget(
                               targetBorderRadius: BorderRadius.circular(10),
-                              key: isFirstTime && index == 1 ? TooltipKeys.showCase4 : new GlobalKey<State<StatefulWidget>>(),
+                              key: isFirstTime && index == 0 ? TooltipKeys.showCase4 : new GlobalKey<State<StatefulWidget>>(),
                               tooltipPosition: TooltipPosition.bottom,
                               container: Container(
                                 child: Column(

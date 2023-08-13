@@ -6,6 +6,7 @@ import 'package:bargainb/providers/google_sign_in_provider.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/search_appBar.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
+import 'package:bargainb/view/screens/register_screen.dart';
 import 'package:bargainb/view/screens/subscription_screen.dart';
 import 'package:bargainb/view/screens/support_screen.dart';
 import 'package:bargainb/view/widgets/otp_dialog.dart';
@@ -28,6 +29,7 @@ import 'package:bargainb/view/screens/settings_screen.dart';
 import 'package:bargainb/view/widgets/setting_row.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,10 +54,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void updateUserDataFuture() {
-    getUserDataFuture = FirebaseFirestore.instance
-        .collection('/users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get();
+    getUserDataFuture =
+        FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
   }
 
   bool isEditing = false;
@@ -71,24 +71,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
         //canonicalUrl: '',
         title: "Profile Page",
         imageUrl:
-        'https://play-lh.googleusercontent.com/u6LMBvrIXH6r1LFQftqjSzebxflasn-nhcoZUlP6DjWHV6fmrwgNFyjJeFwFmckrySHF=w240-h480-rw',
-        contentDescription:
-        'Hey, Check out this profile page',
+            'https://play-lh.googleusercontent.com/u6LMBvrIXH6r1LFQftqjSzebxflasn-nhcoZUlP6DjWHV6fmrwgNFyjJeFwFmckrySHF=w240-h480-rw',
+        contentDescription: 'Hey, Check out this profile page',
         // keywords: ['Plugin', 'Branch', 'Flutter'],
         publiclyIndex: true,
         locallyIndex: true,
-        contentMetadata: BranchContentMetaData()
-          ..addCustomMetadata('page', '/profile-screen'));
+        contentMetadata: BranchContentMetaData()..addCustomMetadata('page', '/profile-screen'));
     BranchLinkProperties lp = BranchLinkProperties(
-      //alias: 'flutterplugin', //define link url,
+        //alias: 'flutterplugin', //define link url,
         channel: 'Profile',
         feature: 'sharing',
         stage: 'new share',
         campaign: "Profile sharing",
         tags: ['tag-1']);
-    BranchResponse response =
-    await FlutterBranchSdk.getShortUrl(buo: buo, linkProperties: lp);
-    FlutterBranchSdk.trackContent(buo: [buo], branchEvent: BranchEvent.standardEvent(BranchStandardEvent.INVITE)..addCustomData("shared-page", "Profile"));
+    BranchResponse response = await FlutterBranchSdk.getShortUrl(buo: buo, linkProperties: lp);
+    FlutterBranchSdk.trackContent(
+        buo: [buo],
+        branchEvent: BranchEvent.standardEvent(BranchStandardEvent.INVITE)..addCustomData("shared-page", "Profile"));
     if (response.success) {
       print('Link generated: ${response.result}');
     } else {
@@ -97,12 +96,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Share.share(response.result);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Consumer<GoogleSignInProvider>(builder: (ctx, provider, _) {
       return Scaffold(
-       appBar: SearchAppBar(isBackButton: false),
+        appBar: SearchAppBar(isBackButton: false),
         body: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -121,56 +119,74 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ));
                     }
+                    if(snapshot.data!.data() == null){
+                      return TextButton(
+                          onPressed: () async {
+                            await Clipboard.setData(ClipboardData(text: "${FirebaseAuth.instance.currentUser!.uid}"));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("UID Copied successfully, please send it to the developer")));
+                            FirebaseAuth.instance.signOut();
+                            AppNavigator.pushReplacement(context: context, screen: RegisterScreen());
+                      },child: Text("Something went wrong while fetching the profile data. \n\n UID: ${FirebaseAuth.instance.currentUser!.uid}\n\nClick to logout"));
+                    }
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        isEditing ? Align(
-                          alignment: Alignment.topRight,
-                            child: TextButton(onPressed: () async {
-                              await saveProfileChanges();
-                            }, child: Text(LocaleKeys.save.tr()))) : Container(),
+                        Row(
+                          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            if(isEditing)
+                              TextButton(
+                                  onPressed: () async {
+                                    setState(() {
+                                      isEditing = !isEditing;
+                                    });
+                                  },
+                                  child: Text(LocaleKeys.cancel.tr())),
+                            Spacer(),
+                            isEditing
+                                ? TextButton(
+                                    onPressed: () async {
+                                      await saveProfileChanges();
+                                    },
+                                    child: Text(LocaleKeys.save.tr()))
+                                :  TextButton(
+                                    onPressed: () async {
+                                      setState(() {
+                                        isEditing = !isEditing;
+                                      });
+                                    },
+                                    child: Text(LocaleKeys.edit.tr())),
+                          ],
+                        ),
                         Center(
                           child: Column(
                             children: [
                               CircleAvatar(
-                                backgroundImage:
-                                    getUserImage(snapshot) as ImageProvider,
+                                backgroundImage: getUserImage(snapshot),
                                 radius: isEditing ? 50 : 100,
                               ),
                               if (isEditing) ...[
                                 TextButton(
                                     onPressed: () async {
-                                      ImageSource sourcePicker =
-                                          Platform.isAndroid
-                                              ? await showModalBottomSheet(
-                                                  context: context,
-                                                  builder: (ctx) =>
-                                                      ImageSourcePickerSheet())
-                                              : await showCupertinoModalPopup(
-                                                  context: context,
-                                                  builder: (ctx) =>
-                                                      ImageSourcePickerSheet());
+                                      ImageSource sourcePicker = Platform.isAndroid
+                                          ? await showModalBottomSheet(
+                                              context: context, builder: (ctx) => ImageSourcePickerSheet())
+                                          : await showCupertinoModalPopup(
+                                              context: context, builder: (ctx) => ImageSourcePickerSheet());
                                       // if(sourcePicker == ImageSource.gallery){
                                       try {
-                                        final image = await ImagePicker()
-                                            .pickImage(source: sourcePicker);
+                                        final image = await ImagePicker().pickImage(source: sourcePicker);
                                         if (image == null) return;
                                         final imageFile = File(image.path);
-                                        final userImageRef = FirebaseStorage
-                                            .instance
+                                        final userImageRef = FirebaseStorage.instance
                                             .ref()
                                             .child('user_image')
-                                            .child(
-                                                '${FirebaseAuth.instance.currentUser!.uid}.jpg');
-                                        await userImageRef
-                                            .putFile(imageFile)
-                                            .whenComplete(() => null);
-                                        final url =
-                                            await userImageRef.getDownloadURL();
+                                            .child('${FirebaseAuth.instance.currentUser!.uid}.jpg');
+                                        await userImageRef.putFile(imageFile).whenComplete(() => null);
+                                        final url = await userImageRef.getDownloadURL();
                                         await FirebaseFirestore.instance
                                             .collection('users')
-                                            .doc(FirebaseAuth
-                                                .instance.currentUser!.uid)
+                                            .doc(FirebaseAuth.instance.currentUser!.uid)
                                             .update({
                                           'imageURL': url,
                                         });
@@ -184,27 +200,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     },
                                     child: Text(
                                       "Change".tr(),
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: 17.sp,
-                                          color: mainPurple),
+                                      style: TextStyle(fontWeight: FontWeight.w400, fontSize: 17.sp, color: mainPurple),
                                     ))
                               ],
                               !isEditing ? 10.ph : Container(),
                               if (!isEditing) ...[
                                 Text(
                                   snapshot.data!['username'],
-                                  style: TextStyle(
-                                      fontSize: 28.sp,
-                                      fontWeight: FontWeight.w600),
+                                  style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.w600),
                                 ),
                                 4.ph,
                                 Text(
                                   snapshot.data!['email'],
-                                  style: TextStyle(
-                                      fontSize: 14.sp,
-                                      fontWeight: FontWeight.w300,
-                                      color: Colors.grey),
+                                  style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w300, color: Colors.grey),
                                 ),
                               ],
                             ],
@@ -233,8 +241,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               color: mainPurple,
                             ),
                             settingText: "Subscription",
-                            onTap: () => AppNavigator.push(
-                                context: context, screen: SubscriptionScreen()),
+                            onTap: () => AppNavigator.push(context: context, screen: SubscriptionScreen()),
                           ),
                           Divider(),
                           10.ph,
@@ -244,8 +251,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               color: mainPurple,
                             ),
                             settingText: LocaleKeys.settings.tr(),
-                            onTap: () => AppNavigator.push(
-                                context: context, screen: SettingsScreen()),
+                            onTap: () => AppNavigator.push(context: context, screen: SettingsScreen()),
                           ),
                           Divider(),
                           10.ph,
@@ -256,8 +262,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 SharedPreferences.getInstance().then((value) {
                                   value.remove("firstTime");
                                 });
-                                pushNewScreen(context,
-                                    screen: MainScreen(), withNavBar: false);
+                                pushNewScreen(context, screen: MainScreen(), withNavBar: false);
                               }),
                           Divider(),
                           10.ph,
@@ -268,16 +273,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ),
                               settingText: LocaleKeys.support.tr(),
                               onTap: () {
-                                pushNewScreen(context,
-                                    screen: SupportScreen(), withNavBar: true);
+                                pushNewScreen(context, screen: SupportScreen(), withNavBar: true);
                               }),
                           10.ph
                         ],
                         if (isEditing) ...[
                           Text(
                             "Name".tr(),
-                            style: TextStylesDMSans.textViewMedium13
-                                .copyWith(color: Colors.grey),
+                            style: TextStylesDMSans.textViewMedium13.copyWith(color: Colors.grey),
                           ),
                           TextFormField(
                             onChanged: (value) {
@@ -291,8 +294,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           20.ph,
                           Text(
                             LocaleKeys.phone.tr(),
-                            style: TextStylesDMSans.textViewMedium13
-                                .copyWith(color: Colors.grey),
+                            style: TextStylesDMSans.textViewMedium13.copyWith(color: Colors.grey),
                           ),
                           TextFormField(
                             onChanged: (value) {
@@ -302,14 +304,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               });
                             },
                             initialValue: snapshot.data!['phoneNumber'],
-                            decoration:
-                                InputDecoration(hintText: "+31 (097) 999-9999"),
+                            decoration: InputDecoration(hintText: "+31 (097) 999-9999"),
                           ),
                           20.ph,
                           Text(
                             "YourStatus".tr(),
-                            style: TextStylesDMSans.textViewMedium13
-                                .copyWith(color: Colors.grey),
+                            style: TextStylesDMSans.textViewMedium13.copyWith(color: Colors.grey),
                           ),
                           TextFormField(
                             onChanged: (value) {
@@ -319,9 +319,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               });
                             },
                             initialValue:
-                                snapshot.data!['status'].toString().isEmpty
-                                    ? status
-                                    : snapshot.data!['status'],
+                                snapshot.data!['status'].toString().isEmpty ? status : snapshot.data!['status'],
                           ),
                           10.ph,
                         ]
@@ -350,10 +348,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         await verifyPhoneNumber(phone);
       }
       if (!isPhoneEdited) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .update(data);
+        await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update(data);
         setState(() {
           updateUserDataFuture();
         });
@@ -368,41 +363,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
     TrackingUtils().trackAccountSettingsUpdated(FirebaseAuth.instance.currentUser!.uid);
   }
 
-  Object getUserImage(
-      AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
-    return snapshot.data!['imageURL'] != ""
-        ? NetworkImage(snapshot.data!['imageURL'])
-        : AssetImage(personImage);
+  dynamic getUserImage(AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+    try{
+    return snapshot.data!['imageURL'] != "" ? NetworkImage(snapshot.data!['imageURL']) : AssetImage(personImage);
+    }catch(e){
+      print(e);
+      Sentry.captureMessage("Something went wrong while fetching the profile picture. \n UID: ${FirebaseAuth.instance.currentUser!.uid}");
+      return AssetImage(personImage);
+    }
   }
 
   Future<void> verifyPhoneNumber(String phone) async {
     setState(() {
       if (isEditing) isPhoneEdited = false;
     });
-    var result = await FirebaseFirestore.instance
-        .collection('users')
-        .where('phoneNumber', isEqualTo: phone)
-        .get();
+    var result = await FirebaseFirestore.instance.collection('users').where('phoneNumber', isEqualTo: phone).get();
     if (result.docs.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          backgroundColor: Theme.of(context).colorScheme.error,
-          content: Text("PhoneNumberAlready".tr())));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: Text("PhoneNumberAlready".tr())));
       return;
     }
     await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phone,
         verificationCompleted: (phoneCredential) {},
         verificationFailed: (e) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(e.message.toString())));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message.toString())));
         },
         codeSent: (String verificationId, int? resendToken) async {
           var otp = await showOtpDialog();
 
           String smsCode = otp;
 
-          PhoneAuthCredential credential = PhoneAuthProvider.credential(
-              verificationId: verificationId, smsCode: smsCode);
+          PhoneAuthCredential credential =
+              PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
           try {
             await FirebaseAuth.instance.signInWithCredential(credential);
             Map<String, Object?> data = {};
@@ -426,8 +419,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           } on FirebaseAuthException catch (e) {
             log(e.message!);
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                backgroundColor: Theme.of(context).colorScheme.error,
-                content: Text(e.message ?? "invalidOTP".tr())));
+                backgroundColor: Theme.of(context).colorScheme.error, content: Text(e.message ?? "invalidOTP".tr())));
           }
         },
         codeAutoRetrievalTimeout: (message) {});
@@ -440,7 +432,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               phoneNumber: phone,
               resendOtp: () => verifyPhoneNumber(phone),
               isSignUp: false,
-          canResend: true,
+              canResend: true,
             ));
   }
 }
