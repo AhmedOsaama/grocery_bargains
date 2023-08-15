@@ -69,8 +69,6 @@ class MySearchDelegate extends SearchDelegate {
   Widget buildResults(BuildContext context) {
     var productProvider = Provider.of<ProductsProvider>(context, listen: false);
     if (query.isNotEmpty) saveRecentSearches();
-    print('Relevance :');
-    print(sortDropdownValue == 'Relevance');
     // getSearchResultsFuture = Provider.of<ProductsProvider>(context, listen: false).searchProducts(query, sortDropdownValue == 'Relevance');
     return StatefulBuilder(
       builder: (context, setS) {

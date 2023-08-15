@@ -92,7 +92,7 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
         // await Provider.of<ProductsProvider>(context, listen: false)
         //     .getLimitedPriceComparisons(pageKey);
       }
-      final newProducts = await Provider.of<ProductsProvider>(context, listen: false).getProducts(pageKey + 214354);
+      final newProducts = await Provider.of<ProductsProvider>(context, listen: false).getProducts(pageKey);
 
       final isLastPage = newProducts.length < _pageSize;
       if (isLastPage) {

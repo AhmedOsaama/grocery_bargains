@@ -58,7 +58,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PagingController<int, Product> _pagingController = PagingController(firstPageKey: 0);
   static const _pageSize = 100;
-  static const _startingIndex = 214354;
+  static const _pageNumber = 1;
 
 
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
     //   _fetchPage(pageKey);
     // });
     super.initState();
-    getProductsFuture = Provider.of<ProductsProvider>(context, listen: false).getProducts(_startingIndex);
+    getProductsFuture = Provider.of<ProductsProvider>(context, listen: false).getProducts(_pageNumber);
     getAllListsFuture = Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlistsFuture();
     if (FirebaseAuth.instance.currentUser != null) {
       getUserDataFuture =
@@ -119,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
         // await Provider.of<ProductsProvider>(context, listen: false)
         //     .getProducts(pageKey + 214354);
       }
-      final newProducts = await Provider.of<ProductsProvider>(context, listen: false).getProducts(pageKey + 214354);
+      final newProducts = await Provider.of<ProductsProvider>(context, listen: false).getProducts(_pageNumber);
 
       final isLastPage = newProducts.length < _pageSize;
       if (isLastPage) {
@@ -555,7 +555,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 shrinkWrap: true,
                                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                                     maxCrossAxisExtent: 200,
-                                    mainAxisExtent: 260,
+                                    mainAxisExtent: 275,
                                     childAspectRatio: 0.67,
                                     crossAxisSpacing: 5,
                                     mainAxisSpacing: 5),
@@ -665,9 +665,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               isFetching = true;
                             });
                             try {
-                              var startingIndex = allProducts.last.id + 1;
-                              print("StartingIndex: " + startingIndex.toString());
-                              await productsProvider.getProducts(startingIndex);
+                              var pageNumber = _pageNumber + 1;
+                              print("StartingIndex: " + pageNumber.toString());
+                              await productsProvider.getProducts(pageNumber);
                               // all.addAll(newProducts);
                             }catch(e){
                               print(e);

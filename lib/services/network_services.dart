@@ -57,9 +57,9 @@ class NetworkServices {
   //"limited" requests
 
 
-  static Future<http.Response> getLimitedProducts(int startingIndex) async {
+  static Future<http.Response> getLimitedProducts(int startingIndex,int limit) async {                  //starting index is the page number(i.e 1,2,3...)
     final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/get_limited_new_products?startingIndex=$startingIndex');
+        'https://europe-west1-discountly.cloudfunctions.net/get_limited_latest_products?startingIndex=$startingIndex&numberPerPage=$limit');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;

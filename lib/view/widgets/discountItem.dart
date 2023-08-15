@@ -156,7 +156,7 @@ class DiscountItem extends StatelessWidget {
                   ),
                 ),
                 SizeContainer(itemSize: getProductSize(product)),
-                10.ph,
+                5.ph,
                 if (getProductBrand(product).isNotEmpty)
                   SizedBox(
                     width: 105.w,
@@ -182,7 +182,7 @@ class DiscountItem extends StatelessWidget {
                 5.ph,
                 Text(
                   "€${getPrice(product)}",
-                  style: TextStylesInter.textViewBold18,
+                  style: TextStylesInter.textViewBold16,
                 ),
                 3.ph,
                 if (getDiscountValue(product) != null)

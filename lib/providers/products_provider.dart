@@ -29,9 +29,9 @@ class ProductsProvider with ChangeNotifier {
 
   ///gettingAll
 
-  Future<List<Product>> getProducts(int startingIndex) async {
+  Future<List<Product>> getProducts(int startingIndex,) async {
     List<Product> products = [];
-    var response = await NetworkServices.getLimitedProducts(startingIndex);
+    var response = await NetworkServices.getLimitedProducts(startingIndex, 100);
     List productsList = jsonDecode(response.body);
     for(var decodedProduct in productsList){
       var product = Product.fromJson(decodedProduct);
@@ -168,7 +168,7 @@ class ProductsProvider with ChangeNotifier {
         hoogvlietProducts.add(product);
       }
 
-      var searchResult = [...jumboProducts, ...albertProducts, ...hoogvlietProducts];
+      var searchResult = [...albertProducts, ...jumboProducts, ...hoogvlietProducts];
       TrackingUtils().trackSearchPerformed("filter", FirebaseAuth.instance.currentUser!.uid, searchTerm);
       return searchResult;
     }catch(e){
