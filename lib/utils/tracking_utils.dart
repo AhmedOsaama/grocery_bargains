@@ -9,7 +9,8 @@ class TrackingUtils {
 
   static const userRegistrationSuccessEvent = 'User Registration Success';
   static const userRegistrationFailedEvent = 'User Registration Failed';
-  static const onboardingEvent = 'Onboarding started/finished';
+  static const onboardingStartedEvent = 'Onboarding Started';
+  static const onboardingFinishedEvent = 'Onboarding Finished';
   static const phonePlatformRegisteredEvent = 'Phone Platform registered';
   static const successfulLoginEvent = 'Successful login';
   static const failedLoginEvent = 'Failed login';
@@ -44,12 +45,12 @@ class TrackingUtils {
   }
 
   void trackOnboardingFinished(String userId, String timeStamp, String duration){
-    mixpanel.track(onboardingEvent, properties: {
+    mixpanel.track(onboardingFinishedEvent, properties: {
       userIdKey: userId,
       timeStampKey: timeStamp,
       "Onboarding duration": duration
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(onboardingEvent)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(onboardingFinishedEvent)
       ..addCustomData(userIdKey, userId)
         ..addCustomData(timeStampKey, timeStamp)
         ..addCustomData("Onboarding duration", duration)
@@ -58,11 +59,11 @@ class TrackingUtils {
   }
 
   void trackOnboardingStarted(String userId, String timeStamp){
-    mixpanel.track(onboardingEvent, properties: {
+    mixpanel.track(onboardingStartedEvent, properties: {
       userIdKey: userId,
       timeStampKey: timeStamp,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(onboardingEvent)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(onboardingStartedEvent)
       ..addCustomData(userIdKey, userId)
         ..addCustomData(timeStampKey, timeStamp)
     );
