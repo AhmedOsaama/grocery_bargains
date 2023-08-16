@@ -29,7 +29,7 @@ class LatestBargainsScreen extends StatefulWidget {
 
 class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
   final PagingController<int, Product> _pagingController =
-      PagingController(firstPageKey: 0);
+      PagingController(firstPageKey: 1);
   static const _pageSize = 100;
 
   @override
@@ -74,7 +74,7 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
                         builderDelegate: PagedChildBuilderDelegate(
                             itemBuilder: ((context, item, index) {
                           return DiscountItem(
-                            inGridView: true,
+                            inGridView: false,
                             product: item,
                           );
                         })),

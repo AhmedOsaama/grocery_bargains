@@ -134,6 +134,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           imageURL: widget.imageURL,
           size: widget.size1,
           text: '');
+
+      if(widget.gtin == null || widget.gtin == "N/A") {
+        var product = await productsProvider.getProductById(widget.productId);
+        var storeName = productsProvider.getStoreName(product.storeId);
+        if (product.availableNow == 1) {
+          comparisonItems.add(GestureDetector(
+            onTap: widget.storeName == storeName
+                ? () => chatlistsProvider.addProductToList(context, listItem)
+                : () => goToStoreProductPage(context, storeName, product),
+            child: PriceComparisonItem(
+                isSameStore: widget.storeName == storeName,
+                price: product.price ?? "N/A",
+                size: product.unit,
+                storeImagePath: productsProvider.getStoreLogoPath(storeName)),
+          ));
+          return;
+        }
+      }
+
       List<Product> similarProducts = await productsProvider.getSimilarProducts(widget.gtin);
 
       for(var product in similarProducts){

@@ -232,15 +232,15 @@ class MySearchDelegate extends SearchDelegate {
     }
     if (sortDropdownValue != "Sort" && storeDropdownValue == "Store") {
         results = productProvider.sortProducts(sortDropdownValue, results);
-      // if(sortDropdownValue != 'Relevance'){
-      //   results = productProvider.sortProducts(sortDropdownValue, results);
-      // }else{
-      //   // setState((){
-      //   // print("SHOWING RESULTS");
-      //   // buildResults(context);
-      //     // getSearchResultsFuture = Provider.of<ProductsProvider>(context, listen: false).searchProducts(query, true);
-      //   // });
-      // }
+      if(sortDropdownValue != 'Relevance'){
+        results = productProvider.sortProducts(sortDropdownValue, results);
+      }else{
+        // setState((){
+        // print("SHOWING RESULTS");
+        // query = query;
+          // getSearchResultsFuture = Provider.of<ProductsProvider>(context, listen: false).searchProducts(query, true);
+        // });
+      }
     }
     if (sortDropdownValue == "Sort" && storeDropdownValue != "Store") {
       if (storeDropdownValue == "Albert Heijn") {
@@ -268,7 +268,12 @@ class MySearchDelegate extends SearchDelegate {
       //   // });
       // }
     }
-    TrackingUtils().trackSearchPerformed("$sortDropdownValue, $storeDropdownValue", FirebaseAuth.instance.currentUser!.uid, "");
+    try {
+      TrackingUtils().trackSearchPerformed(
+          "$sortDropdownValue, $storeDropdownValue", FirebaseAuth.instance.currentUser!.uid, "");
+    }catch(e){
+      print(e);
+    }
     return results;
   }
 

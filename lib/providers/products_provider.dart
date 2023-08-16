@@ -45,20 +45,29 @@ class ProductsProvider with ChangeNotifier {
 
   Future<List<Product>> getSimilarProducts(String gtin) async {
     List<Product> products = [];
-    var response = await NetworkServices.getSimilarProducts(gtin);
-    List productsList = jsonDecode(response.body);
-    for(var decodedProduct in productsList){
-      var product = Product.fromJson(decodedProduct);
-      products.add(product);
+    try {
+      var response = await NetworkServices.getSimilarProducts(gtin);
+      List productsList = jsonDecode(response.body);
+      for (var decodedProduct in productsList) {
+        var product = Product.fromJson(decodedProduct);
+        products.add(product);
+      }
+    }catch(e){
+      print("Error getting similar products: $e");
     }
     return products;
   }
 
   Future<Product> getProductById(int id) async {
+    try{
     var response = await NetworkServices.getProductById(id);
     List productsList = jsonDecode(response.body);
     var product = Product.fromJson(productsList[0]);
     return product;
+    }catch(e){
+      print("Error getting a product by ID");
+      return Future.value();
+    }
   }
 
   Future<void> getAllProducts() async {
@@ -86,6 +95,7 @@ class ProductsProvider with ChangeNotifier {
       var product = Product.fromJson(decodedProduct);
       products.add(product);
     }
+    products.shuffle();
     return products;
   }
 
@@ -97,6 +107,7 @@ class ProductsProvider with ChangeNotifier {
       var product = Product.fromJson(decodedProduct);
       products.add(product);
     }
+    products.shuffle();
     return products;
   }
 
@@ -169,7 +180,9 @@ class ProductsProvider with ChangeNotifier {
       }
 
       var searchResult = [...albertProducts, ...jumboProducts, ...hoogvlietProducts];
-      TrackingUtils().trackSearchPerformed("filter", FirebaseAuth.instance.currentUser!.uid, searchTerm);
+      try {
+        TrackingUtils().trackSearchPerformed("filter", FirebaseAuth.instance.currentUser!.uid, searchTerm);
+      }catch(e){}
       return searchResult;
     }catch(e){
       print(e);
