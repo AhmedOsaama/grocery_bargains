@@ -42,10 +42,10 @@ class DiscountItem extends StatelessWidget {
 
   String getProductSize(Product product) {
     try {
+      if(product.unit == "N/A" || product.unit.isEmpty) return product.pricePerUnit!;
       return product.unit;
     } catch (e) {
-      print(e);
-      print(product.id);
+      print("Error: failed to get size in discount item");
       return "N/A";
     }
   }
@@ -220,7 +220,7 @@ class DiscountItem extends StatelessWidget {
           description: product.description,
           oldPrice: product.oldPrice,
           price1: double.tryParse(product.price ?? "") ?? 0.0,
-          size1: product.unit, gtin: product.gtin,
+          size1: getProductSize(product), gtin: product.gtin,
         ));
   }
 

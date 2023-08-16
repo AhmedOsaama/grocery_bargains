@@ -848,6 +848,7 @@ class _ChatViewState extends State<ChatView> {
       fillColor: lightPurple,
       suffixIcon: TextButton(
         onPressed: () async {
+          if(quickItemController.text.isEmpty) return;
           await Provider.of<ChatlistsProvider>(context, listen: false).addItemToList(
               ListItem(
                   id: -1,
