@@ -20,6 +20,7 @@ const Color lightGreen = Color.fromRGBO(103, 196, 172, 1);
 const Color hintText = Color.fromRGBO(138, 138, 142, 1);
 const Color lightGrey = Color(0xffD9D9D9);
 const Color liteGrey = Color(0xffA3A3A3);
+const Color disabledColor = Color.fromRGBO(255, 220, 188, 1);
 
 const Color black = Color(0xff000000);
 const Color hintbuttonSocial = Color(0xff03034d);

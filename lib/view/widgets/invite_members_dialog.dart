@@ -75,7 +75,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
     var chatlistsProvider = Provider.of<ChatlistsProvider>(context,listen: false);
     return ShowCaseWidget(
       onFinish: () async {
-        AppNavigator.pop(context: context);
+        // AppNavigator.pop(context: context);
         chatlistsProvider.deleteList(context, chatlistsProvider.chatlists.last.id);
         chatlistsProvider.stopwatch.stop();
         var onboardingDuration = chatlistsProvider.stopwatch.elapsed.inSeconds.toString();
@@ -256,15 +256,15 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                                 }).toList()),
                           ],
                           20.ph,
-                          TextButton(
-                            onPressed: () {
+                          InkWell(
+                            onTap: () {
                               widget.shareList();
                               TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Share chatlist", DateTime.now().toUtc().toString());
                             },
                             child: Text(LocaleKeys.invitePeopleViaLink.tr(),
-                                style: TextStylesInter.textViewRegular12.copyWith(color: mainOrange)),
+                                style: TextStylesInter.textViewRegular12.copyWith(color: brightOrange)),
                           ),
-                          10.ph,
+                          30.ph,
                           Text(
                             LocaleKeys.contactsOnBargainB.tr(),
                             style: TextStylesInter.textViewRegular12.copyWith(color: mainPurple),

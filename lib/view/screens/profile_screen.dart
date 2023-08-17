@@ -163,7 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             children: [
                               CircleAvatar(
                                 backgroundImage: getUserImage(snapshot),
-                                radius: isEditing ? 50 : 100,
+                                radius: 60
                               ),
                               if (isEditing) ...[
                                 TextButton(

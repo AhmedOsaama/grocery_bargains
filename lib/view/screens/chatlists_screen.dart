@@ -32,6 +32,7 @@ import 'package:bargainb/view/widgets/store_list_widget.dart';
 import '../../config/routes/app_navigator.dart';
 import '../../utils/tracking_utils.dart';
 import '../components/generic_field.dart';
+import '../components/search_widget.dart';
 
 
 class ChatlistsScreen extends StatefulWidget {
@@ -60,17 +61,22 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
   Widget build(BuildContext context) {
     var chatlistsProvider = context.watch<ChatlistsProvider>();
     return Scaffold(
-      backgroundColor: Color.fromRGBO(245, 247, 254, 1),
-      appBar: SearchAppBar(isBackButton: false,),
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () {
-            chatlistsProvider.notifyListeners();
-            return Future.value();
-          },
+      // backgroundColor: Color.fromRGBO(245, 247, 254, 1),
+      body: RefreshIndicator(
+        onRefresh: () {
+          chatlistsProvider.notifyListeners();
+          return Future.value();
+        },
+        child: Container(
+          color: Color.fromRGBO(245, 247, 254, 1),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              50.ph,
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 15.w),
+                child: SearchWidget(isBackButton: false,),
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 child: Text(
@@ -195,7 +201,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
             context: context,
             builder: (ctx) => CreateListDialog());
       },
-      color: yellow,
+      color: brightOrange,
       padding: EdgeInsets.zero,
       borderRadius: BorderRadius.circular(20),
       child: const Icon(

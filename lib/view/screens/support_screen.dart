@@ -112,7 +112,7 @@ class _SupportScreenState extends State<SupportScreen> {
                   width: double.infinity,
                   height: 60.h,
                   borderRadius: BorderRadius.circular(6),
-                  color: mainOrange,
+                  color: brightOrange,
                   child: Text(
                     LocaleKeys.submit.tr(),
                     style:

@@ -290,7 +290,7 @@ class MySearchDelegate extends SearchDelegate {
     suggestions = searchResults.where((searchResult) {
       final result = searchResult.toLowerCase();
       return result.contains(input);
-    }).toList();
+    }).toList().reversed.toList();
   }
 
   Future<List> buildFutureSuggestions() async {

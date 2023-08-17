@@ -139,8 +139,8 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                         },
                         height: 60.h,
                         width: double.infinity,
-                        color: yellow,
-                        disabledBackgroundColor: done ? yellow : orange10,
+                        color: brightOrange,
+                        disabledBackgroundColor: done ? brightOrange : disabledColor,
                         borderRadius: BorderRadius.circular(6),
                         child: Text(
                           LocaleKeys.addToList.tr(),

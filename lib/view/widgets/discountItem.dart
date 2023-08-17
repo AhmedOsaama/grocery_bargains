@@ -45,7 +45,7 @@ class DiscountItem extends StatelessWidget {
       if(product.unit == "N/A" || product.unit.isEmpty) return product.pricePerUnit!;
       return product.unit;
     } catch (e) {
-      print("Error: failed to get size in discount item");
+      // print("Error: failed to get size in discount item");
       return "N/A";
     }
   }

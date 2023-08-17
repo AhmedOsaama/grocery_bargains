@@ -79,6 +79,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       isFirstTime = prefs.getBool("firstTime") ?? true;
+      // isFirstTime = true;
     });
   }
 
@@ -270,17 +271,22 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // bottomNavigationBar: null,
+      resizeToAvoidBottomInset: true,
       body: Container(
-        decoration: BoxDecoration(color: white, boxShadow: [
+        decoration: BoxDecoration(color: isFirstTime ? Color.fromRGBO(25, 27, 38, 0.6) : Color.fromRGBO(245, 247, 254, 1), boxShadow: [
           BoxShadow(blurRadius: 50, offset: Offset(0, 20), color: Color.fromRGBO(52, 99, 237, 0.15)),
         ]),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            75.ph,
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: SearchWidget(isBackButton: true),
+            SizedBox(height: 50,),
+            Opacity(
+              opacity: isFirstTime ? 0.3 : 1.0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: SearchWidget(isBackButton: true),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -447,7 +453,13 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
               contactsList: contactsList,
               shareList: shareListViaDeepLink,
               addContactToChatlist: addContactToChatlist,
-            ));
+            )).then((value) {
+              if(isFirstTime){
+                setState(() {
+                  isFirstTime = false;
+                });
+              }
+    });
   }
 
   Future<void> addContactToChatlist(UserContactInfo userInfo, BuildContext context) async {

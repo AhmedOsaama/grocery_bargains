@@ -87,20 +87,22 @@ class _CreateListDialogState extends State<CreateListDialog> {
                 Expanded(
                     child: GenericButton(
                   height: 60.h,
-                  onPressed: canCreate ? () async {
-                    var id = await Provider.of<ChatlistsProvider>(context, listen: false)
-                        .createChatList([], name: chatlistNameController.text.trim());
-                    await pushNewScreen(context,
-                        screen: ChatListViewScreen(
-                          listId: id,
-                        ),
-                        withNavBar: false);
-                    AppNavigator.pop(context: context);
-                  } : (){},
-                  color: canCreate ? mainOrange : Colors.white,
+                  onPressed: canCreate
+                      ? () async {
+                          var id = await Provider.of<ChatlistsProvider>(context, listen: false)
+                              .createChatList([], name: chatlistNameController.text.trim());
+                          await pushNewScreen(context,
+                              screen: ChatListViewScreen(
+                                listId: id,
+                              ),
+                              withNavBar: false);
+                          AppNavigator.pop(context: context);
+                        }
+                      : () {},
+                  color: canCreate ? brightOrange : disabledColor,
                   borderRadius: BorderRadius.circular(6),
                   borderColor: grey,
-                  child: Text(
+                      child: Text(
                     LocaleKeys.create.tr(),
                     style: TextStyles.textViewSemiBold16.copyWith(color: canCreate ? Colors.white : darkGrey),
                   ),

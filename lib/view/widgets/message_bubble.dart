@@ -190,9 +190,9 @@ class _MessageBubbleState extends State<MessageBubble> {
                       ),
                       child: Text(
                         widget.message,
-                        style: TextStyles.textViewRegular16.copyWith(color: widget.isMe ? Colors.white : Colors.black),
+                        style: TextStyles.textViewRegular15.copyWith(color: widget.isMe ? Colors.white : Colors.black),
                         softWrap: true,
-                        textAlign: TextAlign.left,
+                        textAlign: widget.isMe ? TextAlign.right : TextAlign.left,
                       ),
                     ),
                   ]
