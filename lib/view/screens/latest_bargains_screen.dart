@@ -98,7 +98,7 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
       if (isLastPage) {
         _pagingController.appendLastPage(newProducts);
       } else {
-        int nextPageKey = pageKey + newProducts.length;
+        int nextPageKey = pageKey + 1;
         _pagingController.appendPage(newProducts, nextPageKey);
       }
     } catch (error) {

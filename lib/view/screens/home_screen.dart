@@ -58,7 +58,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PagingController<int, Product> _pagingController = PagingController(firstPageKey: 0);
   static const _pageSize = 100;
-  static const _pageNumber = 1;
+   var _pageNumber = 1;
 
 
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
@@ -112,27 +112,27 @@ class _HomeScreenState extends State<HomeScreen> {
     getFirstTime();
   }
 
-  Future<void> _fetchPage(int pageKey) async {
-    try {
-      print("PAGE KEY: " + pageKey.toString());
-      if (pageKey > 0) {
-        // await Provider.of<ProductsProvider>(context, listen: false)
-        //     .getProducts(pageKey + 214354);
-      }
-      final newProducts = await Provider.of<ProductsProvider>(context, listen: false).getProducts(_pageNumber);
-
-      final isLastPage = newProducts.length < _pageSize;
-      if (isLastPage) {
-        _pagingController.appendLastPage(newProducts);
-      } else {
-        int nextPageKey = pageKey + newProducts.length;
-        _pagingController.appendPage(newProducts, nextPageKey);
-      }
-      // startingIndex++;
-    } catch (error) {
-      _pagingController.error = "Something wrong ! Please try again";
-    }
-  }
+  // Future<void> _fetchPage(int pageKey) async {
+  //   try {
+  //     print("PAGE KEY: " + pageKey.toString());
+  //     if (pageKey > 0) {
+  //       // await Provider.of<ProductsProvider>(context, listen: false)
+  //       //     .getProducts(pageKey + 214354);
+  //     }
+  //     final newProducts = await Provider.of<ProductsProvider>(context, listen: false).getProducts(_pageNumber);
+  //
+  //     final isLastPage = newProducts.length < _pageSize;
+  //     if (isLastPage) {
+  //       _pagingController.appendLastPage(newProducts);
+  //     } else {
+  //       int nextPageKey = pageKey + newProducts.length;
+  //       _pagingController.appendPage(newProducts, nextPageKey);
+  //     }
+  //     // startingIndex++;
+  //   } catch (error) {
+  //     _pagingController.error = "Something wrong ! Please try again";
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -665,10 +665,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               isFetching = true;
                             });
                             try {
-                              var pageNumber = _pageNumber + 1;
-                              print("StartingIndex: " + pageNumber.toString());
-                              await productsProvider.getProducts(pageNumber);
-                              // all.addAll(newProducts);
+                              _pageNumber = _pageNumber + 1;
+                              print("Page Number: " + _pageNumber.toString());
+                              await productsProvider.getProducts(_pageNumber);
                             }catch(e){
                               print(e);
                             }
