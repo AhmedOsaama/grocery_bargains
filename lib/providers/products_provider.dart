@@ -35,7 +35,7 @@ class ProductsProvider with ChangeNotifier {
     List productsList = jsonDecode(response.body);
     for(var decodedProduct in productsList){
       var product = Product.fromJson(decodedProduct);
-      products.add(product);
+      if(product.availableNow == 1) products.add(product);
     }
     // products.shuffle();
     this.products.addAll(products);
@@ -150,7 +150,15 @@ class ProductsProvider with ChangeNotifier {
 
 
 
-  Future<List<Product?>> searchProducts(String searchTerm, bool isRelevant) async {
+  Future<List<Product?>> searchProducts(String searchTerm) async {
+    var isRelevant = true;
+    if(searchTerm.contains("Relevance")){
+      searchTerm = searchTerm.split('-')[0];
+     isRelevant = true;
+    }else{
+      isRelevant = false;
+    }
+
     try {
       var response = await Future.wait([
         NetworkServices.searchAlbertProducts(searchTerm, isRelevant),

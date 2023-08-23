@@ -12,6 +12,7 @@ const Color darkBlue = Color.fromRGBO(5, 55, 84, 1);
 const Color lightBlue = Color.fromRGBO(14, 79, 104, 1);
 const Color white = Color.fromRGBO(255, 255, 255, 1);
 const Color grey = Color.fromRGBO(238, 235, 233, 1);
+const Color greyDropdownText = Color.fromRGBO(70, 70, 70, 1);
 const Color greyText = Color.fromRGBO(124, 124, 124, 1);
 const Color darkGrey = Color.fromRGBO(204, 204, 203, 1);
 const Color green = Color.fromRGBO(64, 161, 138, 1);

@@ -52,6 +52,13 @@ class MySearchDelegate extends SearchDelegate {
                 ))
             : Container(),
       ),
+      // IconButton(onPressed: (){
+      //   if(query.contains("Relevance")){
+      //     query = query.split('-')[0];
+      //   }else{
+      //     query = query +  " - Relevance";
+      //   }
+      // }, icon: Icon(Icons.adb,color: query.contains("Relevance") ? Colors.green : null))
     ];
   }
 
@@ -70,12 +77,9 @@ class MySearchDelegate extends SearchDelegate {
     var productProvider = Provider.of<ProductsProvider>(context, listen: false);
     if (query.isNotEmpty) saveRecentSearches();
     // getSearchResultsFuture = Provider.of<ProductsProvider>(context, listen: false).searchProducts(query, sortDropdownValue == 'Relevance');
-    return StatefulBuilder(
-      builder: (context, setS) {
         return FutureBuilder<List<Product?>>(
-            future: Provider.of<ProductsProvider>(context, listen: false).searchProducts(query, sortDropdownValue == 'Relevance'),
+            future: Provider.of<ProductsProvider>(context, listen: false).searchProducts(query),
             builder: (context, snapshot) {
-              print("BUILDING:");
               if (snapshot.connectionState == ConnectionState.waiting)
                 return const Center(
                   child: CircularProgressIndicator(),
@@ -95,33 +99,41 @@ class MySearchDelegate extends SearchDelegate {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: StatefulBuilder(builder: (ctx, setState) {
-                  results = filterProducts(results, searchResults, productProvider, setS, context);
+                  results = filterProducts(results, searchResults, productProvider);
+                  if(query.contains("Relevance")) sortDropdownValue = "Relevance";
+                  print(sortDropdownValue);
                   return Column(
                     children: [
                       20.ph,
                       Row(children: [
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 15.w),
-                          decoration: BoxDecoration(color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r))),
+                          decoration: BoxDecoration(color: white, borderRadius: BorderRadius.all(Radius.circular(6.r)),border: Border.all(color: grey)),
                           child: DropdownButton<String>(
                             value: sortDropdownValue,
                             icon: Icon(
                               Icons.keyboard_arrow_down,
-                              color: white,
+                              color: greyDropdownText,
                             ),
                             iconSize: 24,
                             underline: Container(),
-                            dropdownColor: orange70,
-                            style: TextStyles.textViewMedium12,
+                            // dropdownColor: Colors.white,
+                            style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
                             borderRadius: BorderRadius.circular(4.r),
                             onChanged: (String? newValue) {
-                              setState(() {
-                                sortDropdownValue = newValue!;
-                              });
+                              if(newValue != "Relevance") {
+                                if(query.contains("Relevance")) query = query.split('-')[0];
+                                setState(() {
+                                  sortDropdownValue = newValue!;
+                                });
+                                return;
+                              }
+                              if(newValue == "Relevance" && !query.contains("Relevance")) query = query +  " - Relevance";
+                              // else query = query.split('-')[0];
                             },
                             items:
-                                // <String>['Sort', "Relevance", 'Low price', 'High price'].map<DropdownMenuItem<String>>((String value) {
-                                <String>['Sort', 'Low price', 'High price'].map<DropdownMenuItem<String>>((String value) {
+                                <String>['Sort', "Relevance", 'Low price', 'High price'].map<DropdownMenuItem<String>>((String value) {
+                                // <String>['Sort', 'Low price', 'High price'].map<DropdownMenuItem<String>>((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Text(
@@ -135,18 +147,18 @@ class MySearchDelegate extends SearchDelegate {
                         8.pw,
                         Container(
                           padding: EdgeInsets.symmetric(horizontal: 15.w),
-                          decoration: BoxDecoration(color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r))),
+                          decoration: BoxDecoration(color: white, borderRadius: BorderRadius.all(Radius.circular(6.r)),border: Border.all(color: grey)),
                           child: Center(
                             child: DropdownButton<String>(
                               value: storeDropdownValue,
                               icon: Icon(
                                 Icons.keyboard_arrow_down,
-                                color: white,
+                                color: greyDropdownText,
                               ),
                               iconSize: 24,
-                              dropdownColor: orange70,
+                              // dropdownColor: orange70,
                               underline: Container(),
-                              style: TextStyles.textViewMedium12,
+                              style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
                               borderRadius: BorderRadius.circular(4.r),
                               onChanged: (String? newValue) {
                                 setState(() {
@@ -217,8 +229,6 @@ class MySearchDelegate extends SearchDelegate {
                 }),
               );
             });
-      }
-    );
   }
 
   void resetFilter(){
@@ -226,21 +236,13 @@ class MySearchDelegate extends SearchDelegate {
     storeDropdownValue = 'Store';
   }
 
-  List filterProducts(List results, List<Product?> searchResults, ProductsProvider productProvider, Function setState, BuildContext context) {
+  List filterProducts(List results, List<Product?> searchResults, ProductsProvider productProvider) {
     if (sortDropdownValue == "Sort" && storeDropdownValue == "Store") {
       results = List.from(searchResults);
     }
     if (sortDropdownValue != "Sort" && storeDropdownValue == "Store") {
-        results = productProvider.sortProducts(sortDropdownValue, results);
-      if(sortDropdownValue != 'Relevance'){
-        results = productProvider.sortProducts(sortDropdownValue, results);
-      }else{
-        // setState((){
-        // print("SHOWING RESULTS");
-        // query = query;
-          // getSearchResultsFuture = Provider.of<ProductsProvider>(context, listen: false).searchProducts(query, true);
-        // });
-      }
+      if(sortDropdownValue == "Relevance") {}
+      else results = productProvider.sortProducts(sortDropdownValue, results);
     }
     if (sortDropdownValue == "Sort" && storeDropdownValue != "Store") {
       if (storeDropdownValue == "Albert Heijn") {
@@ -259,14 +261,8 @@ class MySearchDelegate extends SearchDelegate {
         results =
             searchResults.where((searchResult) => productProvider.getStoreName(searchResult?.storeId ?? 0) == storeDropdownValue).toList();
       }
-        results = productProvider.sortProducts(sortDropdownValue, results);
-      // if(sortDropdownValue != 'Relevance'){
-      //   results = productProvider.sortProducts(sortDropdownValue, results);
-      // }else{
-      //   // setState((){
-      //   //   showResults(context);
-      //   // });
-      // }
+      if(sortDropdownValue == "Relevance") {}
+      else results = productProvider.sortProducts(sortDropdownValue, results);
     }
     try {
       TrackingUtils().trackSearchPerformed(

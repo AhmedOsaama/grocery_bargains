@@ -1,3 +1,4 @@
+import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/widgets/product_dialog.dart';
@@ -12,6 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
+import '../screens/search_screen.dart';
 
 class ChatlistItem extends StatefulWidget {
   final QueryDocumentSnapshot<Map<String, dynamic>> item;
@@ -96,7 +98,9 @@ class _ChatlistItemState extends State<ChatlistItem> {
               if(isClicked)
                 IconButton(onPressed: () async {
                   var pref = await SharedPreferences.getInstance();
-                  showSearch(context: context, delegate: MySearchDelegate(pref: pref),query: text);
+                  AppNavigator.push(context: context, screen: SearchScreen(searchQuery: text));
+
+                  // showSearch(context: context, delegate: MySearchDelegate(pref: pref),query: text);
                 }, icon: Icon(Icons.arrow_right,color: greyText,)),
               Spacer(),
               if(isClicked)
