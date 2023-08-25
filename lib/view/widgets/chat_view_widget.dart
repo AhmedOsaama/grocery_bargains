@@ -523,11 +523,12 @@ class _ChatViewState extends State<ChatView> {
                                 if (items.isEmpty) height = 180;
                                 if (items.isNotEmpty) height = 450;
                               } else {
+                                print( "ITEMS LENGTH: " + items.length.toString());
                                 if (items.isEmpty) height = 180;
                                 if (items.length > 0 && items.length < 2) height = 200;
-                                if (items.length > 1 && items.length < 3) height = 250;
-                                if (items.length >= 3 && items.length < 5) height = 350;
-                                if (items.length >= 5 && items.length < 10) height = 500;
+                                if (items.length > 1 && items.length < 3) height = 300;
+                                if (items.length >= 3 && items.length < 5) height = 450;
+                                if (items.length >= 5 && items.length < 10) height = 600;
                                 if (items.length >= 10) height = 1000;
                               }
                               return Container(
@@ -706,7 +707,7 @@ class _ChatViewState extends State<ChatView> {
                                           );
                                         }
 
-                                        if (!isFirstTimeChatlist && items.isEmpty)
+                                        if (!isFirstTimeChatlist && items.isEmpty)        //not first time case and items are empty
                                           return Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [

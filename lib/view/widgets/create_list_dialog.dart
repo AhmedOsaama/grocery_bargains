@@ -95,7 +95,7 @@ class _CreateListDialogState extends State<CreateListDialog> {
                               screen: ChatListViewScreen(
                                 listId: id,
                               ),
-                              withNavBar: false);
+                              withNavBar: true);
                           AppNavigator.pop(context: context);
                         }
                       : () {},

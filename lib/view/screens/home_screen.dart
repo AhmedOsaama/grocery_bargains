@@ -139,13 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
     var chatlistProvider = Provider.of<ChatlistsProvider>(context,listen: false);
     return ShowCaseWidget(
       onStart: (_,i){
-        var user = FirebaseAuth.instance.currentUser;
-        if(user != null){
-        var userId = user.uid;
-        TrackingUtils().trackOnboardingStarted(userId, DateTime.now().toUtc().toString(),);
-        }else{
-          TrackingUtils().trackOnboardingStarted("Guest", DateTime.now().toUtc().toString(),);
-        }
+
       },
       builder: Builder(builder: (builder) {
         if (isHomeFirstTime && !dialogOpened) {
@@ -155,6 +149,13 @@ class _HomeScreenState extends State<HomeScreen> {
             chatlistProvider.stopwatch.reset();
             var onboardingDuration = chatlistProvider.stopwatch.elapsed.inSeconds.toString();
             print("Onboarding duration start: " + onboardingDuration);
+            var user = FirebaseAuth.instance.currentUser;
+            if(user != null){
+              var userId = user.uid;
+              TrackingUtils().trackOnboardingStarted(userId, DateTime.now().toUtc().toString(),);
+            }else{
+              TrackingUtils().trackOnboardingStarted("Guest", DateTime.now().toUtc().toString(),);
+            }
           });
           dialogOpened = true;
         }

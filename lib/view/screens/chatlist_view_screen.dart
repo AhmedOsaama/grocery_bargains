@@ -459,6 +459,11 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                   isFirstTime = false;
                 });
               }
+              if(value == "Phone Added"){
+                setState(() {
+                  getUserImagesFuture = getUserImages();
+                });
+              }
     });
   }
 

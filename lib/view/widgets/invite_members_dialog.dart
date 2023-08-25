@@ -1,6 +1,6 @@
-import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/screens/home_screen.dart';
+import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -380,9 +380,30 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                                 }).toList()),
                           ],
                           if (widget.contactsList.isEmpty && !widget.isContactsPermissionGranted)
-                            Text(
-                              LocaleKeys.addYourPhoneNumber.tr(),
-                              style: TextStylesInter.textViewRegular15.copyWith(color: black),
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 200.w,
+                                  child: Text(
+                                    LocaleKeys.addYourPhoneNumber.tr(),
+                                    style: TextStylesInter.textViewRegular15.copyWith(color: black),
+                                  ),
+                                ),
+                                Spacer(),
+                                GenericButton(
+                                    onPressed: () {
+                                      AppNavigator.pop(context: context,object: "Phone Added");
+                                      pushNewScreen(context, screen: ProfileScreen(isEditing: true,),withNavBar: true);
+                                    },
+                                    shape: CircleBorder(),
+                                    padding: EdgeInsets.zero,
+                                    width: 36,
+                                    color: purple70,
+                                    child: Icon(
+                                      Icons.add,
+                                      color: white,
+                                    ))
+                              ],
                             ),
                           if (widget.contactsList.isEmpty && widget.isContactsPermissionGranted)
                             Text(

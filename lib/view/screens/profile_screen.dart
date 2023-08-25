@@ -37,7 +37,8 @@ import '../../utils/assets_manager.dart';
 import '../widgets/image_source_picker_dialog.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  bool isEditing;
+  ProfileScreen({Key? key, this.isEditing = false}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -45,11 +46,19 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
+  bool isEditing = false;
+  bool isEdited = false;
+  bool isPhoneEdited = false;
+  String name = "";
+  String phone = "";
+  String status = "";
+
   @override
   void initState() {
     updateUserDataFuture();
     TrackingUtils().trackUserProfileViewed(FirebaseAuth.instance.currentUser!.uid);
     TrackingUtils().trackPageVisited("Profile Screen", FirebaseAuth.instance.currentUser!.uid);
+    isEditing = widget.isEditing;
     super.initState();
   }
 
@@ -58,12 +67,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
   }
 
-  bool isEditing = false;
-  bool isEdited = false;
-  bool isPhoneEdited = false;
-  String name = "";
-  String phone = "";
-  String status = "";
+
 
   void shareProfileDeepLink() async {
     BranchUniversalObject buo = BranchUniversalObject(
@@ -301,6 +305,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               setState(() {
                                 phone = value;
                                 isPhoneEdited = true;
+                                isEdited = true;
                               });
                             },
                             initialValue: snapshot.data!['phoneNumber'],
@@ -334,7 +339,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> saveProfileChanges() async {
+    print("Entered saveProfileChanges");
+    print(isEditing);
+    print(isEdited);
     if (isEditing && isEdited) {
+      print("Entered isEditing Condition");
+
       Map<String, Object?> data = {};
 
       if (name.isNotEmpty) {
@@ -345,6 +355,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
 
       if (phone.isNotEmpty && isPhoneEdited) {
+        print("Entered Condition");
         await verifyPhoneNumber(phone);
       }
       if (!isPhoneEdited) {
@@ -374,15 +385,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> verifyPhoneNumber(String phone) async {
+    print("Entered Verify Phone number");
     setState(() {
       if (isEditing) isPhoneEdited = false;
     });
-    var result = await FirebaseFirestore.instance.collection('users').where('phoneNumber', isEqualTo: phone).get();
-    if (result.docs.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: Text("PhoneNumberAlready".tr())));
-      return;
-    }
+    // var result = await FirebaseFirestore.instance.collection('users').where('phoneNumber', isEqualTo: phone).get();
+    // if (result.docs.isNotEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: Text("PhoneNumberAlready".tr())));
+    //   return;
+    // }
+    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
     await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phone,
         verificationCompleted: (phoneCredential) {},
@@ -390,14 +403,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message.toString())));
         },
         codeSent: (String verificationId, int? resendToken) async {
-          var otp = await showOtpDialog();
+          try {
+            var otp = await showOtpDialog();
 
           String smsCode = otp;
 
-          PhoneAuthCredential credential =
-              PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
-          try {
-            await FirebaseAuth.instance.signInWithCredential(credential);
+          // PhoneAuthCredential credential =
+          //     PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
+          // await FirebaseAuth.instance.currentUser!.linkWithPhoneNumber(phone).catchError((e) {
+          //   log(e.toString());
+          // });
+            // await FirebaseAuth.instance.signInWithCredential(credential);
             Map<String, Object?> data = {};
 
             data.addAll({'phoneNumber': phone});

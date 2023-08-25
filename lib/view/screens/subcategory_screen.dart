@@ -104,17 +104,17 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
               Row(children: [
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 15.w),
-                  decoration: BoxDecoration(color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r))),
+                  decoration: BoxDecoration(color: white, borderRadius: BorderRadius.all(Radius.circular(6.r)),border: Border.all(color: grey)),
                   child: DropdownButton<String>(
                     value: sortDropdownValue,
                     icon: Icon(
                       Icons.keyboard_arrow_down,
-                      color: white,
+                      color: greyDropdownText,
                     ),
                     iconSize: 24,
                     underline: Container(),
-                    dropdownColor: orange70,
-                    style: TextStyles.textViewMedium12,
+                    // dropdownColor: Colors.white,
+                    style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
                     borderRadius: BorderRadius.circular(4.r),
                     onChanged: (String? newValue) {
                       setState(() {
@@ -135,18 +135,18 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                 8.pw,
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 15.w),
-                  decoration: BoxDecoration(color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r))),
+                  decoration: BoxDecoration(color: white, borderRadius: BorderRadius.all(Radius.circular(6.r)),border: Border.all(color: grey)),
                   child: Center(
                     child: DropdownButton<String>(
                       value: storeDropdownValue,
                       icon: Icon(
                         Icons.keyboard_arrow_down,
-                        color: white,
+                        color: greyDropdownText,
                       ),
                       iconSize: 24,
-                      dropdownColor: orange70,
                       underline: Container(),
-                      style: TextStyles.textViewMedium12,
+                      // dropdownColor: Colors.white,
+                      style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
                       borderRadius: BorderRadius.circular(4.r),
                       onChanged: (String? newValue) {
                         setState(() {

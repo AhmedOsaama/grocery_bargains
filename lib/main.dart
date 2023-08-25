@@ -162,14 +162,14 @@ class _MyAppState extends State<MyApp> {
               return StreamBuilder(
                   stream: authStateChangesStream,
                   builder: (context, snapshot) {
-                    // if (!widget.isRemembered && Platform.isAndroid) {
-                    //   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-                    //       overlays: [
-                    //         SystemUiOverlay.top,
-                    //         SystemUiOverlay.bottom
-                    //       ]);
-                    //   return RegisterScreen();
-                    // }
+                    if (!widget.isRemembered && Platform.isAndroid) {
+                      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+                          overlays: [
+                            SystemUiOverlay.top,
+                            SystemUiOverlay.bottom
+                          ]);
+                      return RegisterScreen();
+                    }
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
                           overlays: []);
