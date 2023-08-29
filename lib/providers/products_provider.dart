@@ -164,6 +164,7 @@ class ProductsProvider with ChangeNotifier {
         NetworkServices.searchAlbertProducts(searchTerm, isRelevant),
         NetworkServices.searchJumboProducts(searchTerm, isRelevant),
         NetworkServices.searchHoogvlietProducts(searchTerm, isRelevant),
+        NetworkServices.searchDirkProducts(searchTerm, isRelevant),
       ]);
 
       List<Product> albertProducts = [];
@@ -187,7 +188,15 @@ class ProductsProvider with ChangeNotifier {
         hoogvlietProducts.add(product);
       }
 
-      var searchResult = [...albertProducts, ...jumboProducts, ...hoogvlietProducts];
+      List<Product> dirkProducts = [];
+      List decodedDirk = jsonDecode(response[3].body);
+      for (var decodedProduct in decodedDirk) {
+        var product = Product.fromJson(decodedProduct);
+        dirkProducts.add(product);
+      }
+
+      var searchResult = [...albertProducts, ...jumboProducts, ...hoogvlietProducts, ...dirkProducts];
+      searchResult.shuffle();
       try {
         TrackingUtils().trackSearchPerformed("filter", FirebaseAuth.instance.currentUser!.uid, searchTerm);
       }catch(e){}
@@ -247,6 +256,7 @@ class ProductsProvider with ChangeNotifier {
     if (storeName == 'Albert') return albert;
     if (storeName == 'Jumbo') return jumbo;
     if (storeName == 'Hoogvliet') return hoogLogo;
+    if (storeName == 'Dirk') return imageError;
     return albert;
   }
 
@@ -257,6 +267,8 @@ class ProductsProvider with ChangeNotifier {
       return jumbo;
     }if(selectedStore == "Hoogvliet"){
       return hoogvlietLogo;
+    }if(selectedStore == "Dirk"){
+      return imageError;
     }
     return imageError;
   }
@@ -265,6 +277,7 @@ class ProductsProvider with ChangeNotifier {
     if(storeId == 1) return "Albert";
     if(storeId == 2) return "Jumbo";
     if(storeId == 3) return "Hoogvliet";
+    if(storeId == 4) return "Dirk";
     return "N/A";
   }
 }

@@ -153,7 +153,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                           storeDropdownValue = newValue!;
                         });
                       },
-                      items: <String>['Store', 'Albert Heijn', 'Jumbo', 'Hoogvliet']
+                      items: <String>['Store', 'Albert Heijn', 'Jumbo', 'Hoogvliet', 'Dirk']
                           .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,

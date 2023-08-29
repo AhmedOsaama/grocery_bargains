@@ -333,7 +333,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                             _pagingController.refresh();
                           });
                         },
-                        items: <String>['Store', 'Albert Heijn', 'Jumbo', 'Hoogvliet']
+                        items: <String>['Store', 'Albert Heijn', 'Jumbo', 'Hoogvliet', 'Dirk']
                             .map<DropdownMenuItem<String>>((String value) {
                           return DropdownMenuItem<String>(
                             value: value,

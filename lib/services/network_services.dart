@@ -114,6 +114,16 @@ class NetworkServices {
     return response;
   }
 
+  static Future<http.Response> searchDirkProducts(String searchTerm, bool isRelevant) async {
+    var relevant = isRelevant ? 1 : 0;
+    // var relevant = 1;
+    final url = Uri.parse(
+        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new/?tableName=dirk&searchIndex=$searchTerm&relevant=$relevant&limit=150');
+    var response = await http.get(
+        url, headers: {'Content-Type': 'application/json',});
+    return response;
+  }
+
 
   static Future<http.Response> getSearchSuggestions(String searchTerm, String tableName) async {
     final url = Uri.parse(

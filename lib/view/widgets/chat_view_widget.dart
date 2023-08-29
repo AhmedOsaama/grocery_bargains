@@ -66,6 +66,7 @@ class _ChatViewState extends State<ChatView> {
   List albertItems = [];
   List jumboItems = [];
   List hoogvlietItems = [];
+  List dirkItems = [];
   List quicklyAddedItems = [];
 
   TextEditingController quickItemController = TextEditingController();
@@ -615,6 +616,7 @@ class _ChatViewState extends State<ChatView> {
                                           albertItems.clear();
                                           jumboItems.clear();
                                           hoogvlietItems.clear();
+                                          dirkItems.clear();
                                           quicklyAddedItems.clear();
                                           for (var item in items) {
                                             if (item['store_name'] == "Albert") {
@@ -626,11 +628,14 @@ class _ChatViewState extends State<ChatView> {
                                             if (item['store_name'] == "Hoogvliet") {
                                               hoogvlietItems.add(item);
                                             }
+                                            if (item['store_name'] == "Dirk") {
+                                              dirkItems.add(item);
+                                            }
                                             if (item['store_name'].isEmpty) {
                                               quicklyAddedItems.add(item);
                                             }
                                           }
-                                          if (albertItems.isEmpty && jumboItems.isEmpty && hoogvlietItems.isEmpty)
+                                          if (albertItems.isEmpty && jumboItems.isEmpty && hoogvlietItems.isEmpty && dirkItems.isEmpty)
                                             return Column(children: [
                                               ...quicklyAddedItems.map((item) {
                                                 return ChatlistItem(item: item);
@@ -702,6 +707,21 @@ class _ChatViewState extends State<ChatView> {
                                                     }).toList(),
                                                   ),
                                                 ],
+                                                if (dirkItems.isNotEmpty) ...[
+                                                  Align(
+                                                    alignment: Alignment.centerLeft,
+                                                    child: Image.asset(
+                                                      Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Dirk"),
+                                                      width: 60,height: 30,
+                                                    ),
+                                                  ),
+                                                  5.ph,
+                                                  Column(
+                                                    children: dirkItems.map((item) {
+                                                      return ChatlistItem(item: item);
+                                                    }).toList(),
+                                                  ),
+                                                ],
                                               ],
                                             ),
                                           );
@@ -730,6 +750,7 @@ class _ChatViewState extends State<ChatView> {
                                         albertItems.clear();
                                         jumboItems.clear();
                                         hoogvlietItems.clear();
+                                        dirkItems.clear();
                                         quicklyAddedItems.clear();
                                         for (var item in items) {
                                           if (item['store_name'] == "Albert") {
@@ -740,6 +761,9 @@ class _ChatViewState extends State<ChatView> {
                                           }
                                           if (item['store_name'] == "Hoogvliet") {
                                             hoogvlietItems.add(item);
+                                          }
+                                          if (item['store_name'] == "Dirk") {
+                                            dirkItems.add(item);
                                           }
                                           if (item['store_name'].isEmpty) {
                                             quicklyAddedItems.add(item);
@@ -798,6 +822,21 @@ class _ChatViewState extends State<ChatView> {
                                                 5.ph,
                                                 Column(
                                                   children: hoogvlietItems.map((item) {
+                                                    return ChatlistItem(item: item);
+                                                  }).toList(),
+                                                ),
+                                              ],
+                                              if (dirkItems.isNotEmpty) ...[
+                                                Align(
+                                                  alignment: Alignment.centerLeft,
+                                                  child: Image.asset(
+                                                    Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Dirk"),
+                                                    width: 60,height: 30,
+                                                  ),
+                                                ),
+                                                5.ph,
+                                                Column(
+                                                  children: dirkItems.map((item) {
                                                     return ChatlistItem(item: item);
                                                   }).toList(),
                                                 ),

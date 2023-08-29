@@ -1,3 +1,4 @@
+import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/utils/assets_manager.dart';
@@ -233,6 +234,9 @@ class DiscountItem extends StatelessWidget {
     }
     if (selectedStore == "Hoogvliet") {
       return hoogvlietLogo;
+    }
+    if (selectedStore == "Dirk") {
+      return imageError;
     }
     return imageError;
   }
