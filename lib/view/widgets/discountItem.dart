@@ -236,7 +236,7 @@ class DiscountItem extends StatelessWidget {
       return hoogvlietLogo;
     }
     if (selectedStore == "Dirk") {
-      return imageError;
+      return dirkLogo;
     }
     return imageError;
   }

@@ -30,3 +30,4 @@ const String groceryList = "$imgPath/grocery_list.png";
 const String messagesPlaceholder = "$imgPath/avatars.png";
 const String albertLogo = "$imgPath/albert_logo.png";
 const String hoogvlietLogo = "$imgPath/hoogvliet_logo_2.png";
+const String dirkLogo = "$imgPath/dirk.png";

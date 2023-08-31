@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bargainb/utils/tracking_utils.dart';
@@ -11,6 +12,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -73,12 +75,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
     try {
       if (!isLogin) {
-
         var result = await FirebaseFirestore.instance
             .collection('users')
             .where('phoneNumber', isEqualTo: phoneNumber)
             .get();
-        if (result.docs.isNotEmpty) {
+        if (result.docs.isNotEmpty) {                                           //phone number check
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,
               content: Text("PhoneNumberAlready".tr())));
@@ -89,7 +90,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             .collection('users')
             .where('email', isEqualTo: email)
             .get();
-        if (result1.docs.isNotEmpty) {
+        if (result1.docs.isNotEmpty) {                                                      // email check
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,
               content: Text("EmailAlready".tr())));
@@ -134,6 +135,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         print("logged in");
         saveRememberMePref();
         if(!result.docs.first.data().containsKey('token')) saveUserDeviceToken(userCredential);
+        // if(!result.docs.first.data().containsKey('isHubspotContact')) createHubspotContact(userCredential, result.docs.first.data());
         //saveFirstTimePref();
         AppNavigator.pushReplacement(context: context, screen: MainScreen());
       }
@@ -143,7 +145,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       if (error.message != null) {
         message = error.message!;
       }
-      print(message);
+      // print(message);
       TrackingUtils().trackUserRegistrationFailed(message);
       TrackingUtils().trackFailedLogin(message);
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
@@ -540,7 +542,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       // print(appleCredential);
       userCredential =
           await FirebaseAuth.instance.signInWithCredential(appleCredential);
-      print(userCredential);
       providerName = 'Apple';
     } else {
       userCredential =
@@ -567,6 +568,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         TrackingUtils().trackUserRegistrationSuccess(userCredential.user!.uid);
         TrackingUtils().trackRegisteredUserPlatform(Platform.operatingSystem);
       }else{
+        // print("Creating hubspot");
+        // if(!userSnapshot.data()!.containsKey('isHubspotContact')) createHubspotContact(userCredential, userSnapshot.data()!);
         TrackingUtils().trackSuccessfulLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
       }
       saveRememberMePref();
@@ -591,29 +594,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
     //in case of phone auth: only phone number is provided in usercredential
     //in case of email auth: only email is provided in usercredential
     //in case of social auth: email, username and photo are provided in usercredential
-    var deviceToken = await FirebaseMessaging.instance.getToken();              //could produce a problem if permission is not accepted especially on iOS
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(userCredential.user!.uid)
-        .set({
-      "email": email,
-      "username": username,
-      'imageURL': photoURL,
-      'phoneNumber': phoneNumber,
-      'token': deviceToken,
-      'timestamp': Timestamp.now(),
-      'language': 'en',
-      'status': "Hello! I'm using BargainB. Join the app",
-      'privacy': {
-        'connectContacts': true,
-        'locationServices': false,
-      },
-      'preferences': {
-        'emailMarketing': true,
-        'weekly': true,
-        'daily': false,
-      },
-    });
+    try {
+      var deviceToken = await FirebaseMessaging.instance
+          .getToken(); //could produce a problem if permission is not accepted especially on iOS
+      var userData = {
+        "email": email,
+        "username": username,
+        'imageURL': photoURL,
+        'phoneNumber': phoneNumber,
+        'token': deviceToken,
+        'timestamp': Timestamp.now().toString(),
+        'language': 'en',
+        'status': "Hello! I'm using BargainB. Join the app",
+        'privacy': {
+          'connectContacts': true,
+          'locationServices': false,
+        },
+        'preferences': {
+          'emailMarketing': true,
+          'weekly': true,
+          'daily': false,
+        },
+      };
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set(userData);
+      var contactData = {
+        "email": email,
+        "firstname": username,
+        'phone': phoneNumber,
+      };
+      await createHubspotContact(userCredential, contactData);
+    }catch(e){
+      print(e);
+    }
   }
 
   Future<void> saveUserDeviceToken(UserCredential userCredential) async {
@@ -626,5 +641,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
       'timestamp': Timestamp.now(),
     });
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Added device token")));
-  }
+  } 
+  
+  Future<void> createHubspotContact(UserCredential userCredential, Map userData) async {
+    print("creating contact");
+    var contactData = jsonEncode({
+      "properties": userData
+    });
+    try {
+      await post(Uri.parse('https://api.hubapi.com/crm/v3/objects/contacts'),
+        headers: {
+          'Authorization': 'Bearer pat-eu1-6afeefb9-6630-45c6-b31e-e292f251c251',
+          'Content-Type': 'application/json'
+        },
+        body: contactData,
+      ).then((value) => print(value.body));
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .update({
+        'isHubspotContact': true,
+      });
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Added Hubspot Contact")));
+    }catch(e){
+      print(e);
+    }
+    }
 }

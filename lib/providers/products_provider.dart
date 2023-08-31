@@ -256,7 +256,7 @@ class ProductsProvider with ChangeNotifier {
     if (storeName == 'Albert') return albert;
     if (storeName == 'Jumbo') return jumbo;
     if (storeName == 'Hoogvliet') return hoogLogo;
-    if (storeName == 'Dirk') return imageError;
+    if (storeName == 'Dirk') return dirkLogo;
     return albert;
   }
 
@@ -268,7 +268,7 @@ class ProductsProvider with ChangeNotifier {
     }if(selectedStore == "Hoogvliet"){
       return hoogvlietLogo;
     }if(selectedStore == "Dirk"){
-      return imageError;
+      return dirkLogo;
     }
     return imageError;
   }

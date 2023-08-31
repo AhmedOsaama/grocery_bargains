@@ -1,5 +1,6 @@
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
+import 'package:bargainb/view/screens/algolia_search_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -43,11 +44,12 @@ class SearchWidget extends StatelessWidget {
         Expanded(
           child: GestureDetector(
             onTap: () async {
-              SharedPreferences pref =
-              await SharedPreferences.getInstance();
-              return showSearch(
-                  context: context,
-                  delegate: MySearchDelegate(pref: pref));
+              AppNavigator.push(context: context, screen: AlgoliaSearchScreen());
+              // SharedPreferences pref =
+              // await SharedPreferences.getInstance();
+              // return showSearch(
+              //     context: context,
+              //     delegate: MySearchDelegate(pref: pref));
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 10.w,vertical: 12.h),
