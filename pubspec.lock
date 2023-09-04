@@ -10,7 +10,7 @@ packages:
     source: hosted
     version: "1.3.0"
   algolia:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: algolia
       sha256: "0ba325344f85ac8f8351d158f0be0643e169ac0c91a43a496f8b1f3b54390066"

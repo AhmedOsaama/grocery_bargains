@@ -1,4 +1,6 @@
+import 'package:algolia/algolia.dart';
 import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
+import 'package:bargainb/utils/algolia_utils.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/view/components/generic_field.dart';
 import 'package:bargainb/view/components/search_widget.dart';
@@ -50,6 +52,12 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
 
   @override
   void initState() {
+    AlgoliaApp.algolia.instance.index('dev_PRODUCTS').settings..setCustomRanking([
+      'desc(if(offer IS NOT NULL, 1, 0))',
+      'desc(if(old_price IS NOT NULL, 1, 0))',
+    ]);
+    // AlgoliaApp.algolia.index('dev_PRODUCTS').
+
     _searchTextController.addListener(() => _productsSearcher.query(_searchTextController.text));
 
     _searchTextController.addListener(
@@ -60,6 +68,8 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
         ),
       ),
     );
+
+
 
     _searchPage.listen((page) {
       if (page.pageKey == 0) {
@@ -75,6 +85,7 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
             )
         )
     );
+
     _productsSearcher.connectFilterState(_filterState);
     _filterState.filters.listen((_) => _pagingController.refresh());
     super.initState();
@@ -86,7 +97,7 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
     _productsSearcher.dispose();
     _pagingController.dispose();
     _filterState.dispose();
-    _facetList.dispose();
+    // _facetList.dispose();
     super.dispose();
   }
 

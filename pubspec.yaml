@@ -82,6 +82,7 @@ dependencies:
   phone_form_field: ^7.0.5
   translator: ^0.1.7
   algolia_helper_flutter: ^0.3.3
+  algolia: ^1.1.2
 
 
 
