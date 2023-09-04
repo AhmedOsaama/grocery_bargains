@@ -52,10 +52,6 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
 
   @override
   void initState() {
-    AlgoliaApp.algolia.instance.index('dev_PRODUCTS').settings..setCustomRanking([
-      'desc(if(offer IS NOT NULL, 1, 0))',
-      'desc(if(old_price IS NOT NULL, 1, 0))',
-    ]);
     // AlgoliaApp.algolia.index('dev_PRODUCTS').
 
     _searchTextController.addListener(() => _productsSearcher.query(_searchTextController.text));
@@ -192,7 +188,20 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
               underline: Container(),
               style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
               borderRadius: BorderRadius.circular(4.r),
-              onChanged: (String? newValue) {
+              onChanged: (String? newValue) async {
+                var algoliaIndex = AlgoliaApp.algolia.instance.index('dev_PRODUCTS');
+                AlgoliaSettings settingsData = algoliaIndex.settings;
+                settingsData.setCustomRanking([
+                  // 'desc(if(offer IS NOT NULL, 1, 0))',
+                  // 'desc(if(old_price IS NOT NULL, 1, 0))',
+                  'desc(brand)'
+                ]);
+                print('setting settings');
+                var setSettings = await settingsData.setSettings().catchError((e) => print(e));
+                print(setSettings.data);
+                algoliaIndex.settings.getSettings().then((value) => print( "Settings: " + value.toString()));
+
+                ////////
                 setState(() {
                   storeDropdownValue = newValue!;
                 });
