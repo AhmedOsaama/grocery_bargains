@@ -65,17 +65,17 @@ class NetworkServices {
     return response;
   }
 
-  static Future<http.Response> getLimitedAlbertProductsByCategory(String category, int startingIndex) async {
+  static Future<http.Response> getLimitedAlbertProductsByCategory(String category, int pageNumber) async {
     final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/getLimitedAlbertCategoryProducts?category=$category&startingIndex=$startingIndex');
+        'https://europe-west1-discountly.cloudfunctions.net/getLimitedAlbertCategoryProducts_new?startingIndex=$pageNumber&numberPerPage=100&category=$category');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;
   }
 
-  static Future<http.Response> getLimitedAlbertProductsBySubCategory(String subCategory, int startingIndex) async {
+  static Future<http.Response> getLimitedAlbertProductsBySubCategory(String subCategory, int pageNumber) async {
     final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/getLimitedAlbertSubCategoryProducts?subCategory=$subCategory&startingIndex=$startingIndex');
+        'https://europe-west1-discountly.cloudfunctions.net/getLimitedAlbertSubCategoryProducts_new?startingIndex=$pageNumber&numberPerPage=100&subCategory=$subCategory');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;

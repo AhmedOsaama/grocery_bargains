@@ -130,7 +130,7 @@ class ChatlistsProvider with ChangeNotifier {
     //removing my self
     allUserIds.remove(myId);
 
-    //for every user we get their name,image and lists in common
+    //for every user we get their name, image and lists in common
     for (var userId in allUserIds) {
       var userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
       var userName = userSnapshot.data()!['username'];

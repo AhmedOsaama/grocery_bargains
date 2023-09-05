@@ -589,69 +589,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                   );
                                 });
 
-                            // return FutureBuilder(
-                            //     future: getProductsFuture,
-                            //     builder: (context, snapshot) {
-                            //       if (snapshot.connectionState == ConnectionState.waiting) {
-                            //         return Center(
-                            //           child: CircularProgressIndicator(),
-                            //         );
-                            //       }
-                            //       if (products.isEmpty) products.addAll(snapshot.data ?? []);
-                            //       return GridView.builder(
-                            //           physics: ScrollPhysics(), // to disable GridView's scrolling
-                            //           shrinkWrap: true,
-                            //           gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                            //               maxCrossAxisExtent: 200,
-                            //               mainAxisExtent: 260,
-                            //               childAspectRatio: 0.67,
-                            //               crossAxisSpacing: 5,
-                            //               mainAxisSpacing: 5),
-                            //           itemCount: results.length,
-                            //           itemBuilder: (BuildContext ctx, index) {
-                            //             Product p = Product(
-                            //               id: results.elementAt(index).id,
-                            //               oldPrice: results.elementAt(index).oldPrice ?? "",
-                            //               storeId: results.elementAt(index).storeId,
-                            //               name: results.elementAt(index).name,
-                            //               brand: results.elementAt(index).brand,
-                            //               link: results.elementAt(index).link,
-                            //               category: results.elementAt(index).category,
-                            //               price: results.elementAt(index).price,
-                            //               unit: results.elementAt(index).unit,
-                            //               image: results.elementAt(index).image,
-                            //               description: results.elementAt(index).description,
-                            //               gtin: results.elementAt(index).gtin,
-                            //               subCategory: results.elementAt(index).subCategory,
-                            //               offer: results.elementAt(index).offer,
-                            //               englishName: results.elementAt(index).englishName,
-                            //               similarId: results.elementAt(index).similarId,
-                            //               similarStId: results.elementAt(index).similarStId,
-                            //               availableNow: results.elementAt(index).availableNow,
-                            //               dateAdded: results.elementAt(index).dateAdded,
-                            //             );
-                            //             return DiscountItem(
-                            //               product: p,
-                            //               inGridView: false,
-                            //             );
-                            //           });
-                            //     });
-
-
-                            // return PagedGridView<int, Product>(
-                            //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            //       crossAxisCount: 2,
-                            //       mainAxisSpacing: 15.h,
-                            //       // crossAxisSpacing: 5.w,
-                            //       childAspectRatio: 0.6),
-                            //   pagingController: _pagingController,
-                            //   builderDelegate: PagedChildBuilderDelegate<Product>(
-                            //       itemBuilder: (context, item, index) =>
-                            //           DiscountItem(
-                            //             inGridView: false,
-                            //             product: item,
-                            //           )),
-                            // );
                           }
                         },
                       ),

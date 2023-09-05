@@ -38,7 +38,8 @@ import '../widgets/image_source_picker_dialog.dart';
 
 class ProfileScreen extends StatefulWidget {
   bool isEditing;
-  ProfileScreen({Key? key, this.isEditing = false}) : super(key: key);
+  bool isBackButton;
+  ProfileScreen({Key? key, this.isEditing = false, this.isBackButton = false}) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -104,7 +105,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Consumer<GoogleSignInProvider>(builder: (ctx, provider, _) {
       return Scaffold(
-        appBar: SearchAppBar(isBackButton: false),
+        appBar: SearchAppBar(isBackButton: widget.isBackButton),
         body: SingleChildScrollView(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),

@@ -87,27 +87,27 @@ class ProductsProvider with ChangeNotifier {
     return response.statusCode;
   }
 
-  Future<List<Product>> getProductsByCategory(String category, int startingIndex) async {
+  Future<List<Product>> getProductsByCategory(String category, int pageNumber) async {
     List<Product> products = [];
-    var response = await NetworkServices.getLimitedAlbertProductsByCategory(category.trim(), startingIndex);
+    var response = await NetworkServices.getLimitedAlbertProductsByCategory(category.trim(), pageNumber);
     List productsList = jsonDecode(response.body);
     for(var decodedProduct in productsList) {
       var product = Product.fromJson(decodedProduct);
       products.add(product);
     }
-    products.shuffle();
+    // products.shuffle();
     return products;
   }
 
-  Future<List<Product>> getProductsBySubCategory(String subCategory, int startingIndex) async {
+  Future<List<Product>> getProductsBySubCategory(String subCategory, int pageNumber) async {
     List<Product> products = [];
-    var response = await NetworkServices.getLimitedAlbertProductsBySubCategory(subCategory.trim(), startingIndex);
+    var response = await NetworkServices.getLimitedAlbertProductsBySubCategory(subCategory.trim(), pageNumber);
     List productsList = jsonDecode(response.body);
     for(var decodedProduct in productsList) {
       var product = Product.fromJson(decodedProduct);
       products.add(product);
     }
-    products.shuffle();
+    // products.shuffle();
     return products;
   }
 
@@ -150,63 +150,63 @@ class ProductsProvider with ChangeNotifier {
 
 
 
-  Future<List<Product?>> searchProducts(String searchTerm) async {
-    var isRelevant = true;
-    if(searchTerm.contains("Relevance")){
-      searchTerm = searchTerm.split('-')[0];
-     isRelevant = true;
-    }else{
-      isRelevant = false;
-    }
-
-    try {
-      var response = await Future.wait([
-        NetworkServices.searchAlbertProducts(searchTerm, isRelevant),
-        NetworkServices.searchJumboProducts(searchTerm, isRelevant),
-        NetworkServices.searchHoogvlietProducts(searchTerm, isRelevant),
-        NetworkServices.searchDirkProducts(searchTerm, isRelevant),
-      ]);
-
-      List<Product> albertProducts = [];
-      List decodedAlbert = jsonDecode(response[0].body);
-      for (var decodedProduct in decodedAlbert) {
-        var product = Product.fromJson(decodedProduct);
-        albertProducts.add(product);
-      }
-
-      List<Product> jumboProducts = [];
-      List decodedJumbo = jsonDecode(response[1].body);
-      for (var decodedProduct in decodedJumbo) {
-        var product = Product.fromJson(decodedProduct);
-        jumboProducts.add(product);
-      }
-
-      List<Product> hoogvlietProducts = [];
-      List decodedHoogvliet = jsonDecode(response[2].body);
-      for (var decodedProduct in decodedHoogvliet) {
-        var product = Product.fromJson(decodedProduct);
-        hoogvlietProducts.add(product);
-      }
-
-      List<Product> dirkProducts = [];
-      List decodedDirk = jsonDecode(response[3].body);
-      for (var decodedProduct in decodedDirk) {
-        var product = Product.fromJson(decodedProduct);
-        dirkProducts.add(product);
-      }
-
-      var searchResult = [...albertProducts, ...jumboProducts, ...hoogvlietProducts, ...dirkProducts];
-      searchResult.shuffle();
-      try {
-        TrackingUtils().trackSearchPerformed("filter", FirebaseAuth.instance.currentUser!.uid, searchTerm);
-      }catch(e){}
-      return searchResult;
-    }catch(e){
-      print(e);
-      return [];
-    }
-
-  }
+  // Future<List<Product?>> searchProducts(String searchTerm) async {
+  //   var isRelevant = true;
+  //   if(searchTerm.contains("Relevance")){
+  //     searchTerm = searchTerm.split('-')[0];
+  //    isRelevant = true;
+  //   }else{
+  //     isRelevant = false;
+  //   }
+  //
+  //   try {
+  //     var response = await Future.wait([
+  //       NetworkServices.searchAlbertProducts(searchTerm, isRelevant),
+  //       NetworkServices.searchJumboProducts(searchTerm, isRelevant),
+  //       NetworkServices.searchHoogvlietProducts(searchTerm, isRelevant),
+  //       NetworkServices.searchDirkProducts(searchTerm, isRelevant),
+  //     ]);
+  //
+  //     List<Product> albertProducts = [];
+  //     List decodedAlbert = jsonDecode(response[0].body);
+  //     for (var decodedProduct in decodedAlbert) {
+  //       var product = Product.fromJson(decodedProduct);
+  //       albertProducts.add(product);
+  //     }
+  //
+  //     List<Product> jumboProducts = [];
+  //     List decodedJumbo = jsonDecode(response[1].body);
+  //     for (var decodedProduct in decodedJumbo) {
+  //       var product = Product.fromJson(decodedProduct);
+  //       jumboProducts.add(product);
+  //     }
+  //
+  //     List<Product> hoogvlietProducts = [];
+  //     List decodedHoogvliet = jsonDecode(response[2].body);
+  //     for (var decodedProduct in decodedHoogvliet) {
+  //       var product = Product.fromJson(decodedProduct);
+  //       hoogvlietProducts.add(product);
+  //     }
+  //
+  //     List<Product> dirkProducts = [];
+  //     List decodedDirk = jsonDecode(response[3].body);
+  //     for (var decodedProduct in decodedDirk) {
+  //       var product = Product.fromJson(decodedProduct);
+  //       dirkProducts.add(product);
+  //     }
+  //
+  //     var searchResult = [...albertProducts, ...jumboProducts, ...hoogvlietProducts, ...dirkProducts];
+  //     searchResult.shuffle();
+  //     try {
+  //       TrackingUtils().trackSearchPerformed("filter", FirebaseAuth.instance.currentUser!.uid, searchTerm);
+  //     }catch(e){}
+  //     return searchResult;
+  //   }catch(e){
+  //     print(e);
+  //     return [];
+  //   }
+  //
+  // }
 
 
   Future<void> goToProductPage(String storeName, BuildContext context, int productId) async {

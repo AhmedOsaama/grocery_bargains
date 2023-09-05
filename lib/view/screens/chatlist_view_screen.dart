@@ -110,6 +110,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   }
 
   Future<Widget> getUserImages() async {
+    listUsers.clear();
     List<Widget> imageWidgets = [];
     List userIds = [];
     List allUserIds = [];

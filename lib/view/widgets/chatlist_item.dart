@@ -1,6 +1,7 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
+import 'package:bargainb/view/screens/algolia_search_screen.dart';
 import 'package:bargainb/view/widgets/product_dialog.dart';
 import 'package:bargainb/view/widgets/size_container.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -98,7 +99,7 @@ class _ChatlistItemState extends State<ChatlistItem> {
               if(isClicked)
                 IconButton(onPressed: () async {
                   var pref = await SharedPreferences.getInstance();
-                  AppNavigator.push(context: context, screen: SearchScreen(searchQuery: text));
+                  AppNavigator.push(context: context, screen: AlgoliaSearchScreen(query: text));
 
                   // showSearch(context: context, delegate: MySearchDelegate(pref: pref),query: text);
                 }, icon: Icon(Icons.arrow_right,color: greyText,)),

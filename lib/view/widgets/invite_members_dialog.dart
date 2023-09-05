@@ -393,7 +393,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                                 GenericButton(
                                     onPressed: () {
                                       AppNavigator.pop(context: context,object: "Phone Added");
-                                      pushNewScreen(context, screen: ProfileScreen(isEditing: true,),withNavBar: true);
+                                      pushNewScreen(context, screen: ProfileScreen(isEditing: true, isBackButton: true), withNavBar: true);
                                     },
                                     shape: CircleBorder(),
                                     padding: EdgeInsets.zero,

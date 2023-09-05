@@ -37,6 +37,7 @@ class CategoryScreen extends StatefulWidget {
 class _CategoryScreenState extends State<CategoryScreen> {
   final PagingController<int, dynamic> _pagingController = PagingController(firstPageKey: 0);
   static const _pageSize = 100;
+  var _pageNumber = 1;
   var isLoading = false;
   TextStyle textButtonStyle = TextStylesInter.textViewRegular16.copyWith(color: mainPurple);
   bool switchValue = false;
@@ -65,7 +66,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
     //   _fetchPage(pageKey);
     // });
     var productProvider = Provider.of<ProductsProvider>(context, listen: false);
-    getProductsByCategoryFuture = productProvider.getProductsByCategory(widget.category, 0);
+    getProductsByCategoryFuture = productProvider.getProductsByCategory(widget.category, 1);
     super.initState();
   }
 
@@ -422,9 +423,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         isFetching = true;
                       });
                       try {
-                        var startingIndex = results.last.id + 1;
-                        print("StartingIndex: " + startingIndex.toString());
-                        var newProducts = await productProvider.getProductsByCategory(widget.category, startingIndex);
+                        _pageNumber = _pageNumber + 1;
+                        print("page number: " + _pageNumber.toString());
+                        var newProducts = await productProvider.getProductsByCategory(widget.category, _pageNumber);
                         products.addAll(newProducts);
                       }catch(e){
                         print(e);

@@ -19,7 +19,8 @@ import '../../utils/style_utils.dart';
 import '../widgets/discountItem.dart';
 
 class AlgoliaSearchScreen extends StatefulWidget {
-  const AlgoliaSearchScreen({Key? key}) : super(key: key);
+  final String query;
+  const AlgoliaSearchScreen({Key? key, this.query = ''}) : super(key: key);
 
   @override
   State<AlgoliaSearchScreen> createState() => _AlgoliaSearchScreenState();
@@ -32,6 +33,7 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
       applicationID: 'DG62X9U03X',
       apiKey: 'e862c47c6741eef540abe9fb5f68eef6',
       indexName: 'dev_PRODUCTS');
+      // indexName: 'productss');
 
   final GlobalKey<ScaffoldState> _mainScaffoldKey = GlobalKey();
 
@@ -52,8 +54,8 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
 
   @override
   void initState() {
-    // AlgoliaApp.algolia.index('dev_PRODUCTS').
-
+    _searchTextController.text = widget.query;
+    _productsSearcher.query(_searchTextController.text);
     _searchTextController.addListener(() => _productsSearcher.query(_searchTextController.text));
 
     _searchTextController.addListener(
@@ -65,14 +67,15 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
       ),
     );
 
-
-
     _searchPage.listen((page) {
       if (page.pageKey == 0) {
         _pagingController.refresh();
       }
       _pagingController.appendPage(page.items, page.nextPageKey);
-    }).onError((error) => _pagingController.error = error);
+    }).onError((error) {
+      print("ERROR IN SEARCH: $error");
+      return _pagingController.error = error;
+    });
 
     _pagingController.addPageRequestListener(
             (pageKey) => _productsSearcher.applyState(
@@ -93,7 +96,7 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
     _productsSearcher.dispose();
     _pagingController.dispose();
     _filterState.dispose();
-    // _facetList.dispose();
+    _facetList.dispose();
     super.dispose();
   }
 
@@ -189,19 +192,6 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
               style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
               borderRadius: BorderRadius.circular(4.r),
               onChanged: (String? newValue) async {
-                var algoliaIndex = AlgoliaApp.algolia.instance.index('dev_PRODUCTS');
-                AlgoliaSettings settingsData = algoliaIndex.settings;
-                settingsData.setCustomRanking([
-                  // 'desc(if(offer IS NOT NULL, 1, 0))',
-                  // 'desc(if(old_price IS NOT NULL, 1, 0))',
-                  'desc(brand)'
-                ]);
-                print('setting settings');
-                var setSettings = await settingsData.setSettings().catchError((e) => print(e));
-                print(setSettings.data);
-                algoliaIndex.settings.getSettings().then((value) => print( "Settings: " + value.toString()));
-
-                ////////
                 setState(() {
                   storeDropdownValue = newValue!;
                 });
@@ -210,7 +200,8 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
               },
               items: storeList
                   .map<DropdownMenuItem<String>>((String value) {
-                    if(value == 'Store') {
+                    var index = storeList.indexOf(value) - 1;
+                    if(value == 'Store' || selectableFacets.isEmpty) {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(
@@ -219,7 +210,6 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
                         ),
                       );
                     }
-                    var index = storeList.indexOf(value) - 1;
                     var selectableFacet = selectableFacets[index];
                 return DropdownMenuItem<String>(
                   value: value,

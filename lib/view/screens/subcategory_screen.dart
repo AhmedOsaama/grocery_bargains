@@ -36,6 +36,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
   var isLoading = false;
   TextStyle textButtonStyle = TextStylesInter.textViewRegular16.copyWith(color: mainPurple);
   bool switchValue = false;
+  var _pageNumber = 1;
 
   int? _selectedIndex;
   String sortDropdownValue = 'Sort';
@@ -50,7 +51,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
   void initState() {
     var productProvider = Provider.of<ProductsProvider>(context, listen: false);
     try {
-      getProductsBySubCategoryFuture = productProvider.getProductsBySubCategory(widget.subCategory, 0);
+      getProductsBySubCategoryFuture = productProvider.getProductsBySubCategory(widget.subCategory, 1);
       TrackingUtils().trackPageVisited("Subcategory Screen", FirebaseAuth.instance.currentUser!.uid);
     } catch (e) {}
     super.initState();
@@ -229,17 +230,15 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                       borderRadius: BorderRadius.circular(10),
                       borderColor: mainPurple,
                       color: Colors.white,
-                      onPressed: results.isEmpty
-                          ? () {}
-                          : () async {
+                      onPressed: () async {
                               setState(() {
                                 isFetching = true;
                               });
                               try {
-                                var startingIndex = results.last.id + 1;
-                                print("StartingIndex: " + startingIndex.toString());
+                                _pageNumber = _pageNumber + 1;
+                                print("Page number: " + _pageNumber.toString());
                                 var newProducts =
-                                    await productProvider.getProductsBySubCategory(widget.subCategory, startingIndex);
+                                    await productProvider.getProductsBySubCategory(widget.subCategory, _pageNumber);
                                 products.addAll(newProducts);
                               } catch (e) {
                                 print(e);
