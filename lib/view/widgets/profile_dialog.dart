@@ -103,8 +103,8 @@ class ProfileDialog extends StatelessWidget {
                             var user = FirebaseAuth.instance.currentUser!;
                             var userId = user.uid;
                             await user.reload();
-                            print(user.phoneNumber);
                             await user.delete().catchError((e) async {
+                              print(e);
                               if(user.phoneNumber == null){
                                   if(Platform.isIOS){
                                     await loginWithSocial(context, true);
@@ -114,7 +114,6 @@ class ProfileDialog extends StatelessWidget {
                               }else{
                                 await loginWithPhoneNumber(user.phoneNumber!, context);
                               }
-                            }).then((value) async {
                               await user.delete();
                             });
                             await FirebaseFirestore.instance.collection('/users').doc(userId).delete();
