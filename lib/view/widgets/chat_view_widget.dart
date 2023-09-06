@@ -909,6 +909,7 @@ class _ChatViewState extends State<ChatView> {
     return GenericField(
       controller: quickItemController,
       onSubmitted: (value) {
+        if(quickItemController.text.isEmpty) return;
         Provider.of<ChatlistsProvider>(context, listen: false).addItemToList(
             ListItem(
                 id: -1,
@@ -923,6 +924,8 @@ class _ChatViewState extends State<ChatView> {
                 brand: ''),
             widget.listId);
         quickItemController.clear();
+        TrackingUtils().trackChatlistAction(
+            FirebaseAuth.instance.currentUser!.uid, "Add quick item", DateTime.now().toUtc().toString());
       },
       hintText: LocaleKeys.addSomethingQuickly.tr(),
       contentPadding: EdgeInsets.only(left: 10),
