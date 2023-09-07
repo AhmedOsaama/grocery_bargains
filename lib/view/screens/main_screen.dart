@@ -188,6 +188,15 @@ class _MainScreenState extends State<MainScreen> {
         textStyle: TextStyle(fontSize: 12.sp),
         activeColorPrimary: selectedColor,
         inactiveColorPrimary: unSelectedColor,
+        onPressed: (_){
+          NavigatorController.jumpToTab(1);
+          try{
+            TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open Chatlists screen", DateTime.now().toUtc().toString(), "Home screen");
+          }catch(e){
+            print(e);
+            TrackingUtils().trackButtonClick("Guest", "open Chatlists screen", DateTime.now().toUtc().toString(), "Home screen");
+          }
+        }
       ),
       PersistentBottomNavBarItem(
           icon: Icon(
@@ -209,6 +218,12 @@ class _MainScreenState extends State<MainScreen> {
                       ));
             } else {
               NavigatorController.jumpToTab(2);
+              try{
+                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open profile screen", DateTime.now().toUtc().toString(), "Home screen");
+              }catch(e){
+                print(e);
+                TrackingUtils().trackButtonClick("Guest", "open profile screen", DateTime.now().toUtc().toString(), "Home screen");
+              }
             }
           }),
     ];

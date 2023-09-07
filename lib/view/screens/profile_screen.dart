@@ -130,6 +130,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("UID Copied successfully, please send it to the developer")));
                             FirebaseAuth.instance.signOut();
                             AppNavigator.pushReplacement(context: context, screen: RegisterScreen());
+                            try {
+                              TrackingUtils().trackTextLinkClicked(
+                                  FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Profile Screen", "Error profile sign-out link");
+                            }catch(e){
+                              print(e);
+                            }
                       },child: Text("Something went wrong while fetching the profile data. \n\n UID: ${FirebaseAuth.instance.currentUser!.uid}\n\nClick to logout"));
                     }
                     return Column(
@@ -141,6 +147,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             if(isEditing)
                               TextButton(
                                   onPressed: () async {
+                                    try {
+                                      TrackingUtils().trackTextLinkClicked(
+                                          FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Profile screen", "Cancel profile editing");
+                                    }catch(e){
+                                      print(e);
+                                    }
                                     setState(() {
                                       isEditing = !isEditing;
                                     });
@@ -151,10 +163,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ? TextButton(
                                     onPressed: () async {
                                       await saveProfileChanges();
+                                      try {
+                                        TrackingUtils().trackTextLinkClicked(
+                                            FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Profile screen", "Save profile edits");
+                                      }catch(e){
+                                        print(e);
+                                      }
                                     },
                                     child: Text(LocaleKeys.save.tr()))
                                 :  TextButton(
                                     onPressed: () async {
+                                      try {
+                                        TrackingUtils().trackTextLinkClicked(
+                                            FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Profile screen", "Edit profile");
+                                      }catch(e){
+                                        print(e);
+                                      }
                                       setState(() {
                                         isEditing = !isEditing;
                                       });
@@ -201,6 +225,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         print("Failed to pick image: $e");
                                       }
                                       // }
+                                      try {
+                                        TrackingUtils().trackTextLinkClicked(
+                                            FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Profile screen", "Change profile picture");
+                                      }catch(e){
+                                        print(e);
+                                      }
                                     },
                                     child: Text(
                                       "Change".tr(),
@@ -231,10 +261,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             settingText: "Your Status",
                             value: snapshot.data!['status'],
-                            onTap: () => {
+                            onTap: (){
                               setState(() {
                                 isEditing = !isEditing;
-                              })
+                              });
+                              TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open status", DateTime.now().toUtc().toString(), "Profile screen");
                             },
                           ),
                           Divider(),
@@ -245,7 +276,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               color: mainPurple,
                             ),
                             settingText: "Subscription",
-                            onTap: () => AppNavigator.push(context: context, screen: SubscriptionScreen()),
+                            onTap: () {
+                              AppNavigator.push(context: context, screen: SubscriptionScreen());
+                              TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open Subscription screen", DateTime.now().toUtc().toString(), "Profile screen");
+                            },
                           ),
                           Divider(),
                           10.ph,
@@ -255,7 +289,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               color: mainPurple,
                             ),
                             settingText: LocaleKeys.settings.tr(),
-                            onTap: () => AppNavigator.push(context: context, screen: SettingsScreen()),
+                            onTap: () {
+                              AppNavigator.push(context: context, screen: SettingsScreen());
+                              TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open Settings screen", DateTime.now().toUtc().toString(), "Profile screen");
+                            },
                           ),
                           Divider(),
                           10.ph,
@@ -267,6 +304,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   value.remove("firstTime");
                                 });
                                 pushNewScreen(context, screen: MainScreen(), withNavBar: false);
+                                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Activate tutorial", DateTime.now().toUtc().toString(), "Profile screen");
                               }),
                           Divider(),
                           10.ph,
@@ -278,6 +316,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               settingText: LocaleKeys.support.tr(),
                               onTap: () {
                                 pushNewScreen(context, screen: SupportScreen(), withNavBar: true);
+                                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open Support screen", DateTime.now().toUtc().toString(), "Profile screen");
                               }),
                           10.ph
                         ],

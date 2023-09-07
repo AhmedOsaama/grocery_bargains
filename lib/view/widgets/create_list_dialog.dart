@@ -1,6 +1,7 @@
 import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
@@ -11,6 +12,7 @@ import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/style_utils.dart';
+import '../../utils/tracking_utils.dart';
 import '../components/button.dart';
 import '../components/generic_field.dart';
 import '../screens/chatlist_view_screen.dart';
@@ -24,8 +26,17 @@ class CreateListDialog extends StatefulWidget {
 
 class _CreateListDialogState extends State<CreateListDialog> {
   bool canCreate = false;
-
   TextEditingController chatlistNameController = TextEditingController();
+
+  @override
+  void initState() {
+    try {
+      TrackingUtils().trackPopPageView(
+          FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Create chatlist popup");
+    }catch(e){
+      print(e);
+    }    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +85,10 @@ class _CreateListDialogState extends State<CreateListDialog> {
                 Expanded(
                     child: GenericButton(
                   height: 60.h,
-                  onPressed: () => AppNavigator.pop(context: context),
+                  onPressed: () {
+                    AppNavigator.pop(context: context);
+                    TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Back from create chatlist", DateTime.now().toUtc().toString(), "Chatlists screen");
+                  },
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(6),
                   borderColor: grey,

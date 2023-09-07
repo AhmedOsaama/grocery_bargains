@@ -32,6 +32,17 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
   bool done = false;
 
   @override
+  void initState() {
+    try {
+      TrackingUtils().trackPopPageView(
+          FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Choose chatlist popup");
+    }catch(e){
+      print(e);
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     var chatlistsProvider = Provider.of<ChatlistsProvider>(context);
 
@@ -146,6 +157,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                                     chatlistName,
                                     widget.item.quantity.toString(),
                                     'Add');
+                                  TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "add to list", DateTime.now().toUtc().toString(), "Product screen");
                                 AppNavigator.pop(context: context);
                               },
                         height: 60.h,

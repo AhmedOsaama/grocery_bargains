@@ -2,12 +2,32 @@ import 'dart:io';
 
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ImageSourcePickerSheet extends StatelessWidget {
+import '../../utils/tracking_utils.dart';
+
+class ImageSourcePickerSheet extends StatefulWidget {
   const ImageSourcePickerSheet({Key? key}) : super(key: key);
+
+  @override
+  State<ImageSourcePickerSheet> createState() => _ImageSourcePickerSheetState();
+}
+
+class _ImageSourcePickerSheetState extends State<ImageSourcePickerSheet> {
+
+  @override
+  void initState() {
+    try {
+      TrackingUtils().trackPopPageView(
+          FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Choose profile picture popup");
+    }catch(e){
+      print(e);
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

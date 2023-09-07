@@ -105,6 +105,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                                       setState(() {
                                         updateUserDataFuture();
                                       });
+                                      TrackingUtils().trackBooleanToggleClicks(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), value, 'Email marketing', "Preferences Screen");
                                     })
                               ],
                             ),
@@ -146,6 +147,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                                       setState(() {
                                         updateUserDataFuture();
                                       });
+                                      TrackingUtils().trackBooleanToggleClicks(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), value, 'Daily Email marketing', "Preferences Screen");
                                     })
                               ],
                             ),
@@ -179,6 +181,13 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                                               ["daily"]
                                         }
                                       });
+                                      try {
+                                        TrackingUtils().trackBooleanToggleClicks(
+                                            FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
+                                            value, 'Weekly Email marketing', "Preferences Screen");
+                                      }catch(e){
+                                        print(e);
+                                      }
                                       setState(() {
                                         updateUserDataFuture();
                                       });
@@ -201,6 +210,12 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                                         await launchUrl(url);
                                       } catch (e) {
                                         log(e.toString());
+                                      }
+                                      try {
+                                        TrackingUtils().trackTextLinkClicked(
+                                            FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Preferences screen", "Open privacy policy");
+                                      }catch(e){
+                                        print(e);
                                       }
                                     },
                                     child: Text(

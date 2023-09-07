@@ -263,6 +263,7 @@ class ChatlistsProvider with ChangeNotifier {
         showChatlistSnackBar(context, Text(LocaleKeys.pleaseCreateAList.tr()), LocaleKeys.create.tr(), "", true);
       }
     }
+      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "add product", DateTime.now().toUtc().toString(), "Product screen");
   }
 
   Future<void> updateItemQuantity(String chatlistId, String itemId, int newQuantity) async {
@@ -304,6 +305,8 @@ class ChatlistsProvider with ChangeNotifier {
       updateChatList(listId, message, userData);
     }
     TrackingUtils().trackChatlistMessageSent(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), message, listId, chatlistName);
+    TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Send message", DateTime.now().toUtc().toString(), "Chatlist screen");
+
   }
 
   Future<bool> shareItem({required ListItem item, required String docId}) async {

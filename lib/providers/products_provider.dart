@@ -227,6 +227,12 @@ class ProductsProvider with ChangeNotifier {
           productCategory: product.category,
           price1: double.tryParse(product.price ?? "") ?? 0.0, gtin: product.gtin,
         ));
+    try{
+      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open product page", DateTime.now().toUtc().toString(), "Chatlist screen");
+    }catch(e){
+      print(e);
+      TrackingUtils().trackButtonClick("Guest", "Open product page", DateTime.now().toUtc().toString(), "Chatlist screen");
+    }
   }
 
   void shareProductViaDeepLink(String itemName, int itemId, String storeName, BuildContext context) async {

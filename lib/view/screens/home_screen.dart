@@ -304,6 +304,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           TextButton(
                               onPressed: () {
                                 AppNavigator.push(context: context, screen: AllCategoriesScreen());
+                                try {
+                                  TrackingUtils().trackTextLinkClicked(
+                                      FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Home screen", "See all categories");
+                                }catch(e){
+                                  print(e);
+                                  TrackingUtils().trackTextLinkClicked(
+                                      'Guest', DateTime.now().toUtc().toString(), "Home screen", "See all categories");
+                                }
                                 // pushNewScreen(context, screen: AllCategoriesScreen(), withNavBar: true);
                               },
                               child: Text(
@@ -330,11 +338,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                             : 10.0,
                                       ),
                                       child: GestureDetector(
-                                        onTap: () => pushNewScreen(context,
+                                        onTap: () {
+                                          pushNewScreen(context,
                                             screen: CategoryScreen(
                                               category: element.category,
                                             ),
-                                            withNavBar: true),
+                                            withNavBar: true);
+                                          try{
+                                          TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open category page", DateTime.now().toUtc().toString(), "Home screen");
+                                          }catch(e){
+                                            print(e);
+                                            TrackingUtils().trackButtonClick("Guest", "Open category page", DateTime.now().toUtc().toString(), "Home screen");
+                                          }
+                                        },
                                         child: SizedBox(
                                           width: 71.w,
                                           child: Column(
@@ -507,6 +523,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           TextButton(
                               onPressed: () {
                                 AppNavigator.push(context: context, screen: LatestBargainsScreen());
+                                try {
+                                  TrackingUtils().trackTextLinkClicked(
+                                      FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Home screen", "See all latest bargains");
+                                }catch(e){
+                                  print(e);
+                                  TrackingUtils().trackTextLinkClicked(
+                                      'Guest', DateTime.now().toUtc().toString(), "Home screen", "See all latest bargains");
+                                }
                               },
                               child: Text(
                                 'seeAll'.tr(),
@@ -602,6 +626,12 @@ class _HomeScreenState extends State<HomeScreen> {
                             setState(() {
                               isFetching = false;
                             });
+                            try{
+                            TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "See more", DateTime.now().toUtc().toString(), "Home screen");
+                            }catch(e){
+                              print(e);
+                              TrackingUtils().trackButtonClick("Guest", "See more", DateTime.now().toUtc().toString(), "Home screen");
+                            }
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -648,6 +678,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
        // NavigatorController.jumpToTab(1);
        ShowCaseWidget.of(builder).next();
+       try{
+         TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open product page", DateTime.now().toUtc().toString(), "Home screen");
+       }catch(e){
+         print(e);
+         TrackingUtils().trackButtonClick("Guest", "Open product page", DateTime.now().toUtc().toString(), "Home screen");
+       }
      }catch(e){
        print(e);
      }

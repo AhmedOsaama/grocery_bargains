@@ -5,6 +5,7 @@ import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/widgets/size_container.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bargainb/utils/app_colors.dart';
@@ -18,6 +19,7 @@ import '../../models/list_item.dart';
 import '../../models/product.dart';
 import '../../providers/chatlists_provider.dart';
 import '../../utils/style_utils.dart';
+import '../../utils/tracking_utils.dart';
 import '../screens/product_detail_screen.dart';
 
 class DiscountItem extends StatelessWidget {
@@ -224,6 +226,12 @@ class DiscountItem extends StatelessWidget {
           price1: double.tryParse(product.price ?? "") ?? 0.0,
           size1: getProductSize(product), gtin: product.gtin,
         ));
+    try{
+      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open product page", DateTime.now().toUtc().toString(), "Home screen");
+    }catch(e){
+      print(e);
+      TrackingUtils().trackButtonClick("Guest", "Open product page", DateTime.now().toUtc().toString(), "Home screen");
+    }
   }
 
   String getStoreLogoPath() {

@@ -113,6 +113,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   AppNavigator.push(
                       context: context,
                       screen: SubCategoryScreen(subCategory: subCategory, subCategoryLabel: subCategoryLabel));
+                  try{
+                    TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open subcategory page", DateTime.now().toUtc().toString(), "Category screen");
+                  }catch(e){
+                    print(e);
+                    TrackingUtils().trackButtonClick("Guest", "Open subcategory page", DateTime.now().toUtc().toString(), "Category screen");
+                  }
                 },
               ),
             ));
@@ -154,6 +160,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   },
                 ));
               });
+              try{
+                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Show more subcategories", DateTime.now().toUtc().toString(), "Category screen");
+              }catch(e){
+                print(e);
+                TrackingUtils().trackButtonClick("Guest", "Show more subcategories", DateTime.now().toUtc().toString(), "Category screen");
+              }
             },
           ),
         );

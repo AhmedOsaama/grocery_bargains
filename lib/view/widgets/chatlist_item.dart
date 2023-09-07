@@ -6,6 +6,7 @@ import 'package:bargainb/view/widgets/product_dialog.dart';
 import 'package:bargainb/view/widgets/size_container.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -14,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
+import '../../utils/tracking_utils.dart';
 import '../screens/search_screen.dart';
 
 class ChatlistItem extends StatefulWidget {
@@ -83,6 +85,8 @@ class _ChatlistItemState extends State<ChatlistItem> {
                     print(e);
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("OperationNotDone".tr())));
                   });
+                  TrackingUtils().trackCheckBoxItemClicked(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Mark off chatlist item", "Chatlist screen", isChecked);
+                  TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Check off item", DateTime.now().toUtc().toString(), "Chatlist screen");
                 },
               ),
               TextButton(
@@ -90,6 +94,12 @@ class _ChatlistItemState extends State<ChatlistItem> {
                   setState(() {
                   isClicked = !isClicked;
                   });
+                  try {
+                    TrackingUtils().trackTextLinkClicked(
+                        FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Chatlist screen", "Click chatlist item");
+                  }catch(e){
+                    print(e);
+                  }
                 },
                 child: Text(
                   text,
@@ -100,14 +110,15 @@ class _ChatlistItemState extends State<ChatlistItem> {
                 IconButton(onPressed: () async {
                   var pref = await SharedPreferences.getInstance();
                   AppNavigator.push(context: context, screen: AlgoliaSearchScreen(query: text));
-
+                  TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open search", DateTime.now().toUtc().toString(), "Chatlist screen");
                   // showSearch(context: context, delegate: MySearchDelegate(pref: pref),query: text);
                 }, icon: Icon(Icons.arrow_right,color: greyText,)),
               Spacer(),
               if(isClicked)
                 IconButton(onPressed: (){
                 FirebaseFirestore.instance.collection('/lists/${widget.item.reference.parent.parent!.id}/items').doc(widget.item.id).delete();
-              }, icon: Icon(Icons.close,color: greyText,size: 18,))
+                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "delete manual(text) item", DateTime.now().toUtc().toString(), "Chatlist screen");
+                }, icon: Icon(Icons.close,color: greyText,size: 18,))
             ],
           )
         : Column(
@@ -139,6 +150,7 @@ class _ChatlistItemState extends State<ChatlistItem> {
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(SnackBar(content: Text("OperationNotDone".tr())));
                               });
+                              TrackingUtils().trackCheckBoxItemClicked(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Mark off chatlist item", "Chatlist screen", isChecked);
                             },
                           ),
                           GestureDetector(
@@ -197,6 +209,7 @@ class _ChatlistItemState extends State<ChatlistItem> {
                                       itemOldPrice: itemOldPrice,
                                           itemDocId: widget.item.id,
                                         ));
+                                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "edit item", DateTime.now().toUtc().toString(), "Chatlist screen");
                               },
                               child: SvgPicture.asset(
                                 edit,

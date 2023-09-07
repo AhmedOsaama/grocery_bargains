@@ -99,6 +99,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                         setState(() {
                           updateUserDataFuture();
                         });
+                        TrackingUtils().trackLanguageSelected(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "English");
                       },
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -135,6 +136,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                         setState(() {
                           updateUserDataFuture();
                         });
+                        TrackingUtils().trackLanguageSelected(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Dutch");
                       },
                       child: Container(
                         child: Row(

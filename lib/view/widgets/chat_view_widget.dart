@@ -582,6 +582,7 @@ class _ChatViewState extends State<ChatView> {
                                               setState(() {
                                                 isExpandingChatlist = !isExpandingChatlist;
                                               });
+                                              TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Expand chatlist", DateTime.now().toUtc().toString(), "Chatlist screen");
                                             },
                                             icon: isExpandingChatlist
                                                 ? Icon(
@@ -921,6 +922,7 @@ class _ChatViewState extends State<ChatView> {
                 brand: ''),
             widget.listId);
         quickItemController.clear();
+        TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "add manual(text) item", DateTime.now().toUtc().toString(), "Chatlist screen");
       },
       hintText: LocaleKeys.addSomethingQuickly.tr(),
       contentPadding: EdgeInsets.only(left: 10),
@@ -944,6 +946,7 @@ class _ChatViewState extends State<ChatView> {
                   brand: ''),
               widget.listId);
           quickItemController.clear();
+          TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "add manual(text) item", DateTime.now().toUtc().toString(), "Chatlist screen");
         },
         child: Text(
           LocaleKeys.add.tr(),

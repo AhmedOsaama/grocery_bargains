@@ -2,14 +2,16 @@ import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pinput/pinput.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../utils/style_utils.dart';
+import '../../utils/tracking_utils.dart';
 
-class OtpDialog extends StatelessWidget {
+class OtpDialog extends StatefulWidget {
   final String phoneNumber;
   final bool isSignUp;
   final Function resendOtp;
@@ -20,6 +22,23 @@ class OtpDialog extends StatelessWidget {
       required this.resendOtp,
       required this.isSignUp, required this.canResend})
       : super(key: key);
+
+  @override
+  State<OtpDialog> createState() => _OtpDialogState();
+}
+
+class _OtpDialogState extends State<OtpDialog> {
+
+  @override
+  void initState() {
+    try {
+      TrackingUtils().trackPopPageView(
+          FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "OTP popup");
+    }catch(e){
+      print(e);
+    }
+    super.initState();
+  }
 
   var pin = '';
 
@@ -35,7 +54,7 @@ class OtpDialog extends StatelessWidget {
           children: [
             10.ph,
             Text(
-              isSignUp ? "LastStep".tr() : "",
+              widget.isSignUp ? "LastStep".tr() : "",
               style: TextStylesInter.textViewBold44,
             ),
             30.ph,
@@ -48,7 +67,7 @@ class OtpDialog extends StatelessWidget {
               style: TextStylesInter.textViewMedium25,
             ),
             8.ph,
-            Text("${"CodeIsSent".tr()}${phoneNumber}"),
+            Text("${"CodeIsSent".tr()}${widget.phoneNumber}"),
             30.ph,
             Pinput(
                 validator: (s) {
@@ -78,11 +97,11 @@ class OtpDialog extends StatelessWidget {
                   style: TextStylesInter.textViewSemiBold15,
                 )),
             30.ph,
-            if(canResend)
+            if(widget.canResend)
             GestureDetector(
               onTap: () async {
                 AppNavigator.pop(context: context);
-                await resendOtp();
+                await widget.resendOtp();
                 print("finish");
               },
               child: Text.rich(

@@ -200,6 +200,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
         showDialog(
             context: context,
             builder: (ctx) => CreateListDialog());
+        TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Create Chatlist", DateTime.now().toUtc().toString(), "Chatlist screen");
       },
       color: brightOrange,
       padding: EdgeInsets.zero,

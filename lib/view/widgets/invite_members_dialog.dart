@@ -67,6 +67,12 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
   @override
   void initState() {
     getFirstTime();
+    try {
+      TrackingUtils().trackPopPageView(
+          FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Invite people popup");
+    }catch(e){
+      print(e);
+    }
     super.initState();
   }
 
@@ -390,6 +396,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                                     onPressed: () {
                                       AppNavigator.pop(context: context,object: "Phone Added");
                                       pushNewScreen(context, screen: ProfileScreen(isEditing: true, isBackButton: true), withNavBar: true);
+                                      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "add phone number", DateTime.now().toUtc().toString(), "Chatlist screen(invite popup)");
                                     },
                                     shape: CircleBorder(),
                                     padding: EdgeInsets.zero,

@@ -13,6 +13,7 @@ import '../../utils/app_colors.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
+import '../../utils/tracking_utils.dart';
 import '../screens/chatlist_view_screen.dart';
 
 class ChatCard extends StatelessWidget {
@@ -27,11 +28,14 @@ class ChatCard extends StatelessWidget {
         builder: (context, snapshot) {
           var storeItems = snapshot.data?.docs ?? [];
           return InkWell(
-            onTap: () => pushNewScreen(context,
+            onTap: () {
+              pushNewScreen(context,
                 screen: ChatListViewScreen(
                   listId: allLists.elementAt(i).id,
                 ),
-                withNavBar: true),
+                withNavBar: true);
+              TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open chatlist", DateTime.now().toUtc().toString(), "Chatlists screen");
+            },
             child: Container(
               padding: EdgeInsets.only(left: 17.w, top: 10.h, bottom: 10.h),
               decoration: BoxDecoration(

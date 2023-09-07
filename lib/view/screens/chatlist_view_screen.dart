@@ -403,6 +403,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                   IconButton(
                     onPressed: () {
                       showInviteMembersDialog(context);
+                      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Show invite members dialog", DateTime.now().toUtc().toString(), "Chatlist screen");
                     },
                     icon: SvgPicture.asset(
                       newperson,

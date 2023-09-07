@@ -146,14 +146,14 @@ class TrackingUtils {
     mixpanel.track(booleanToggleClicksEvent, properties: {
       userIdKey: userId,
       timeStampKey: timestamp,
-      valueKey: value,
+      valueKey: value.toString(),
       toggleNameKey: toggleName,
       pageNameKey: pageName,
     });
     FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(booleanToggleClicksEvent)
       ..addCustomData(userIdKey, userId)
       ..addCustomData(timeStampKey, timestamp)
-      ..addCustomData(valueKey, value)
+      ..addCustomData(valueKey, value.toString())
       ..addCustomData(toggleNameKey, toggleName)
       ..addCustomData(pageNameKey, pageName)
     );
@@ -176,27 +176,25 @@ class TrackingUtils {
     );
   }
 
-  void trackCheckBoxItemClicked(String userId, String timestamp, String cbiName, String cbiPageName, bool value, String pageName){
+  void trackCheckBoxItemClicked(String userId, String timestamp, String cbiName, String cbiPageName, bool value){
     mixpanel.track(checkboxItemClickedEvent, properties: {
       userIdKey: userId,
       timeStampKey: timestamp,
       cbiNameKey: cbiName,
       cbiPageNameKey: cbiPageName,
-      valueKey: value,
-      pageNameKey: pageName,
+      valueKey: value.toString(),
     });
     FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(checkboxItemClickedEvent)
       ..addCustomData(userIdKey, userId)
       ..addCustomData(timeStampKey, timestamp)
       ..addCustomData(cbiNameKey, cbiName)
       ..addCustomData(cbiPageNameKey, cbiPageName)
-      ..addCustomData(valueKey, value)
-      ..addCustomData(pageNameKey, pageName)
+      ..addCustomData(valueKey, value.toString())
     );
   }
 
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
   void trackSignup(String userId, String timestamp){
     mixpanel.track(signUpEvent, properties: {
       userIdKey : userId,
@@ -247,7 +245,7 @@ class TrackingUtils {
     mixpanel.track(productActionEvent, properties: {
       userIdKey : userId,
       timeStampKey : timestamp,
-      discountedKey : discounted,
+      discountedKey : discounted.toString(),
       chatlistIdKey : chatlistId,
       chatlistNameKey : ChatlistName,
       quantityKey : quantity,
@@ -256,7 +254,7 @@ class TrackingUtils {
     FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(productActionEvent)
       ..addCustomData(userIdKey, userId)
         ..addCustomData(timeStampKey, timestamp)
-        ..addCustomData(discountedKey, discounted)
+        ..addCustomData(discountedKey, discounted.toString())
         ..addCustomData(chatlistIdKey, chatlistId)
         ..addCustomData(chatlistNameKey, ChatlistName)
         ..addCustomData(quantityKey, quantity)

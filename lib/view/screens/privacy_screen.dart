@@ -90,8 +90,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                                     onChanged: (value) async {
                                       await FirebaseFirestore.instance
                                           .collection('users')
-                                          .doc(FirebaseAuth
-                                              .instance.currentUser!.uid)
+                                          .doc(FirebaseAuth.instance.currentUser!.uid)
                                           .update({
                                         "privacy": {
                                           "locationServices": value,
@@ -103,6 +102,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                                       setState(() {
                                         updateUserDataFuture();
                                       });
+                                      TrackingUtils().trackBooleanToggleClicks(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), value, 'Location services', "Privacy Screen");
                                     })
                               ],
                             ),
@@ -139,6 +139,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                                       setState(() {
                                         updateUserDataFuture();
                                       });
+                                      TrackingUtils().trackBooleanToggleClicks(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), value, 'Connect Contacts', "Privacy Screen");
                                     })
                               ],
                             ),
@@ -158,6 +159,12 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                                       await launchUrl(url);
                                     } catch (e) {
                                       log(e.toString());
+                                    }
+                                    try {
+                                      TrackingUtils().trackTextLinkClicked(
+                                          FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Privacy screen", "Open privacy policy");
+                                    }catch(e){
+                                      print(e);
                                     }
                                   },
                                   child: Text(

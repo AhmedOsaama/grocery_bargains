@@ -237,8 +237,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       Column(
                         children: [
                           GestureDetector(
-                            onTap: () => Provider.of<ProductsProvider>(context, listen: false)
-                                .shareProductViaDeepLink(widget.productName, widget.productId, widget.storeName, context),
+                            onTap: () {
+                              Provider.of<ProductsProvider>(context, listen: false)
+                                .shareProductViaDeepLink(widget.productName, widget.productId, widget.storeName, context);
+                              try{
+                                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Share product", DateTime.now().toUtc().toString(), "Product screen");
+                              }catch(e){
+                                print(e);
+                                TrackingUtils().trackButtonClick("Guest", "Share categories", DateTime.now().toUtc().toString(), "Product screen");
+                              }
+                            },
                             child: Column(
                               children: [
                                 Container(
@@ -271,6 +279,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 getComparisonsFuture = getComparisons();
 
                               });
+                              try{
+                                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "increase quantity", DateTime.now().toUtc().toString(), "Product screen");
+                              }catch(e){
+                                print(e);
+                                TrackingUtils().trackButtonClick("Guest", "increase quantity", DateTime.now().toUtc().toString(), "Product screen");
+                              }
                             },
                             decreaseQuantity: () {
                               setState(() {
@@ -278,6 +292,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 // getComparisons();
                                 getComparisonsFuture = getComparisons();
                               });
+                              try{
+                                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "decrease quantity", DateTime.now().toUtc().toString(), "Product screen");
+                              }catch(e){
+                                print(e);
+                                TrackingUtils().trackButtonClick("Guest", "decrease quantity", DateTime.now().toUtc().toString(), "Product screen");
+                              }
                             },
                           ),
                         ],

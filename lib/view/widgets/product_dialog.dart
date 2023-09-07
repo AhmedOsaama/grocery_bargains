@@ -53,6 +53,18 @@ class ProductDialog extends StatefulWidget {
 }
 
 class _ProductDialogState extends State<ProductDialog> {
+
+  @override
+  void initState() {
+    try {
+      TrackingUtils().trackPopPageView(
+          FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Chatlist Item edit popup");
+    }catch(e){
+      print(e);
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var chatlistProvider = Provider.of<ChatlistsProvider>(context, listen: false);
@@ -95,12 +107,14 @@ class _ProductDialogState extends State<ProductDialog> {
                     ++widget.itemQuantity;
                   });
                   chatlistProvider.updateItemQuantity(widget.listId, widget.itemDocId, widget.itemQuantity);
+                  TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "increase chatlist item quantity", DateTime.now().toUtc().toString(), "Chatlist screen");
                 },
                 decreaseQuantity: () {
                   setState(() {
                     widget.itemQuantity--;
                   });
                   chatlistProvider.updateItemQuantity(widget.listId, widget.itemDocId, widget.itemQuantity);
+                  TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "increase chatlist item quantity", DateTime.now().toUtc().toString(), "Chatlist screen");
                 },
               ),
             ),
@@ -114,6 +128,7 @@ class _ProductDialogState extends State<ProductDialog> {
                       onPressed: () {
                         Provider.of<ChatlistsProvider>(context, listen: false)
                             .deleteItemFromChatlist(widget.listId, widget.itemDocId, widget.itemPrice, widget.itemOldPrice, widget.itemQuantity.toString());
+                        TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Delete chatlist item", DateTime.now().toUtc().toString(), "Chatlist screen");
                         AppNavigator.pop(context: context);
                       },
                       icon: Icon(Icons.delete, color: purple30),
@@ -132,6 +147,7 @@ class _ProductDialogState extends State<ProductDialog> {
                         onPressed: () {
                           var productProvider = Provider.of<ProductsProvider>(context, listen: false);
                           productProvider.goToProductPage(widget.storeName, context, widget.itemId);
+                          TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open product page", DateTime.now().toUtc().toString(), "Chatlist screen");
                         },
                         splashRadius: 25,
                         icon: Icon(
@@ -151,6 +167,7 @@ class _ProductDialogState extends State<ProductDialog> {
                         onPressed: () {
                           Provider.of<ProductsProvider>(context, listen: false)
                               .shareProductViaDeepLink(widget.itemName, widget.itemId, widget.storeName, context);
+                          TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Share chatlist item", DateTime.now().toUtc().toString(), "Chatlist screen");
                         },
                         icon: Icon(Icons.share_outlined, color: purple30),
                         splashRadius: 25),

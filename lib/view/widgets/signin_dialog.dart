@@ -2,6 +2,7 @@
 
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
@@ -10,10 +11,11 @@ import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import '../../config/routes/app_navigator.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
+import '../../utils/tracking_utils.dart';
 import '../components/button.dart';
 import '../screens/register_screen.dart';
 
-class SigninDialog extends StatelessWidget {
+class SigninDialog extends StatefulWidget {
   final String title;
   final String body;
   final String buttonText;
@@ -24,6 +26,22 @@ class SigninDialog extends StatelessWidget {
     required this.body,
     required this.buttonText,
   }) : super(key: key);
+
+  @override
+  State<SigninDialog> createState() => _SigninDialogState();
+}
+
+class _SigninDialogState extends State<SigninDialog> {
+  @override
+  void initState() {
+    try {
+      TrackingUtils().trackPopPageView(
+          "Guest", DateTime.now().toUtc().toString(), "Sign in popup");
+    }catch(e){
+      print(e);
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,12 +62,12 @@ class SigninDialog extends StatelessWidget {
             ),
             10.ph,
             Text(
-              '$title',
+              '${widget.title}',
               style: TextStyles.textViewSemiBold28.copyWith(color: black2),
             ),
             10.ph,
             Text(
-              body,
+              widget.body,
               textAlign: TextAlign.center,
               style: TextStyles.textViewRegular16
                   .copyWith(color: Color.fromRGBO(72, 72, 72, 1)),
@@ -82,7 +100,7 @@ class SigninDialog extends StatelessWidget {
                               screen: RegisterScreen(), withNavBar: false);
                         },
                         child: Text(
-                          buttonText,
+                          widget.buttonText,
                           style: TextStyles.textViewSemiBold16
                               .copyWith(color: white),
                         ))),

@@ -23,12 +23,11 @@ import '../components/button.dart';
 import '../screens/register_screen.dart';
 import 'otp_dialog.dart';
 
-class ProfileDialog extends StatelessWidget {
+class ProfileDialog extends StatefulWidget {
   final String title;
   final String body;
   final String buttonText;
   final bool isSigningOut;
-  var resendToken = null;
 
   ProfileDialog(
       {Key? key,
@@ -37,6 +36,22 @@ class ProfileDialog extends StatelessWidget {
       required this.buttonText,
       required this.isSigningOut})
       : super(key: key);
+
+  @override
+  State<ProfileDialog> createState() => _ProfileDialogState();
+}
+
+class _ProfileDialogState extends State<ProfileDialog> {
+  @override
+  void initState() {
+    try {
+      TrackingUtils().trackPopPageView(
+          FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Profile sign-out/delete popup");
+    }catch(e){
+      print(e);
+    }    super.initState();
+  }
+  var resendToken = null;
 
   @override
   Widget build(BuildContext context) {
@@ -51,12 +66,12 @@ class ProfileDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '$title?',
+              '${widget.title}?',
               style: TextStyles.textViewSemiBold28.copyWith(color: black2),
             ),
             10.ph,
             Text(
-              body,
+              widget.body,
               style: TextStyles.textViewRegular16
                   .copyWith(color: Color.fromRGBO(72, 72, 72, 1)),
             ),
@@ -82,7 +97,7 @@ class ProfileDialog extends StatelessWidget {
                         height: 60.h,
                         borderRadius: BorderRadius.circular(6),
                         onPressed: () async {
-                          if (isSigningOut) {
+                          if (widget.isSigningOut) {
                             var pref = await SharedPreferences.getInstance();
                             pref.setBool("rememberMe", false);
                             var isGoogleSignedIn =
@@ -98,7 +113,8 @@ class ProfileDialog extends StatelessWidget {
                               FirebaseAuth.instance.signOut();
                             }
                             print("SIGNED OUT...................");
-                          } else {
+                          }
+                          else {
                             var user = FirebaseAuth.instance.currentUser!;
                             var userId = user.uid;
                             await user.reload();
@@ -121,7 +137,7 @@ class ProfileDialog extends StatelessWidget {
                               context: context, screen: RegisterScreen());
                         },
                         child: Text(
-                          buttonText,
+                          widget.buttonText,
                           style: TextStyles.textViewSemiBold16
                               .copyWith(color: black2),
                         ))),
@@ -220,5 +236,4 @@ class ProfileDialog extends StatelessWidget {
           isSignUp: false,
         ));
   }
-
 }

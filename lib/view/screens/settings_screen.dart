@@ -87,6 +87,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onTap: () {
                 AppNavigator.push(
                     context: context, screen: PreferencesScreen());
+                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open Preferences screen", DateTime.now().toUtc().toString(), "Profile screen");
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -110,6 +111,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               onTap: () {
                 AppNavigator.pushReplacement(
                     context: context, screen: LanguageScreen());
+                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open Language screen", DateTime.now().toUtc().toString(), "Profile screen");
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -148,14 +150,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             Spacer(),
             GenericButton(
-              onPressed: () => showDialog(
+              onPressed: () {
+                showDialog(
                   context: context,
                   builder: (ctx) => ProfileDialog(
                         title: LocaleKeys.signout.tr(),
                         body: LocaleKeys.logoutFromAccount.tr(),
                         buttonText: LocaleKeys.signout.tr(),
                         isSigningOut: true,
-                      )),
+                      ));
+                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Signout", DateTime.now().toUtc().toString(), "Profile screen");
+              },
               width: double.infinity,
               height: 60.h,
               borderRadius: BorderRadius.circular(6),
@@ -168,14 +173,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             10.ph,
             GenericButton(
-              onPressed: () => showDialog(
+              onPressed: () {
+                showDialog(
                   context: context,
                   builder: (ctx) => ProfileDialog(
                         title: LocaleKeys.deleteYourAccount.tr(),
                         body: LocaleKeys.allDataWillBeRemoved.tr(),
                         buttonText: LocaleKeys.delete.tr(),
                         isSigningOut: false,
-                      )),
+                      ));
+                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Delete Account", DateTime.now().toUtc().toString(), "Profile screen");
+              },
               width: double.infinity,
               height: 60.h,
               borderRadius: BorderRadius.circular(6),
