@@ -34,7 +34,7 @@ class _SupportScreenState extends State<SupportScreen> {
 
   @override
   void initState() {
-    TrackingUtils().trackPageVisited("Support Screen", FirebaseAuth.instance.currentUser!.uid);
+    TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Support Screen");
     super.initState();
   }
   @override
@@ -146,7 +146,6 @@ class _SupportScreenState extends State<SupportScreen> {
         'user_message': userMessage,
       }
     })).then((value) {
-      TrackingUtils().trackUserFeedback(FirebaseAuth.instance.currentUser!.uid);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(LocaleKeys.messageSentSuccessfully.tr())));
       AppNavigator.pop(context: context);
     }

@@ -60,7 +60,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   void initState() {
     try {
-      TrackingUtils().trackPageVisited("Category screen", FirebaseAuth.instance.currentUser!.uid);
+      TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Category screen");
     } catch (e) {}
     // _pagingController.addPageRequestListener((pageKey) {
     //   _fetchPage(pageKey);
@@ -228,10 +228,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
       }
       results = productProvider.sortProducts(sortDropdownValue, results);
     }
-    try {
-      TrackingUtils()
-          .trackSearchPerformed("$sortDropdownValue, $storeDropdownValue", FirebaseAuth.instance.currentUser!.uid, "");
-    } catch (e) {}
     return results;
   }
 
@@ -296,6 +292,16 @@ class _CategoryScreenState extends State<CategoryScreen> {
                       style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
                       borderRadius: BorderRadius.circular(4.r),
                       onChanged: (String? newValue) {
+                        try {
+                          TrackingUtils().trackFilterUsed(
+                              FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
+                              "Category screen", 'price');
+                        }catch(e){
+                          print(e);
+                          TrackingUtils().trackFilterUsed(
+                              "Guest", DateTime.now().toUtc().toString(),
+                              "Category screen", 'price');
+                        }
                         setState(() {
                           sortDropdownValue = newValue!;
                           _pagingController.refresh();
@@ -329,6 +335,16 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
                         borderRadius: BorderRadius.circular(4.r),
                         onChanged: (String? newValue) {
+                          try {
+                            TrackingUtils().trackFilterUsed(
+                                FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
+                                "Category screen", 'store');
+                          }catch(e){
+                            print(e);
+                            TrackingUtils().trackFilterUsed(
+                                "Guest", DateTime.now().toUtc().toString(),
+                                "Category screen", 'store');
+                          }
                           setState(() {
                             storeDropdownValue = newValue!;
                             _pagingController.refresh();

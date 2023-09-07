@@ -34,7 +34,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
   @override
   void initState() {
     updateUserDataFuture();
-    TrackingUtils().trackPageVisited("Preferences Screen", FirebaseAuth.instance.currentUser!.uid);
+    TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Preferences Screen");
     super.initState();
   }
 

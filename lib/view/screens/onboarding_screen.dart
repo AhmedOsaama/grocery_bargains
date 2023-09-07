@@ -6,6 +6,7 @@ import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,6 +19,8 @@ import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../utils/tracking_utils.dart';
+
 class OnBoardingScreen extends StatefulWidget {
   OnBoardingScreen({Key? key}) : super(key: key);
 
@@ -28,6 +31,15 @@ class OnBoardingScreen extends StatefulWidget {
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
   double pageNumber = 0;
   final PageController _pageController = PageController();
+
+  @override
+  void initState() {
+    try {
+      TrackingUtils().trackPageView(
+          FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Onboarding screen");
+    }catch(e){}
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

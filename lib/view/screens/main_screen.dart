@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/screens/product_detail_screen.dart';
 import 'package:bargainb/view/widgets/signin_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -133,6 +134,12 @@ class _MainScreenState extends State<MainScreen> {
           AppNavigator.push(context: context, screen: ChatListViewScreen(listId: widget.notificationData!));
         }
       });
+    try{
+      TrackingUtils().trackAppOpen(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString());
+    }catch(e){
+      print(e);
+      TrackingUtils().trackAppOpen('Guest', DateTime.now().toUtc().toString());
+    }
   }
 
   @override

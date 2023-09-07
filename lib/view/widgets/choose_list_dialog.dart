@@ -3,6 +3,7 @@ import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
@@ -13,6 +14,7 @@ import '../../generated/locale_keys.g.dart';
 import '../../models/list_item.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
+import '../../utils/tracking_utils.dart';
 import '../components/button.dart';
 
 class ChooseListDialog extends StatefulWidget {
@@ -127,16 +129,25 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                                 setState(() {
                                   done = b;
                                 });
-                                var chatlistName =
-                                    chatlistsProvider.chatlists.firstWhere((chatlist) => chatlist.id == selectedListId).name;
+                                var chatlistName = chatlistsProvider.chatlists
+                                    .firstWhere((chatlist) => chatlist.id == selectedListId)
+                                    .name;
                                 chatlistsProvider.showChatlistSnackBar(
                                     widget.context,
                                     Text(LocaleKeys.addedTo.tr() + " $chatlistName"),
                                     LocaleKeys.view.tr(),
                                     selectedListId,
                                     false);
+                                TrackingUtils().trackProductAction(
+                                    FirebaseAuth.instance.currentUser!.uid,
+                                    DateTime.now().toUtc().toString(),
+                                    widget.item.oldPrice == null,
+                                    selectedListId,
+                                    chatlistName,
+                                    widget.item.quantity.toString(),
+                                    'Add');
                                 AppNavigator.pop(context: context);
-                        },
+                              },
                         height: 60.h,
                         width: double.infinity,
                         color: brightOrange,

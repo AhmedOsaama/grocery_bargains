@@ -30,6 +30,7 @@ class ProductDialog extends StatefulWidget {
   String itemDocId;
   String itemPrice;
   String storeName;
+  String itemOldPrice;
   int itemQuantity;
 
   ProductDialog(
@@ -43,6 +44,7 @@ class ProductDialog extends StatefulWidget {
       required this.itemPrice,
       required this.itemDocId,
       required this.itemSize,
+      required this.itemOldPrice,
       required this.itemName})
       : super(key: key);
 
@@ -111,7 +113,7 @@ class _ProductDialogState extends State<ProductDialog> {
                     IconButton(
                       onPressed: () {
                         Provider.of<ChatlistsProvider>(context, listen: false)
-                            .deleteItemFromChatlist(widget.listId, widget.itemDocId, widget.itemPrice);
+                            .deleteItemFromChatlist(widget.listId, widget.itemDocId, widget.itemPrice, widget.itemOldPrice, widget.itemQuantity.toString());
                         AppNavigator.pop(context: context);
                       },
                       icon: Icon(Icons.delete, color: purple30),
@@ -130,7 +132,6 @@ class _ProductDialogState extends State<ProductDialog> {
                         onPressed: () {
                           var productProvider = Provider.of<ProductsProvider>(context, listen: false);
                           productProvider.goToProductPage(widget.storeName, context, widget.itemId);
-                          TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "View item in chatlist", DateTime.now().toUtc().toString());
                         },
                         splashRadius: 25,
                         icon: Icon(
@@ -150,7 +151,6 @@ class _ProductDialogState extends State<ProductDialog> {
                         onPressed: () {
                           Provider.of<ProductsProvider>(context, listen: false)
                               .shareProductViaDeepLink(widget.itemName, widget.itemId, widget.storeName, context);
-                          TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Share item in chatlist", DateTime.now().toUtc().toString());
                         },
                         icon: Icon(Icons.share_outlined, color: purple30),
                         splashRadius: 25),

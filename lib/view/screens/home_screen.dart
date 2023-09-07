@@ -97,16 +97,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    // _pagingController.addPageRequestListener((pageKey) {
-    //   _fetchPage(pageKey);
-    // });
     super.initState();
     getProductsFuture = Provider.of<ProductsProvider>(context, listen: false).getProducts(_pageNumber);
     getAllListsFuture = Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlistsFuture();
     if (FirebaseAuth.instance.currentUser != null) {
       getUserDataFuture =
           FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
-    TrackingUtils().trackPageVisited("Home screen", FirebaseAuth.instance.currentUser!.uid);
+      TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Home Screen");
     }
 
     getFirstTime();
@@ -149,13 +146,6 @@ class _HomeScreenState extends State<HomeScreen> {
             chatlistProvider.stopwatch.reset();
             var onboardingDuration = chatlistProvider.stopwatch.elapsed.inSeconds.toString();
             print("Onboarding duration start: " + onboardingDuration);
-            var user = FirebaseAuth.instance.currentUser;
-            if(user != null){
-              var userId = user.uid;
-              TrackingUtils().trackOnboardingStarted(userId, DateTime.now().toUtc().toString(),);
-            }else{
-              TrackingUtils().trackOnboardingStarted("Guest", DateTime.now().toUtc().toString(),);
-            }
           });
           dialogOpened = true;
         }
@@ -651,6 +641,7 @@ class _HomeScreenState extends State<HomeScreen> {
              imageURL: product.image,
              description: product.description,
              oldPrice: product.oldPrice,
+             productCategory: product.category,
              price1: double.tryParse(product.price ?? "") ?? 0.0,
              size1: product.unit, gtin: product.gtin,
            ));

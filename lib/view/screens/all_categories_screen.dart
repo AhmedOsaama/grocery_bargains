@@ -32,10 +32,8 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
   @override
   void initState() {
     try{
-    TrackingUtils().trackPageVisited("All categories screen", FirebaseAuth.instance.currentUser!.uid);
-    }catch(e){
-
-    }
+    TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "All categories screen");
+    }catch(e){}
     super.initState();
   }
 

@@ -57,8 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     updateUserDataFuture();
-    TrackingUtils().trackUserProfileViewed(FirebaseAuth.instance.currentUser!.uid);
-    TrackingUtils().trackPageVisited("Profile Screen", FirebaseAuth.instance.currentUser!.uid);
+    TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Profile Screen");
     isEditing = widget.isEditing;
     super.initState();
   }
@@ -371,8 +370,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         isEditing = !isEditing;
         isEdited = !isEdited;
       });
-    TrackingUtils().trackUserProfileEdited(FirebaseAuth.instance.currentUser!.uid);
-    TrackingUtils().trackAccountSettingsUpdated(FirebaseAuth.instance.currentUser!.uid);
   }
 
   dynamic getUserImage(AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {

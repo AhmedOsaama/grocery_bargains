@@ -220,6 +220,7 @@ class DiscountItem extends StatelessWidget {
           imageURL: product.image,
           description: product.description,
           oldPrice: product.oldPrice,
+          productCategory: product.category,
           price1: double.tryParse(product.price ?? "") ?? 0.0,
           size1: getProductSize(product), gtin: product.gtin,
         ));

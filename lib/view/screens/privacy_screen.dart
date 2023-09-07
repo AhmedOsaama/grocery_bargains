@@ -35,7 +35,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   @override
   void initState() {
     updateUserDataFuture();
-    TrackingUtils().trackPageVisited("Privacy Screen", FirebaseAuth.instance.currentUser!.uid);
+    TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Privacy Screen");
     super.initState();
   }
 

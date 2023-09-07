@@ -23,8 +23,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   var selectedLanguage = Language.english;
   @override
   void initState() {
-    TrackingUtils().trackAccountPlanSelected("Free plan");
-    TrackingUtils().trackPageVisited("Subscription Screen", FirebaseAuth.instance.currentUser!.uid);
+    TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Subscription screen");
     super.initState();
   }
 

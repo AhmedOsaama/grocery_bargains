@@ -104,7 +104,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       });
     }
     getUserImagesFuture = getUserImages();
-    TrackingUtils().trackPageVisited("Chatlist screen", FirebaseAuth.instance.currentUser!.uid);
+    TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Chatlist Screen");
 
     super.initState();
   }
@@ -436,6 +436,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
               listId: widget.listId,
               showInviteMembersDialog: showInviteMembersDialog,
               isExpandingChatlist: widget.isExpandingChatlist,
+                  chatlistName: chatList.name,
             ))
           ],
         ),
@@ -541,6 +542,5 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       print('Error : ${response.errorCode} - ${response.errorMessage}');
     }
     Share.share(response.result);
-    TrackingUtils().trackShare(FirebaseAuth.instance.currentUser!.uid);
   }
 }

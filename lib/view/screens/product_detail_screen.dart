@@ -42,6 +42,7 @@ class ProductDetailScreen extends StatefulWidget {
   final double? price1;
   final String? oldPrice;
   final String size1;
+  final String productCategory;
   const ProductDetailScreen({
     Key? key,
     required this.storeName,
@@ -52,7 +53,7 @@ class ProductDetailScreen extends StatefulWidget {
     required this.size1,
     required this.productId,
     this.oldPrice,
-    required this.productBrand, required this.gtin,
+    required this.productBrand, required this.gtin, required this.productCategory,
   }) : super(key: key);
 
   @override
@@ -84,8 +85,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     ]);
     getComparisonsFuture = getComparisons();
     try{
-    TrackingUtils().trackProductViewed(widget.productId.toString(), widget.storeName, FirebaseAuth.instance.currentUser!.uid);
-    TrackingUtils().trackPageVisited("Product Screen", FirebaseAuth.instance.currentUser!.uid);
+    TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Product Screen");
 
     }catch(e){
     }
@@ -186,6 +186,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           productName: product.name,
           imageURL: product.image,
           description: product.description,
+          productCategory: product.category,
           price1: double.tryParse(product.price ?? "") ?? 0.0,
           size1: product.unit, gtin: product.gtin,
         ));

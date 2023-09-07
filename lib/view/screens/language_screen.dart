@@ -32,7 +32,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
 
   @override
   void initState() {
-    TrackingUtils().trackPageVisited("Language Screen", FirebaseAuth.instance.currentUser!.uid);
+    TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Language Screen");
     updateUserDataFuture();
     super.initState();
   }

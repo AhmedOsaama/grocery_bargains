@@ -55,10 +55,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   var photoURL = "";
 
   var resendToken = null;
-  initState(){
-    // TrackingUtils().trackPageVisited("Register Screen", FirebaseAuth.instance.currentUser!.uid);
-    super.initState();
-  }
 
   Future<void> saveRememberMePref() async {
     var pref = await SharedPreferences.getInstance();
@@ -83,7 +79,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,
               content: Text("PhoneNumberAlready".tr())));
-          TrackingUtils().trackUserRegistrationFailed("PhoneNumberAlready".tr());
           return;
         }
         var result1 = await FirebaseFirestore.instance
@@ -94,19 +89,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,
               content: Text("EmailAlready".tr())));
-          TrackingUtils().trackUserRegistrationFailed("EmailAlready".tr());
           return;
         }
         var userCredential = await loginWithPhoneNumber(phoneNumber);
         if (userCredential == null) {
-          TrackingUtils().trackUserRegistrationFailed("credential error");
           throw "credential error";
         }
 
         this.phoneNumber = userCredential.user!.phoneNumber!;
-        TrackingUtils().trackUserRegistrationSuccess(userCredential.user!.uid);
-        TrackingUtils().trackRegisteredUserPlatform(Platform.operatingSystem);
         await saveUserData(userCredential);
+        TrackingUtils().trackSignup(userCredential.user!.uid, DateTime.now().toUtc().toString());
 
         saveRememberMePref();
         //saveFirstTimePref();
@@ -123,16 +115,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               backgroundColor: Theme.of(context).colorScheme.error,
               content: Text("ThisPhoneNumber".tr())));
-          TrackingUtils().trackFailedLogin("credential error");
           return;
         }
         var userCredential = await loginWithPhoneNumber(phoneNumber);
-        TrackingUtils().trackSuccessfulLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
         if (userCredential == null) {
-          TrackingUtils().trackFailedLogin("credential error");
           throw "credential error";
         }
         print("logged in");
+        TrackingUtils().trackLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
         saveRememberMePref();
         if(!result.docs.first.data().containsKey('token')) saveUserDeviceToken(userCredential);
         // if(!result.docs.first.data().containsKey('isHubspotContact')) createHubspotContact(userCredential, result.docs.first.data());
@@ -146,8 +136,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         message = error.message!;
       }
       // print(message);
-      TrackingUtils().trackUserRegistrationFailed(message);
-      TrackingUtils().trackFailedLogin(message);
       ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
         content: Text(message),
         backgroundColor: Theme.of(ctx).colorScheme.error,
@@ -480,6 +468,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         verificationFailed: (e) {
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(e.message.toString())));
+          TrackingUtils().trackPhoneNumberVerified("Guest", DateTime.now().toUtc().toString(), false);
           completer.complete(userCredential);
         },
         forceResendingToken: resendToken,
@@ -495,10 +484,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               verificationId: verificationId, smsCode: smsCode);
           try {
             userCredential = await _auth.signInWithCredential(credential);
+            TrackingUtils().trackPhoneNumberVerified("Guest", DateTime.now().toUtc().toString(), true);
           } on FirebaseAuthException catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 backgroundColor: Theme.of(context).colorScheme.error,
                 content: Text(e.message ?? "invalidOTP".tr())));
+            TrackingUtils().trackPhoneNumberVerified("Guest", DateTime.now().toUtc().toString(), false);
           }
 
           print("Signed In...");
@@ -565,16 +556,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
           print(e);
         }
         await saveUserData(userCredential);
-        TrackingUtils().trackUserRegistrationSuccess(userCredential.user!.uid);
-        TrackingUtils().trackRegisteredUserPlatform(Platform.operatingSystem);
       }else{
         // print("Creating hubspot");
         // if(!userSnapshot.data()!.containsKey('isHubspotContact')) createHubspotContact(userCredential, userSnapshot.data()!);
-        TrackingUtils().trackSuccessfulLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
       }
       saveRememberMePref();
 
-
+      TrackingUtils().trackLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
       var pref = await SharedPreferences.getInstance();
       var isFirstTime = pref.getBool("firstTime") ?? true;
       print("IS FIRST TIME:" + isFirstTime.toString());

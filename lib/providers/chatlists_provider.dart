@@ -180,7 +180,6 @@ class ChatlistsProvider with ChangeNotifier {
         lastMessageUserId: '',
         lastMessageUserName: ''));
     notifyListeners();
-    TrackingUtils().trackUserCreateChatlist(FirebaseAuth.instance.currentUser!.uid, name ?? "Name...");
     return docRef.id;
   }
 
@@ -194,10 +193,10 @@ class ChatlistsProvider with ChangeNotifier {
       print(error);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("couldntDeleteList".tr())));
     });
-    TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Delete chatlist", DateTime.now().toUtc().toString());
+    TrackingUtils().trackSideMenuItemClicked(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Chatlist Side Menu", "Remove", "Chatlist Screen");
   }
 
-  Future<void> deleteItemFromChatlist(String listId, String itemId, String itemPrice) async {
+  Future<void> deleteItemFromChatlist(String listId, String itemId, String itemPrice, String itemOldPrice, String itemQuantity) async {
     try {
       var chatlist = chatlists.firstWhere((chatlist) => chatlist.id == listId);
       var item = await FirebaseFirestore.instance.collection('/lists/${listId}/items').doc(itemId).get();
@@ -221,10 +220,17 @@ class ChatlistsProvider with ChangeNotifier {
       chatlist.itemLength -= 1;
       chatlist.totalPrice -= double.tryParse(itemPrice) ?? 0;
       notifyListeners();
+    TrackingUtils().trackProductAction(
+        FirebaseAuth.instance.currentUser!.uid,
+        DateTime.now().toUtc().toString(),
+        itemOldPrice.isNotEmpty,
+        listId,
+        chatlist.name,
+        itemQuantity,
+        'Delete');
     } catch (e) {
       print(e);
     }
-    TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Delete item from chatlist", DateTime.now().toUtc().toString());
   }
 
   Future<void> updateListName(String value, String listId) async {
@@ -232,7 +238,7 @@ class ChatlistsProvider with ChangeNotifier {
     var chatlist = chatlists.firstWhere((chatlist) => chatlist.id == listId);
     chatlist.name = value;
     notifyListeners();
-    TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Update list name", DateTime.now().toUtc().toString());
+    TrackingUtils().trackSideMenuItemClicked(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Chatlist Side Menu", "Rename", "Chatlist Screen");
   }
 
   Future<void> addProductToList(BuildContext context, ListItem listItem) async {
@@ -249,6 +255,7 @@ class ChatlistsProvider with ChangeNotifier {
       if (chatlists.length > 1) showChooseListDialog(context: context, listItem: listItem);
       if (chatlists.length == 1) {
         await addItemToList(listItem, chatlists[0].id);
+        TrackingUtils().trackProductAction(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), listItem.oldPrice != null, chatlists[0].id, chatlists[0].name, listItem.quantity.toString(), 'Add');
         showChatlistSnackBar(context, Text(LocaleKeys.addedTo.tr() + " ${chatlists[0].name}"), LocaleKeys.view.tr(),
             chatlists[0].id, false);
       }
@@ -266,11 +273,10 @@ class ChatlistsProvider with ChangeNotifier {
         .update({'item_quantity': newQuantity});
     print('Done updating quantity');
     notifyListeners();
-   TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Update quantity", DateTime.now().toUtc().toString());
   }
 
   //chat methods
-  Future<void> sendMessage(String message, String listId) async {
+  Future<void> sendMessage(String message, String listId, String chatlistName) async {
     if (message.isNotEmpty) {
       final userData =
           await FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
@@ -297,7 +303,7 @@ class ChatlistsProvider with ChangeNotifier {
       });
       updateChatList(listId, message, userData);
     }
-    TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Send message", DateTime.now().toUtc().toString());
+    TrackingUtils().trackChatlistMessageSent(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), message, listId, chatlistName);
   }
 
   Future<bool> shareItem({required ListItem item, required String docId}) async {

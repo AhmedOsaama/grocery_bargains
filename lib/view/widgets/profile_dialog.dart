@@ -97,7 +97,6 @@ class ProfileDialog extends StatelessWidget {
                             } else {
                               FirebaseAuth.instance.signOut();
                             }
-                            TrackingUtils().trackUserLoggedOut(DateTime.now().toUtc().toString(), FirebaseAuth.instance.currentUser!.uid);
                             print("SIGNED OUT...................");
                           } else {
                             var user = FirebaseAuth.instance.currentUser!;
@@ -117,7 +116,6 @@ class ProfileDialog extends StatelessWidget {
                               await user.delete();
                             });
                             await FirebaseFirestore.instance.collection('/users').doc(userId).delete();
-                          TrackingUtils().trackAccountDeleted(userId);
                           }
                           AppNavigator.pushReplacement(
                               context: context, screen: RegisterScreen());

@@ -52,7 +52,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
     var productProvider = Provider.of<ProductsProvider>(context, listen: false);
     try {
       getProductsBySubCategoryFuture = productProvider.getProductsBySubCategory(widget.subCategory, 1);
-      TrackingUtils().trackPageVisited("Subcategory Screen", FirebaseAuth.instance.currentUser!.uid);
+      TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Subcategory screen");
     } catch (e) {}
     super.initState();
   }
@@ -81,10 +81,6 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
       }
       results = productProvider.sortProducts(sortDropdownValue, results);
     }
-    try {
-      TrackingUtils()
-          .trackSearchPerformed("$sortDropdownValue, $storeDropdownValue", FirebaseAuth.instance.currentUser!.uid, "");
-    } catch (e) {}
     return results;
   }
 
@@ -118,6 +114,16 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                     style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
                     borderRadius: BorderRadius.circular(4.r),
                     onChanged: (String? newValue) {
+                      try {
+                        TrackingUtils().trackFilterUsed(
+                            FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
+                            "Subcategory screen", 'price');
+                      }catch(e){
+                        print(e);
+                        TrackingUtils().trackFilterUsed(
+                            "Guest", DateTime.now().toUtc().toString(),
+                            "Subcategory screen", 'price');
+                      }
                       setState(() {
                         sortDropdownValue = newValue!;
                       });
@@ -150,6 +156,16 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                       style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
                       borderRadius: BorderRadius.circular(4.r),
                       onChanged: (String? newValue) {
+                        try {
+                          TrackingUtils().trackFilterUsed(
+                              FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
+                              "Subcategory screen", 'store');
+                        }catch(e){
+                          print(e);
+                          TrackingUtils().trackFilterUsed(
+                              "Guest", DateTime.now().toUtc().toString(),
+                              "Subcategory screen", 'store');
+                        }
                         setState(() {
                           storeDropdownValue = newValue!;
                         });

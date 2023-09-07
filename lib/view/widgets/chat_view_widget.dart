@@ -42,10 +42,11 @@ import 'message_bubble.dart';
 
 class ChatView extends StatefulWidget {
   final String listId;
+  final String chatlistName;
   final Function showInviteMembersDialog;
   final bool? isExpandingChatlist;
 
-  ChatView({Key? key, required this.listId, required this.showInviteMembersDialog, this.isExpandingChatlist})
+  ChatView({Key? key, required this.listId, required this.showInviteMembersDialog, this.isExpandingChatlist, required this.chatlistName})
       : super(key: key);
 
   @override
@@ -581,10 +582,6 @@ class _ChatViewState extends State<ChatView> {
                                               setState(() {
                                                 isExpandingChatlist = !isExpandingChatlist;
                                               });
-                                              TrackingUtils().trackChatlistAction(
-                                                  FirebaseAuth.instance.currentUser!.uid,
-                                                  "Expand/collapse chatlist items",
-                                                  DateTime.now().toUtc().toString());
                                             },
                                             icon: isExpandingChatlist
                                                 ? Icon(
@@ -875,7 +872,7 @@ class _ChatViewState extends State<ChatView> {
                           borderRaduis: 99999,
                           onSubmitted: (_) async {
                             await Provider.of<ChatlistsProvider>(context, listen: false)
-                                .sendMessage(messageController.text.trim(), widget.listId);
+                                .sendMessage(messageController.text.trim(), widget.listId, widget.chatlistName);
                             messageController.clear();
                           },
                         ),
@@ -884,7 +881,7 @@ class _ChatViewState extends State<ChatView> {
                       GestureDetector(
                         onTap: () async {
                           await Provider.of<ChatlistsProvider>(context, listen: false)
-                              .sendMessage(messageController.text.trim(), widget.listId);
+                              .sendMessage(messageController.text.trim(), widget.listId, widget.chatlistName);
                           messageController.clear();
                           FocusScope.of(context).unfocus();
                         },
@@ -924,8 +921,6 @@ class _ChatViewState extends State<ChatView> {
                 brand: ''),
             widget.listId);
         quickItemController.clear();
-        TrackingUtils().trackChatlistAction(
-            FirebaseAuth.instance.currentUser!.uid, "Add quick item", DateTime.now().toUtc().toString());
       },
       hintText: LocaleKeys.addSomethingQuickly.tr(),
       contentPadding: EdgeInsets.only(left: 10),
@@ -949,8 +944,6 @@ class _ChatViewState extends State<ChatView> {
                   brand: ''),
               widget.listId);
           quickItemController.clear();
-          TrackingUtils().trackChatlistAction(
-              FirebaseAuth.instance.currentUser!.uid, "Add quick item", DateTime.now().toUtc().toString());
         },
         child: Text(
           LocaleKeys.add.tr(),

@@ -38,7 +38,7 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
       _fetchPage(pageKey);
     });
     try{
-    TrackingUtils().trackPageVisited("Latest bargains screen", FirebaseAuth.instance.currentUser!.uid);
+      TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Latest bargains screen");
     }catch(e){}
     super.initState();
   }

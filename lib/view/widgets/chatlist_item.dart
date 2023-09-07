@@ -194,6 +194,7 @@ class _ChatlistItemState extends State<ChatlistItem> {
                                           storeName: storeName,
                                           listId: widget.item.reference.parent.parent!.id,
                                           itemPrice: itemPrice,
+                                      itemOldPrice: itemOldPrice,
                                           itemDocId: widget.item.id,
                                         ));
                               },

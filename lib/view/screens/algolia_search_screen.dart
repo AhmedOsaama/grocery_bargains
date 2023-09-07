@@ -2,9 +2,11 @@ import 'package:algolia/algolia.dart';
 import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
 import 'package:bargainb/utils/algolia_utils.dart';
 import 'package:bargainb/utils/empty_padding.dart';
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/generic_field.dart';
 import 'package:bargainb/view/components/search_widget.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
@@ -87,6 +89,8 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
 
     _productsSearcher.connectFilterState(_filterState);
     _filterState.filters.listen((_) => _pagingController.refresh());
+
+    TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Search screen");
     super.initState();
   }
 
@@ -156,6 +160,12 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
                 if (!snapshot.hasData) {
                   return const SizedBox.shrink();
                 }
+                try {
+                  TrackingUtils().trackSearch(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), _searchTextController.text);
+                }catch(e){
+                  print(e);
+                  TrackingUtils().trackSearch("Guest", DateTime.now().toUtc().toString(), _searchTextController.text);
+                }
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text('${snapshot.data!.nbHits} hits'),
@@ -192,6 +202,16 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
               style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
               borderRadius: BorderRadius.circular(4.r),
               onChanged: (String? newValue) async {
+                try {
+                  TrackingUtils().trackFilterUsed(
+                      FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
+                      "Search screen", 'store');
+                }catch(e){
+                  print(e);
+                  TrackingUtils().trackFilterUsed(
+                      "Guest", DateTime.now().toUtc().toString(),
+                      "Search screen", 'store');
+                }
                 setState(() {
                   storeDropdownValue = newValue!;
                 });

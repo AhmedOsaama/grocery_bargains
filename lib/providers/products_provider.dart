@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:bargainb/services/network_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../config/routes/app_navigator.dart';
@@ -223,6 +224,7 @@ class ProductsProvider with ChangeNotifier {
           imageURL: product.image,
           description: product.description,
           size1: product.unit,
+          productCategory: product.category,
           price1: double.tryParse(product.price ?? "") ?? 0.0, gtin: product.gtin,
         ));
   }
@@ -247,8 +249,18 @@ class ProductsProvider with ChangeNotifier {
     } else {
       print('Error : ${response.errorCode} - ${response.errorMessage}');
     }
+    var productCategory = 'N/A';
+    try {
+      var product =
+      await Provider
+          .of<ProductsProvider>(context, listen: false)
+          .getProductById(itemId);
+      productCategory = product.category;
+    }catch(e){
+      print(e);
+    }
     await Share.share(response.result);
-    TrackingUtils().trackShare(FirebaseAuth.instance.currentUser!.uid);
+    TrackingUtils().trackShareProduct(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), itemId.toString(), itemName, productCategory);
   }
 
   String getImage(String storeName) {

@@ -28,7 +28,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     updateUserDataFuture();
-    TrackingUtils().trackPageVisited("Settings Screen", FirebaseAuth.instance.currentUser!.uid);
+    TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Settings screen");
 
     super.initState();
   }

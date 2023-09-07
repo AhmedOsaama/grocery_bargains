@@ -80,7 +80,6 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
         chatlistsProvider.stopwatch.stop();
         var onboardingDuration = chatlistsProvider.stopwatch.elapsed.inSeconds.toString();
         print("Onboarding duration: " + onboardingDuration);
-        TrackingUtils().trackOnboardingFinished(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), onboardingDuration);
       },
       builder: Builder(builder: (showCaseContext){
         WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -219,7 +218,6 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                                               lists: lists,
                                               user: userInfo,
                                             ));
-                                        TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Open contact page", DateTime.now().toUtc().toString());
                                       }
                                     },
                                     child: Padding(
@@ -259,7 +257,6 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                           InkWell(
                             onTap: () {
                               widget.shareList();
-                              TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Share chatlist", DateTime.now().toUtc().toString());
                             },
                             child: Text(LocaleKeys.invitePeopleViaLink.tr(),
                                 style: TextStylesInter.textViewRegular12.copyWith(color: brightOrange)),
@@ -331,7 +328,6 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                                           InkWell(
                                             onTap: () async {
                                               await widget.addContactToChatlist(userInfo, context);
-                                              TrackingUtils().trackChatlistAction(FirebaseAuth.instance.currentUser!.uid, "Add contact to chatlist", DateTime.now().toUtc().toString());
                                               showDialog(
                                                   context: context,
                                                   builder: (ctx) => Dialog(
