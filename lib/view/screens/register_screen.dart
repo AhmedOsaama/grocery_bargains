@@ -484,7 +484,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               verificationId: verificationId, smsCode: smsCode);
           try {
             userCredential = await _auth.signInWithCredential(credential);
-            TrackingUtils().trackPhoneNumberVerified("Guest", DateTime.now().toUtc().toString(), true);
+            TrackingUtils().trackPhoneNumberVerified(userCredential.user!.uid , DateTime.now().toUtc().toString(), true);
           } on FirebaseAuthException catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 backgroundColor: Theme.of(context).colorScheme.error,
@@ -591,7 +591,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'imageURL': photoURL,
         'phoneNumber': phoneNumber,
         'token': deviceToken,
-        'timestamp': Timestamp.now().toString(),
+        'timestamp': DateTime.now().toUtc().toString(),
         'language': 'en',
         'status': "Hello! I'm using BargainB. Join the app",
         'privacy': {
@@ -604,6 +604,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
           'daily': false,
         },
       };
+      TrackingUtils().mixpanel.identify(userCredential.user!.uid);
+      TrackingUtils().mixpanel.getPeople()
+        ..set("\$name", username)
+        ..set('\$email', email)
+        ..set('email', email)
+        ..set('username', username)
+        ..set('imageURL', photoURL)
+        ..set('phoneNumber', phoneNumber)
+        ..set('token', deviceToken)
+        ..set('timestamp', DateTime.now().toUtc().toString())
+        ..set('language', 'en')
+        ..set('status', "Hello! I'm using BargainB. Join the app")
+        ..set('privacy', {
+              'connectContacts': true,
+              'locationServices': false,
+            })
+        ..set('preferences', {
+          'emailMarketing': true,
+          'weekly': true,
+          'daily': false,
+        });
       await FirebaseFirestore.instance
           .collection('users')
           .doc(userCredential.user!.uid)
