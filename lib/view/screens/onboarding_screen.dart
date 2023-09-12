@@ -58,7 +58,27 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   });
                 },
                 physics: const BouncingScrollPhysics(),
-                children: [slide1, slide2, slide3],
+                children: [Column(
+                  children: [
+                    SizedBox(
+                      height: 70.h,
+                    ),
+                    // SvgPicture.asset(bargainbIcon),
+                    Image.asset(onboarding1,),
+                    Spacer(),
+                    Text(
+                      LocaleKeys.findAllTheDiscountsHere.tr(),
+                      style: TextStyles.textViewSemiBold30.copyWith(color: prussian),
+                    ),
+                    SizedBox(
+                      height: 18.h,
+                    ),
+                    Text(
+                      LocaleKeys.exploreAllTheLatest.tr(),
+                      style: TextStyles.textViewRegular14.copyWith(color: gunmetal),
+                    ),
+                  ],
+                ), slide2, slide3],
               ),
             ),
             Row(
@@ -128,12 +148,12 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   var slide1 = Column(
     children: [
-      SizedBox(
-        height: 100.h,
-      ),
-      SvgPicture.asset(bargainbIcon),
+      // SizedBox(
+      //   height: 100.h,
+      // ),
+      // SvgPicture.asset(bargainbIcon),
       30.ph,
-      Image.asset(onboarding1),
+      Image.asset(onboarding1,height: 100,),
       Spacer(),
       Text(
         LocaleKeys.findAllTheDiscountsHere.tr(),
