@@ -7,6 +7,7 @@ import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 
 import '../../generated/locale_keys.g.dart';
+import '../../services/purchase_service.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
 
@@ -44,7 +45,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 30.h),
         child: Container(
-          height: ScreenUtil().screenHeight / 2,
+          // height: ScreenUtil().screenHeight / 2,
           padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 35.h),
           decoration: BoxDecoration(
             color: white,
@@ -119,10 +120,43 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   )
                 ],
               ),
+              100.ph,
+              ElevatedButton(onPressed: fetchOffers, child: Text("See plans")),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> fetchOffers() async {
+    final offerings = await PurchaseApi.fetchOffers();
+    if(offerings.isEmpty){
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("No plans found")));
+    }else{
+      final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
+      
+      showModalBottomSheet(context: context, builder: (context) => Column(
+        children: packages.map((package) => InkWell(
+          onTap: (){
+            print("Purchasing");
+            PurchaseApi.purchasePackage(package);
+          },
+          child: Container(
+            margin: EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black)
+            ),
+            child: Column(
+              children: [
+                Text(package.storeProduct.title),
+                Text(package.storeProduct.description),
+                Text(package.storeProduct.priceString),
+              ],
+            ),
+          ),
+        )).toList(),
+      ));
+    }
   }
 }
