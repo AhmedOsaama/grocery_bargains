@@ -107,6 +107,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+
     super.initState();
     getAllProductsFuture = Provider.of<ProductsProvider>(context, listen: false)
         .getAllProducts()
