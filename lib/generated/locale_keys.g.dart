@@ -257,5 +257,26 @@ abstract class  LocaleKeys {
   static const tapOnAListItemToFind = 'tapOnAListItemToFind';
   static const addItemsToYourChatlist = 'addItemsToYourChatlist';
   static const addYourFirstItem = 'addYourFirstItem';
+  static const goPremium = 'goPremium';
+  static const ourAppIsCompletelyFree = 'ourAppIsCompletelyFree';
+  static const unlockPremiumFeatures = 'unlockPremiumFeatures';
+  static const spendingInsights = 'spendingInsights';
+  static const personalizedRecommendations = 'personalizedRecommendations';
+  static const gainDeepInsights = 'gainDeepInsights';
+  static const receiveTailored = 'receiveTailored';
+  static const mostFlexible = 'mostFlexible';
+  static const monthly = 'monthly';
+  static const yearly = 'yearly';
+  static const lifetime = 'lifetime';
+  static const onePayment = 'onePayment';
+  static const payOnlyOnce = 'payOnlyOnce';
+  static const upgradeNow = 'upgradeNow';
+  static const changePlan = 'changePlan';
+  static const chooseAPlan = 'chooseAPlan';
+  static const currentPlan = 'currentPlan';
+  static const subscriptionRenew = 'subscriptionRenew';
+  static const subscribe = 'subscribe';
+  static const thankYou = 'thankYou';
+  static const youAreUpgraded = 'youAreUpgraded';
 
 }

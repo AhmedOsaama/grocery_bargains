@@ -1,4 +1,10 @@
+import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
+import 'package:bargainb/view/components/button.dart';
+import 'package:bargainb/view/widgets/feature_widget.dart';
+import 'package:bargainb/view/widgets/subscription_paywall.dart';
+import 'package:bargainb/view/widgets/subscription_plan_widget.dart';
+import 'package:dots_indicator/dots_indicator.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +16,7 @@ import '../../generated/locale_keys.g.dart';
 import '../../services/purchase_service.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
+import '../widgets/plan_widget.dart';
 
 enum Language { english, dutch }
 
@@ -21,10 +28,13 @@ class SubscriptionScreen extends StatefulWidget {
 }
 
 class _SubscriptionScreenState extends State<SubscriptionScreen> {
+  var scrollController = ScrollController();
   var selectedLanguage = Language.english;
+  var subscriptionPlan = "None";
   @override
   void initState() {
-    TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Subscription screen");
+    TrackingUtils().trackPageView(
+        FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Subscription screen");
     super.initState();
   }
 
@@ -33,130 +43,161 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        elevation: 0.2,
+        elevation: 0,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         // leading: backButt,
         title: Text(
-          "subscription".tr(),
-          style: TextStyles.textViewSemiBold16.copyWith(color: black1),
+          "Go Premium".tr(),
+          style: TextStylesInter.textViewSemiBold18.copyWith(color: blackSecondary),
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 30.h),
-        child: Container(
-          // height: ScreenUtil().screenHeight / 2,
-          padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 35.h),
-          decoration: BoxDecoration(
-            color: white,
-            boxShadow: [
-              BoxShadow(
-                offset: Offset(0, 20),
-                color: shadowColor,
-                blurRadius: 20.0,
-              )
-            ],
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Color.fromRGBO(238, 238, 238, 1)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                bee1,
-                width: 120.w,
-                height: 120.h,
-                fit: BoxFit.fill,
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+        child: Column(
+          children: [
+            Text(
+              LocaleKeys.ourAppIsCompletelyFree.tr(),
+              textAlign: TextAlign.center,
+              style: TextStylesInter.textViewRegular14.copyWith(color: Color(0xFF48484A)),
+            ),
+            23.ph,
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                LocaleKeys.unlockPremiumFeatures.tr(),
+                style: TextStylesInter.textViewSemiBold18.copyWith(color: Color(0xFF181A26)),
               ),
-              16.ph,
-              Text(
-                LocaleKeys.freePlan.tr(),
-                style: TextStyles.textViewSemiBold24.copyWith(color: black2),
-              ),
-              24.ph,
-              Row(
+            ),
+            10.ph,
+            Flexible(
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                controller: scrollController,
+                physics: BouncingScrollPhysics(),
                 children: [
-                  Icon(
-                    Icons.star,
-                    color: yellow,
+                  FeatureContainer(
+                    heading: LocaleKeys.spendingInsights.tr(),
+                    body: LocaleKeys.gainDeepInsights.tr(),
                   ),
-                  5.pw,
-                  Text(
-                    'UnlimitedLists'.tr(),
-                    style: TextStyles.textViewRegular16.copyWith(color: black1),
-                  )
+                  FeatureContainer(
+                    heading: LocaleKeys.personalizedRecommendations.tr(),
+                    body: LocaleKeys.receiveTailored.tr(),
+                  ),
+                  FeatureContainer(
+                    heading: LocaleKeys.personalizedRecommendations.tr(),
+                    body: LocaleKeys.receiveTailored.tr(),
+                  ),
+                  FeatureContainer(
+                    heading: LocaleKeys.personalizedRecommendations.tr(),
+                    body: LocaleKeys.receiveTailored.tr(),
+                  ),
                 ],
               ),
-              10.ph,
-              Row(
-                children: [
-                  Icon(
-                    Icons.star,
-                    color: yellow,
-                  ),
-                  5.pw,
-                  Text(
-                    'UnlimitedShared'.tr(),
-                    style: TextStyles.textViewRegular16.copyWith(color: black1),
-                  )
-                ],
+            ),
+            DotsIndicator(
+              dotsCount: 4,
+              position: 0.0,
+            ),
+            15.ph,
+            subscriptionPlan == 'None' ?
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                PlanWidget(
+                  promotion: LocaleKeys.mostFlexible.tr(),
+                  type: LocaleKeys.monthly.tr(),
+                  price: "1.09",
+                  pricePerMonth: "1.09 / month*",
+                ),
+                PlanWidget(
+                  promotion: LocaleKeys.mostFlexible.tr(),
+                  type: LocaleKeys.yearly.tr(),
+                  price: "9.49",
+                  pricePerMonth: "0.79 / month*",
+                ),
+                PlanWidget(
+                  promotion: LocaleKeys.onePayment.tr(),
+                  type: LocaleKeys.lifetime.tr(),
+                  price: "15.99",
+                  pricePerMonth: "Pay only once",
+                ),
+              ],
+            )
+                : Column(
+             children: [
+            Text(LocaleKeys.thankYou.tr(), style: TextStylesInter.textViewSemiBold18.copyWith(color: blackSecondary),),
+               Text(LocaleKeys.youAreUpgraded.tr(), style: TextStylesInter.textViewLight15.copyWith(color: Color(0xFF48484A)),),
+               SubscriptionPlanWidget(promotion: LocaleKeys.currentPlan.tr(), type: subscriptionPlan, price: '9.49', pricePerMonth: "pricePerMonth", selectedPlan: subscriptionPlan, onSubscriptionChanged: (){}),
+             ],
+           ),
+            14.ph,
+            GenericButton(
+              width: double.infinity,
+              borderRadius: BorderRadius.circular(10),
+              padding: EdgeInsets.symmetric(vertical: 20),
+              color: brightOrange,
+              onPressed: () async {
+                final offerings = await PurchaseApi.fetchOffers();
+                if (offerings.isEmpty) {
+                  print("No plans found");
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Couldn't fetch plans from Google or Apple store. Please try again later")));
+                } else {
+                  final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
+                var value = await showModalBottomSheet(
+                  clipBehavior: Clip.antiAlias,
+                  isScrollControlled: true,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+                  context: context,
+                  builder: (ctx) => SubscriptionPaywall(packages: packages,));
+                if(value != null){                     //TODO: updatePage()
+                  setState(() {
+                    subscriptionPlan = value;
+                  });
+                }
+                }
+              },
+              child: Text(
+                LocaleKeys.upgradeNow.tr(),
+                style: TextStylesInter.textViewSemiBold16.copyWith(color: white),
               ),
-              10.ph,
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.star,
-                    color: yellow,
-                  ),
-                  5.pw,
-                  Flexible(
-                    child: Text(
-                      'UnlimitedProduct'.tr(),
-                      style:
-                          TextStyles.textViewRegular16.copyWith(color: black1),
-                    ),
-                  )
-                ],
-              ),
-              100.ph,
-              ElevatedButton(onPressed: fetchOffers, child: Text("See plans")),
-            ],
-          ),
+            ),
+            10.ph,
+            Text(
+              LocaleKeys.subscriptionRenew.tr(),
+              style: TextStylesInter.textViewRegular12.copyWith(color: Color(0xFF48484A)),
+            )
+          ],
         ),
       ),
     );
   }
 
-  Future<void> fetchOffers() async {
-    final offerings = await PurchaseApi.fetchOffers();
-    if(offerings.isEmpty){
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("No plans found")));
-    }else{
-      final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
-      
-      showModalBottomSheet(context: context, builder: (context) => Column(
-        children: packages.map((package) => InkWell(
-          onTap: (){
-            print("Purchasing");
-            PurchaseApi.purchasePackage(package);
-          },
-          child: Container(
-            margin: EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black)
-            ),
-            child: Column(
-              children: [
-                Text(package.storeProduct.title),
-                Text(package.storeProduct.description),
-                Text(package.storeProduct.priceString),
-              ],
-            ),
-          ),
-        )).toList(),
-      ));
-    }
+  // Future<void> fetchOffers() async {
+  //
+  //
+  //     showModalBottomSheet(
+  //         context: context,
+  //         builder: (context) => Column(
+  //               children: packages
+  //                   .map((package) => InkWell(
+  //                         onTap: () {
+  //                           print("Purchasing");
+  //                           PurchaseApi.purchasePackage(package);
+  //                         },
+  //                         child: Container(
+  //                           margin: EdgeInsets.all(5),
+  //                           decoration: BoxDecoration(border: Border.all(color: Colors.black)),
+  //                           child: Column(
+  //                             children: [
+  //                               Text(package.storeProduct.title),
+  //                               Text(package.storeProduct.description),
+  //                               Text(package.storeProduct.priceString),
+  //                             ],
+  //                           ),
+  //                         ),
+  //                       ))
+  //                   .toList(),
+  //             ));
+  //   }
   }
-}
