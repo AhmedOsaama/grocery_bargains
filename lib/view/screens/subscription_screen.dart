@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/button.dart';
@@ -11,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../../generated/locale_keys.g.dart';
 import '../../services/purchase_service.dart';
@@ -31,8 +34,15 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   var scrollController = ScrollController();
   var selectedLanguage = Language.english;
   var subscriptionPlan = "None";
+  var subscriptionPrice = "None";
+  var subscriptionPricePerMonth = "None";
+
+
   @override
   void initState() {
+   subscriptionPlan = PurchaseApi.subscriptionPeriod;
+   subscriptionPrice = PurchaseApi.subscriptionPrice;
+   subscriptionPricePerMonth = PurchaseApi.subscriptionPricePerMonth;
     TrackingUtils().trackPageView(
         FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Subscription screen");
     super.initState();
@@ -70,7 +80,8 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               ),
             ),
             10.ph,
-            Flexible(
+            Container(
+              height: 250,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 controller: scrollController,
@@ -84,21 +95,13 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     heading: LocaleKeys.personalizedRecommendations.tr(),
                     body: LocaleKeys.receiveTailored.tr(),
                   ),
-                  FeatureContainer(
-                    heading: LocaleKeys.personalizedRecommendations.tr(),
-                    body: LocaleKeys.receiveTailored.tr(),
-                  ),
-                  FeatureContainer(
-                    heading: LocaleKeys.personalizedRecommendations.tr(),
-                    body: LocaleKeys.receiveTailored.tr(),
-                  ),
                 ],
               ),
             ),
-            DotsIndicator(
-              dotsCount: 4,
-              position: 0.0,
-            ),
+            // DotsIndicator(
+            //   dotsCount: 4,
+            //   position: 0.0,
+            // ),
             15.ph,
             subscriptionPlan == 'None' ?
             Row(
@@ -127,8 +130,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 : Column(
              children: [
             Text(LocaleKeys.thankYou.tr(), style: TextStylesInter.textViewSemiBold18.copyWith(color: blackSecondary),),
+               10.ph,
                Text(LocaleKeys.youAreUpgraded.tr(), style: TextStylesInter.textViewLight15.copyWith(color: Color(0xFF48484A)),),
-               SubscriptionPlanWidget(promotion: LocaleKeys.currentPlan.tr(), type: subscriptionPlan, price: '9.49', pricePerMonth: "pricePerMonth", selectedPlan: subscriptionPlan, onSubscriptionChanged: (){}),
+               10.ph,
+               SubscriptionPlanWidget(promotion: LocaleKeys.currentPlan.tr(), type: subscriptionPlan, price: subscriptionPrice, pricePerMonth: subscriptionPricePerMonth, selectedPlan: subscriptionPlan, onSubscriptionChanged: (){}),
              ],
            ),
             14.ph,
@@ -150,9 +155,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
                   context: context,
                   builder: (ctx) => SubscriptionPaywall(packages: packages,));
-                if(value != null){                     //TODO: updatePage()
+                if(value != null){
                   setState(() {
-                    subscriptionPlan = value;
+                    subscriptionPlan = PurchaseApi.subscriptionPeriod;
+                    subscriptionPrice = PurchaseApi.subscriptionPrice;
+                    subscriptionPricePerMonth = PurchaseApi.subscriptionPricePerMonth;
                   });
                 }
                 }

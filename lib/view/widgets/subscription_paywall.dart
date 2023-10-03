@@ -20,12 +20,12 @@ class SubscriptionPaywall extends StatefulWidget {
 }
 
 class _SubscriptionPaywallState extends State<SubscriptionPaywall> {
-  var selectedPlan = "None";
-  var subscriptionPlan = "None";      //comes from user record
+  var selectedPlan = "None";          //can change at runtime
+  var subscriptionPlan = "None";      //comes from revenuCat
 
   @override
   void initState() {
-    Purchases.getCustomerInfo().then((value) => print(value.activeSubscriptions));
+    subscriptionPlan = PurchaseApi.subscriptionPeriod;
     if(subscriptionPlan != "None")
     selectedPlan = subscriptionPlan;
     super.initState();
@@ -54,7 +54,7 @@ class _SubscriptionPaywallState extends State<SubscriptionPaywall> {
           Column(
             children: [
               SubscriptionPlanWidget(
-                promotion: subscriptionPlan == 'Monthly' ? "Current Plan" : LocaleKeys.mostFlexible.tr(),
+                promotion: subscriptionPlan == 'Monthly' ? LocaleKeys.currentPlan.tr() : LocaleKeys.mostFlexible.tr(),
                 type: LocaleKeys.monthly.tr(),
                 price: widget.packages[0].storeProduct.priceString,
                 pricePerMonth: "${(widget.packages[0].storeProduct.price)} / Month",
@@ -66,10 +66,10 @@ class _SubscriptionPaywallState extends State<SubscriptionPaywall> {
                 },
               ),
               SubscriptionPlanWidget(
-                promotion: subscriptionPlan == 'Yearly' ? "Current Plan" : LocaleKeys.mostFlexible.tr(),
+                promotion: subscriptionPlan == 'Yearly' ?  LocaleKeys.currentPlan.tr() : LocaleKeys.mostFlexible.tr(),
                 type: LocaleKeys.yearly.tr(),
                 price: widget.packages[1].storeProduct.priceString,
-                pricePerMonth: "${(widget.packages[1].storeProduct.price / 365).toStringAsFixed(2)} / Month",
+                pricePerMonth: "${(widget.packages[1].storeProduct.price / 12).toStringAsFixed(2)} / Month",
                 selectedPlan: selectedPlan,
                 onSubscriptionChanged: (value) {
                   setState(() {
@@ -78,9 +78,9 @@ class _SubscriptionPaywallState extends State<SubscriptionPaywall> {
                 },
               ),
               SubscriptionPlanWidget(
-                promotion: subscriptionPlan == 'Lifetime' ? "Current Plan" : LocaleKeys.onePayment.tr(),
+                promotion: subscriptionPlan == 'Lifetime' ?  LocaleKeys.currentPlan.tr() : LocaleKeys.onePayment.tr(),
                 type: LocaleKeys.lifetime.tr(),
-                price: '15.99',
+                price: widget.packages[2].storeProduct.priceString,
                 pricePerMonth: "One time payment",
                 selectedPlan: selectedPlan,
                 onSubscriptionChanged: (value) {
@@ -105,6 +105,10 @@ class _SubscriptionPaywallState extends State<SubscriptionPaywall> {
                   });
                   if(selectedPlan == "Yearly") await PurchaseApi.purchasePackage(widget.packages[1]).catchError((e){
                     print("Error in buying the yearly package");
+                    AppNavigator.pop(context: context);
+                  });
+                  if(selectedPlan == "Lifetime") await PurchaseApi.purchasePackage(widget.packages[2]).catchError((e){
+                    print("Error in buying the lifetime package");
                     AppNavigator.pop(context: context);
                   });
                   AppNavigator.pop(context: context, object: selectedPlan);

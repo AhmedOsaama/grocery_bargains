@@ -41,7 +41,7 @@ class _SubscriptionPlanWidgetState extends State<SubscriptionPlanWidget> {
             clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
-              color: widget.promotion == "Current Plan" ? mainPurple : brightOrange,
+              color: widget.promotion == LocaleKeys.currentPlan.tr() ? mainPurple : brightOrange,
             ),
             child: Text(
               widget.promotion,
@@ -73,12 +73,6 @@ class _SubscriptionPlanWidgetState extends State<SubscriptionPlanWidget> {
                           widget.price,
                           style: TextStylesInter.textViewSemiBold24.copyWith(color: Color(0xFF181A26)),
                         ),
-                        // 5.pw,
-                        // Text(
-                        //   "EUR",
-                        //   style: TextStylesInter.textViewSemiBold12
-                        //       .copyWith(color: Color(0xFF181A26), letterSpacing: -0.30),
-                        // ),
                       ],
                     ),
                     5.ph,

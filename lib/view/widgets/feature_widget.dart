@@ -18,7 +18,7 @@ class FeatureContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 260.w,
-      // height: 201,
+      // height: 150,
       padding: EdgeInsets.symmetric(horizontal: 14.w),
       margin: EdgeInsets.only(right: 14.w),
       decoration: BoxDecoration(

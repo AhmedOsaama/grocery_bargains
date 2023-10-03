@@ -426,12 +426,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       if (isEditing) isPhoneEdited = false;
     });
-    // var result = await FirebaseFirestore.instance.collection('users').where('phoneNumber', isEqualTo: phone).get();
-    // if (result.docs.isNotEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: Text("PhoneNumberAlready".tr())));
-    //   return;
-    // }
+
     FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
     await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phone,
@@ -445,12 +440,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           String smsCode = otp;
 
-          // PhoneAuthCredential credential =
-          //     PhoneAuthProvider.credential(verificationId: verificationId, smsCode: smsCode);
-          // await FirebaseAuth.instance.currentUser!.linkWithPhoneNumber(phone).catchError((e) {
-          //   log(e.toString());
-          // });
-            // await FirebaseAuth.instance.signInWithCredential(credential);
             Map<String, Object?> data = {};
 
             data.addAll({'phoneNumber': phone});
