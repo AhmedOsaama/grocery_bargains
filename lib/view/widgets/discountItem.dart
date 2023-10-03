@@ -27,7 +27,7 @@ class DiscountItem extends StatelessWidget {
   final bool inGridView;
   DiscountItem({Key? key, required this.inGridView, required this.product}) : super(key: key);
 
-  var selectedStore = (['Albert', "Jumbo", "Hoogvliet"]..shuffle()).first;
+  var selectedStore = (['Albert', "Jumbo", "Hoogvliet", "Dirk"]..shuffle()).first;
 
   String getProductImage(Product product) {
     try {
@@ -134,7 +134,7 @@ class DiscountItem extends StatelessWidget {
                 child: Icon(
                   Icons.add,
                   color: mainPurple,
-                  size: 30,
+                  size: 28,
                 ),
               ),
             ),
@@ -180,7 +180,7 @@ class DiscountItem extends StatelessWidget {
                 Image.asset(
                   getStoreLogoPath(),
                   width: 60,
-                  height: 20,
+                  height: 25,
                 ),
                 5.ph,
                 Text(

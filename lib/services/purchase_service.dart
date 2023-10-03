@@ -2,21 +2,30 @@ import 'dart:io';
 
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class PurchaseApi{
-  // static const _apiKey = 'appl_HUpmOoVSBSzFEjDWMemOoWSxdBq';
-  static const _apiKey = 'goog_TKFhZiVZKEYVhHGVqldnltUOYyJ';
+  static const _apiKey = 'appl_HUpmOoVSBSzFEjDWMemOoWSxdBq';
+  // static const _apiKey = 'goog_TKFhZiVZKEYVhHGVqldnltUOYyJ';
 
   static var subscriptionPeriod = "None";
   static var subscriptionPrice = "None";
   static var subscriptionPricePerMonth = "None";
 
   static Future init() async{
+    var apiKey = Platform.isIOS ? 'appl_HUpmOoVSBSzFEjDWMemOoWSxdBq' : 'goog_TKFhZiVZKEYVhHGVqldnltUOYyJ';
     await Purchases.setLogLevel(LogLevel.debug);
-    await Purchases.configure(PurchasesConfiguration(_apiKey));
+    await Purchases.configure(PurchasesConfiguration(apiKey));
+    // try {
+    //   await Purchases.configure(PurchasesConfiguration(apiKey)
+    //     ..appUserID = FirebaseAuth.instance.currentUser!.uid);
+    // }catch(e){
+    //   print(e);
+    //   await Purchases.configure(PurchasesConfiguration(apiKey));
+    // }
     await checkSubscriptionStatus();
   }
 
@@ -33,14 +42,18 @@ class PurchaseApi{
 
   static Future<void> checkSubscriptionStatus() async {
    var value = await Purchases.getCustomerInfo();
-      if(value.entitlements.all['all_analysis_features']!.isActive){
-        var productIdentifier = value.entitlements.all['all_analysis_features']!.productIdentifier;
-        var product = await getSubscriptionProduct(productIdentifier);
-        subscriptionPeriod = getSubscriptionPeriod(productIdentifier);
-        subscriptionPrice = getSubscriptionPriceString(product);
-        subscriptionPricePerMonth = getPricePerMonth(subscriptionPeriod, getSubscriptionPrice(product));
-        // return subscriptionStatus;
-      }
+   try {
+     if (value.entitlements.all['all_analysis_features']!.isActive) {
+       var productIdentifier = value.entitlements.all['all_analysis_features']!.productIdentifier;
+       var product = await getSubscriptionProduct(productIdentifier);
+       subscriptionPeriod = getSubscriptionPeriod(productIdentifier);
+       subscriptionPrice = getSubscriptionPriceString(product);
+       subscriptionPricePerMonth = getPricePerMonth(subscriptionPeriod, getSubscriptionPrice(product));
+       // return subscriptionStatus;
+     }
+   }catch(e){
+     print(e);
+   }
     // return subscriptionStatus;
   }
 

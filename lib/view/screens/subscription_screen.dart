@@ -58,123 +58,125 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         foregroundColor: Colors.black,
         // leading: backButt,
         title: Text(
-          "Go Premium".tr(),
+          LocaleKeys.goPremium.tr(),
           style: TextStylesInter.textViewSemiBold18.copyWith(color: blackSecondary),
         ),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
-        child: Column(
-          children: [
-            Text(
-              LocaleKeys.ourAppIsCompletelyFree.tr(),
-              textAlign: TextAlign.center,
-              style: TextStylesInter.textViewRegular14.copyWith(color: Color(0xFF48484A)),
-            ),
-            23.ph,
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                LocaleKeys.unlockPremiumFeatures.tr(),
-                style: TextStylesInter.textViewSemiBold18.copyWith(color: Color(0xFF181A26)),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Text(
+                LocaleKeys.ourAppIsCompletelyFree.tr(),
+                textAlign: TextAlign.center,
+                style: TextStylesInter.textViewRegular14.copyWith(color: Color(0xFF48484A)),
               ),
-            ),
-            10.ph,
-            Container(
-              height: 250,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                controller: scrollController,
-                physics: BouncingScrollPhysics(),
+              23.ph,
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  LocaleKeys.unlockPremiumFeatures.tr(),
+                  style: TextStylesInter.textViewSemiBold18.copyWith(color: Color(0xFF181A26)),
+                ),
+              ),
+              10.ph,
+              Container(
+                height: 250,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  controller: scrollController,
+                  physics: BouncingScrollPhysics(),
+                  children: [
+                    FeatureContainer(
+                      heading: LocaleKeys.spendingInsights.tr(),
+                      body: LocaleKeys.gainDeepInsights.tr(),
+                    ),
+                    FeatureContainer(
+                      heading: LocaleKeys.personalizedRecommendations.tr(),
+                      body: LocaleKeys.receiveTailored.tr(),
+                    ),
+                  ],
+                ),
+              ),
+              // DotsIndicator(
+              //   dotsCount: 4,
+              //   position: 0.0,
+              // ),
+              15.ph,
+              subscriptionPlan == 'None' ?
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  FeatureContainer(
-                    heading: LocaleKeys.spendingInsights.tr(),
-                    body: LocaleKeys.gainDeepInsights.tr(),
+                  PlanWidget(
+                    promotion: LocaleKeys.mostFlexible.tr(),
+                    type: LocaleKeys.monthly.tr(),
+                    price: "1.09",
+                    pricePerMonth: "1.09 / month*",
                   ),
-                  FeatureContainer(
-                    heading: LocaleKeys.personalizedRecommendations.tr(),
-                    body: LocaleKeys.receiveTailored.tr(),
+                  PlanWidget(
+                    promotion: LocaleKeys.mostFlexible.tr(),
+                    type: LocaleKeys.yearly.tr(),
+                    price: "9.49",
+                    pricePerMonth: "0.79 / month*",
+                  ),
+                  PlanWidget(
+                    promotion: LocaleKeys.onePayment.tr(),
+                    type: LocaleKeys.lifetime.tr(),
+                    price: "15.99",
+                    pricePerMonth: "Pay only once",
                   ),
                 ],
+              )
+                  : Column(
+               children: [
+              Text(LocaleKeys.thankYou.tr(), style: TextStylesInter.textViewSemiBold18.copyWith(color: blackSecondary),),
+                 10.ph,
+                 Text(LocaleKeys.youAreUpgraded.tr(), style: TextStylesInter.textViewLight15.copyWith(color: Color(0xFF48484A)),),
+                 10.ph,
+                 SubscriptionPlanWidget(promotion: LocaleKeys.currentPlan.tr(), type: subscriptionPlan, price: subscriptionPrice, pricePerMonth: subscriptionPricePerMonth, selectedPlan: subscriptionPlan, onSubscriptionChanged: (){}),
+               ],
+             ),
+              14.ph,
+              GenericButton(
+                width: double.infinity,
+                borderRadius: BorderRadius.circular(10),
+                padding: EdgeInsets.symmetric(vertical: 20),
+                color: brightOrange,
+                onPressed: () async {
+                  final offerings = await PurchaseApi.fetchOffers();
+                  if (offerings.isEmpty) {
+                    print("No plans found");
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Couldn't fetch plans from Google or Apple store. Please try again later")));
+                  } else {
+                    final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
+                  var value = await showModalBottomSheet(
+                    clipBehavior: Clip.antiAlias,
+                    isScrollControlled: true,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+                    context: context,
+                    builder: (ctx) => SubscriptionPaywall(packages: packages,));
+                  if(value != null){
+                    setState(() {
+                      subscriptionPlan = PurchaseApi.subscriptionPeriod;
+                      subscriptionPrice = PurchaseApi.subscriptionPrice;
+                      subscriptionPricePerMonth = PurchaseApi.subscriptionPricePerMonth;
+                    });
+                  }
+                  }
+                },
+                child: Text(
+                  LocaleKeys.upgradeNow.tr(),
+                  style: TextStylesInter.textViewSemiBold16.copyWith(color: white),
+                ),
               ),
-            ),
-            // DotsIndicator(
-            //   dotsCount: 4,
-            //   position: 0.0,
-            // ),
-            15.ph,
-            subscriptionPlan == 'None' ?
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                PlanWidget(
-                  promotion: LocaleKeys.mostFlexible.tr(),
-                  type: LocaleKeys.monthly.tr(),
-                  price: "1.09",
-                  pricePerMonth: "1.09 / month*",
-                ),
-                PlanWidget(
-                  promotion: LocaleKeys.mostFlexible.tr(),
-                  type: LocaleKeys.yearly.tr(),
-                  price: "9.49",
-                  pricePerMonth: "0.79 / month*",
-                ),
-                PlanWidget(
-                  promotion: LocaleKeys.onePayment.tr(),
-                  type: LocaleKeys.lifetime.tr(),
-                  price: "15.99",
-                  pricePerMonth: "Pay only once",
-                ),
-              ],
-            )
-                : Column(
-             children: [
-            Text(LocaleKeys.thankYou.tr(), style: TextStylesInter.textViewSemiBold18.copyWith(color: blackSecondary),),
-               10.ph,
-               Text(LocaleKeys.youAreUpgraded.tr(), style: TextStylesInter.textViewLight15.copyWith(color: Color(0xFF48484A)),),
-               10.ph,
-               SubscriptionPlanWidget(promotion: LocaleKeys.currentPlan.tr(), type: subscriptionPlan, price: subscriptionPrice, pricePerMonth: subscriptionPricePerMonth, selectedPlan: subscriptionPlan, onSubscriptionChanged: (){}),
-             ],
-           ),
-            14.ph,
-            GenericButton(
-              width: double.infinity,
-              borderRadius: BorderRadius.circular(10),
-              padding: EdgeInsets.symmetric(vertical: 20),
-              color: brightOrange,
-              onPressed: () async {
-                final offerings = await PurchaseApi.fetchOffers();
-                if (offerings.isEmpty) {
-                  print("No plans found");
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Couldn't fetch plans from Google or Apple store. Please try again later")));
-                } else {
-                  final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
-                var value = await showModalBottomSheet(
-                  clipBehavior: Clip.antiAlias,
-                  isScrollControlled: true,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-                  context: context,
-                  builder: (ctx) => SubscriptionPaywall(packages: packages,));
-                if(value != null){
-                  setState(() {
-                    subscriptionPlan = PurchaseApi.subscriptionPeriod;
-                    subscriptionPrice = PurchaseApi.subscriptionPrice;
-                    subscriptionPricePerMonth = PurchaseApi.subscriptionPricePerMonth;
-                  });
-                }
-                }
-              },
-              child: Text(
-                LocaleKeys.upgradeNow.tr(),
-                style: TextStylesInter.textViewSemiBold16.copyWith(color: white),
-              ),
-            ),
-            10.ph,
-            Text(
-              LocaleKeys.subscriptionRenew.tr(),
-              style: TextStylesInter.textViewRegular12.copyWith(color: Color(0xFF48484A)),
-            )
-          ],
+              10.ph,
+              Text(
+                LocaleKeys.subscriptionRenew.tr(),
+                style: TextStylesInter.textViewRegular12.copyWith(color: Color(0xFF48484A)),
+              )
+            ],
+          ),
         ),
       ),
     );

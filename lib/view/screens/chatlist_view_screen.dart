@@ -15,6 +15,7 @@ import 'package:bargainb/view/widgets/invite_members_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
@@ -104,6 +105,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       });
     }
     getUserImagesFuture = getUserImages();
+    FirebaseMessaging.instance.getToken().then((value) => print("USER TOKEN: $value"));
     TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Chatlist Screen");
 
     super.initState();

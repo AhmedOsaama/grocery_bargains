@@ -640,7 +640,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  Future<void> saveUserDeviceToken(UserCredential userCredential) async {
+  Future<void> saveUserDeviceToken(UserCredential userCredential) async {           //duplicate in main screen
     var deviceToken = await FirebaseMessaging.instance.getToken();              //could produce a problem if permission is not accepted especially on iOS
     await FirebaseFirestore.instance
         .collection('users')
@@ -649,7 +649,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       'token': deviceToken,
       'timestamp': Timestamp.now(),
     });
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Added device token")));
+    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Added device token")));
   } 
   
   Future<void> createHubspotContact(UserCredential userCredential, Map userData) async {

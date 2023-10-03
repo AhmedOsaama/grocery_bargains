@@ -8,6 +8,7 @@ import 'package:bargainb/view/widgets/signin_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
@@ -19,6 +20,7 @@ import 'package:provider/provider.dart';
 import 'package:bargainb/view/screens/home_screen.dart';
 import 'package:bargainb/view/screens/chatlists_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../config/routes/app_navigator.dart';
@@ -48,6 +50,18 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       isFirstTime = prefs.getBool("firstTime") ?? true;
     });
+  }
+
+  Future<void> saveUserDeviceToken() async {
+    var deviceToken = await FirebaseMessaging.instance.getToken();              //could produce a problem if permission is not accepted especially on iOS
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({
+      'token': deviceToken,
+      'timestamp': Timestamp.now(),
+    });
+    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Added device token")));
   }
 
   @override
@@ -136,6 +150,8 @@ class _MainScreenState extends State<MainScreen> {
       });
     try{
       TrackingUtils().trackAppOpen(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString());
+      Purchases.logIn(FirebaseAuth.instance.currentUser!.uid);
+      saveUserDeviceToken();
     }catch(e){
       print(e);
       TrackingUtils().trackAppOpen('Guest', DateTime.now().toUtc().toString());
