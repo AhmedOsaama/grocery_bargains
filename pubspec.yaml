@@ -84,6 +84,7 @@ dependencies:
   algolia_helper_flutter: ^0.3.3
   algolia: ^1.1.2
   purchases_flutter: ^5.6.5
+  syncfusion_flutter_charts: ^21.2.4
 
 
 

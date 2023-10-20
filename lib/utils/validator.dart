@@ -4,7 +4,7 @@ class Validator {
   static String? defaultValidator(String? value) {
     if (value != null && value.trim().isEmpty) {
       // return tr("error_field_required");
-      return "error_field_required";
+      return "Message cannot be empty";
     }
     return null;
   }

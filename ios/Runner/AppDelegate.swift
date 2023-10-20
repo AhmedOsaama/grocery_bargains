@@ -8,7 +8,7 @@ import BranchSDK
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    Branch.setUseTestBranchKey(false)
+    Branch.setUseTestBranchKey(true)
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

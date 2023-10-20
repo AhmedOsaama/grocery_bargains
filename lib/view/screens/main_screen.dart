@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
+import 'package:bargainb/view/screens/insights_screen.dart';
 import 'package:bargainb/view/screens/product_detail_screen.dart';
 import 'package:bargainb/view/widgets/signin_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -179,6 +180,7 @@ class _MainScreenState extends State<MainScreen> {
     return [
       HomeScreen(),
       ChatlistsScreen(),
+      InsightsScreen(),
       FirebaseAuth.instance.currentUser == null ? Container() : ProfileScreen(),
     ];
   }
@@ -216,6 +218,26 @@ class _MainScreenState extends State<MainScreen> {
       ),
       PersistentBottomNavBarItem(
           icon: Icon(
+            Icons.analytics_outlined,
+            size: 24.sp,
+          ),
+          title: ("Insights".tr()),
+          textStyle: TextStyle(fontSize: 12.sp),
+          activeColorPrimary: selectedColor,
+          inactiveColorPrimary: unSelectedColor,
+          onPressed: (_){
+            NavigatorController.jumpToTab(2);
+            try{
+              TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open Insights screen", DateTime.now().toUtc().toString(), "Home screen");
+            }catch(e){
+              print(e);
+              TrackingUtils().trackButtonClick("Guest", "open Insights screen", DateTime.now().toUtc().toString(), "Home screen");
+            }
+          }
+      ),
+
+      PersistentBottomNavBarItem(
+          icon: Icon(
             Icons.account_circle_outlined,
             size: 24.sp,
           ),
@@ -233,7 +255,7 @@ class _MainScreenState extends State<MainScreen> {
                         title: 'Sign In',
                       ));
             } else {
-              NavigatorController.jumpToTab(2);
+              NavigatorController.jumpToTab(3);
               try{
                 TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open profile screen", DateTime.now().toUtc().toString(), "Home screen");
               }catch(e){

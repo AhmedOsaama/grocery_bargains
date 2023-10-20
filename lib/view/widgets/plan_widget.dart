@@ -30,6 +30,7 @@ class PlanWidget extends StatelessWidget {
           ),
           child: Column(
                 children: [
+                  10.ph,
                   Text(
                     type,
                     style:

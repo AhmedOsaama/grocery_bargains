@@ -872,8 +872,12 @@ class _ChatViewState extends State<ChatView> {
                           contentPadding: EdgeInsets.only(left: 10),
                           borderRaduis: 99999,
                           onSubmitted: (_) async {
+                            await FirebaseMessaging.instance.unsubscribeFromTopic(widget.listId);
                             await Provider.of<ChatlistsProvider>(context, listen: false)
                                 .sendMessage(messageController.text.trim(), widget.listId, widget.chatlistName);
+                            Future.delayed(Duration(seconds: 5),(){
+                              FirebaseMessaging.instance.subscribeToTopic(widget.listId);
+                            });
                             messageController.clear();
                           },
                         ),
@@ -881,8 +885,12 @@ class _ChatViewState extends State<ChatView> {
                       5.pw,
                       GestureDetector(
                         onTap: () async {
+                          await FirebaseMessaging.instance.unsubscribeFromTopic(widget.listId);
                           await Provider.of<ChatlistsProvider>(context, listen: false)
                               .sendMessage(messageController.text.trim(), widget.listId, widget.chatlistName);
+                          Future.delayed(Duration(seconds: 5),(){
+                            FirebaseMessaging.instance.subscribeToTopic(widget.listId);
+                          });
                           messageController.clear();
                           FocusScope.of(context).unfocus();
                         },

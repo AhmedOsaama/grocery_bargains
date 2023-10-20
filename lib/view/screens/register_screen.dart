@@ -276,23 +276,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                   ),
                 ),
-                // GenericField(
-                //   hintText: "***********",
-                //   suffixIcon: GestureDetector(
-                //       onTap: () {
-                //         setState(() {
-                //           isObscured = !isObscured;
-                //         });
-                //       },
-                //       child: Icon(isObscured
-                //           ? Icons.visibility
-                //           : Icons.visibility_off)),
-                //   validation: (value) => Validator.password(value),
-                //   obscureText: isObscured,
-                //   onSaved: (value) {
-                //     password = value!;
-                //   },
-                // ),
                 SizedBox(
                   height: 10.h,
                 ),
