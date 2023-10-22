@@ -1,7 +1,9 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/icons_manager.dart';
+import 'package:bargainb/utils/media_query_values.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/button.dart';
 import 'package:bargainb/view/screens/total_saved_screen.dart';
@@ -26,6 +28,8 @@ class _InsightsScreenState extends State<InsightsScreen> {
 
   late List<_ChartData> data;
   late TooltipBehavior _tooltip;
+
+  var _pageViewController = PageController();
 
 
   String getDurationRange(){
@@ -62,107 +66,176 @@ class _InsightsScreenState extends State<InsightsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            100.ph,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-            DurationButton(duration: "Week", selectedDuration: selectedDuration, onPressed: (){
-              setState(() {
-                selectedDuration = "Week";
-              });
-            }),
-                15.pw,
-                DurationButton(duration: "Month", selectedDuration: selectedDuration, onPressed: (){
-              setState(() {
-                selectedDuration = "Month";
-              });
-            }),
-                15.pw,
-                DurationButton(duration: "Year", selectedDuration: selectedDuration, onPressed: (){
-              setState(() {
-                selectedDuration = "Year";
-              });
-            }),
-              ],
-            ),
-            10.ph,  //first 3 buttons
-            Text("October Overview", style: TextStylesInter.textViewSemiBold18,),
-            8.ph,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(getDurationRange(), style: TextStylesInter.textViewRegular12.copyWith(color: Color(0xFF7C7C7C)),),
-                5.pw,
-                Icon(Icons.calendar_month_outlined, size: 24,)
-              ],
-            ),          //duration, calendar
-            16.ph,
-            SizedBox(
-              height: 85.h,
-              child: Row(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              20.ph,
+              Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  GestureDetector(
-                    onTap: () => AppNavigator.push(context: context, screen: TotalSavedScreen()),
-                      child: InsightOverview(type: "Total Saved", value: '€234', info: "Increase of 24%", infoColor: Color(0xFF18C336),)),
-                  20.pw,
-                  VerticalDivider(),
-                  20.pw,
-                 InsightOverview(type: "Biggest Expense", value: '€234', info: "AH Luxury meat BBQ package", infoColor: Color(0xFFFFB81F),)
+              DurationButton(duration: "Week", selectedDuration: selectedDuration, onPressed: (){
+                setState(() {
+                  selectedDuration = "Week";
+                });
+              }),
+                  15.pw,
+                  DurationButton(duration: "Month", selectedDuration: selectedDuration, onPressed: (){
+                setState(() {
+                  selectedDuration = "Month";
+                });
+              }),
+                  15.pw,
+                  DurationButton(duration: "Year", selectedDuration: selectedDuration, onPressed: (){
+                setState(() {
+                  selectedDuration = "Year";
+                });
+              }),
                 ],
               ),
-            ),             //total saved, biggest expenses
-            Divider(),
-            Container(
-              height: 320.h,
-              child: SfCircularChart(
-                  tooltipBehavior: _tooltip,
-                  annotations: [
-                    CircularChartAnnotation(
-                      widget: InsightOverview(type: "Total Spent", value: "€543", info: "Increase of 24%", infoColor: Colors.green,)
-                    )
+              10.ph,  //first 3 buttons
+              Text("October Overview", style: TextStylesInter.textViewSemiBold18,),
+              8.ph,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(getDurationRange(), style: TextStylesInter.textViewRegular12.copyWith(color: Color(0xFF7C7C7C)),),
+                  5.pw,
+                  Icon(Icons.calendar_month_outlined, size: 24,)
+                ],
+              ),          //duration, calendar
+              16.ph,
+              SizedBox(
+                height: 85.h,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: () => AppNavigator.push(context: context, screen: TotalSavedScreen()),
+                        child: InsightOverview(type: "Total Saved", value: '€234', info: "Increase of 24%", infoColor: Color(0xFF18C336),)),
+                    20.pw,
+                    VerticalDivider(),
+                    20.pw,
+                   InsightOverview(type: "Biggest Expense", value: '€234', info: "AH Luxury meat BBQ package", infoColor: Color(0xFFFFB81F),)
                   ],
-                  series: [
-                    DoughnutSeries<_ChartData, String>(
-                        dataSource: data,
-                        dataLabelSettings: DataLabelSettings(isVisible: true,
-                          labelPosition: ChartDataLabelPosition.outside,
-                          overflowMode: OverflowMode.trim,
-                          useSeriesColor: true,
-                          connectorLineSettings: ConnectorLineSettings(
-                            type: ConnectorType.curve,
-                          )
+                ),
+              ),             //total saved, biggest expenses
+              Divider(),
+              Container(
+                height: 320.h,
+                child: Stack(
+                  children: [
+                    PageView(
+                      scrollDirection: Axis.horizontal,
+                      controller: _pageViewController,
+                      onPageChanged: (page){
+                        setState(() {
+                          page = 2;
+                        });
+                      },
+                      physics: BouncingScrollPhysics(),
+                      allowImplicitScrolling: true,
+                      children: [
+                        Container(
+                          // padding: EdgeInsets.only(left: 40),
+                          child: SfCircularChart(
+                              tooltipBehavior: _tooltip,
+                              annotations: [
+                                CircularChartAnnotation(
+                                  widget: InsightOverview(type: "Total Spent", value: "€543", info: "Increase of 24%", infoColor: Colors.green,)
+                                )
+                              ],
+                              series: [
+                                DoughnutSeries<_ChartData, String>(
+                                    dataSource: data,
+                                    dataLabelSettings: DataLabelSettings(isVisible: true,
+                                      labelPosition: ChartDataLabelPosition.outside,
+                                      overflowMode: OverflowMode.trim,
+                                      useSeriesColor: true,
+                                      connectorLineSettings: ConnectorLineSettings(
+                                        type: ConnectorType.curve,
+                                      )
+                                    ),
+                                    innerRadius: "70",
+                                    xValueMapper: (_ChartData data, _) => data.x,
+                                    yValueMapper: (_ChartData data, _) => data.y,
+                                  dataLabelMapper: (_ChartData data, _) => data.x,
+                                )
+                              ]),
                         ),
-                        innerRadius: "70",
-                        xValueMapper: (_ChartData data, _) => data.x,
-                        yValueMapper: (_ChartData data, _) => data.y,
-                      dataLabelMapper: (_ChartData data, _) => data.x,
-                    )
-                  ]),
-            ),
-            Divider(),
-            Text("Top Insights", style: TextStylesInter.textViewSemiBold14,),
-            20.ph,
-            Container(
-              height: 110,
-              // padding: EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  TopInsight(insightType: "Chatlist", image: Image.asset(chatlist, width: 32,height: 32,), insightValue: "Home", insightMetadata: "94 products"),
-                  VerticalDivider(endIndent: 10,),
-                  TopInsight(insightType: "Store", image: Image.asset(jumbo, width: 32,height: 32,), insightValue: "Jumbo", insightMetadata: "94 products"),
-                  VerticalDivider(endIndent: 10,),
-                  TopInsight(insightType: "Products", image: Image.asset(chatlist,width: 32,height: 32,), insightValue: "Eat Natural Cranberry, Macadamia ...", insightMetadata: "94 products"),
-                  VerticalDivider(endIndent: 10,),
-                  TopInsight(insightType: "Person", image: Image.asset(personAva,width: 32,height: 32,), insightValue: "Home", insightMetadata: "94 products"),
-                ],
+                        Container(
+                          // padding: EdgeInsets.only(left: 40),
+                          child: SfCircularChart(
+                              tooltipBehavior: _tooltip,
+                              annotations: [
+                                CircularChartAnnotation(
+                                  widget: InsightOverview(type: "Total Spent", value: "€543", info: "Increase of 24%", infoColor: Colors.green,)
+                                )
+                              ],
+                              series: [
+                                DoughnutSeries<_ChartData, String>(
+                                    dataSource: data,
+                                    dataLabelSettings: DataLabelSettings(isVisible: true,
+                                      labelPosition: ChartDataLabelPosition.outside,
+                                      overflowMode: OverflowMode.trim,
+                                      useSeriesColor: true,
+                                      connectorLineSettings: ConnectorLineSettings(
+                                        type: ConnectorType.curve,
+                                      )
+                                    ),
+                                    innerRadius: "70",
+                                    xValueMapper: (_ChartData data, _) => data.x,
+                                    yValueMapper: (_ChartData data, _) => data.y,
+                                  dataLabelMapper: (_ChartData data, _) => data.x,
+                                )
+                              ]),
+                        ),
+                      ],
+                    ),
+                    if(_pageViewController.page! < 1)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: IconButton(
+                          onPressed: (){
+                            var pageNumber = _pageViewController.page!.toInt();
+                            // _pageViewController.nextPage(duration: duration, curve: curve)
+                            _pageViewController.animateToPage(pageNumber + 1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                          }, icon: Icon(Icons.arrow_forward_ios, color: mainPurple, size: 20,)),
+                    ),
+                    if(_pageViewController.page! > 0)
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                          onPressed: (){
+                            var pageNumber = _pageViewController.page!.toInt();
+                            // _pageViewController.nextPage(duration: duration, curve: curve)
+                            _pageViewController.animateToPage(pageNumber - 1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                          }, icon: Icon(Icons.arrow_back_ios_new_outlined, color: mainPurple, size: 20,)),
+                    ),
+                  ],
+                ),
               ),
-            )
-          ],
+              Divider(),
+              Text("Top Insights", style: TextStylesInter.textViewSemiBold14,),
+              20.ph,
+              Container(
+                height: 110,
+                // padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TopInsight(insightType: "Chatlist", image: Image.asset(chatlist, width: 32,height: 32,), insightValue: "Home", insightMetadata: "94 products"),
+                    VerticalDivider(endIndent: 10,),
+                    TopInsight(insightType: "Store", image: Image.asset(jumbo, width: 32,height: 32,), insightValue: "Jumbo", insightMetadata: "94 products"),
+                    VerticalDivider(endIndent: 10,),
+                    TopInsight(insightType: "Products", image: Image.asset(chatlist,width: 32,height: 32,), insightValue: "Eat Natural Cranberry, Macadamia ...", insightMetadata: "94 products"),
+                    VerticalDivider(endIndent: 10,),
+                    TopInsight(insightType: "Person", image: Image.asset(personAva,width: 32,height: 32,), insightValue: "Home", insightMetadata: "94 products"),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
