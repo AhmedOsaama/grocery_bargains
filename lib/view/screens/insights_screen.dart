@@ -1,4 +1,5 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/main.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/empty_padding.dart';
@@ -31,6 +32,8 @@ class _InsightsScreenState extends State<InsightsScreen> {
 
   var _pageViewController = PageController();
 
+  int pageNumber = 0;
+
 
   String getDurationRange(){
     var dateTime = DateTime.now();
@@ -53,18 +56,25 @@ class _InsightsScreenState extends State<InsightsScreen> {
   
   @override
   void initState() {
-    data = [
-      _ChartData('Bakery', 25),
-      _ChartData('International', 38),
-      _ChartData('Pharmacies', 34),
-      _ChartData('Others', 52)
-    ];
+
     _tooltip = TooltipBehavior(enable: true);
     super.initState();
   }
   
   @override
   Widget build(BuildContext context) {
+    data = [
+      _ChartData("Drinks", 83.33),
+      // _ChartData("Meat&Seafood", 70.00),
+      _ChartData("Dairy", 60.00),
+      _ChartData("Bakery", 40.50),
+      _ChartData("Snacks", 20.00),
+      _ChartData("sauces", 30.00),
+      // _ChartData("Personal Care", 40.00),
+      // _ChartData("Pet Supplies", 25.00),
+      // _ChartData("Baby Products", 10.00),
+      _ChartData("pet", 55.00),
+    ];
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -105,21 +115,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
                 ],
               ),          //duration, calendar
               16.ph,
-              SizedBox(
-                height: 85.h,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () => AppNavigator.push(context: context, screen: TotalSavedScreen()),
-                        child: InsightOverview(type: "Total Saved", value: '€234', info: "Increase of 24%", infoColor: Color(0xFF18C336),)),
-                    20.pw,
-                    VerticalDivider(),
-                    20.pw,
-                   InsightOverview(type: "Biggest Expense", value: '€234', info: "AH Luxury meat BBQ package", infoColor: Color(0xFFFFB81F),)
-                  ],
-                ),
-              ),             //total saved, biggest expenses
+              OverviewRow(),
               Divider(),
               Container(
                 height: 320.h,
@@ -130,113 +126,183 @@ class _InsightsScreenState extends State<InsightsScreen> {
                       controller: _pageViewController,
                       onPageChanged: (page){
                         setState(() {
-                          page = 2;
+                          pageNumber = page;
                         });
                       },
                       physics: BouncingScrollPhysics(),
                       allowImplicitScrolling: true,
                       children: [
-                        Container(
-                          // padding: EdgeInsets.only(left: 40),
-                          child: SfCircularChart(
-                              tooltipBehavior: _tooltip,
-                              annotations: [
-                                CircularChartAnnotation(
-                                  widget: InsightOverview(type: "Total Spent", value: "€543", info: "Increase of 24%", infoColor: Colors.green,)
-                                )
-                              ],
-                              series: [
-                                DoughnutSeries<_ChartData, String>(
-                                    dataSource: data,
-                                    dataLabelSettings: DataLabelSettings(isVisible: true,
-                                      labelPosition: ChartDataLabelPosition.outside,
-                                      overflowMode: OverflowMode.trim,
-                                      useSeriesColor: true,
-                                      connectorLineSettings: ConnectorLineSettings(
-                                        type: ConnectorType.curve,
-                                      )
-                                    ),
-                                    innerRadius: "70",
-                                    xValueMapper: (_ChartData data, _) => data.x,
-                                    yValueMapper: (_ChartData data, _) => data.y,
-                                  dataLabelMapper: (_ChartData data, _) => data.x,
-                                )
-                              ]),
-                        ),
-                        Container(
-                          // padding: EdgeInsets.only(left: 40),
-                          child: SfCircularChart(
-                              tooltipBehavior: _tooltip,
-                              annotations: [
-                                CircularChartAnnotation(
-                                  widget: InsightOverview(type: "Total Spent", value: "€543", info: "Increase of 24%", infoColor: Colors.green,)
-                                )
-                              ],
-                              series: [
-                                DoughnutSeries<_ChartData, String>(
-                                    dataSource: data,
-                                    dataLabelSettings: DataLabelSettings(isVisible: true,
-                                      labelPosition: ChartDataLabelPosition.outside,
-                                      overflowMode: OverflowMode.trim,
-                                      useSeriesColor: true,
-                                      connectorLineSettings: ConnectorLineSettings(
-                                        type: ConnectorType.curve,
-                                      )
-                                    ),
-                                    innerRadius: "70",
-                                    xValueMapper: (_ChartData data, _) => data.x,
-                                    yValueMapper: (_ChartData data, _) => data.y,
-                                  dataLabelMapper: (_ChartData data, _) => data.x,
-                                )
-                              ]),
-                        ),
+                        CircleChart(tooltip: _tooltip, data: data),
+                        LineChart(tooltip: _tooltip, data: data),
                       ],
                     ),
-                    if(_pageViewController.page! < 1)
+                    if(pageNumber < 1)
                     Align(
                       alignment: Alignment.centerRight,
                       child: IconButton(
                           onPressed: (){
-                            var pageNumber = _pageViewController.page!.toInt();
                             // _pageViewController.nextPage(duration: duration, curve: curve)
                             _pageViewController.animateToPage(pageNumber + 1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
                           }, icon: Icon(Icons.arrow_forward_ios, color: mainPurple, size: 20,)),
                     ),
-                    if(_pageViewController.page! > 0)
+                    if(pageNumber > 0)
                     Align(
                       alignment: Alignment.centerLeft,
                       child: IconButton(
                           onPressed: (){
-                            var pageNumber = _pageViewController.page!.toInt();
-                            // _pageViewController.nextPage(duration: duration, curve: curve)
                             _pageViewController.animateToPage(pageNumber - 1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
                           }, icon: Icon(Icons.arrow_back_ios_new_outlined, color: mainPurple, size: 20,)),
                     ),
                   ],
                 ),
               ),
+              10.ph,
               Divider(),
               Text("Top Insights", style: TextStylesInter.textViewSemiBold14,),
               20.ph,
-              Container(
-                height: 110,
-                // padding: EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TopInsight(insightType: "Chatlist", image: Image.asset(chatlist, width: 32,height: 32,), insightValue: "Home", insightMetadata: "94 products"),
-                    VerticalDivider(endIndent: 10,),
-                    TopInsight(insightType: "Store", image: Image.asset(jumbo, width: 32,height: 32,), insightValue: "Jumbo", insightMetadata: "94 products"),
-                    VerticalDivider(endIndent: 10,),
-                    TopInsight(insightType: "Products", image: Image.asset(chatlist,width: 32,height: 32,), insightValue: "Eat Natural Cranberry, Macadamia ...", insightMetadata: "94 products"),
-                    VerticalDivider(endIndent: 10,),
-                    TopInsight(insightType: "Person", image: Image.asset(personAva,width: 32,height: 32,), insightValue: "Home", insightMetadata: "94 products"),
-                  ],
-                ),
-              )
+              TopInsightsRow(),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class TopInsightsRow extends StatelessWidget {
+  const TopInsightsRow({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 170,
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          TopInsight(insightType: "Chatlist", image: Image.asset(chatlist, width: 32,height: 32,), insightValue: "Home", insightMetadata: "94 products"),
+          10.pw,
+          TopInsight(insightType: "Store", image: Image.asset(jumbo, width: 32,height: 32,), insightValue: "Jumbo", insightMetadata: "94 products"),
+          10.pw,
+          TopInsight(insightType: "Products", image: Image.asset(chatlist,width: 32,height: 32,), insightValue: "Eat Natural Cranberry, Macadamia ...", insightMetadata: "94 products"),
+          10.pw,
+          TopInsight(insightType: "Person", image: Image.asset(personAva,width: 32,height: 32,), insightValue: "Home", insightMetadata: "94 products"),
+        ],
+      ),
+    );
+  }
+}
+
+class LineChart extends StatelessWidget {
+  const LineChart({
+    super.key,
+    required TooltipBehavior tooltip,
+    required this.data,
+  }) : _tooltip = tooltip;
+
+  final TooltipBehavior _tooltip;
+  final List<_ChartData> data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: SfCartesianChart(
+        primaryXAxis: CategoryAxis(),
+          tooltipBehavior: _tooltip,
+          series: [
+            LineSeries<_ChartData, String>(
+                dataSource: data,
+                xValueMapper: (_ChartData data, _) => data.x,
+                yValueMapper: (_ChartData data, _) => data.y,
+            )
+          ]),
+    );
+  }
+}
+
+class CircleChart extends StatelessWidget {
+  const CircleChart({
+    super.key,
+    required TooltipBehavior tooltip,
+    required this.data,
+  }) : _tooltip = tooltip;
+
+  final TooltipBehavior _tooltip;
+  final List<_ChartData> data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: SfCircularChart(
+          tooltipBehavior: _tooltip,
+          annotations: [
+            CircularChartAnnotation(
+              widget: InsightOverview(type: "Total Spent", value: "€543", info: "Increase of 24%", infoColor: Colors.green,)
+            )
+          ],
+          series: [
+            DoughnutSeries<_ChartData, String>(
+                dataSource: data,
+                dataLabelSettings: DataLabelSettings(
+                    isVisible: true,
+                  labelPosition: ChartDataLabelPosition.outside,
+                  overflowMode: OverflowMode.trim,
+                  useSeriesColor: true,
+                  connectorLineSettings: ConnectorLineSettings(
+                    type: ConnectorType.line,
+                  ),
+                  builder: (dynamic data, dynamic point, dynamic series, int pointIndex, int seriesIndex) {
+                      // print("$data, $point, $series, $pointIndex, $seriesIndex");
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(color: mainPurple)
+                            ),
+                            child: SvgPicture.asset('assets/icon/category_icons/${data.x.toLowerCase()}.svg', width: 20, height: 20,)),
+                        6.ph,
+                        Text(data.x, style: TextStylesInter.textViewRegular12,),
+                      ],
+                    );
+                  }
+                ),
+                innerRadius: "65",
+                radius: "90",
+                xValueMapper: (_ChartData data, _) => data.x,
+                yValueMapper: (_ChartData data, _) => data.y,
+              dataLabelMapper: (_ChartData data, _) => data.x,
+            )
+          ]),
+    );
+  }
+}
+
+class OverviewRow extends StatelessWidget {
+  const OverviewRow({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 85.h,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          GestureDetector(
+            onTap: () => AppNavigator.push(context: context, screen: TotalSavedScreen()),
+              child: InsightOverview(type: "Total Saved", value: '€234', info: "Increase of 24%", infoColor: Color(0xFF18C336),)),
+          20.pw,
+          VerticalDivider(),
+          20.pw,
+         InsightOverview(type: "Biggest Expense", value: '€234', info: "AH Luxury meat BBQ package", infoColor: Color(0xFFFFB81F),)
+        ],
       ),
     );
   }
