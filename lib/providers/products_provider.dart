@@ -212,6 +212,7 @@ class ProductsProvider with ChangeNotifier {
 
   Future<void> goToProductPage(String storeName, BuildContext context, int productId) async {
     var product = await getProductById(productId);
+    if(product == null) return;
     // var product = products.firstWhere((element) => element.id == productId);
     AppNavigator.push(
         context: context,

@@ -31,11 +31,9 @@ class AlgoliaSearchScreen extends StatefulWidget {
 class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
   final PagingController<int, Product> _pagingController = PagingController(firstPageKey: 0);
   final _searchTextController = TextEditingController();
-  final _productsSearcher = HitsSearcher(
-      applicationID: 'DG62X9U03X',
-      apiKey: 'e862c47c6741eef540abe9fb5f68eef6',
-      indexName: 'dev_PRODUCTS');
-      // indexName: 'productss');
+  final _productsSearcher =
+      HitsSearcher(applicationID: 'DG62X9U03X', apiKey: 'e862c47c6741eef540abe9fb5f68eef6', indexName: 'dev_PRODUCTS');
+  // indexName: 'productss');
 
   final GlobalKey<ScaffoldState> _mainScaffoldKey = GlobalKey();
 
@@ -50,7 +48,7 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
   var storeDropdownValue = "Store";
 
   Stream<SearchMetadata> get _searchMetadata => _productsSearcher.responses.map(SearchMetadata.fromResponse);
-    Stream<HitsPage> get _searchPage => _productsSearcher.responses.map(HitsPage.fromResponse);
+  Stream<HitsPage> get _searchPage => _productsSearcher.responses.map(HitsPage.fromResponse);
 
   var storeList = ['Store', 'Albert Heijn', 'Jumbo', 'Hoogvliet', "Dirk"];
 
@@ -61,8 +59,8 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
     _searchTextController.addListener(() => _productsSearcher.query(_searchTextController.text));
 
     _searchTextController.addListener(
-          () => _productsSearcher.applyState(
-            (state) => state.copyWith(
+      () => _productsSearcher.applyState(
+        (state) => state.copyWith(
           query: _searchTextController.text,
           page: 0,
         ),
@@ -79,18 +77,20 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
       return _pagingController.error = error;
     });
 
-    _pagingController.addPageRequestListener(
-            (pageKey) => _productsSearcher.applyState(
-                (state) => state.copyWith(
-              page: pageKey,
-            )
-        )
-    );
+    _pagingController.addPageRequestListener((pageKey) => _productsSearcher.applyState((state) => state.copyWith(
+          page: pageKey,
+        )));
 
     _productsSearcher.connectFilterState(_filterState);
     _filterState.filters.listen((_) => _pagingController.refresh());
 
-    TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Search screen");
+    try {
+      TrackingUtils()
+          .trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Search screen");
+    }catch(e){
+      TrackingUtils()
+          .trackPageView('Guest', DateTime.now().toUtc().toString(), "Search screen");
+    }
     super.initState();
   }
 
@@ -121,8 +121,14 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                        Icon(Icons.arrow_back_ios,color: mainPurple,),
-                      SvgPicture.asset(bargainbIcon,height: 42.h,),
+                      Icon(
+                        Icons.arrow_back_ios,
+                        color: mainPurple,
+                      ),
+                      SvgPicture.asset(
+                        bargainbIcon,
+                        height: 42.h,
+                      ),
                     ],
                   ),
                 ),
@@ -132,10 +138,12 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
                     controller: _searchTextController,
                     borderRaduis: 999,
                     colorStyle: grey,
-                    prefixIcon: Icon(Icons.search,color: Colors.black,),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Colors.black,
+                    ),
                     hintText: LocaleKeys.whatAreYouLookingFor.tr(),
-                    hintStyle: TextStyles.textViewSemiBold14
-                        .copyWith(color: greyText),
+                    hintStyle: TextStyles.textViewSemiBold14.copyWith(color: greyText),
                   ),
                 ),
               ],
@@ -161,8 +169,9 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
                   return const SizedBox.shrink();
                 }
                 try {
-                  TrackingUtils().trackSearch(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), _searchTextController.text);
-                }catch(e){
+                  TrackingUtils().trackSearch(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
+                      _searchTextController.text);
+                } catch (e) {
                   print(e);
                   TrackingUtils().trackSearch("Guest", DateTime.now().toUtc().toString(), _searchTextController.text);
                 }
@@ -180,116 +189,95 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
   }
 
   Widget _filters(BuildContext context) => StreamBuilder<List<SelectableItem<Facet>>>(
-        stream: _facetList.facets,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const SizedBox.shrink();
-          }
-          final selectableFacets = snapshot.data!;
-          return Container(
-            margin: EdgeInsets.symmetric(horizontal: 10),
-            padding: EdgeInsets.symmetric(horizontal: 15.w),
-            decoration: BoxDecoration(color: white, borderRadius: BorderRadius.all(Radius.circular(6.r)),border: Border.all(color: grey)),
-            child: DropdownButton<String>(
-              value: storeDropdownValue,
-              icon: Icon(
-                Icons.keyboard_arrow_down,
-                color: greyDropdownText,
-              ),
-              iconSize: 24,
-              // dropdownColor: orange70,
-              underline: Container(),
-              style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
-              borderRadius: BorderRadius.circular(4.r),
-              onChanged: (String? newValue) async {
-                try {
-                  TrackingUtils().trackFilterUsed(
-                      FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
-                      "Search screen", 'store');
-                }catch(e){
-                  print(e);
-                  TrackingUtils().trackFilterUsed(
-                      "Guest", DateTime.now().toUtc().toString(),
-                      "Search screen", 'store');
-                }
-                setState(() {
-                  storeDropdownValue = newValue!;
-                });
-                if(storeDropdownValue == "Store") _filterState.clear();
-                if(storeDropdownValue != 'Store') _facetList.toggle(storeList.indexOf(storeDropdownValue).toString());
-              },
-              items: storeList
-                  .map<DropdownMenuItem<String>>((String value) {
-                    var index = storeList.indexOf(value) - 1;
-                    if(value == 'Store' || selectableFacets.isEmpty) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(
-                          value,
-                          style: TextStyles.textViewMedium12,
-                        ),
-                      );
-                    }
-                    var selectableFacet = selectableFacets[index];
+      stream: _facetList.facets,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const SizedBox.shrink();
+        }
+        final selectableFacets = snapshot.data ?? [];
+        if (selectableFacets.length != storeList.length - 1) return SizedBox.shrink();
+        return Container(
+          margin: EdgeInsets.symmetric(horizontal: 10),
+          padding: EdgeInsets.symmetric(horizontal: 15.w),
+          decoration: BoxDecoration(
+              color: white, borderRadius: BorderRadius.all(Radius.circular(6.r)), border: Border.all(color: grey)),
+          child: DropdownButton<String>(
+            value: storeDropdownValue,
+            icon: Icon(
+              Icons.keyboard_arrow_down,
+              color: greyDropdownText,
+            ),
+            iconSize: 24,
+            underline: Container(),
+            style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
+            borderRadius: BorderRadius.circular(4.r),
+            onChanged: changeFilter,
+            items: storeList.map<DropdownMenuItem<String>>((String value) {
+              var index = storeList.indexOf(value) - 1;
+              if (value == 'Store' || selectableFacets.isEmpty) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(
-                    "$value (${selectableFacet.item.count})",
+                    value,
                     style: TextStyles.textViewMedium12,
                   ),
                 );
-              }).toList(),
-            ),
-          );
+              }
+              // if(index >= 0 && index < selectableFacets.length)
+              var selectableFacet = selectableFacets[index];
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(
+                  "$value (${selectableFacet.item.count})",
+                  style: TextStyles.textViewMedium12,
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      });
 
-          // return ListView.builder(
-          //     padding: const EdgeInsets.all(8),
-          //     itemCount: selectableFacets.length,
-          //     itemBuilder: (_, index) {
-          //       final selectableFacet = selectableFacets[index];
-          //       return CheckboxListTile(
-          //         value: selectableFacet.isSelected,
-          //         title: Text(
-          //             "${selectableFacet.item.value} (${selectableFacet.item.count})"),
-          //         onChanged: (_) {
-          //           _facetList.toggle(selectableFacet.item.value);
-          //         },
-          //       );
-          //     });
-        });
+  void changeFilter(String? newValue) async {
+    try {
+      TrackingUtils().trackFilterUsed(
+          FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Search screen", 'store');
+    } catch (e) {
+      print(e);
+      TrackingUtils().trackFilterUsed("Guest", DateTime.now().toUtc().toString(), "Search screen", 'store');
+    }
+    setState(() {
+      storeDropdownValue = newValue!;
+    });
+    if (storeDropdownValue == "Store") _filterState.clear();
+    if (storeDropdownValue != 'Store') _facetList.toggle(storeList.indexOf(storeDropdownValue).toString());
+  }
 
   Widget _hits(BuildContext context) => PagedGridView<int, Product>(
       pagingController: _pagingController,
       padding: EdgeInsets.symmetric(horizontal: 10),
-      gridDelegate:
-      const SliverGridDelegateWithMaxCrossAxisExtent(
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 200,
           mainAxisExtent: 260,
           childAspectRatio: 0.67,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10),
       builderDelegate: PagedChildBuilderDelegate<Product>(
-          noItemsFoundIndicatorBuilder: (_) => const Center(
-            child: Text('No results found'),
-          ),
-          itemBuilder: (_, item, __) => DiscountItem(
-        inGridView: false,
-        product: item,
-      ),
+        noItemsFoundIndicatorBuilder: (_) => const Center(
+          child: Text('No results found'),
+        ),
+        itemBuilder: (_, item, __) => DiscountItem(
+          inGridView: false,
+          product: item,
+        ),
       ));
 }
-
-
-
-
 
 class SearchMetadata {
   final int nbHits;
 
   const SearchMetadata(this.nbHits);
 
-  factory SearchMetadata.fromResponse(SearchResponse response) =>
-      SearchMetadata(response.nbHits);
+  factory SearchMetadata.fromResponse(SearchResponse response) => SearchMetadata(response.nbHits);
 }
 
 class HitsPage {

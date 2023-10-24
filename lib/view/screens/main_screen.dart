@@ -151,7 +151,7 @@ class _MainScreenState extends State<MainScreen> {
       });
     try{
       TrackingUtils().trackAppOpen(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString());
-      Purchases.logIn(FirebaseAuth.instance.currentUser!.uid);
+      // Purchases.logIn(FirebaseAuth.instance.currentUser!.uid);
       saveUserDeviceToken();
     }catch(e){
       print(e);

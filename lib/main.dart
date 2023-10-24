@@ -40,7 +40,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
-  await PurchaseApi.init();
+  // await PurchaseApi.init();
 
   await SystemChrome.setPreferredOrientations(
     [DeviceOrientation.portraitUp],

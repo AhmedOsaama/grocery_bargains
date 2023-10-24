@@ -369,7 +369,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   future: GoogleTranslator().translate(element.category, to: "nl"),
                                                   builder: (context, snapshot) {
                                                     if(snapshot.connectionState == ConnectionState.waiting) return Container();
-                                                    var translatedCategory = snapshot.data!.text;
+                                                    var translatedCategory = 'N/A';
+                                                    if(snapshot.data != null) translatedCategory = snapshot.data!.text;
                                                     if(context.locale.languageCode == "nl"){
                                                       return Flexible(
                                                         child: Text(
