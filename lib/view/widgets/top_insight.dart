@@ -15,7 +15,7 @@ class TopInsight extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(10),
-      margin: EdgeInsets.symmetric(vertical: 30),
+      margin: EdgeInsets.symmetric(vertical: 20),
       clipBehavior: Clip.antiAlias,
       decoration: ShapeDecoration(
         color: Colors.white,
@@ -37,7 +37,7 @@ class TopInsight extends StatelessWidget {
           Text(insightType, style: TextStylesInter.textViewSemiBold10.copyWith(color: mainPurple),),
           10.ph,
           image,
-          15.ph,
+          // 15.ph,
           SizedBox(
             width: 75.w,
               child: Text(insightValue,

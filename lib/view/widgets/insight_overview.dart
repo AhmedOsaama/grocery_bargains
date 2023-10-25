@@ -1,5 +1,8 @@
+import 'package:bargainb/main.dart';
+import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../utils/style_utils.dart';
 
@@ -12,18 +15,41 @@ class InsightOverview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(type, style: TextStylesInter.textViewMedium14.copyWith(color: Color(0xFFC2D0FA)),),
-        5.ph,
-        Text(value, style: TextStylesInter.textViewSemiBold20,),
-        5.ph,
-        SizedBox(
-          width: 130,
-            child: Text(info,
-              textAlign: TextAlign.center, style: TextStylesInter.textViewSemiBold12.copyWith(color: infoColor),))
-      ],
+    return Container(
+      width: 174.w,
+      height: 112.h,
+      padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+          color: Color(0x263463ED),
+      blurRadius: 28,
+      offset: Offset(0, 10),
+      spreadRadius: 0,
+    )
+    ],
+      ),
+      child: Stack(
+        children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: Icon(Icons.arrow_forward_ios, color: mainPurple, size: 20,),
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(type, style: TextStylesInter.textViewMedium14.copyWith(color: Color(0xFFC2D0FA)),),
+              5.ph,
+              Text(value, style: TextStylesInter.textViewSemiBold20,),
+              5.ph,
+              Text(info, style: TextStylesInter.textViewSemiBold12.copyWith(color: infoColor),)
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

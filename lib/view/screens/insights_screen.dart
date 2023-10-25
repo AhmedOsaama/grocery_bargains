@@ -78,90 +78,104 @@ class _InsightsScreenState extends State<InsightsScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              20.ph,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-              DurationButton(duration: "Week", selectedDuration: selectedDuration, onPressed: (){
-                setState(() {
-                  selectedDuration = "Week";
-                });
-              }),
-                  15.pw,
-                  DurationButton(duration: "Month", selectedDuration: selectedDuration, onPressed: (){
-                setState(() {
-                  selectedDuration = "Month";
-                });
-              }),
-                  15.pw,
-                  DurationButton(duration: "Year", selectedDuration: selectedDuration, onPressed: (){
-                setState(() {
-                  selectedDuration = "Year";
-                });
-              }),
-                ],
-              ),
-              10.ph,  //first 3 buttons
-              Text("October Overview", style: TextStylesInter.textViewSemiBold18,),
-              8.ph,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(getDurationRange(), style: TextStylesInter.textViewRegular12.copyWith(color: Color(0xFF7C7C7C)),),
-                  5.pw,
-                  Icon(Icons.calendar_month_outlined, size: 24,)
-                ],
-              ),          //duration, calendar
-              16.ph,
-              OverviewRow(),
-              Divider(),
-              Container(
-                height: 320.h,
-                child: Stack(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                20.ph,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    PageView(
-                      scrollDirection: Axis.horizontal,
-                      controller: _pageViewController,
-                      onPageChanged: (page){
-                        setState(() {
-                          pageNumber = page;
-                        });
-                      },
-                      physics: BouncingScrollPhysics(),
-                      allowImplicitScrolling: true,
-                      children: [
-                        CircleChart(tooltip: _tooltip, data: data),
-                        LineChart(tooltip: _tooltip, data: data),
-                      ],
-                    ),
-                    if(pageNumber < 1)
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: IconButton(
-                          onPressed: (){
-                            // _pageViewController.nextPage(duration: duration, curve: curve)
-                            _pageViewController.animateToPage(pageNumber + 1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                          }, icon: Icon(Icons.arrow_forward_ios, color: mainPurple, size: 20,)),
-                    ),
-                    if(pageNumber > 0)
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: IconButton(
-                          onPressed: (){
-                            _pageViewController.animateToPage(pageNumber - 1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                          }, icon: Icon(Icons.arrow_back_ios_new_outlined, color: mainPurple, size: 20,)),
-                    ),
+                DurationButton(duration: "Week", selectedDuration: selectedDuration, onPressed: (){
+                  setState(() {
+                    selectedDuration = "Week";
+                  });
+                }),
+                    15.pw,
+                    DurationButton(duration: "Month", selectedDuration: selectedDuration, onPressed: (){
+                  setState(() {
+                    selectedDuration = "Month";
+                  });
+                }),
+                    15.pw,
+                    DurationButton(duration: "Year", selectedDuration: selectedDuration, onPressed: (){
+                  setState(() {
+                    selectedDuration = "Year";
+                  });
+                }),
                   ],
                 ),
-              ),
-              10.ph,
-              Divider(),
-              Text("Top Insights", style: TextStylesInter.textViewSemiBold14,),
-              20.ph,
-              TopInsightsRow(),
-            ],
+                10.ph,  //first 3 buttons
+                Text("October Overview", style: TextStylesInter.textViewSemiBold18,),
+                8.ph,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(getDurationRange(), style: TextStylesInter.textViewRegular12.copyWith(color: Color(0xFF7C7C7C)),),
+                    5.pw,
+                    Icon(Icons.calendar_month_outlined, size: 24,)
+                  ],
+                ),          //duration, calendar
+                16.ph,
+                OverviewRow(),
+                10.ph,
+                Container(
+                  height: 320.h,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(16),
+                    color: Colors.white,
+                    boxShadow:  [
+                      BoxShadow(
+                        color: Color(0x263463ED),
+                        blurRadius: 28,
+                        offset: Offset(0, 10),
+                        spreadRadius: 0,
+                      )
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      PageView(
+                        scrollDirection: Axis.horizontal,
+                        controller: _pageViewController,
+                        onPageChanged: (page){
+                          setState(() {
+                            pageNumber = page;
+                          });
+                        },
+                        physics: BouncingScrollPhysics(),
+                        allowImplicitScrolling: true,
+                        children: [
+                          CircleChart(tooltip: _tooltip, data: data),
+                          LineChart(tooltip: _tooltip, data: data),
+                        ],
+                      ),
+                      if(pageNumber < 1)
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
+                            onPressed: (){
+                              // _pageViewController.nextPage(duration: duration, curve: curve)
+                              _pageViewController.animateToPage(pageNumber + 1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                            }, icon: Icon(Icons.arrow_forward_ios, color: mainPurple, size: 20,)),
+                      ),
+                      if(pageNumber > 0)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: IconButton(
+                            onPressed: (){
+                              _pageViewController.animateToPage(pageNumber - 1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                            }, icon: Icon(Icons.arrow_back_ios_new_outlined, color: mainPurple, size: 20,)),
+                      ),
+                    ],
+                  ),
+                ),
+                15.ph,
+                Text("Top Insights", style: TextStylesInter.textViewSemiBold14,),
+                TopInsightsRow(),
+              ],
+            ),
           ),
         ),
       ),
@@ -177,10 +191,10 @@ class TopInsightsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 170,
-      padding: EdgeInsets.symmetric(horizontal: 10),
+      height: 150,
       child: ListView(
         scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.zero,
         children: [
           TopInsight(insightType: "Chatlist", image: Image.asset(chatlist, width: 32,height: 32,), insightValue: "Home", insightMetadata: "94 products"),
           10.pw,
@@ -208,6 +222,7 @@ class LineChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.all(10),
       child: SfCartesianChart(
         primaryXAxis: CategoryAxis(),
           tooltipBehavior: _tooltip,
@@ -239,7 +254,16 @@ class CircleChart extends StatelessWidget {
           tooltipBehavior: _tooltip,
           annotations: [
             CircularChartAnnotation(
-              widget: InsightOverview(type: "Total Spent", value: "€543", info: "Increase of 24%", infoColor: Colors.green,)
+              widget: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text("Total Spent", style: TextStylesInter.textViewMedium14.copyWith(color: Color(0xFFC2D0FA)),),
+                  5.ph,
+                  Text("€543", style: TextStylesInter.textViewSemiBold20,),
+                  5.ph,
+                  Text("increase of 24%", style: TextStylesInter.textViewSemiBold12.copyWith(color: Color(0xFF18C336)),)
+                ],
+              ),
             )
           ],
           series: [
@@ -291,16 +315,14 @@ class OverviewRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 85.h,
+      height: 105.h,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           GestureDetector(
             onTap: () => AppNavigator.push(context: context, screen: TotalSavedScreen()),
               child: InsightOverview(type: "Total Saved", value: '€234', info: "Increase of 24%", infoColor: Color(0xFF18C336),)),
-          20.pw,
-          VerticalDivider(),
-          20.pw,
+          10.pw,
          InsightOverview(type: "Biggest Expense", value: '€234', info: "AH Luxury meat BBQ package", infoColor: Color(0xFFFFB81F),)
         ],
       ),
