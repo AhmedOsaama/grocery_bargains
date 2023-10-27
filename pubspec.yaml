@@ -85,6 +85,8 @@ dependencies:
   algolia: ^1.1.2
   purchases_flutter: ^5.6.5
   syncfusion_flutter_charts: ^21.2.4
+  table_calendar: ^3.0.8
+  calendar_date_picker2: ^0.5.3
 
 
 

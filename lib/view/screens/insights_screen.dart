@@ -11,14 +11,16 @@ import 'package:bargainb/view/screens/total_saved_screen.dart';
 import 'package:bargainb/view/widgets/duration_button.dart';
 import 'package:bargainb/view/widgets/insight_overview.dart';
 import 'package:bargainb/view/widgets/top_insight.dart';
+import 'package:calendar_date_picker2/calendar_date_picker2.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 class InsightsScreen extends StatefulWidget {
-   InsightsScreen({Key? key}) : super(key: key);
+  InsightsScreen({Key? key}) : super(key: key);
 
   @override
   State<InsightsScreen> createState() => _InsightsScreenState();
@@ -32,35 +34,46 @@ class _InsightsScreenState extends State<InsightsScreen> {
 
   var _pageViewController = PageController();
 
+  var _firstDay = DateTime.now();
+  var _lastDay = DateTime.now();
+  var _calendarFormat = CalendarFormat.month;
+
   int pageNumber = 0;
 
-
-  String getDurationRange(){
+  String getDurationRange() {
     var dateTime = DateTime.now();
     var currentMonth = DateFormat(DateFormat.ABBR_MONTH).format(dateTime);
-    if(selectedDuration == "Week"){
+    if (selectedDuration == "Week") {
       var lowerLimit = dateTime.subtract(Duration(days: dateTime.weekday - 1)).day;
       var higherLimit = dateTime.add(Duration(days: DateTime.daysPerWeek - dateTime.weekday)).day;
+      _firstDay = dateTime.subtract(Duration(days: dateTime.weekday - 1));
+      _lastDay = dateTime.add(Duration(days: DateTime.daysPerWeek - dateTime.weekday));
+      _calendarFormat = CalendarFormat.week;
       return "$currentMonth $lowerLimit - $currentMonth $higherLimit";
-    }else if (selectedDuration == "Month"){
+    } else if (selectedDuration == "Month") {
       var lowerLimit = DateTime(dateTime.year, dateTime.month, 1).day;
       var higherLimit = DateTime(dateTime.year, dateTime.month + 1, 0).day;
+      _firstDay = DateTime(dateTime.year, dateTime.month, 1);
+      _lastDay = DateTime(dateTime.year, dateTime.month + 1, 0);
+      _calendarFormat = CalendarFormat.month;
       return "$currentMonth $lowerLimit - $currentMonth $higherLimit";
-    }else if(selectedDuration == "Year"){
+    } else if (selectedDuration == "Year") {
       var lowerLimit = DateTime(dateTime.year, 1, 1).day;
       var higherLimit = DateTime(dateTime.year, 12, 31).day;
+      _firstDay = DateTime(dateTime.year, 1, 1);
+      _lastDay = DateTime(dateTime.year, 12, 31);
+      _calendarFormat = CalendarFormat.month;
       return "Jan. $lowerLimit, ${dateTime.year} - Dec. $higherLimit, ${dateTime.year}";
     }
     return "Nan - Nan";
   }
-  
+
   @override
   void initState() {
-
     _tooltip = TooltipBehavior(enable: true);
     super.initState();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     data = [
@@ -87,36 +100,62 @@ class _InsightsScreenState extends State<InsightsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                DurationButton(duration: "Week", selectedDuration: selectedDuration, onPressed: (){
-                  setState(() {
-                    selectedDuration = "Week";
-                  });
-                }),
+                    DurationButton(
+                        duration: "Week",
+                        selectedDuration: selectedDuration,
+                        onPressed: () {
+                          setState(() {
+                            selectedDuration = "Week";
+                          });
+                        }),
                     15.pw,
-                    DurationButton(duration: "Month", selectedDuration: selectedDuration, onPressed: (){
-                  setState(() {
-                    selectedDuration = "Month";
-                  });
-                }),
+                    DurationButton(
+                        duration: "Month",
+                        selectedDuration: selectedDuration,
+                        onPressed: () {
+                          setState(() {
+                            selectedDuration = "Month";
+                          });
+                        }),
                     15.pw,
-                    DurationButton(duration: "Year", selectedDuration: selectedDuration, onPressed: (){
-                  setState(() {
-                    selectedDuration = "Year";
-                  });
-                }),
+                    DurationButton(
+                        duration: "Year",
+                        selectedDuration: selectedDuration,
+                        onPressed: () {
+                          setState(() {
+                            selectedDuration = "Year";
+                          });
+                        }),
                   ],
                 ),
-                10.ph,  //first 3 buttons
-                Text("October Overview", style: TextStylesInter.textViewSemiBold18,),
+                10.ph, //first 3 buttons
+                Text(
+                  "October Overview",
+                  style: TextStylesInter.textViewSemiBold18,
+                ),
                 8.ph,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(getDurationRange(), style: TextStylesInter.textViewRegular12.copyWith(color: Color(0xFF7C7C7C)),),
+                    Text(
+                      getDurationRange(),
+                      style: TextStylesInter.textViewRegular12.copyWith(color: Color(0xFF7C7C7C)),
+                    ),
                     5.pw,
-                    Icon(Icons.calendar_month_outlined, size: 24,)
+                    IconButton(
+                        onPressed: () => showDatePicker(
+                            context: context,
+                            initialDatePickerMode:
+                                selectedDuration == "Year" ? DatePickerMode.year : DatePickerMode.day,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(2020),
+                            lastDate: _lastDay),
+                        icon: Icon(
+                          Icons.calendar_month_rounded,
+                          color: mainPurple,
+                        ))
                   ],
-                ),          //duration, calendar
+                ),
                 16.ph,
                 OverviewRow(),
                 10.ph,
@@ -125,7 +164,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(16),
                     color: Colors.white,
-                    boxShadow:  [
+                    boxShadow: [
                       BoxShadow(
                         color: Color(0x263463ED),
                         blurRadius: 28,
@@ -139,7 +178,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
                       PageView(
                         scrollDirection: Axis.horizontal,
                         controller: _pageViewController,
-                        onPageChanged: (page){
+                        onPageChanged: (page) {
                           setState(() {
                             pageNumber = page;
                           });
@@ -151,28 +190,43 @@ class _InsightsScreenState extends State<InsightsScreen> {
                           LineChart(tooltip: _tooltip, data: data),
                         ],
                       ),
-                      if(pageNumber < 1)
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: IconButton(
-                            onPressed: (){
-                              // _pageViewController.nextPage(duration: duration, curve: curve)
-                              _pageViewController.animateToPage(pageNumber + 1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                            }, icon: Icon(Icons.arrow_forward_ios, color: mainPurple, size: 20,)),
-                      ),
-                      if(pageNumber > 0)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: IconButton(
-                            onPressed: (){
-                              _pageViewController.animateToPage(pageNumber - 1, duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                            }, icon: Icon(Icons.arrow_back_ios_new_outlined, color: mainPurple, size: 20,)),
-                      ),
+                      if (pageNumber < 1)
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                              onPressed: () {
+                                // _pageViewController.nextPage(duration: duration, curve: curve)
+                                _pageViewController.animateToPage(pageNumber + 1,
+                                    duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                              },
+                              icon: Icon(
+                                Icons.arrow_forward_ios,
+                                color: mainPurple,
+                                size: 20,
+                              )),
+                        ),
+                      if (pageNumber > 0)
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: IconButton(
+                              onPressed: () {
+                                _pageViewController.animateToPage(pageNumber - 1,
+                                    duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+                              },
+                              icon: Icon(
+                                Icons.arrow_back_ios_new_outlined,
+                                color: mainPurple,
+                                size: 20,
+                              )),
+                        ),
                     ],
                   ),
                 ),
                 15.ph,
-                Text("Top Insights", style: TextStylesInter.textViewSemiBold14,),
+                Text(
+                  "Top Insights",
+                  style: TextStylesInter.textViewSemiBold14,
+                ),
                 TopInsightsRow(),
               ],
             ),
@@ -182,6 +236,74 @@ class _InsightsScreenState extends State<InsightsScreen> {
     );
   }
 }
+
+// class CalendarDialog extends StatefulWidget {
+//   final DateTime firstDay;
+//   final DateTime lastDay;
+//   final CalendarFormat calendarFormat;
+//
+//   const CalendarDialog({Key? key, required this.firstDay, required this.lastDay, required this.calendarFormat}) : super(key: key);
+//
+//   @override
+//   State<CalendarDialog> createState() => _CalendarDialogState();
+// }
+
+// class _CalendarDialogState extends State<CalendarDialog> {
+//   var _focusedDay = DateTime.now();
+//   late CalendarFormat _calendarFormat;
+//   @override
+//   void initState() {
+//     _calendarFormat = widget.calendarFormat;
+//     super.initState();
+//   }
+//   DateTime? _selectedDay;
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Dialog(
+//       child: SizedBox(
+//         height: 450.h,
+//         child:
+//         // child: TableCalendar(
+//         //   firstDay: widget.firstDay,
+//         //   lastDay: widget.lastDay,
+//         //   focusedDay: _focusedDay,
+//         //   calendarFormat: _calendarFormat,
+//         //   headerVisible: true,
+//         //   rangeSelectionMode: RangeSelectionMode.toggledOn,
+//         //   calendarBuilders: CalendarBuilders(
+//         //     outsideBuilder: (ctx,_, i) => SizedBox.shrink(),
+//         //   ),
+//         //   headerStyle: HeaderStyle(
+//         //     titleCentered: true,
+//         //     formatButtonVisible: false,
+//         //   ),
+//         //   selectedDayPredicate: (day) {
+//         //     return isSameDay(_selectedDay, day);
+//         //   },
+//         //   onFormatChanged: (format){
+//         //     if (_calendarFormat != format) {
+//         //       setState(() {
+//         //         _calendarFormat = format;
+//         //       });
+//         //     }
+//         //   },
+//         //   onDaySelected: (selectedDay, focusedDay) {
+//         //     if (!isSameDay(_selectedDay, selectedDay)) {
+//         //       setState(() {
+//         //         _selectedDay = selectedDay;
+//         //         _focusedDay = focusedDay;
+//         //       });
+//         //     }
+//         //   },
+//         //   onPageChanged: (focusedDay) {
+//         //     _focusedDay = focusedDay;
+//         //   },
+//         // ),
+//       ),
+//     );
+//   }
+// }
 
 class TopInsightsRow extends StatelessWidget {
   const TopInsightsRow({
@@ -196,13 +318,45 @@ class TopInsightsRow extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.zero,
         children: [
-          TopInsight(insightType: "Chatlist", image: Image.asset(chatlist, width: 32,height: 32,), insightValue: "Home", insightMetadata: "94 products"),
+          TopInsight(
+              insightType: "Chatlist",
+              image: Image.asset(
+                chatlist,
+                width: 32,
+                height: 32,
+              ),
+              insightValue: "Home",
+              insightMetadata: "94 products"),
           10.pw,
-          TopInsight(insightType: "Store", image: Image.asset(jumbo, width: 32,height: 32,), insightValue: "Jumbo", insightMetadata: "94 products"),
+          TopInsight(
+              insightType: "Store",
+              image: Image.asset(
+                jumbo,
+                width: 32,
+                height: 32,
+              ),
+              insightValue: "Jumbo",
+              insightMetadata: "94 products"),
           10.pw,
-          TopInsight(insightType: "Products", image: Image.asset(chatlist,width: 32,height: 32,), insightValue: "Eat Natural Cranberry, Macadamia ...", insightMetadata: "94 products"),
+          TopInsight(
+              insightType: "Products",
+              image: Image.asset(
+                chatlist,
+                width: 32,
+                height: 32,
+              ),
+              insightValue: "Eat Natural Cranberry, Macadamia ...",
+              insightMetadata: "94 products"),
           10.pw,
-          TopInsight(insightType: "Person", image: Image.asset(personAva,width: 32,height: 32,), insightValue: "Home", insightMetadata: "94 products"),
+          TopInsight(
+              insightType: "Person",
+              image: Image.asset(
+                personAva,
+                width: 32,
+                height: 32,
+              ),
+              insightValue: "Home",
+              insightMetadata: "94 products"),
         ],
       ),
     );
@@ -223,16 +377,13 @@ class LineChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(10),
-      child: SfCartesianChart(
-        primaryXAxis: CategoryAxis(),
-          tooltipBehavior: _tooltip,
-          series: [
-            LineSeries<_ChartData, String>(
-                dataSource: data,
-                xValueMapper: (_ChartData data, _) => data.x,
-                yValueMapper: (_ChartData data, _) => data.y,
-            )
-          ]),
+      child: SfCartesianChart(primaryXAxis: CategoryAxis(), tooltipBehavior: _tooltip, series: [
+        LineSeries<_ChartData, String>(
+          dataSource: data,
+          xValueMapper: (_ChartData data, _) => data.x,
+          yValueMapper: (_ChartData data, _) => data.y,
+        )
+      ]),
     );
   }
 }
@@ -250,59 +401,68 @@ class CircleChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: SfCircularChart(
-          tooltipBehavior: _tooltip,
-          annotations: [
-            CircularChartAnnotation(
-              widget: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text("Total Spent", style: TextStylesInter.textViewMedium14.copyWith(color: Color(0xFFC2D0FA)),),
-                  5.ph,
-                  Text("€543", style: TextStylesInter.textViewSemiBold20,),
-                  5.ph,
-                  Text("increase of 24%", style: TextStylesInter.textViewSemiBold12.copyWith(color: Color(0xFF18C336)),)
-                ],
+      child: SfCircularChart(tooltipBehavior: _tooltip, annotations: [
+        CircularChartAnnotation(
+          widget: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Total Spent",
+                style: TextStylesInter.textViewMedium14.copyWith(color: Color(0xFFC2D0FA)),
               ),
-            )
-          ],
-          series: [
-            DoughnutSeries<_ChartData, String>(
-                dataSource: data,
-                dataLabelSettings: DataLabelSettings(
-                    isVisible: true,
-                  labelPosition: ChartDataLabelPosition.outside,
-                  overflowMode: OverflowMode.trim,
-                  useSeriesColor: true,
-                  connectorLineSettings: ConnectorLineSettings(
-                    type: ConnectorType.line,
-                  ),
-                  builder: (dynamic data, dynamic point, dynamic series, int pointIndex, int seriesIndex) {
-                      // print("$data, $point, $series, $pointIndex, $seriesIndex");
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          padding: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(color: mainPurple)
-                            ),
-                            child: SvgPicture.asset('assets/icon/category_icons/${data.x.toLowerCase()}.svg', width: 20, height: 20,)),
-                        6.ph,
-                        Text(data.x, style: TextStylesInter.textViewRegular12,),
-                      ],
-                    );
-                  }
-                ),
-                innerRadius: "65",
-                radius: "90",
-                xValueMapper: (_ChartData data, _) => data.x,
-                yValueMapper: (_ChartData data, _) => data.y,
-              dataLabelMapper: (_ChartData data, _) => data.x,
-            )
-          ]),
+              5.ph,
+              Text(
+                "€543",
+                style: TextStylesInter.textViewSemiBold20,
+              ),
+              5.ph,
+              Text(
+                "increase of 24%",
+                style: TextStylesInter.textViewSemiBold12.copyWith(color: Color(0xFF18C336)),
+              )
+            ],
+          ),
+        )
+      ], series: [
+        DoughnutSeries<_ChartData, String>(
+          dataSource: data,
+          dataLabelSettings: DataLabelSettings(
+              isVisible: true,
+              labelPosition: ChartDataLabelPosition.outside,
+              overflowMode: OverflowMode.trim,
+              useSeriesColor: true,
+              connectorLineSettings: ConnectorLineSettings(
+                type: ConnectorType.line,
+              ),
+              builder: (dynamic data, dynamic point, dynamic series, int pointIndex, int seriesIndex) {
+                // print("$data, $point, $series, $pointIndex, $seriesIndex");
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: mainPurple)),
+                        child: SvgPicture.asset(
+                          'assets/icon/category_icons/${data.x.toLowerCase()}.svg',
+                          width: 20,
+                          height: 20,
+                        )),
+                    6.ph,
+                    Text(
+                      data.x,
+                      style: TextStylesInter.textViewRegular12,
+                    ),
+                  ],
+                );
+              }),
+          innerRadius: "65",
+          radius: "90",
+          xValueMapper: (_ChartData data, _) => data.x,
+          yValueMapper: (_ChartData data, _) => data.y,
+          dataLabelMapper: (_ChartData data, _) => data.x,
+        )
+      ]),
     );
   }
 }
@@ -320,10 +480,20 @@ class OverviewRow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           GestureDetector(
-            onTap: () => AppNavigator.push(context: context, screen: TotalSavedScreen()),
-              child: InsightOverview(type: "Total Saved", value: '€234', info: "Increase of 24%", infoColor: Color(0xFF18C336),)),
+              onTap: () => AppNavigator.push(context: context, screen: TotalSavedScreen()),
+              child: InsightOverview(
+                type: "Total Saved",
+                value: '€234',
+                info: "Increase of 24%",
+                infoColor: Color(0xFF18C336),
+              )),
           10.pw,
-         InsightOverview(type: "Biggest Expense", value: '€234', info: "AH Luxury meat BBQ package", infoColor: Color(0xFFFFB81F),)
+          InsightOverview(
+            type: "Biggest Expense",
+            value: '€234',
+            info: "AH Luxury meat BBQ package",
+            infoColor: Color(0xFFFFB81F),
+          )
         ],
       ),
     );
