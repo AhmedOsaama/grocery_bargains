@@ -133,6 +133,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           quantity: quantity,
           imageURL: widget.imageURL,
           size: widget.size1,
+          category: widget.productCategory,
           text: '');
 
       if(widget.gtin == null || widget.gtin == "N/A") {

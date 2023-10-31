@@ -169,15 +169,6 @@ class _ChatViewState extends State<ChatView> {
   @override
   Widget build(BuildContext context) {
     return ShowCaseWidget(
-      // onStart: (_, p) {
-      //   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-      // },
-      // onFinish: () {
-      //   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [
-      //     SystemUiOverlay.top,
-      //     SystemUiOverlay.bottom,
-      //   ]);
-      // },
       builder: Builder(builder: (ctx) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
           if (isFirstTime) {

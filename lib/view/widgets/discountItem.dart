@@ -111,6 +111,7 @@ class DiscountItem extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
+                print("Product Category: ${product.category}");
                 var listItem = ListItem(
                     storeName: selectedStore,
                     brand: product.brand,
@@ -121,6 +122,7 @@ class DiscountItem extends StatelessWidget {
                     isChecked: false,
                     quantity: 1,
                     imageURL: product.image,
+                    category: product.category,
                     size: getProductSize(product));
                 Provider.of<ChatlistsProvider>(context, listen: false).addProductToList(context, listItem);
               },

@@ -243,6 +243,10 @@ class ChatlistsProvider with ChangeNotifier {
 
   Future<void> addProductToList(BuildContext context, ListItem listItem) async {
     //adds a product from home or product page to chatlist
+    print("Adding category ${listItem.id}");
+    print("Adding category ${listItem.name}");
+    print("Adding category ${listItem.price}");
+    print("Adding item ${listItem.category}");
     if (FirebaseAuth.instance.currentUser == null) {
       showDialog(
           context: context,
@@ -384,6 +388,7 @@ class ChatlistsProvider with ChangeNotifier {
       'store_name': item.storeName,
       'item_quantity': item.quantity,
       'item_oldPrice': item.oldPrice,
+      'item_category': item.category,
       "item_isChecked": false,
       "text": item.text,
       "owner": userData['username'],

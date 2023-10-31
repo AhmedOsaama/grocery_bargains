@@ -10,6 +10,7 @@ class ListItem {
   String storeName;
   bool isChecked;
   String text;
+  String? category;
   ListItem(
       {this.oldPrice,
       required this.storeName,
@@ -21,5 +22,6 @@ class ListItem {
       required this.isChecked,
       required this.quantity,
       required this.imageURL,
+        this.category,
       required this.size});
 }

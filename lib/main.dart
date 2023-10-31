@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bargainb/providers/insights_provider.dart';
 import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/assets_manager.dart';
@@ -76,6 +77,8 @@ Future<void> main() async {
                 create: (_) => ProductsProvider()),
             ChangeNotifierProvider<ChatlistsProvider>(
                 create: (_) => ChatlistsProvider()),
+            ChangeNotifierProvider<InsightsProvider>(
+                create: (_) => InsightsProvider()),
           ],
           child: MyApp(
               notificationMessage: notificationMessage,

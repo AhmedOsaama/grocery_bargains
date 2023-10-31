@@ -38,6 +38,7 @@ class _ChatlistItemState extends State<ChatlistItem> {
   var storeName;
   var itemId;
   var itemBrand;
+  var itemCategory;
 
   bool isClicked = false;
 
@@ -55,6 +56,7 @@ class _ChatlistItemState extends State<ChatlistItem> {
       storeName = widget.item.data().containsKey("store_name") ? widget.item['store_name'] : '';
       itemId = widget.item.data().containsKey("item_id") ? widget.item['item_id'] : -1;
       itemBrand = widget.item.data().containsKey("item_brand") ? widget.item['item_brand'] : '';
+      itemCategory = widget.item.data().containsKey("item_category") ? widget.item['item_category'] : '';
     }catch(e){
       print(e);
     }
@@ -149,6 +151,25 @@ class _ChatlistItemState extends State<ChatlistItem> {
                                 print(e);
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(SnackBar(content: Text("OperationNotDone".tr())));
+                              });
+                              double parsedItemOldPrice = double.tryParse(itemOldPrice) ?? 0;
+                              double parsedItemPrice = double.parse(itemPrice);
+                              double discount = itemOldPrice != '' ? (parsedItemOldPrice - parsedItemPrice) : 0;
+                              print("RECORDING PURCHASES");
+                              if(isChecked)
+                                FirebaseFirestore.instance.doc('/users/${FirebaseAuth.instance.currentUser!.uid}').update({
+                                  // FieldPath.fromString('purchase_record.${itemCategory}'): FieldValue.arrayUnion([itemName]),
+                                  FieldPath.fromString('purchase_record.${itemCategory}'): FieldValue.arrayUnion([
+                                    {
+                                      "date": DateTime.now().toUtc(),
+                                      "discount": discount,
+                                      "price": parsedItemPrice,
+                                      "product_name": itemName,
+                                      "product_id": itemId,
+                                    }
+                                  ])
+                              }).catchError((e){
+                                print("Error: $e");
                               });
                               TrackingUtils().trackCheckBoxItemClicked(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Mark off chatlist item", "Chatlist screen", isChecked);
                             },
