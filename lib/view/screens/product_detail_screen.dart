@@ -151,6 +151,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 storeImagePath: productsProvider.getStoreLogoPath(storeName)),
           ));
           return;
+        }else{
+          comparisonItems.add(Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Center(child: Text('This item is not available')),
+          ));
         }
       }
 
@@ -272,7 +277,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                           20.ph,
-                          QuantityCounter(
+                         if(comparisonItems.isNotEmpty) QuantityCounter(
                             quantity: quantity,
                             increaseQuantity: () {
                               setState(() {

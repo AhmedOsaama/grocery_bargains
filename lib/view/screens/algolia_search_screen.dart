@@ -291,6 +291,7 @@ class HitsPage {
     final items = response.hits.map(Product.fromJson).toList();
     final isLastPage = response.page >= response.nbPages;
     final nextPageKey = isLastPage ? null : response.page + 1;
+    // items.removeWhere((element) => element.availableNow == 0);
     return HitsPage(items, response.page, nextPageKey);
   }
 }

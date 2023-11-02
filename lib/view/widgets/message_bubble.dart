@@ -9,6 +9,7 @@ import 'package:bargainb/services/network_services.dart';
 import 'package:bargainb/view/screens/contact_profile_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/product_detail_screen.dart';
+import 'package:bargainb/view/widgets/chat_search_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -72,193 +73,208 @@ class MessageBubble extends StatefulWidget {
 }
 
 class _MessageBubbleState extends State<MessageBubble> {
-  // bool isDisplayingOptions = false;
+
+  late Future getUserImageFuture;
+
+  @override
+  void initState() {
+    getUserImageFuture = getUserImage(widget.userId);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     var chatlistProvider = Provider.of<ChatlistsProvider>(context, listen: false);
-    return Row(
-      mainAxisAlignment: widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
-      children: [
-        if (!widget.isMe)
-          GestureDetector(
-            onTap: () async {
-              List<ChatList> lists = [];
-              var friends = await Provider.of<ChatlistsProvider>(context, listen: false).getAllFriends();
+    return FutureBuilder(
+      future: getUserImageFuture,
+      builder: (context, snapshot) {
+        Widget userImageWidget = snapshot.data ?? Container();
+        return Row(
+          mainAxisAlignment: widget.isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+          children: [
+            if (!widget.isMe)
+              GestureDetector(
+                onTap: () async {
+                  List<ChatList> lists = [];
+                  var friends = await Provider.of<ChatlistsProvider>(context, listen: false).getAllFriends();
 
-              friends.forEach((element) {
-                if (element.id == widget.userId) {
-                  element.chatlists.forEach((element) {
-                    lists.add(ChatList(
-                        id: element.id,
-                        name: element.get("list_name"),
-                        storeName: element.get("storeName"),
-                        userIds: element.get("userIds"),
-                        totalPrice: element.get("total_price"),
-                        storeImageUrl: element.get("storeImageUrl"),
-                        itemLength: element.get("size"),
-                        lastMessage: element.get("last_message"),
-                        lastMessageDate: element.get("last_message_date"),
-                        lastMessageUserId: element.get("last_message_userId"),
-                        lastMessageUserName: element.get("last_message_userName")));
+                  friends.forEach((element) {
+                    if (element.id == widget.userId) {
+                      element.chatlists.forEach((element) {
+                        lists.add(ChatList(
+                            id: element.id,
+                            name: element.get("list_name"),
+                            storeName: element.get("storeName"),
+                            userIds: element.get("userIds"),
+                            totalPrice: element.get("total_price"),
+                            storeImageUrl: element.get("storeImageUrl"),
+                            itemLength: element.get("size"),
+                            lastMessage: element.get("last_message"),
+                            lastMessageDate: element.get("last_message_date"),
+                            lastMessageUserId: element.get("last_message_userId"),
+                            lastMessageUserName: element.get("last_message_userName")));
+                      });
+                    }
                   });
-                }
-              });
 
-              AppNavigator.push(
-                  context: context,
-                  screen: ContactProfileScreen(
-                    lists: lists,
-                    user: UserContactInfo(
-                        email: "",
-                        id: widget.userId,
-                        imageURL: widget.userImage,
-                        name: widget.userName,
-                        phoneNumber: ''),
-                  ));
-            },
-            child: widget.userImage.isNotEmpty
-                ? CircleAvatar(
-                    backgroundImage: NetworkImage(widget.userImage),
-                    radius: 20,
-                  )
-                : SvgPicture.asset(bee),
-          ),
-        if (widget.message.isEmpty) //case of product as a message
-          GestureDetector(
-            onTap: () async {
-              var productProvider = Provider.of<ProductsProvider>(context, listen: false);
-             productProvider.goToProductPage(widget.storeName, context, widget.itemId);
-            },
-            child: Container(
-              key: widget.key,
-              // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-              margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-              child: ProductItemWidget(
-                brand: widget.itemBrand,
-                price: widget.itemPrice,
-                name: widget.itemName,
-                size: widget.itemSize,
-                quantity: widget.itemQuantity,
-                imagePath: widget.itemImage,
-                oldPrice: widget.itemOldPrice,
-                isAddedToList: widget.isAddedToList,
-                storeName: widget.storeName,
+                  // AppNavigator.push(
+                  //     context: context,
+                  //     screen: ContactProfileScreen(
+                  //       lists: lists,
+                  //       user: UserContactInfo(
+                  //           email: "",
+                  //           id: widget.userId,
+                  //           imageURL: widget.userImage,
+                  //           name: widget.userName,
+                  //           phoneNumber: ''),
+                  //     ));
+                },
+                child: userImageWidget
               ),
-            ),
-          ),
-        if (widget.message.isNotEmpty)
-          Row(
-            children: widget.isMe
-                ? [
-                    GestureDetector(
-                        onTap: widget.isAddedToList
-                            ? () {}
-                            : () async {
-                                await chatlistProvider.addMessageToList(
-                                  messageDocPath: widget.messageDocPath!,
-                                  userName: widget.userName,
-                                  userId: widget.userId,
-                                  message: widget.message,
-                                  item: ListItem(
-                                      id: -1,
-                                      storeName: "",
-                                      imageURL: '',
-                                      isChecked: false,
-                                      name: widget.message,
-                                      price: "0.0",
-                                      quantity: 0,
-                                      size: '',
-                                      text: widget.message,
-                                      brand: ''),
-                                );
-                              },
-                        child: widget.isAddedToList ? SvgPicture.asset(checkMark) : SvgPicture.asset(add)),
-                    5.pw,
-                    Container(
-                      width: widget.message.length > 30 ? MediaQuery.of(context).size.width * 0.6 : null,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          topRight: const Radius.circular(18),
-                          topLeft: const Radius.circular(18),
-                          bottomLeft: widget.isMe ? const Radius.circular(18) : const Radius.circular(0),
-                          bottomRight: widget.isMe ? const Radius.circular(0) : const Radius.circular(18),
-                        ),
-                        color: widget.isMe ? iris : const Color.fromRGBO(233, 233, 235, 1),
-                      ),
-                      child: Text(
-                        widget.message,
-                        style: TextStyles.textViewRegular15.copyWith(color: widget.isMe ? Colors.white : Colors.black),
-                        softWrap: true,
-                        textAlign: widget.isMe ? TextAlign.right : TextAlign.left,
-                      ),
-                    ),
-                  ]
-                : [
-                    GestureDetector(
-                        onTap: widget.isAddedToList
-                            ? () {}
-                            : () async {
-                                await chatlistProvider.addMessageToList(
-                                  messageDocPath: widget.messageDocPath!,
-                                  userName: widget.userName,
-                                  userId: widget.userId,
-                                  message: widget.message,
-                                  item: ListItem(
-                                      id: -1,
-                                      storeName: "",
-                                      imageURL: '',
-                                      isChecked: false,
-                                      name: widget.message,
-                                      price: "0.0",
-                                      quantity: 0,
-                                      size: '',
-                                      text: widget.message,
-                                      brand: ''),
-                                );
-                              },
-                        child: widget.isAddedToList ? SvgPicture.asset(checkMark) : SvgPicture.asset(add)),
-                    5.pw,
-                    Container(
-                      width: widget.message.length > 30 ? MediaQuery.of(context).size.width * 0.6 : null,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          topRight: const Radius.circular(18),
-                          topLeft: const Radius.circular(18),
-                          bottomLeft: widget.isMe ? const Radius.circular(18) : const Radius.circular(0),
-                          bottomRight: widget.isMe ? const Radius.circular(0) : const Radius.circular(18),
-                        ),
-                        color: widget.isMe ? iris : const Color.fromRGBO(233, 233, 235, 1),
-                      ),
-                      child: Text(
-                        widget.message,
-                        style: TextStyles.textViewRegular16.copyWith(color: widget.isMe ? Colors.white : Colors.black),
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  ].reversed.toList(),
-          ),
-        if (widget.isMe)
-          GestureDetector(
-            onTap: () {
-              AppNavigator.pop(context: context);
-              NavigatorController.jumpToTab(2);
-            },
-            child: widget.userImage.isNotEmpty
-                ? CircleAvatar(
-                    backgroundImage: NetworkImage(widget.userImage),
-                    radius: 20,
-                  )
-                : CircleAvatar(
-                    child: SvgPicture.asset(bee),
-                    radius: 20,
+            if (widget.message.isEmpty) //case of product as a message
+              GestureDetector(
+                onTap: () async {
+                  var productProvider = Provider.of<ProductsProvider>(context, listen: false);
+                 productProvider.goToProductPage(widget.storeName, context, widget.itemId);
+                },
+                child: Container(
+                  key: widget.key,
+                  // padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  margin: EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                  child: ProductItemWidget(
+                    brand: widget.itemBrand,
+                    price: widget.itemPrice,
+                    name: widget.itemName,
+                    size: widget.itemSize,
+                    quantity: widget.itemQuantity,
+                    imagePath: widget.itemImage,
+                    oldPrice: widget.itemOldPrice,
+                    isAddedToList: widget.isAddedToList,
+                    storeName: widget.storeName,
                   ),
-          ),
-      ],
+                ),
+              ),
+            if (widget.message.isNotEmpty)
+              Row(
+                children: widget.isMe
+                    ? [
+                        GestureDetector(
+                            onTap: widget.isAddedToList
+                                ? () {}
+                                : () async {
+                                    await chatlistProvider.addMessageToList(
+                                      messageDocPath: widget.messageDocPath!,
+                                      userName: widget.userName,
+                                      userId: widget.userId,
+                                      message: widget.message,
+                                      item: ListItem(
+                                          id: -1,
+                                          storeName: "",
+                                          imageURL: '',
+                                          isChecked: false,
+                                          name: widget.message,
+                                          price: "0.0",
+                                          quantity: 0,
+                                          size: '',
+                                          text: widget.message,
+                                          brand: ''),
+                                    );
+                                  },
+                            child: widget.isAddedToList ? SvgPicture.asset(checkMark) : SvgPicture.asset(add)),
+                        5.pw,
+                        Container(
+                          width: widget.message.length > 30 ? MediaQuery.of(context).size.width * 0.6 : null,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                          margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                              topRight: const Radius.circular(18),
+                              topLeft: const Radius.circular(18),
+                              bottomLeft: widget.isMe ? const Radius.circular(18) : const Radius.circular(0),
+                              bottomRight: widget.isMe ? const Radius.circular(0) : const Radius.circular(18),
+                            ),
+                            color: widget.isMe ? iris : const Color.fromRGBO(233, 233, 235, 1),
+                          ),
+                          child: Text(
+                            widget.message,
+                            style: TextStyles.textViewRegular15.copyWith(color: widget.isMe ? Colors.white : Colors.black),
+                            softWrap: true,
+                            textAlign: widget.isMe ? TextAlign.right : TextAlign.left,
+                          ),
+                        ),
+                      ]
+                    : [
+                        GestureDetector(
+                            onTap: widget.isAddedToList
+                                ? () {}
+                                : () async {
+                                    await chatlistProvider.addMessageToList(
+                                      messageDocPath: widget.messageDocPath!,
+                                      userName: widget.userName,
+                                      userId: widget.userId,
+                                      message: widget.message,
+                                      item: ListItem(
+                                          id: -1,
+                                          storeName: "",
+                                          imageURL: '',
+                                          isChecked: false,
+                                          name: widget.message,
+                                          price: "0.0",
+                                          quantity: 0,
+                                          size: '',
+                                          text: widget.message,
+                                          brand: ''),
+                                    );
+                                  },
+                            child: widget.isAddedToList ? SvgPicture.asset(checkMark) : SvgPicture.asset(add)),
+                        5.pw,
+                        Container(
+                          width: widget.message.length > 30 ? MediaQuery.of(context).size.width * 0.6 : null,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                          margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.only(
+                              topRight: const Radius.circular(18),
+                              topLeft: const Radius.circular(18),
+                              bottomLeft: widget.isMe ? const Radius.circular(18) : const Radius.circular(0),
+                              bottomRight: widget.isMe ? const Radius.circular(0) : const Radius.circular(18),
+                            ),
+                            color: widget.isMe ? iris : const Color.fromRGBO(233, 233, 235, 1),
+                          ),
+                          child: Text(
+                            widget.message,
+                            style: TextStyles.textViewRegular16.copyWith(color: widget.isMe ? Colors.white : Colors.black),
+                            textAlign: TextAlign.left,
+                          ),
+                        ),
+                      ].reversed.toList(),
+              ),
+            if (widget.isMe)
+              GestureDetector(
+                onTap: () {
+                  AppNavigator.pop(context: context);
+                  NavigatorController.jumpToTab(2);
+                },
+                child: userImageWidget
+              ),
+          ],
+        );
+      }
+    );
+  }
+
+  Future<Widget> getUserImage(String userId) async {
+    var docRef = await FirebaseFirestore.instance.collection('/users').doc(userId).get();
+    String userImage = docRef.get('imageURL');
+    if(userImage.isEmpty || userImage == null ){
+      return CircleAvatar(
+        child: SvgPicture.asset(bee),
+        radius: 20,
+      );
+    }
+    return CircleAvatar(
+      backgroundImage: NetworkImage(userImage),
+      radius: 20,
     );
   }
 }

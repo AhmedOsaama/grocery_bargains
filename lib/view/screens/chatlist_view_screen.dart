@@ -115,10 +115,8 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     listUsers.clear();
     List<Widget> imageWidgets = [];
     List userIds = [];
-    List allUserIds = [];
     imageWidgets.clear();
     try {
-      print(allUserIds);
       final list =
           await FirebaseFirestore.instance.collection('/lists').doc(widget.listId).get().timeout(Duration(seconds: 10));
       userIds = list['userIds'];
@@ -251,6 +249,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     }
 
     return Stack(
+      alignment: AlignmentDirectional.center,
         children: imageWidgets
             .map((image) => Positioned(
                   right: imageWidgets.indexOf(image) * 15,
@@ -316,92 +315,26 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                           ),
                         ),
                   Spacer(),
-                  DropdownButton(
-                    underline: Container(),
-                    borderRadius: BorderRadius.circular(6),
-                    dropdownColor: purple10,
-                    icon: Icon(
-                      Icons.more_vert,
-                      color: Colors.black,
-                    ),
-                    items: [
-                      DropdownMenuItem(
-                          value: 'Rename',
-                          child: Text(
-                            LocaleKeys.rename.tr(),
-                            style: TextStyles.textViewMedium12.copyWith(color: prussian),
-                          )),
-                      DropdownMenuItem(
-                          value: 'Remove',
-                          child: Text(LocaleKeys.remove.tr(),
-                              style: TextStyles.textViewMedium12.copyWith(color: prussian))),
-                    ],
-                    onChanged: (option) {
-                      if (option == 'Rename') {
-                        setState(() {
-                          isEditingName = true;
-                        });
-                      } else if (option == 'Remove') {
-                        showDialog(
-                            context: context,
-                            builder: (ctx) => Dialog(
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(15.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Image.asset(
-                                          groceryList,
-                                        ),
-                                        // 20.ph,
-                                        Text(
-                                          LocaleKeys.areYouSureToDelete.tr(),
-                                          style: TextStylesInter.textViewSemiBold20.copyWith(color: blackSecondary),
-                                        ),
-                                        15.ph,
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                                child: GenericButton(
-                                              height: 60.h,
-                                              onPressed: () => AppNavigator.pop(context: ctx),
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.circular(6),
-                                              borderColor: grey,
-                                              child: Text(
-                                                LocaleKeys.cancel.tr(),
-                                                style: TextStyles.textViewSemiBold16.copyWith(color: Colors.black),
-                                              ),
-                                            )),
-                                            10.pw,
-                                            Expanded(
-                                                child: GenericButton(
-                                              height: 60.h,
-                                              onPressed: () async {
-                                                await deleteList(context);
-                                                AppNavigator.pushReplacement(context: context, screen: ChatlistsScreen());
-                                                AppNavigator.pop(context: ctx);
-                                                // AppNavigator.pop(context: context);
-                                                // return Future.value(1);
-                                              },
-                                              color: brightOrange,
-                                              borderRadius: BorderRadius.circular(6),
-                                              borderColor: grey,
-                                              child: Text(
-                                                LocaleKeys.delete.tr(),
-                                                style: TextStyles.textViewSemiBold16.copyWith(color: Colors.white),
-                                              ),
-                                            )),
-                                          ],
-                                        )
-                                      ],
-                                    ),
-                                  ),
+                  Container(
+                    // width: listUsers.length >= 3 ? 60.w : 35.w,
+                    width: 60.w,
+                    height: 40,
+                    child: FutureBuilder(
+                        future: getUserImagesFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator(
+                                  color: verdigris,
                                 ));
-                      }
-                    },
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 11.0),
+                            child: snapshot.data ?? SvgPicture.asset(bee),
+                          );
+                        }),
                   ),
+                  10.pw,
                   IconButton(
                     onPressed: () {
                       showInviteMembersDialog(context);
@@ -412,25 +345,27 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                       color: Colors.black,
                     ),
                   ),
-                  Container(
-                    // width: listUsers.length >= 3 ? 60.w : 35.w,
-                    width: 60.w,
-                    height: 30,
-                    child: FutureBuilder(
-                        future: getUserImagesFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator(
-                              color: verdigris,
-                            ));
-                          }
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                            child: snapshot.data ?? SvgPicture.asset(bee),
-                          );
-                        }),
-                  ),
+                  PopupMenuButton<String>(
+                      onSelected: (option){
+                    if (option == 'Rename') {
+                      setState(() {
+                        isEditingName = true;
+                      });
+                    } else if (option == 'Remove') {
+                      showRemoveDialog(context);
+                    }
+                  }, itemBuilder: (ctx) => [
+                    PopupMenuItem(
+                        value: 'Rename',
+                        child: Text(
+                          LocaleKeys.rename.tr(),
+                          style: TextStyles.textViewMedium12.copyWith(color: prussian),
+                        )),
+                    PopupMenuItem(
+                        value: 'Remove',
+                        child: Text(LocaleKeys.remove.tr(),
+                            style: TextStyles.textViewMedium12.copyWith(color: prussian)))
+                  ] ),
                 ],
               ),
             ),
@@ -445,6 +380,66 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
         ),
       ),
     );
+  }
+
+  Future<dynamic> showRemoveDialog(BuildContext context) {
+    return showDialog(
+                          context: context,
+                          builder: (ctx) => Dialog(
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Image.asset(
+                                    groceryList,
+                                  ),
+                                  // 20.ph,
+                                  Text(
+                                    LocaleKeys.areYouSureToDelete.tr(),
+                                    style: TextStylesInter.textViewSemiBold20.copyWith(color: blackSecondary),
+                                  ),
+                                  15.ph,
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                          child: GenericButton(
+                                            height: 60.h,
+                                            onPressed: () => AppNavigator.pop(context: ctx),
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(6),
+                                            borderColor: grey,
+                                            child: Text(
+                                              LocaleKeys.cancel.tr(),
+                                              style: TextStyles.textViewSemiBold16.copyWith(color: Colors.black),
+                                            ),
+                                          )),
+                                      10.pw,
+                                      Expanded(
+                                          child: GenericButton(
+                                            height: 60.h,
+                                            onPressed: () async {
+                                              await deleteList(context);
+                                              AppNavigator.pushReplacement(context: context, screen: ChatlistsScreen());
+                                              AppNavigator.pop(context: ctx);
+                                              // AppNavigator.pop(context: context);
+                                              // return Future.value(1);
+                                            },
+                                            color: brightOrange,
+                                            borderRadius: BorderRadius.circular(6),
+                                            borderColor: grey,
+                                            child: Text(
+                                              LocaleKeys.delete.tr(),
+                                              style: TextStyles.textViewSemiBold16.copyWith(color: Colors.white),
+                                            ),
+                                          )),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ));
   }
 
   void showInviteMembersDialog(
