@@ -102,17 +102,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   void didChangeDependencies() {
-    try {
-      bestValueSize = Provider.of<ProductsProvider>(context, listen: false)
-          .bestValueBargains
-          .firstWhere((bargain) => bargain.itemId == widget.productId)
-          .bestValueSize;
-    } catch (e) {
-      print("Error in product page: couldn't find best value size");
-      print(e);
-      bestValueSize = "";
-    }
-    print("BEST VALUE SIZE: $bestValueSize");
+    // try {
+    //   bestValueSize = Provider.of<ProductsProvider>(context, listen: false)
+    //       .bestValueBargains
+    //       .firstWhere((bargain) => bargain.itemId == widget.productId)
+    //       .bestValueSize;
+    // } catch (e) {
+    //   print("Error in product page: couldn't find best value size");
+    //   print(e);
+    //   bestValueSize = "";
+    // }
+    // print("BEST VALUE SIZE: $bestValueSize");
 
     super.didChangeDependencies();
   }
@@ -195,6 +195,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print("PRODUCT ID: ${widget.productId}");
     return Scaffold(
       appBar: SearchAppBar(isBackButton: true,),
       body: ShowCaseWidget(
