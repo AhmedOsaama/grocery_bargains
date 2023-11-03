@@ -16,7 +16,7 @@ class QuantityCounter extends StatelessWidget {
       children: [
         Container(
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            // mainAxisAlignment: MainAxisAlignment.center,
             children: [
               IconButton(
                 onPressed: () {

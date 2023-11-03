@@ -39,6 +39,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
   var _pageNumber = 1;
 
   int? _selectedIndex;
+  bool canRebuild = false;
   String sortDropdownValue = 'Sort';
   String storeDropdownValue = 'Store';
   List products = [];
@@ -81,7 +82,17 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
       }
       results = productProvider.sortProducts(sortDropdownValue, results);
     }
+    rebuildScreen();
     return results;
+  }
+
+  void rebuildScreen() {
+    if(canRebuild)
+      Future.delayed(Duration(milliseconds: 1), (){
+        setState(() {
+          canRebuild = false;
+        });
+      });
   }
 
   @override
@@ -168,6 +179,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                         }
                         setState(() {
                           storeDropdownValue = newValue!;
+                          canRebuild = true;
                         });
                       },
                       items: <String>['Store', 'Albert Heijn', 'Jumbo', 'Hoogvliet', 'Dirk']
@@ -240,6 +252,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                           );
                         });
                   }),
+              if(results.isNotEmpty)
               isFetching
                   ? Center(child: CircularProgressIndicator())
                   : GenericButton(

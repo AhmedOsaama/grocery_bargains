@@ -180,6 +180,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       print("Failed to get price comparisons in product detail");
       print(e);
     }
+    setState(() {
+
+    });
   }
 
   void goToStoreProductPage(BuildContext context, String selectedStore, Product product) {
@@ -200,7 +203,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("PRODUCT ID: ${widget.productId}");
+    print("comparison items: ${comparisonItems.length}");
     return Scaffold(
       appBar: SearchAppBar(isBackButton: true,),
       body: ShowCaseWidget(
@@ -230,7 +233,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   SizeContainer(itemSize: widget.size1),
                   10.ph,
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    // mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
                           height: 200.h,
@@ -241,50 +244,54 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             width: 214.w,
                             height: 214.h,
                           )),
+                      Spacer(),
                       Column(
                         children: [
-                          GestureDetector(
-                            onTap: () {
-                              Provider.of<ProductsProvider>(context, listen: false)
-                                .shareProductViaDeepLink(widget.productName, widget.productId, widget.storeName, context);
-                              try{
-                                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Share product", DateTime.now().toUtc().toString(), "Product screen");
-                              }catch(e){
-                                print(e);
-                                TrackingUtils().trackButtonClick("Guest", "Share categories", DateTime.now().toUtc().toString(), "Product screen");
-                              }
-                            },
-                            child: Column(
-                              children: [
-                                Container(
-                                  // margin: EdgeInsets.symmetric(horizontal: 10),
-                                    padding: EdgeInsets.all(15),
-                                    decoration: BoxDecoration(
-                                      color: purple30,
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: SvgPicture.asset(
-                                      shareIcon,
-                                      width: 20,
-                                      height: 20,
-                                    )),
-                                10.ph,
-                                Text(
-                                  "share".tr(),
-                                  style: TextStyles.textViewMedium12.copyWith(color: blackSecondary),
-                                )
-                              ],
+                          Padding(
+                            padding: EdgeInsets.only(right: comparisonItems.isEmpty ? 30 : 0),
+                            child: GestureDetector(
+                              onTap: () {
+                                Provider.of<ProductsProvider>(context, listen: false)
+                                  .shareProductViaDeepLink(widget.productName, widget.productId, widget.storeName, context);
+                                try{
+                                  TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Share product", DateTime.now().toUtc().toString(), "Product screen");
+                                }catch(e){
+                                  print(e);
+                                  TrackingUtils().trackButtonClick("Guest", "Share categories", DateTime.now().toUtc().toString(), "Product screen");
+                                }
+                              },
+                              child: Column(
+                                children: [
+                                  Container(
+                                    // margin: EdgeInsets.symmetric(horizontal: 10),
+                                      padding: EdgeInsets.all(15),
+                                      decoration: BoxDecoration(
+                                        color: purple30,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: SvgPicture.asset(
+                                        shareIcon,
+                                        width: 20,
+                                        height: 20,
+                                      )),
+                                  10.ph,
+                                  Text(
+                                    "share".tr(),
+                                    style: TextStyles.textViewMedium12.copyWith(color: blackSecondary),
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                           20.ph,
-                         if(comparisonItems.isNotEmpty) QuantityCounter(
+                         if(comparisonItems.isNotEmpty)
+                           QuantityCounter(
                             quantity: quantity,
                             increaseQuantity: () {
                               setState(() {
                                 ++quantity;
                                 // getComparisons();
                                 getComparisonsFuture = getComparisons();
-
                               });
                               try{
                                 TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "increase quantity", DateTime.now().toUtc().toString(), "Product screen");
@@ -447,7 +454,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),
                       children: productSizes.map((size) {
-                        var index = productSizes.indexOf(size);
                         if (size.size.isEmpty || size.size == "None" || size.price == '0.0') {
                           return Container();
                         }

@@ -58,8 +58,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PagingController<int, Product> _pagingController = PagingController(firstPageKey: 0);
   static const _pageSize = 100;
-   var _pageNumber = 1;
-
+  var _pageNumber = 1;
 
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
   // late Future<int> getAllProductsFuture;
@@ -78,7 +77,6 @@ class _HomeScreenState extends State<HomeScreen> {
   var isFetching = false;
 
   late Future getProductsFuture;
-
 
   Future<Null> getFirstTime() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -103,41 +101,18 @@ class _HomeScreenState extends State<HomeScreen> {
     if (FirebaseAuth.instance.currentUser != null) {
       getUserDataFuture =
           FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
-      TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Home Screen");
+      TrackingUtils()
+          .trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Home Screen");
     }
 
     getFirstTime();
   }
 
-  // Future<void> _fetchPage(int pageKey) async {
-  //   try {
-  //     print("PAGE KEY: " + pageKey.toString());
-  //     if (pageKey > 0) {
-  //       // await Provider.of<ProductsProvider>(context, listen: false)
-  //       //     .getProducts(pageKey + 214354);
-  //     }
-  //     final newProducts = await Provider.of<ProductsProvider>(context, listen: false).getProducts(_pageNumber);
-  //
-  //     final isLastPage = newProducts.length < _pageSize;
-  //     if (isLastPage) {
-  //       _pagingController.appendLastPage(newProducts);
-  //     } else {
-  //       int nextPageKey = pageKey + newProducts.length;
-  //       _pagingController.appendPage(newProducts, nextPageKey);
-  //     }
-  //     // startingIndex++;
-  //   } catch (error) {
-  //     _pagingController.error = "Something wrong ! Please try again";
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
-    var chatlistProvider = Provider.of<ChatlistsProvider>(context,listen: false);
+    var chatlistProvider = Provider.of<ChatlistsProvider>(context, listen: false);
     return ShowCaseWidget(
-      onStart: (_,i){
-
-      },
+      onStart: (_, i) {},
       builder: Builder(builder: (builder) {
         if (isHomeFirstTime && !dialogOpened) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -305,9 +280,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               onPressed: () {
                                 AppNavigator.push(context: context, screen: AllCategoriesScreen());
                                 try {
-                                  TrackingUtils().trackTextLinkClicked(
-                                      FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Home screen", "See all categories");
-                                }catch(e){
+                                  TrackingUtils().trackTextLinkClicked(FirebaseAuth.instance.currentUser!.uid,
+                                      DateTime.now().toUtc().toString(), "Home screen", "See all categories");
+                                } catch (e) {
                                   print(e);
                                   TrackingUtils().trackTextLinkClicked(
                                       'Guest', DateTime.now().toUtc().toString(), "Home screen", "See all categories");
@@ -325,7 +300,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: CircularProgressIndicator(),
                             )
                           : Container(
-                              height: ScreenUtil().screenHeight * 0.14,
+                              height: ScreenUtil().screenHeight * 0.16,
                               child: ListView(
                                   scrollDirection: Axis.horizontal,
                                   children:
@@ -340,38 +315,41 @@ class _HomeScreenState extends State<HomeScreen> {
                                       child: GestureDetector(
                                         onTap: () {
                                           pushNewScreen(context,
-                                            screen: CategoryScreen(
-                                              category: element.category,
-                                            ),
-                                            withNavBar: true);
-                                          try{
-                                          TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open category page", DateTime.now().toUtc().toString(), "Home screen");
-                                          }catch(e){
+                                              screen: CategoryScreen(
+                                                category: element.category,
+                                              ),
+                                              withNavBar: true);
+                                          try {
+                                            TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
+                                                "Open category page", DateTime.now().toUtc().toString(), "Home screen");
+                                          } catch (e) {
                                             print(e);
-                                            TrackingUtils().trackButtonClick("Guest", "Open category page", DateTime.now().toUtc().toString(), "Home screen");
+                                            TrackingUtils().trackButtonClick("Guest", "Open category page",
+                                                DateTime.now().toUtc().toString(), "Home screen");
                                           }
                                         },
-                                        child: SizedBox(
-                                          width: 71.w,
+                                        child: Container(
+                                          // width: 71.w,
                                           child: Column(
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
-                                              Image.asset(
+                                              Image.network(
                                                 element.image,
-                                                width: 65.w,
-                                                height: 65.h,
-                                                errorBuilder: (_,p,ctx){
+                                                width: 90,
+                                                height: 60,
+                                                errorBuilder: (_, p, ctx) {
                                                   return SvgPicture.asset(imageError);
                                                 },
                                               ),
                                               FutureBuilder(
                                                   future: GoogleTranslator().translate(element.category, to: "nl"),
                                                   builder: (context, snapshot) {
-                                                    if(snapshot.connectionState == ConnectionState.waiting) return Container();
+                                                    if (snapshot.connectionState == ConnectionState.waiting)
+                                                      return Container();
                                                     var translatedCategory = 'N/A';
-                                                    if(snapshot.data != null) translatedCategory = snapshot.data!.text;
-                                                    if(context.locale.languageCode == "nl"){
+                                                    if (snapshot.data != null) translatedCategory = snapshot.data!.text;
+                                                    if (context.locale.languageCode == "nl") {
                                                       return Flexible(
                                                         child: Text(
                                                           translatedCategory,
@@ -381,14 +359,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         ),
                                                       );
                                                     }
-                                                  return Text(
-                                                    element.category,
-                                                    style: TextStyles.textViewMedium10.copyWith(color: gunmetal),
-                                                    textAlign: TextAlign.center,
-                                                    maxLines: 3,
-                                                  );
-                                                }
-                                              )
+                                                    return Text(
+                                                      element.category,
+                                                      style: TextStyles.textViewMedium10.copyWith(color: gunmetal),
+                                                      textAlign: TextAlign.center,
+                                                      maxLines: 3,
+                                                    );
+                                                  })
                                             ],
                                           ),
                                         ),
@@ -525,12 +502,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               onPressed: () {
                                 AppNavigator.push(context: context, screen: LatestBargainsScreen());
                                 try {
-                                  TrackingUtils().trackTextLinkClicked(
-                                      FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Home screen", "See all latest bargains");
-                                }catch(e){
+                                  TrackingUtils().trackTextLinkClicked(FirebaseAuth.instance.currentUser!.uid,
+                                      DateTime.now().toUtc().toString(), "Home screen", "See all latest bargains");
+                                } catch (e) {
                                   print(e);
-                                  TrackingUtils().trackTextLinkClicked(
-                                      'Guest', DateTime.now().toUtc().toString(), "Home screen", "See all latest bargains");
+                                  TrackingUtils().trackTextLinkClicked('Guest', DateTime.now().toUtc().toString(),
+                                      "Home screen", "See all latest bargains");
                                 }
                               },
                               child: Text(
@@ -543,8 +520,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         builder: (ctx, provider, _) {
                           var products = provider.products;
                           allProducts = products;
-                          if (products.isEmpty)
-                          {
+                          if (products.isEmpty) {
                             return ListView(
                               shrinkWrap: true,
                               children: List<Widget>.generate(
@@ -564,8 +540,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       )),
                             );
-                          }
-                          else {
+                          } else {
                             return GridView.builder(
                                 physics: ScrollPhysics(), // to disable GridView's scrolling
                                 shrinkWrap: true,
@@ -603,45 +578,53 @@ class _HomeScreenState extends State<HomeScreen> {
                                     inGridView: false,
                                   );
                                 });
-
                           }
                         },
                       ),
-                      isFetching ? Center(child: CircularProgressIndicator()) :
-                      GenericButton(
-                          borderRadius: BorderRadius.circular(10),
-                          borderColor: mainPurple,
-                          color: Colors.white,
-                          onPressed: () async {
-                            var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
-                            setState(() {
-                              isFetching = true;
-                            });
-                            try {
-                              _pageNumber = _pageNumber + 1;
-                              print("Page Number: " + _pageNumber.toString());
-                              await productsProvider.getProducts(_pageNumber);
-                            }catch(e){
-                              print(e);
-                            }
-                            setState(() {
-                              isFetching = false;
-                            });
-                            try{
-                            TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "See more", DateTime.now().toUtc().toString(), "Home screen");
-                            }catch(e){
-                              print(e);
-                              TrackingUtils().trackButtonClick("Guest", "See more", DateTime.now().toUtc().toString(), "Home screen");
-                            }
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text("SEE MORE",style: TextStyles.textViewMedium12.copyWith(color: blackSecondary),),
-                              10.pw,
-                              Icon(Icons.keyboard_arrow_down,color: Colors.black,),
-                            ],
-                          )),
+                      isFetching
+                          ? Center(child: CircularProgressIndicator())
+                          : GenericButton(
+                              borderRadius: BorderRadius.circular(10),
+                              borderColor: mainPurple,
+                              color: Colors.white,
+                              onPressed: () async {
+                                var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
+                                setState(() {
+                                  isFetching = true;
+                                });
+                                try {
+                                  _pageNumber = _pageNumber + 1;
+                                  print("Page Number: " + _pageNumber.toString());
+                                  await productsProvider.getProducts(_pageNumber);
+                                } catch (e) {
+                                  print(e);
+                                }
+                                setState(() {
+                                  isFetching = false;
+                                });
+                                try {
+                                  TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "See more",
+                                      DateTime.now().toUtc().toString(), "Home screen");
+                                } catch (e) {
+                                  print(e);
+                                  TrackingUtils().trackButtonClick(
+                                      "Guest", "See more", DateTime.now().toUtc().toString(), "Home screen");
+                                }
+                              },
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "SEE MORE",
+                                    style: TextStyles.textViewMedium12.copyWith(color: blackSecondary),
+                                  ),
+                                  10.pw,
+                                  Icon(
+                                    Icons.keyboard_arrow_down,
+                                    color: Colors.black,
+                                  ),
+                                ],
+                              )),
                     ],
                   ),
                 ),
@@ -654,42 +637,41 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> goToProductPageTutorial(BuildContext context, BuildContext builder) async {
-    var productsProvider = Provider.of<ProductsProvider>(context,listen: false);
-     setState(() {
+    var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
+    setState(() {
       isHomeFirstTime = false;
     });
-     try {
-       Product product = Provider
-           .of<ProductsProvider>(context, listen: false)
-           .products
-           .first;
-       await pushNewScreen(context,
-           screen: ProductDetailScreen(
-             productId: product.id,
-             productBrand: product.brand,
-             storeName: productsProvider.getStoreName(product.storeId),
-             productName: product.name,
-             imageURL: product.image,
-             description: product.description,
-             oldPrice: product.oldPrice,
-             productCategory: product.category,
-             price1: double.tryParse(product.price ?? "") ?? 0.0,
-             size1: product.unit, gtin: product.gtin,
-           ));
+    try {
+      Product product = Provider.of<ProductsProvider>(context, listen: false).products.first;
+      await pushNewScreen(context,
+          screen: ProductDetailScreen(
+            productId: product.id,
+            productBrand: product.brand,
+            storeName: productsProvider.getStoreName(product.storeId),
+            productName: product.name,
+            imageURL: product.image,
+            description: product.description,
+            oldPrice: product.oldPrice,
+            productCategory: product.category,
+            price1: double.tryParse(product.price ?? "") ?? 0.0,
+            size1: product.unit,
+            gtin: product.gtin,
+          ));
 
-       // NavigatorController.jumpToTab(1);
-       ShowCaseWidget.of(builder).next();
-       try{
-         TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open product page", DateTime.now().toUtc().toString(), "Home screen");
-       }catch(e){
-         print(e);
-         TrackingUtils().trackButtonClick("Guest", "Open product page", DateTime.now().toUtc().toString(), "Home screen");
-       }
-     }catch(e){
-       print(e);
-     }
+      // NavigatorController.jumpToTab(1);
+      ShowCaseWidget.of(builder).next();
+      try {
+        TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open product page",
+            DateTime.now().toUtc().toString(), "Home screen");
+      } catch (e) {
+        print(e);
+        TrackingUtils()
+            .trackButtonClick("Guest", "Open product page", DateTime.now().toUtc().toString(), "Home screen");
+      }
+    } catch (e) {
+      print(e);
+    }
   }
-
 
   Future<dynamic> showWelcomeDialog(BuildContext context, BuildContext builder) {
     return showDialog(

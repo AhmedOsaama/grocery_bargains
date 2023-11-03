@@ -28,9 +28,9 @@ class ProductCategory {
       ProductCategory(
         id: json["id"],
         category: json["category"],
-        // image: json["image"],
+        image: json["image"],
         subcategories: json["sub"],
-        image: "assets/images/categories/" + json["category"] + ".png",
+        // image: "assets/images/categories/" + json["category"] + ".png",
       );
 
   Map<String, dynamic> toJson() => {

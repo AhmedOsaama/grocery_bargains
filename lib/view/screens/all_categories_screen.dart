@@ -83,7 +83,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
                                     Container(
                                       width: 174.w,
                                       height: 174.h,
-                                      child: Image.asset(
+                                      child: Image.network(
                                         provider.categories
                                             .elementAt(index)
                                             .image,

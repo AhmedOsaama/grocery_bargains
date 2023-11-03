@@ -40,9 +40,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
   var _pageNumber = 1;
   var isLoading = false;
   TextStyle textButtonStyle = TextStylesInter.textViewRegular16.copyWith(color: mainPurple);
-  bool switchValue = false;
   int counter = 0;
-  bool isSortOpen = false;
+  bool canRebuild = false;
   String sortDropdownValue = 'Sort';
   String brandDropdownValue = 'Brand';
   String storeDropdownValue = 'Store';
@@ -240,7 +239,18 @@ class _CategoryScreenState extends State<CategoryScreen> {
       }
       results = productProvider.sortProducts(sortDropdownValue, results);
     }
+    rebuildScreen();
     return results;
+  }
+
+  void rebuildScreen() {
+    print("Rebuild: $canRebuild");
+      if(canRebuild)
+    Future.delayed(Duration(milliseconds: 1), (){
+      setState(() {
+      canRebuild = false;
+      });
+    });
   }
 
   @override
@@ -359,6 +369,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           }
                           setState(() {
                             storeDropdownValue = newValue!;
+                            canRebuild = true;
                             _pagingController.refresh();
                           });
                         },
@@ -441,37 +452,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                             );
                           });
                     }),
-                isFetching ? Center(child: CircularProgressIndicator()) :
-                GenericButton(
-                  borderRadius: BorderRadius.circular(10),
-                    borderColor: mainPurple,
-                    color: Colors.white,
-                    onPressed: () async {
-                      setState(() {
-                        isFetching = true;
-                      });
-                      try {
-                        _pageNumber = _pageNumber + 1;
-                        print("page number: " + _pageNumber.toString());
-                        var newProducts = await productProvider.getProductsByCategory(widget.category, _pageNumber);
-                        products.addAll(newProducts);
-                      }catch(e){
-                        print(e);
-                      }
-                      // results = filterProducts(results, products, productProvider);
-                      setState(() {
-                        isFetching = false;
-                      });
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("SEE MORE",style: TextStyles.textViewMedium12.copyWith(color: blackSecondary),),
-                        10.pw,
-                        Icon(Icons.keyboard_arrow_down,color: Colors.black,),
-                      ],
-                    )),
-
+                if(results.isNotEmpty)
+                buildSeeMoreButton(productProvider),
                 10.ph,
               ],
             ),
@@ -479,6 +461,38 @@ class _CategoryScreenState extends State<CategoryScreen> {
         ),
       ),
     );
+  }
+
+  Widget buildSeeMoreButton(ProductsProvider productProvider) {
+    return isFetching ? Center(child: CircularProgressIndicator()) :
+              GenericButton(
+                borderRadius: BorderRadius.circular(10),
+                  borderColor: mainPurple,
+                  color: Colors.white,
+                  onPressed: () async {
+                    setState(() {
+                      isFetching = true;
+                    });
+                    try {
+                      _pageNumber = _pageNumber + 1;
+                      print("page number: " + _pageNumber.toString());
+                      var newProducts = await productProvider.getProductsByCategory(widget.category, _pageNumber);
+                      products.addAll(newProducts);
+                    }catch(e){
+                      print(e);
+                    }
+                    setState(() {
+                      isFetching = false;
+                    });
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("SEE MORE",style: TextStyles.textViewMedium12.copyWith(color: blackSecondary),),
+                      10.pw,
+                      Icon(Icons.keyboard_arrow_down,color: Colors.black,),
+                    ],
+                  ));
   }
 
   Widget choiceChips() {
