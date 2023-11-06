@@ -3,6 +3,8 @@ import 'dart:developer';
 
 import 'package:bargainb/models/bestValue_item.dart';
 import 'package:bargainb/models/comparison_product.dart';
+import 'package:bargainb/providers/tutorial_provider.dart';
+import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/utils/down_triangle_painter.dart';
 import 'package:bargainb/utils/tooltips_keys.dart';
 import 'package:bargainb/utils/triangle_painter.dart';
@@ -71,27 +73,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<BestValueItem> bestValueBargains = [];
   // int startingIndex = 0;
-  bool isHomeFirstTime = false;
   bool dialogOpened = false;
 
   var isFetching = false;
 
   late Future getProductsFuture;
-
-  Future<Null> getFirstTime() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      isHomeFirstTime = prefs.getBool("firstTime") ?? true;
-    });
-  }
-
-  Future<Null> turnOffFirstTime() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      prefs.setBool("firstTime", false);
-      isHomeFirstTime = false;
-    });
-  }
 
   @override
   void initState() {
@@ -105,30 +91,34 @@ class _HomeScreenState extends State<HomeScreen> {
           .trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Home Screen");
     }
 
-    getFirstTime();
+    // Provider.of<UserProvider>(context, listen: false).getFirstTime();
   }
 
   @override
   Widget build(BuildContext context) {
     var chatlistProvider = Provider.of<ChatlistsProvider>(context, listen: false);
+    var tutorialProvider = Provider.of<TutorialProvider>(context);
+    // var userProvider = Provider.of<UserProvider>(context);
     return ShowCaseWidget(
       onStart: (_, i) {},
       builder: Builder(builder: (builder) {
-        if (isHomeFirstTime && !dialogOpened) {
+        print("IS TUTORIAL RUNNING: ${tutorialProvider.isTutorialRunning}");
+        print("CAN SHOW WELCOME: ${tutorialProvider.canShowWelcomeDialog}");
+        print("Dialog: ${dialogOpened}");
+        if (tutorialProvider.canShowWelcomeDialog) {
+          print("INSIDE");
           WidgetsBinding.instance.addPostFrameCallback((_) {
+            print("INSIDE CALLBACK");
             showWelcomeDialog(context, builder);
-            chatlistProvider.stopwatch.start();
-            chatlistProvider.stopwatch.reset();
-            var onboardingDuration = chatlistProvider.stopwatch.elapsed.inSeconds.toString();
-            print("Onboarding duration start: " + onboardingDuration);
+            tutorialProvider.deactivateWelcomeTutorial();
+            startTutorialStopwatch(chatlistProvider);
           });
-          dialogOpened = true;
         }
         return Scaffold(
           resizeToAvoidBottomInset: true,
           backgroundColor: white,
           bottomSheet: Showcase.withWidget(
-            key: isHomeFirstTime ? TooltipKeys.showCase1 : new GlobalKey<State<StatefulWidget>>(),
+            key: tutorialProvider.isTutorialRunning ? TooltipKeys.showCase1 : new GlobalKey<State<StatefulWidget>>(),
             container: Column(
               children: [
                 Container(
@@ -148,10 +138,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     GestureDetector(
                       onTap: () {
                         ShowCaseWidget.of(builder).next();
+                        // ShowCaseWidget.of(builder).dismiss();
                       },
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
+                          SkipTutorialButton(tutorialProvider: tutorialProvider, context: builder),
+                          Spacer(),
                           Text(
                             LocaleKeys.next.tr(),
                             style: TextStyles.textViewSemiBold14.copyWith(color: white),
@@ -211,7 +203,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       Showcase.withWidget(
                           targetBorderRadius: BorderRadius.circular(10),
-                          key: isHomeFirstTime ? TooltipKeys.showCase2 : new GlobalKey<State<StatefulWidget>>(),
+                          key:
+                          tutorialProvider.isTutorialRunning ? TooltipKeys.showCase2 : new GlobalKey<State<StatefulWidget>>(),
                           container: Container(
                             child: Column(
                               children: [
@@ -244,8 +237,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ShowCaseWidget.of(builder).next();
                                       },
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
+                                          SkipTutorialButton(tutorialProvider: tutorialProvider, context: builder),
+                                          Spacer(),
                                           Text(
                                             "Next".tr(),
                                             style: TextStyles.textViewSemiBold14.copyWith(color: white),
@@ -374,7 +368,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   }).toList()),
                             ),
                       Showcase.withWidget(
-                        key: isHomeFirstTime ? TooltipKeys.showCase3 : new GlobalKey<State<StatefulWidget>>(),
+                        key: tutorialProvider.isTutorialRunning ? TooltipKeys.showCase3 : new GlobalKey<State<StatefulWidget>>(),
                         targetBorderRadius: BorderRadius.circular(8.r),
                         tooltipPosition: TooltipPosition.top,
                         onBarrierClick: () async {
@@ -437,8 +431,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     await goToProductPageTutorial(context, builder);
                                   },
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
+                                      SkipTutorialButton(tutorialProvider: tutorialProvider, context: builder),
+                                      Spacer(),
                                       Text(
                                         "Next",
                                         style: TextStyles.textViewSemiBold14.copyWith(color: white),
@@ -636,11 +631,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void startTutorialStopwatch(ChatlistsProvider chatlistProvider) {
+    chatlistProvider.stopwatch.start();
+    chatlistProvider.stopwatch.reset();
+    var onboardingDuration = chatlistProvider.stopwatch.elapsed.inSeconds.toString();
+    print("Onboarding duration start: " + onboardingDuration);
+  }
+
   Future<void> goToProductPageTutorial(BuildContext context, BuildContext builder) async {
     var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
-    setState(() {
-      isHomeFirstTime = false;
-    });
+    ShowCaseWidget.of(builder).dismiss();
+
+    // setState(() {
+    //   isHomeFirstTime = false;
+    // });
     try {
       Product product = Provider.of<ProductsProvider>(context, listen: false).products.first;
       await pushNewScreen(context,
@@ -704,8 +708,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       GestureDetector(
                           onTap: () {
-                            AppNavigator.pop(context: context);
-                            turnOffFirstTime();
+                            skipTutorial(context, builder);
                           },
                           child: SvgPicture.asset(closeCircle))
                     ],
@@ -720,13 +723,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    AppNavigator.pop(context: context);
-                    try {
-                      ShowCaseWidget.of(builder)
-                          .startShowCase([TooltipKeys.showCase1, TooltipKeys.showCase2, TooltipKeys.showCase3]);
-                    } catch (e) {
-                      log(e.toString());
-                    }
+                    startHomeTutorial(context, builder);
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -749,14 +746,51 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
+  void skipTutorial(BuildContext context, BuildContext builder) {
+    AppNavigator.pop(context: context);
+    Provider.of<TutorialProvider>(context, listen: false).stopTutorial(builder);
+  }
+
+  void startHomeTutorial(BuildContext context, BuildContext builder) {
+    AppNavigator.pop(context: context);
+    try {
+      // setState(() {
+        ShowCaseWidget.of(builder)
+            .startShowCase([TooltipKeys.showCase1, TooltipKeys.showCase2, TooltipKeys.showCase3]);
+      // });
+    } catch (e) {
+      log(e.toString());
+    }
+    Provider.of<TutorialProvider>(context, listen: false).startTutorial();
+  }
+
   @override
   void dispose() {
     _pagingController.dispose();
     super.dispose();
   }
+}
 
-/*   Future fetch(int startingIndex) {
-    return Provider.of<ProductsProvider>(context, listen: false)
-        .getProducts(startingIndex);
-  } */
+class SkipTutorialButton extends StatelessWidget {
+  const SkipTutorialButton({
+    super.key,
+    required this.tutorialProvider,
+    required this.context,
+  });
+
+  final TutorialProvider tutorialProvider;
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomLeft,
+      child: TextButton(
+        onPressed: () {
+          tutorialProvider.stopTutorial(this.context);
+        },
+        child: Text(LocaleKeys.skip.tr(), style: TextStylesInter.textViewRegular14.copyWith(color: Colors.white),),
+      ),
+    );
+  }
 }

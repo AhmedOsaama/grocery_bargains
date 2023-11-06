@@ -24,11 +24,13 @@ import 'package:showcaseview/showcaseview.dart';
 
 import '../../models/list_item.dart';
 import '../../models/product.dart';
+import '../../providers/tutorial_provider.dart';
 import '../../utils/tooltips_keys.dart';
 import '../../utils/triangle_painter.dart';
 import '../components/search_appBar.dart';
 import '../widgets/choose_list_dialog.dart';
 import 'chatlist_view_screen.dart';
+import 'home_screen.dart';
 import 'main_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -204,12 +206,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     print("comparison items: ${comparisonItems.length}");
+    var tutorialProvider = Provider.of<TutorialProvider>(context);
     return Scaffold(
       appBar: SearchAppBar(isBackButton: true,),
       body: ShowCaseWidget(
         builder: Builder(builder: (ctx){
           WidgetsBinding.instance.addPostFrameCallback((_) async {
-            if (isFirstTime && FirebaseAuth.instance.currentUser != null ) {
+            if (tutorialProvider.isTutorialRunning && FirebaseAuth.instance.currentUser != null ) {
               getComparisonsFuture.whenComplete((){
               ShowCaseWidget.of(ctx).startShowCase([TooltipKeys.showCase4]);
               });
@@ -336,7 +339,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           itemBuilder: (context, index) {
                             return Showcase.withWidget(
                               targetBorderRadius: BorderRadius.circular(10),
-                              key: isFirstTime && index == 0 ? TooltipKeys.showCase4 : new GlobalKey<State<StatefulWidget>>(),
+                              key: tutorialProvider.isTutorialRunning && index == 0 ? TooltipKeys.showCase4 : new GlobalKey<State<StatefulWidget>>(),
                               tooltipPosition: TooltipPosition.bottom,
                               container: Container(
                                 child: Column(
@@ -375,14 +378,16 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                                     ),
                                                     withNavBar: false);
                                                 NavigatorController.jumpToTab(1);
-                                                setState(() {
-                                                  isFirstTime = false;
-                                                });
+                                                // setState(() {
+                                                //   isFirstTime = false;
+                                                // });
                                                 ShowCaseWidget.of(ctx).next();
                                               },
                                               child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.end,
+                                                // mainAxisAlignment: MainAxisAlignment.end,
                                                 children: [
+                                                  SkipTutorialButton(tutorialProvider: tutorialProvider, context: ctx),
+                                                  Spacer(),
                                                   Text(
                                                     "Next".tr(),
                                                     style: TextStyles.textViewSemiBold14.copyWith(color: white),

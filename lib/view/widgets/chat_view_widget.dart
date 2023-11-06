@@ -7,6 +7,7 @@ import 'package:bargainb/view/components/button.dart';
 import 'package:bargainb/view/components/close_button.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/screens/category_screen.dart';
+import 'package:bargainb/view/screens/home_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/widgets/chatlist_item.dart';
 import 'package:bargainb/view/widgets/product_dialog.dart';
@@ -36,6 +37,7 @@ import 'package:bargainb/view/screens/profile_screen.dart';
 
 import '../../models/list_item.dart';
 import '../../providers/products_provider.dart';
+import '../../providers/tutorial_provider.dart';
 import '../../utils/tracking_utils.dart';
 import 'discountItem.dart';
 import 'message_bubble.dart';
@@ -62,7 +64,7 @@ class _ChatViewState extends State<ChatView> {
   var isLoading = false;
   var isCollapsed = true;
   var isExpandingChatlist = false;
-  bool isFirstTime = false;
+  // bool isFirstTime = false;
 
   List albertItems = [];
   List jumboItems = [];
@@ -74,13 +76,13 @@ class _ChatViewState extends State<ChatView> {
 
   bool isFirstTimeChatlist = false;
 
-  Future<Null> getFirstTime() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      isFirstTime = prefs.getBool("firstTime") ?? true;
-      // isFirstTime = true;
-    });
-  }
+  // Future<Null> getFirstTime() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     isFirstTime = prefs.getBool("firstTime") ?? true;
+  //     // isFirstTime = true;
+  //   });
+  // }
 
   Future getFirstTimeChatlist() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -101,13 +103,6 @@ class _ChatViewState extends State<ChatView> {
     }
   }
 
-  Future<Null> turnOffFirstTime() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      prefs.setBool("firstTime", false);
-      isFirstTime = false;
-    });
-  }
 
   Future turnOffFirstTimeChatlist() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -150,13 +145,12 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   void dispose() {
-    if(!isFirstTime) turnOffFirstTimeChatlist();
+    if(isFirstTimeChatlist) turnOffFirstTimeChatlist();
     super.dispose();
   }
 
   @override
   void initState() {
-    getFirstTime();
     getFirstTimeChatlist();
     final fbm = FirebaseMessaging.instance;
     fbm.requestPermission();
@@ -168,10 +162,11 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   Widget build(BuildContext context) {
+    var tutorialProvider = Provider.of<TutorialProvider>(context);
     return ShowCaseWidget(
       builder: Builder(builder: (ctx) {
         WidgetsBinding.instance.addPostFrameCallback((_) async {
-          if (isFirstTime) {
+          if (tutorialProvider.isTutorialRunning) {
             ShowCaseWidget.of(ctx).startShowCase([TooltipKeys.showCase6]);
           }
         });
@@ -183,7 +178,7 @@ class _ChatViewState extends State<ChatView> {
               chatlistBackground,
               fit: BoxFit.cover,
             ),
-            if(isFirstTime) ...[
+            if(tutorialProvider.isTutorialRunning) ...[
               Container(
                 decoration: BoxDecoration(
                     color: Color.fromRGBO(25, 27, 38, 0.6)
@@ -370,16 +365,15 @@ class _ChatViewState extends State<ChatView> {
                                           style: TextStyles.textViewRegular13.copyWith(color: white),
                                         ),
                                         GestureDetector(
-                                          onTap: () async {
-                                            setState(() {
-                                              isFirstTime = false;
-                                            });
+                                          onTap: () {
+                                            ShowCaseWidget.of(context).dismiss();
                                             widget.showInviteMembersDialog(context);
                                             ShowCaseWidget.of(ctx).next();
                                           },
                                           child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.end,
                                             children: [
+                                              SkipTutorialButton(tutorialProvider: tutorialProvider, context: ctx),
+                                              Spacer(),
                                               Text(
                                                 LocaleKeys.next.tr(),
                                                 style: TextStyles.textViewSemiBold14.copyWith(color: white),
@@ -423,7 +417,7 @@ class _ChatViewState extends State<ChatView> {
                 ],
               )
             ],
-            if(!isFirstTime)
+            if(!tutorialProvider.isTutorialRunning)
             Column(
               children: [
                 Expanded(
@@ -542,7 +536,7 @@ class _ChatViewState extends State<ChatView> {
                                             style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
                                             children: [
                                               TextSpan(
-                                                  text: isFirstTime
+                                                  text: isFirstTimeChatlist
                                                       ? "9 items"
                                                       : " ${items.length} ${LocaleKeys.items.tr()}",
                                                   style: TextStylesInter.textViewBold12
@@ -554,7 +548,7 @@ class _ChatViewState extends State<ChatView> {
                                             style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
                                             children: [
                                               TextSpan(
-                                                  text: isFirstTime ? "€17.32" : " €${getTotalListPrice(items)}",
+                                                  text: isFirstTimeChatlist ? "€17.32" : " €${getTotalListPrice(items)}",
                                                   style: TextStylesInter.textViewBold12.copyWith(color: mainPurple))
                                             ])),
                                         15.pw,
@@ -563,7 +557,7 @@ class _ChatViewState extends State<ChatView> {
                                             style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
                                             children: [
                                               TextSpan(
-                                                  text: isFirstTime ? "€4.32" : " €${getTotalListSavings(items)}",
+                                                  text: isFirstTimeChatlist ? "€4.32" : " €${getTotalListSavings(items)}",
                                                   style: TextStylesInter.textViewBold12
                                                       .copyWith(color: greenSecondary))
                                             ])),
@@ -590,7 +584,7 @@ class _ChatViewState extends State<ChatView> {
                                     ),
                                     if (isExpandingChatlist)
                                       Builder(builder: (ctx) {
-                                        if (isFirstTimeChatlist && items.isEmpty && !isFirstTime)
+                                        if (isFirstTimeChatlist && items.isEmpty)
                                           return Column(
                                             children: [
                                               quickItemField(),
@@ -601,7 +595,7 @@ class _ChatViewState extends State<ChatView> {
                                               ),
                                             ],
                                           );
-                                        if (isFirstTimeChatlist && items.isNotEmpty && !isFirstTime) {
+                                        if (isFirstTimeChatlist && items.isNotEmpty) {
                                           albertItems.clear();
                                           jumboItems.clear();
                                           hoogvlietItems.clear();

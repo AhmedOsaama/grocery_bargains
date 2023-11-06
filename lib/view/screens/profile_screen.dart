@@ -5,6 +5,7 @@ import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/providers/google_sign_in_provider.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/search_appBar.dart';
+import 'package:bargainb/view/screens/dummy_subscription_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/register_screen.dart';
 import 'package:bargainb/view/screens/subscription_screen.dart';
@@ -33,6 +34,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../providers/tutorial_provider.dart';
 import '../../utils/assets_manager.dart';
 import '../widgets/image_source_picker_dialog.dart';
 
@@ -277,7 +279,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                             settingText: "Subscription",
                             onTap: () {
-                              AppNavigator.push(context: context, screen: SubscriptionScreen());
+                              // AppNavigator.push(context: context, screen: SubscriptionScreen());
+                              AppNavigator.push(context: context, screen: DummySubscriptionScreen());
                               TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open Subscription screen", DateTime.now().toUtc().toString(), "Profile screen");
                             },
                           ),
@@ -299,11 +302,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           SettingRow(
                               icon: SvgPicture.asset(tutorial),
                               settingText: "Tutorial".tr(),
-                              onTap: () async {
-                                SharedPreferences.getInstance().then((value) {
-                                  value.remove("firstTime");
-                                });
-                                pushNewScreen(context, screen: MainScreen(), withNavBar: false);
+                              onTap: () {
+                                Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
+                                // pushNewScreen(context, screen: MainScreen(), withNavBar: false);
+                                NavigatorController.jumpToTab(0);
+                                // AppNavigator.pushReplacement(context: context, screen: MainScreen());
                                 TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Activate tutorial", DateTime.now().toUtc().toString(), "Profile screen");
                               }),
                           Divider(),

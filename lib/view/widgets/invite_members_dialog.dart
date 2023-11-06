@@ -15,6 +15,7 @@ import '../../config/routes/app_navigator.dart';
 import '../../generated/locale_keys.g.dart';
 import '../../models/chatlist.dart';
 import '../../providers/chatlists_provider.dart';
+import '../../providers/tutorial_provider.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
@@ -47,26 +48,11 @@ class InviteMembersDialog extends StatefulWidget {
 }
 
 class _InviteMembersDialogState extends State<InviteMembersDialog> {
-  bool isFirstTime = true;
 
-  Future<Null> getFirstTime() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      isFirstTime = prefs.getBool("firstTime") ?? true;
-    });
-  }
 
-  Future<Null> turnOffFirstTime() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      prefs.setBool("firstTime", false);
-      isFirstTime = false;
-    });
-  }
 
   @override
   void initState() {
-    getFirstTime();
     try {
       TrackingUtils().trackPopPageView(
           FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Invite people popup");
@@ -79,17 +65,14 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
   @override
   Widget build(BuildContext context) {
     var chatlistsProvider = Provider.of<ChatlistsProvider>(context,listen: false);
+    var tutorialProvider = Provider.of<TutorialProvider>(context);
     return ShowCaseWidget(
       onFinish: () async {
         // AppNavigator.pop(context: context);
-        chatlistsProvider.deleteList(context, chatlistsProvider.chatlists.last.id);
-        chatlistsProvider.stopwatch.stop();
-        var onboardingDuration = chatlistsProvider.stopwatch.elapsed.inSeconds.toString();
-        print("Onboarding duration: " + onboardingDuration);
       },
       builder: Builder(builder: (showCaseContext){
         WidgetsBinding.instance.addPostFrameCallback((_) async {
-          if (isFirstTime) {
+          if (tutorialProvider.isTutorialRunning) {
             ShowCaseWidget.of(showCaseContext).startShowCase([TooltipKeys.showCase6]);
           }
         });
@@ -99,7 +82,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
             height: 50,
             width: 150,
             targetBorderRadius: BorderRadius.circular(10),
-            key: isFirstTime ? TooltipKeys.showCase6 : new GlobalKey<State<StatefulWidget>>(),
+            key: tutorialProvider.isTutorialRunning ? TooltipKeys.showCase6 : new GlobalKey<State<StatefulWidget>>(),
             tooltipPosition: TooltipPosition.bottom,
             container: Container(
               child: Column(
@@ -131,9 +114,12 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                           ),
                           GestureDetector(
                             onTap: () async {
-                              await turnOffFirstTime();
-                              ShowCaseWidget.of(showCaseContext).next();
                               AppNavigator.pop(context: context);
+                              chatlistsProvider.deleteList(context, chatlistsProvider.chatlists.last.id);
+                              chatlistsProvider.stopwatch.stop();
+                              var onboardingDuration = chatlistsProvider.stopwatch.elapsed.inSeconds.toString();
+                              print("Onboarding duration: " + onboardingDuration);
+                              tutorialProvider.stopTutorial(showCaseContext);
                             },
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.end,

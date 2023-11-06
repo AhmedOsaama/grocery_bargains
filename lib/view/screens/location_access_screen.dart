@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
+import 'package:bargainb/providers/tutorial_provider.dart';
+import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/icons_manager.dart';
@@ -16,6 +18,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:gdpr_dialog/gdpr_dialog.dart';
 
@@ -96,6 +99,8 @@ class LocationAccessScreen extends StatelessWidget {
                   }
                   AppNavigator.pushReplacement(
                       context: context, screen: MainScreen());
+                  Provider.of<UserProvider>(context, listen: false).turnOffFirstTime();
+                  Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
                 },
                 child: Text(
                     LocaleKeys.accept.tr(),

@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:bargainb/providers/insights_provider.dart';
+import 'package:bargainb/providers/tutorial_provider.dart';
+import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/assets_manager.dart';
@@ -79,6 +81,10 @@ Future<void> main() async {
                 create: (_) => ChatlistsProvider()),
             ChangeNotifierProvider<InsightsProvider>(
                 create: (_) => InsightsProvider()),
+            ChangeNotifierProvider<TutorialProvider>(
+                create: (_) => TutorialProvider()),
+            ChangeNotifierProvider<UserProvider>(
+                create: (_) => UserProvider()),
           ],
           child: MyApp(
               notificationMessage: notificationMessage,
@@ -122,8 +128,8 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> initMixpanel() async {
     mixPanel =
-    // await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true);    //live
-    await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true);  //dev
+    await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true);    //live
+    // await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true);  //dev
   }
 
   @override

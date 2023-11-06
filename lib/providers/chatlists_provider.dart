@@ -184,15 +184,17 @@ class ChatlistsProvider with ChangeNotifier {
   }
 
   void deleteList(BuildContext context, String listId) {
-    FirebaseFirestore.instance.collection('/lists').doc(listId).delete().then((value) {
-      // updateList();
-      chatlists.removeWhere((chatlist) => chatlist.id == listId);
-      notifyListeners();
-      return AppNavigator.pop(context: context);
-    }).onError((error, stackTrace) {
-      print(error);
+    try {
+      FirebaseFirestore.instance.collection('/lists').doc(listId).delete().then((value) {
+        // updateList();
+        chatlists.removeWhere((chatlist) => chatlist.id == listId);
+        notifyListeners();
+        return AppNavigator.pop(context: context);
+      });
+    }catch(e){
+      print(e);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("couldntDeleteList".tr())));
-    });
+    }
     TrackingUtils().trackSideMenuItemClicked(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Chatlist Side Menu", "Remove", "Chatlist Screen");
   }
 

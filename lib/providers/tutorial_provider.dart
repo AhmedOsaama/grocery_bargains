@@ -1,0 +1,33 @@
+import 'dart:developer';
+
+import 'package:flutter/cupertino.dart';
+import 'package:showcaseview/showcaseview.dart';
+
+import '../utils/tooltips_keys.dart';
+
+class TutorialProvider with ChangeNotifier{
+  bool isTutorialRunning = false;
+  bool canShowWelcomeDialog = false;
+
+  void startTutorial(){
+    isTutorialRunning = true;
+    notifyListeners();
+  }
+
+  void activateWelcomeTutorial(){
+    canShowWelcomeDialog = true;
+    notifyListeners();
+  }
+
+  void deactivateWelcomeTutorial(){
+    canShowWelcomeDialog = false;
+    notifyListeners();
+  }
+
+  void stopTutorial(BuildContext context){
+    isTutorialRunning = false;
+    ShowCaseWidget.of(context).dismiss();
+    notifyListeners();
+  }
+
+}
