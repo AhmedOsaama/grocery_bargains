@@ -136,7 +136,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     String id = "";
     for (var userId in userIds) {
       //for every userId in the chatlist
-      final userSnapshot = await FirebaseFirestore.instance.collection('/users').doc(userId).get();
+      final userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
       imageUrl = userSnapshot.data()!['imageURL'];
       email = userSnapshot.data()!['email'];
       userName = userSnapshot.data()!['username'];
@@ -171,7 +171,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       ));
     }
     var userInfo =
-        await FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser?.uid).get();
+        await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).get();
 
     if (userInfo.get('phoneNumber').isNotEmpty && userInfo.data()!["privacy"]["connectContacts"]) {
       var isPermissionGranted = await FlutterContacts.requestPermission();
@@ -346,6 +346,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                     ),
                   ),
                   PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert),
                       onSelected: (option){
                     if (option == 'Rename') {
                       setState(() {

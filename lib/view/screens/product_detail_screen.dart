@@ -55,7 +55,9 @@ class ProductDetailScreen extends StatefulWidget {
     required this.size1,
     required this.productId,
     this.oldPrice,
-    required this.productBrand, required this.gtin, required this.productCategory,
+    required this.productBrand,
+    required this.gtin,
+    required this.productCategory,
   }) : super(key: key);
 
   @override
@@ -66,125 +68,96 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   List<ItemSize> productSizes = [];
   var defaultPrice = 0.0;
   bool isLoading = false;
-  bool isFirstTime = false;
+  // bool isFirstTime = false;
   final comparisonItems = [];
-
   var selectedIndex = 0;
   var bestValueSize = "";
   var cheapest = "";
-
   int quantity = 1;
-
   List<Map> allLists = [];
-
   late Future getComparisonsFuture;
+  late ListItem listItem;
+
+  bool canUpdateQuantity = false;
 
   @override
   void initState() {
-    getFirstTime();
+    super.initState();
+    initializeListItem();
+    addProductSizes();
+    getComparisonsFuture = getComparisons();
+    trackPageView();
+  }
+
+  void initializeListItem() {
+    listItem = ListItem(
+        id: widget.productId,
+        storeName: widget.storeName,
+        name: widget.productName,
+        brand: widget.productBrand,
+        oldPrice: widget.oldPrice,
+        price: widget.price1.toString(),
+        isChecked: false,
+        quantity: quantity,
+        imageURL: widget.imageURL,
+        size: widget.size1,
+        category: widget.productCategory,
+        text: '');
+  }
+
+  void trackPageView() {
+    try {
+      TrackingUtils()
+          .trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Product Screen");
+    } catch (e) {}
+  }
+
+  void addProductSizes() {
     productSizes.addAll([
       ItemSize(price: widget.price1.toString(), size: widget.size1),
     ]);
-    getComparisonsFuture = getComparisons();
-    try{
-    TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Product Screen");
-
-    }catch(e){
-    }
-
-    super.initState();
-  }
-
-  Future<Null> getFirstTime() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      isFirstTime = prefs.getBool("firstTime") ?? true;
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    // try {
-    //   bestValueSize = Provider.of<ProductsProvider>(context, listen: false)
-    //       .bestValueBargains
-    //       .firstWhere((bargain) => bargain.itemId == widget.productId)
-    //       .bestValueSize;
-    // } catch (e) {
-    //   print("Error in product page: couldn't find best value size");
-    //   print(e);
-    //   bestValueSize = "";
-    // }
-    // print("BEST VALUE SIZE: $bestValueSize");
-
-    super.didChangeDependencies();
   }
 
   Future<void> getComparisons() async {
-    comparisonItems.clear();
     try {
       var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
       var chatlistsProvider = Provider.of<ChatlistsProvider>(context, listen: false);
-      var listItem = ListItem(
-          id: widget.productId,
-          storeName: widget.storeName,
-          name: widget.productName,
-          brand: widget.productBrand,
-          oldPrice: widget.oldPrice,
-          price: widget.price1.toString(),
-          isChecked: false,
-          quantity: quantity,
-          imageURL: widget.imageURL,
-          size: widget.size1,
-          category: widget.productCategory,
-          text: '');
 
-      if(widget.gtin == null || widget.gtin == "N/A") {
+      if (widget.gtin == null || widget.gtin == "N/A") {
         var product = await productsProvider.getProductById(widget.productId);
         var storeName = productsProvider.getStoreName(product.storeId);
         if (product.availableNow == 1) {
-          comparisonItems.add(GestureDetector(
-            onTap: widget.storeName == storeName
-                ? () => chatlistsProvider.addProductToList(context, listItem)
-                : () => goToStoreProductPage(context, storeName, product),
-            child: PriceComparisonItem(
-                isSameStore: widget.storeName == storeName,
-                price: product.price ?? "N/A",
-                size: product.unit,
-                storeImagePath: productsProvider.getStoreLogoPath(storeName)),
-          ));
-          return;
-        }else{
-          comparisonItems.add(Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: Center(child: Text('This item is not available')),
-          ));
+          addComparisonItem(storeName, chatlistsProvider, product, productsProvider);
         }
-      }
-
-      List<Product> similarProducts = await productsProvider.getSimilarProducts(widget.gtin);
-
-      for(var product in similarProducts){
-        var storeName = productsProvider.getStoreName(product.storeId);
-        if(product.availableNow == 1){
-          comparisonItems.add(GestureDetector(
-            onTap: widget.storeName == storeName
-                ? () => chatlistsProvider.addProductToList(context, listItem)
-                : () => goToStoreProductPage(context, storeName, product),
-            child: PriceComparisonItem(
-                isSameStore: widget.storeName == storeName,
-                price: product.price ?? "N/A",
-                size: product.unit,
-                storeImagePath: productsProvider.getStoreLogoPath(storeName)),
-          ));
+      }else {
+        List<Product> similarProducts = await productsProvider.getSimilarProducts(widget.gtin);
+        for (var product in similarProducts) {
+          var storeName = productsProvider.getStoreName(product.storeId);
+          if (product.availableNow == 1) {
+            addComparisonItem(storeName, chatlistsProvider, product, productsProvider);
+          }
         }
       }
     } catch (e) {
       print("Failed to get price comparisons in product detail");
       print(e);
     }
-    setState(() {
+  }
 
-    });
+  void addComparisonItem(String storeName, ChatlistsProvider chatlistsProvider, Product product, ProductsProvider productsProvider) {
+     comparisonItems.add(GestureDetector(
+          onTap: widget.storeName == storeName
+              ? () => chatlistsProvider.addProductToList(context, listItem)
+              : () => goToStoreProductPage(context, storeName, product),
+          child: PriceComparisonItem(
+              isSameStore: widget.storeName == storeName,
+              price: product.price ?? "N/A",
+              size: product.unit,
+              storeImagePath: productsProvider.getStoreLogoPath(storeName)),
+        ));
+     setState(() {
+       canUpdateQuantity = true;
+     });
   }
 
   void goToStoreProductPage(BuildContext context, String selectedStore, Product product) {
@@ -199,351 +172,371 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           description: product.description,
           productCategory: product.category,
           price1: double.tryParse(product.price ?? "") ?? 0.0,
-          size1: product.unit, gtin: product.gtin,
+          size1: product.unit,
+          gtin: product.gtin,
         ));
   }
 
   @override
   Widget build(BuildContext context) {
-    print("comparison items: ${comparisonItems.length}");
     var tutorialProvider = Provider.of<TutorialProvider>(context);
     return Scaffold(
-      appBar: SearchAppBar(isBackButton: true,),
+      appBar: SearchAppBar(
+        isBackButton: true,
+      ),
       body: ShowCaseWidget(
-        builder: Builder(builder: (ctx){
-          WidgetsBinding.instance.addPostFrameCallback((_) async {
-            if (tutorialProvider.isTutorialRunning && FirebaseAuth.instance.currentUser != null ) {
-              getComparisonsFuture.whenComplete((){
-              ShowCaseWidget.of(ctx).startShowCase([TooltipKeys.showCase4]);
-              });
-            }
-          });
-         return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.productBrand.isEmpty ? widget.storeName : widget.productBrand,
-                    style: TextStyles.textViewSemiBold30.copyWith(color: blackSecondary),
-                  ),
-                  Text(
-                    widget.productName,
-                    style: TextStylesInter.textViewRegular14,
-                  ),
-                  5.ph,
-                  SizeContainer(itemSize: widget.size1),
-                  10.ph,
-                  Row(
-                    // mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                          height: 200.h,
-                          width: 200.w,
-                          child: Image.network(
-                            widget.imageURL,
-                            errorBuilder: (ctx, i, _) => SvgPicture.asset(imageError),
-                            width: 214.w,
-                            height: 214.h,
-                          )),
-                      Spacer(),
-                      Column(
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(right: comparisonItems.isEmpty ? 30 : 0),
-                            child: GestureDetector(
-                              onTap: () {
-                                Provider.of<ProductsProvider>(context, listen: false)
-                                  .shareProductViaDeepLink(widget.productName, widget.productId, widget.storeName, context);
-                                try{
-                                  TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Share product", DateTime.now().toUtc().toString(), "Product screen");
-                                }catch(e){
-                                  print(e);
-                                  TrackingUtils().trackButtonClick("Guest", "Share categories", DateTime.now().toUtc().toString(), "Product screen");
-                                }
-                              },
-                              child: Column(
-                                children: [
-                                  Container(
-                                    // margin: EdgeInsets.symmetric(horizontal: 10),
-                                      padding: EdgeInsets.all(15),
-                                      decoration: BoxDecoration(
-                                        color: purple30,
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: SvgPicture.asset(
-                                        shareIcon,
-                                        width: 20,
-                                        height: 20,
-                                      )),
-                                  10.ph,
-                                  Text(
-                                    "share".tr(),
-                                    style: TextStyles.textViewMedium12.copyWith(color: blackSecondary),
-                                  )
-                                ],
+        builder: Builder(
+          builder: (ctx) {
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              if (tutorialProvider.isTutorialRunning && FirebaseAuth.instance.currentUser != null) {
+                getComparisonsFuture.whenComplete(() {
+                  ShowCaseWidget.of(ctx).startShowCase([TooltipKeys.showCase4]);
+                });
+              }
+            });
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.productBrand.isEmpty ? widget.storeName : widget.productBrand,
+                      style: TextStyles.textViewSemiBold30.copyWith(color: blackSecondary),
+                    ),
+                    Text(
+                      widget.productName,
+                      style: TextStylesInter.textViewRegular14,
+                    ),
+                    5.ph,
+                    SizeContainer(itemSize: widget.size1),
+                    10.ph,
+                    Row(
+                      // mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                            height: 200.h,
+                            width: 200.w,
+                            child: Image.network(
+                              widget.imageURL,
+                              errorBuilder: (ctx, i, _) => SvgPicture.asset(imageError),
+                              width: 214.w,
+                              height: 214.h,
+                            )),
+                        Spacer(),
+                        Column(
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(right: comparisonItems.isEmpty ? 30 : 0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  Provider.of<ProductsProvider>(context, listen: false).shareProductViaDeepLink(
+                                      widget.productName, widget.productId, widget.storeName, context);
+                                  try {
+                                    TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
+                                        "Share product", DateTime.now().toUtc().toString(), "Product screen");
+                                  } catch (e) {
+                                    print(e);
+                                    TrackingUtils().trackButtonClick("Guest", "Share categories",
+                                        DateTime.now().toUtc().toString(), "Product screen");
+                                  }
+                                },
+                                child: Column(
+                                  children: [
+                                    Container(
+                                        // margin: EdgeInsets.symmetric(horizontal: 10),
+                                        padding: EdgeInsets.all(15),
+                                        decoration: BoxDecoration(
+                                          color: purple30,
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        child: SvgPicture.asset(
+                                          shareIcon,
+                                          width: 20,
+                                          height: 20,
+                                        )),
+                                    10.ph,
+                                    Text(
+                                      "share".tr(),
+                                      style: TextStyles.textViewMedium12.copyWith(color: blackSecondary),
+                                    )
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          20.ph,
-                         if(comparisonItems.isNotEmpty)
-                           QuantityCounter(
-                            quantity: quantity,
-                            increaseQuantity: () {
-                              setState(() {
-                                ++quantity;
-                                // getComparisons();
-                                getComparisonsFuture = getComparisons();
-                              });
-                              try{
-                                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "increase quantity", DateTime.now().toUtc().toString(), "Product screen");
-                              }catch(e){
-                                print(e);
-                                TrackingUtils().trackButtonClick("Guest", "increase quantity", DateTime.now().toUtc().toString(), "Product screen");
-                              }
-                            },
-                            decreaseQuantity: () {
-                              setState(() {
-                                quantity--;
-                                // getComparisons();
-                                getComparisonsFuture = getComparisons();
-                              });
-                              try{
-                                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "decrease quantity", DateTime.now().toUtc().toString(), "Product screen");
-                              }catch(e){
-                                print(e);
-                                TrackingUtils().trackButtonClick("Guest", "decrease quantity", DateTime.now().toUtc().toString(), "Product screen");
-                              }
-                            },
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                  30.ph,
+                            20.ph,
+                            if (canUpdateQuantity)
+                              QuantityCounter(
+                                quantity: quantity,
+                                increaseQuantity: increaseQuantity,
+                                decreaseQuantity: decreaseQuantity,
+                              ),
+                          ],
+                        )
+                      ],
+                    ),
+                    30.ph,
                     Text(
                       "whereToBuy".tr(),
                       style: TextStylesInter.textViewSemiBold16.copyWith(color: blackSecondary),
                     ),
                     FutureBuilder(
-                      future: getComparisonsFuture,
-                      builder: (context, snapshot) {
-                        if(snapshot.connectionState == ConnectionState.waiting){
-                          return Center(child: CircularProgressIndicator());
-                        }
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemCount: comparisonItems.length,
-                          itemBuilder: (context, index) {
-                            return Showcase.withWidget(
-                              targetBorderRadius: BorderRadius.circular(10),
-                              key: tutorialProvider.isTutorialRunning && index == 0 ? TooltipKeys.showCase4 : new GlobalKey<State<StatefulWidget>>(),
-                              tooltipPosition: TooltipPosition.bottom,
-                              container: Container(
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      height: 11,
-                                      width: 13,
-                                      child: CustomPaint(
-                                        painter: TrianglePainter(
-                                          strokeColor: purple70,
-                                          strokeWidth: 1,
-                                          paintingStyle: PaintingStyle.fill,
+                        future: getComparisonsFuture,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: comparisonItems.length,
+                            itemBuilder: (context, index) {
+                              return Showcase.withWidget(
+                                targetBorderRadius: BorderRadius.circular(10),
+                                key: tutorialProvider.isTutorialRunning && index == 0
+                                    ? TooltipKeys.showCase4
+                                    : new GlobalKey<State<StatefulWidget>>(),
+                                tooltipPosition: TooltipPosition.bottom,
+                                container: Container(
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        height: 11,
+                                        width: 13,
+                                        child: CustomPaint(
+                                          painter: TrianglePainter(
+                                            strokeColor: purple70,
+                                            strokeWidth: 1,
+                                            paintingStyle: PaintingStyle.fill,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.all(15),
-                                      width: 180.w,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8.r),
-                                        color: purple70,
-                                      ),
-                                      child: Column(
-                                          children: [
-                                            Text(
-                                              "toAddItemsInChat".tr(),
-                                              maxLines: 4,
-                                              style: TextStyles.textViewRegular13.copyWith(color: white),
-                                            ),
-                                            GestureDetector(
-                                              onTap: () async {
-                                                var id = await Provider.of<ChatlistsProvider>(context, listen: false).createChatList([]);
-                                                await pushNewScreen(context,
-                                                    screen: ChatListViewScreen(
-                                                      listId: id,
-                                                    ),
-                                                    withNavBar: false);
-                                                NavigatorController.jumpToTab(1);
-                                                // setState(() {
-                                                //   isFirstTime = false;
-                                                // });
-                                                ShowCaseWidget.of(ctx).next();
-                                              },
-                                              child: Row(
-                                                // mainAxisAlignment: MainAxisAlignment.end,
-                                                children: [
-                                                  SkipTutorialButton(tutorialProvider: tutorialProvider, context: ctx),
-                                                  Spacer(),
-                                                  Text(
-                                                    "Next".tr(),
-                                                    style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                                      Container(
+                                        padding: EdgeInsets.all(15),
+                                        width: 180.w,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(8.r),
+                                          color: purple70,
+                                        ),
+                                        child: Column(children: [
+                                          Text(
+                                            "toAddItemsInChat".tr(),
+                                            maxLines: 4,
+                                            style: TextStyles.textViewRegular13.copyWith(color: white),
+                                          ),
+                                          GestureDetector(
+                                            onTap: () async {
+                                              var id = await Provider.of<ChatlistsProvider>(context, listen: false)
+                                                  .createChatList([]);
+                                              await pushNewScreen(context,
+                                                  screen: ChatListViewScreen(
+                                                    listId: id,
                                                   ),
-                                                  Icon(
-                                                    Icons.arrow_forward_ios,
-                                                    color: white,
-                                                    size: 15.sp,
-                                                  )
-                                                ],
-                                              ),
-                                            )
-                                          ]),
-                                    ),
-                                  ],
+                                                  withNavBar: false);
+                                              NavigatorController.jumpToTab(1);
+                                              // setState(() {
+                                              //   isFirstTime = false;
+                                              // });
+                                              ShowCaseWidget.of(ctx).next();
+                                            },
+                                            child: Row(
+                                              // mainAxisAlignment: MainAxisAlignment.end,
+                                              children: [
+                                                SkipTutorialButton(tutorialProvider: tutorialProvider, context: ctx),
+                                                Spacer(),
+                                                Text(
+                                                  "Next".tr(),
+                                                  style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                                                ),
+                                                Icon(
+                                                  Icons.arrow_forward_ios,
+                                                  color: white,
+                                                  size: 15.sp,
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        ]),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              height: 50,
-                              width: 50,
-                              child: comparisonItems[index],
-                            );
-                          },
-                        );
-                      }
-                    ),
-                  SizedBox(
-                    height: 10.h,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                        border: Border.all(color: purple30, width: 2), borderRadius: BorderRadius.circular(15)),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.report_gmailerrorred,
-                          color: mainPurple,
-                        ),
-                        SizedBox(
-                          width: 15.w,
-                        ),
-                        Flexible(
-                            child: Text(
-                              "ThePricesShown".tr(),
-                              style: TextStyles.textViewLight12.copyWith(color: const Color.fromRGBO(62, 62, 62, 1)),
-                            )),
-                      ],
-                    ),
-                  ),
-                  30.ph,
-                  if (widget.description.isNotEmpty) ...[
-                    Text("Description".tr(), style: TextStyles.textViewSemiBold18.copyWith(color: blackSecondary)),
+                                height: 50,
+                                width: 50,
+                                child: comparisonItems[index],
+                              );
+                            },
+                          );
+                        }),
                     SizedBox(
                       height: 10.h,
                     ),
-                    Text(
-                      widget.description,
-                      style: TextStylesInter.textViewMedium14.copyWith(color: Color.fromRGBO(134, 136, 137, 1)),
-                    ),
-                  ],
-                  SizedBox(
-                    height: 20.h,
-                  ),
-                  Text(
-                    "Sizes".tr(),
-                    style: TextStyles.textViewSemiBold18,
-                  ),
-                  ListView(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      children: productSizes.map((size) {
-                        if (size.size.isEmpty || size.size == "None" || size.price == '0.0') {
-                          return Container();
-                        }
-                        return GestureDetector(
-                          onTap: () {},
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: bestValueSize == size.size ? mainPurple : Colors.transparent),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Row(
-                              children: [
-                                Image.network(
-                                  widget.imageURL,
-                                  errorBuilder: (ctx, _, s) => SvgPicture.asset(imageError),
-                                  width: 64,
-                                  height: 64,
-                                ),
-                                5.pw,
-                                Image.asset(
-                                  Provider.of<ProductsProvider>(context, listen: false).getImage(widget.storeName),
-                                  width: 20,
-                                  height: 20,
-                                ),
-                                34.pw,
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      size.size,
-                                      style: TextStylesInter.textViewSemiBold16.copyWith(color: blackSecondary),
-                                    ),
-                                    SizedBox(
-                                      height: 10.h,
-                                    ),
-                                    Row(
-                                      children: [
-                                        Text(
-                                          "\€${size.price}", //to type euro: ALT + 0128
-                                          style: TextStyles.textViewMedium12.copyWith(color: mainPurple),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                                Spacer(),
-                                Column(
-                                  children: [
-                                    if (bestValueSize.isNotEmpty && bestValueSize == size.size)
-                                      Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                                        decoration:
-                                        BoxDecoration(borderRadius: BorderRadius.circular(10), color: mainPurple),
-                                        child: Text(
-                                          "BESTVALUE".tr(),
-                                          style: TextStyles.textViewRegular12.copyWith(color: Colors.white),
-                                        ),
-                                      ),
-                                    10.ph,
-                                    if (cheapest.isNotEmpty && cheapest == size.price)
-                                      Container(
-                                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
-                                        decoration:
-                                        BoxDecoration(borderRadius: BorderRadius.circular(10), color: mainPurple),
-                                        child: Text(
-                                          "cheapest".tr(),
-                                          style: TextStyles.textViewRegular12.copyWith(color: Colors.white),
-                                        ),
-                                      ),
-                                  ],
-                                )
-                              ],
-                            ),
+                    Container(
+                      padding: EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: purple30, width: 2), borderRadius: BorderRadius.circular(15)),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.report_gmailerrorred,
+                            color: mainPurple,
                           ),
-                        );
-                      }).toList()),
-                ],
+                          SizedBox(
+                            width: 15.w,
+                          ),
+                          Flexible(
+                              child: Text(
+                            "ThePricesShown".tr(),
+                            style: TextStyles.textViewLight12.copyWith(color: const Color.fromRGBO(62, 62, 62, 1)),
+                          )),
+                        ],
+                      ),
+                    ),
+                    30.ph,
+                    if (widget.description.isNotEmpty) ...[
+                      Text("Description".tr(), style: TextStyles.textViewSemiBold18.copyWith(color: blackSecondary)),
+                      SizedBox(
+                        height: 10.h,
+                      ),
+                      Text(
+                        widget.description,
+                        style: TextStylesInter.textViewMedium14.copyWith(color: Color.fromRGBO(134, 136, 137, 1)),
+                      ),
+                    ],
+                    SizedBox(
+                      height: 20.h,
+                    ),
+                    Text(
+                      "Sizes".tr(),
+                      style: TextStyles.textViewSemiBold18,
+                    ),
+                    ListView(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        children: productSizes.map((size) {
+                          if (size.size.isEmpty || size.size == "None" || size.price == '0.0') {
+                            return Container();
+                          }
+                          return GestureDetector(
+                            onTap: () {},
+                            child: Container(
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: bestValueSize == size.size ? mainPurple : Colors.transparent),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Row(
+                                children: [
+                                  Image.network(
+                                    widget.imageURL,
+                                    errorBuilder: (ctx, _, s) => SvgPicture.asset(imageError),
+                                    width: 64,
+                                    height: 64,
+                                  ),
+                                  5.pw,
+                                  Image.asset(
+                                    Provider.of<ProductsProvider>(context, listen: false).getImage(widget.storeName),
+                                    width: 20,
+                                    height: 20,
+                                  ),
+                                  34.pw,
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        size.size,
+                                        style: TextStylesInter.textViewSemiBold16.copyWith(color: blackSecondary),
+                                      ),
+                                      SizedBox(
+                                        height: 10.h,
+                                      ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            "\€${size.price}", //to type euro: ALT + 0128
+                                            style: TextStyles.textViewMedium12.copyWith(color: mainPurple),
+                                          ),
+                                        ],
+                                      )
+                                    ],
+                                  ),
+                                  Spacer(),
+                                  Column(
+                                    children: [
+                                      if (bestValueSize.isNotEmpty && bestValueSize == size.size)
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                                          decoration:
+                                              BoxDecoration(borderRadius: BorderRadius.circular(10), color: mainPurple),
+                                          child: Text(
+                                            "BESTVALUE".tr(),
+                                            style: TextStyles.textViewRegular12.copyWith(color: Colors.white),
+                                          ),
+                                        ),
+                                      10.ph,
+                                      if (cheapest.isNotEmpty && cheapest == size.price)
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 3),
+                                          decoration:
+                                              BoxDecoration(borderRadius: BorderRadius.circular(10), color: mainPurple),
+                                          child: Text(
+                                            "cheapest".tr(),
+                                            style: TextStyles.textViewRegular12.copyWith(color: Colors.white),
+                                          ),
+                                        ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList()),
+                  ],
+                ),
               ),
-            ),
-          );
-
-        },),
+            );
+          },
+        ),
       ),
     );
+  }
+
+  decreaseQuantity() {
+    setState(() {
+      quantity--;
+    });
+    listItem.quantity--;
+    trackQuantityDecrease();
+  }
+
+  increaseQuantity() {
+    setState(() {
+      ++quantity;
+    });
+    listItem.quantity++;
+    trackQuantityIncrease();
+  }
+
+  void trackQuantityDecrease() {
+    try {
+      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "decrease quantity",
+          DateTime.now().toUtc().toString(), "Product screen");
+    } catch (e) {
+      print(e);
+      TrackingUtils()
+          .trackButtonClick("Guest", "decrease quantity", DateTime.now().toUtc().toString(), "Product screen");
+    }
+  }
+
+  void trackQuantityIncrease() {
+    try {
+      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "increase quantity",
+          DateTime.now().toUtc().toString(), "Product screen");
+    } catch (e) {
+      print(e);
+      TrackingUtils()
+          .trackButtonClick("Guest", "increase quantity", DateTime.now().toUtc().toString(), "Product screen");
+    }
   }
 }
 

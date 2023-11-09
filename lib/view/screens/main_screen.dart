@@ -180,7 +180,7 @@ class _MainScreenState extends State<MainScreen> {
     return [
       HomeScreen(),
       ChatlistsScreen(),
-      InsightsScreen(),
+      // InsightsScreen(),
       FirebaseAuth.instance.currentUser == null ? Container() : ProfileScreen(),
     ];
   }
@@ -216,25 +216,25 @@ class _MainScreenState extends State<MainScreen> {
           }
         }
       ),
-      PersistentBottomNavBarItem(
-          icon: Icon(
-            Icons.analytics_outlined,
-            size: 24.sp,
-          ),
-          title: ("Insights".tr()),
-          textStyle: TextStyle(fontSize: 12.sp),
-          activeColorPrimary: selectedColor,
-          inactiveColorPrimary: unSelectedColor,
-          onPressed: (_){
-            NavigatorController.jumpToTab(2);
-            try{
-              TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open Insights screen", DateTime.now().toUtc().toString(), "Home screen");
-            }catch(e){
-              print(e);
-              TrackingUtils().trackButtonClick("Guest", "open Insights screen", DateTime.now().toUtc().toString(), "Home screen");
-            }
-          }
-      ),
+      // PersistentBottomNavBarItem(
+      //     icon: Icon(
+      //       Icons.analytics_outlined,
+      //       size: 24.sp,
+      //     ),
+      //     title: ("Insights".tr()),
+      //     textStyle: TextStyle(fontSize: 12.sp),
+      //     activeColorPrimary: selectedColor,
+      //     inactiveColorPrimary: unSelectedColor,
+      //     onPressed: (_){
+      //       NavigatorController.jumpToTab(2);
+      //       try{
+      //         TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open Insights screen", DateTime.now().toUtc().toString(), "Home screen");
+      //       }catch(e){
+      //         print(e);
+      //         TrackingUtils().trackButtonClick("Guest", "open Insights screen", DateTime.now().toUtc().toString(), "Home screen");
+      //       }
+      //     }
+      // ),
 
       PersistentBottomNavBarItem(
           icon: Icon(
@@ -255,7 +255,7 @@ class _MainScreenState extends State<MainScreen> {
                         title: 'Sign In',
                       ));
             } else {
-              NavigatorController.jumpToTab(3);
+              NavigatorController.jumpToTab(2);
               try{
                 TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open profile screen", DateTime.now().toUtc().toString(), "Home screen");
               }catch(e){
