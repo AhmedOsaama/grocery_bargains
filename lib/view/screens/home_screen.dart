@@ -59,6 +59,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final PagingController<int, Product> _pagingController = PagingController(firstPageKey: 0);
+  ScrollController scrollController = ScrollController();
+
   static const _pageSize = 100;
   var _pageNumber = 1;
 
@@ -78,6 +80,11 @@ class _HomeScreenState extends State<HomeScreen> {
   var isFetching = false;
 
   late Future getProductsFuture;
+  late Future<List<Translation>> getCategoryTranslations;
+
+  var showFAB = false;
+
+  List<Future<Translation>> translatedCategoryList = [];
 
   @override
   void initState() {
@@ -90,8 +97,35 @@ class _HomeScreenState extends State<HomeScreen> {
       TrackingUtils()
           .trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Home Screen");
     }
+    addScrollListener();
 
-    // Provider.of<UserProvider>(context, listen: false).getFirstTime();
+    translateCategories();
+  }
+
+  void translateCategories() {
+    Provider.of<ProductsProvider>(context, listen: false).categories.forEach((element) {
+      var translationFuture = GoogleTranslator().translate(element.category, to: "nl");
+      translatedCategoryList.add(translationFuture);
+    });
+
+    getCategoryTranslations = Future.wait(translatedCategoryList);
+  }
+
+  void addScrollListener() {
+    return scrollController.addListener(() {
+      double showOffset = 200.0;
+      if (scrollController.offset > showOffset) {
+        if (!showFAB)
+          setState(() {
+            showFAB = true;
+          });
+      } else {
+        if (showFAB)
+          setState(() {
+            showFAB = false;
+          });
+      }
+    });
   }
 
   @override
@@ -102,13 +136,13 @@ class _HomeScreenState extends State<HomeScreen> {
     return ShowCaseWidget(
       onStart: (_, i) {},
       builder: Builder(builder: (builder) {
-        print("IS TUTORIAL RUNNING: ${tutorialProvider.isTutorialRunning}");
-        print("CAN SHOW WELCOME: ${tutorialProvider.canShowWelcomeDialog}");
-        print("Dialog: ${dialogOpened}");
+        // print("IS TUTORIAL RUNNING: ${tutorialProvider.isTutorialRunning}");
+        // print("CAN SHOW WELCOME: ${tutorialProvider.canShowWelcomeDialog}");
+        // print("Dialog: ${dialogOpened}");
         if (tutorialProvider.canShowWelcomeDialog) {
-          print("INSIDE");
+          // print("INSIDE");
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            print("INSIDE CALLBACK");
+            // print("INSIDE CALLBACK");
             showWelcomeDialog(context, builder);
             tutorialProvider.deactivateWelcomeTutorial();
             startTutorialStopwatch(chatlistProvider);
@@ -117,82 +151,14 @@ class _HomeScreenState extends State<HomeScreen> {
         return Scaffold(
           resizeToAvoidBottomInset: true,
           backgroundColor: white,
-          bottomSheet: Showcase.withWidget(
-            key: tutorialProvider.isTutorialRunning ? TooltipKeys.showCase1 : new GlobalKey<State<StatefulWidget>>(),
-            container: Column(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(15),
-                  //margin: EdgeInsets.symmetric(vertical: 30.w),
-                  width: 180.w,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8.r),
-                    color: purple70,
-                  ),
-                  child: Column(children: [
-                    Text(
-                      "UseOurNavigation".tr(),
-                      maxLines: 4,
-                      style: TextStyles.textViewRegular13.copyWith(color: white),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        ShowCaseWidget.of(builder).next();
-                        // ShowCaseWidget.of(builder).dismiss();
-                      },
-                      child: Row(
-                        children: [
-                          SkipTutorialButton(tutorialProvider: tutorialProvider, context: builder),
-                          Spacer(),
-                          Text(
-                            LocaleKeys.next.tr(),
-                            style: TextStyles.textViewSemiBold14.copyWith(color: white),
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            color: white,
-                            size: 15.sp,
-                          )
-                        ],
-                      ),
-                    )
-                  ]),
-                ),
-                Container(
-                  height: 11,
-                  width: 13,
-                  child: CustomPaint(
-                    painter: DownTrianglePainter(
-                      strokeColor: purple70,
-                      strokeWidth: 1,
-                      paintingStyle: PaintingStyle.fill,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            height: 110.h,
-            width: 190.h,
-            child: Container(
-              height: 0,
-              color: Colors.transparent,
-            ),
-          ),
+          floatingActionButton: buildFAB(),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+          bottomSheet: buildNavigationBarTutorial(tutorialProvider, builder),
           body: SafeArea(
             child: RefreshIndicator(
-              onRefresh: () {
-                setState(() {
-                  getAllListsFuture = Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlistsFuture();
-                  if (FirebaseAuth.instance.currentUser != null) {
-                    getUserDataFuture = FirebaseFirestore.instance
-                        .collection('/users')
-                        .doc(FirebaseAuth.instance.currentUser!.uid)
-                        .get();
-                  }
-                });
-                return Future.value();
-              },
+              onRefresh: () => onRefresh(context),
               child: SingleChildScrollView(
+                controller: scrollController,
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 15.w),
                   child: Column(
@@ -201,425 +167,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       SizedBox(
                         height: 15.h,
                       ),
-                      Showcase.withWidget(
-                          targetBorderRadius: BorderRadius.circular(10),
-                          key:
-                          tutorialProvider.isTutorialRunning ? TooltipKeys.showCase2 : new GlobalKey<State<StatefulWidget>>(),
-                          container: Container(
-                            child: Column(
-                              children: [
-                                Container(
-                                  height: 11,
-                                  width: 13,
-                                  child: CustomPaint(
-                                    painter: TrianglePainter(
-                                      strokeColor: purple70,
-                                      strokeWidth: 1,
-                                      paintingStyle: PaintingStyle.fill,
-                                    ),
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(15),
-                                  width: 180.w,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8.r),
-                                    color: purple70,
-                                  ),
-                                  child: Column(children: [
-                                    Text(
-                                      "ItIsSmartSearch".tr(),
-                                      maxLines: 4,
-                                      style: TextStyles.textViewRegular13.copyWith(color: white),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        ShowCaseWidget.of(builder).next();
-                                      },
-                                      child: Row(
-                                        children: [
-                                          SkipTutorialButton(tutorialProvider: tutorialProvider, context: builder),
-                                          Spacer(),
-                                          Text(
-                                            "Next".tr(),
-                                            style: TextStyles.textViewSemiBold14.copyWith(color: white),
-                                          ),
-                                          Icon(
-                                            Icons.arrow_forward_ios,
-                                            color: white,
-                                            size: 15.sp,
-                                          )
-                                        ],
-                                      ),
-                                    )
-                                  ]),
-                                ),
-                              ],
-                            ),
-                          ),
-                          height: 50,
-                          width: 50,
-                          child: SearchWidget(isBackButton: false)),
+                      buildSearchTutorial(tutorialProvider, builder),
                       SizedBox(
                         height: 10.h,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "allCategories".tr(),
-                            style: TextStylesDMSans.textViewBold16.copyWith(color: prussian),
-                          ),
-                          TextButton(
-                              onPressed: () {
-                                AppNavigator.push(context: context, screen: AllCategoriesScreen());
-                                try {
-                                  TrackingUtils().trackTextLinkClicked(FirebaseAuth.instance.currentUser!.uid,
-                                      DateTime.now().toUtc().toString(), "Home screen", "See all categories");
-                                } catch (e) {
-                                  print(e);
-                                  TrackingUtils().trackTextLinkClicked(
-                                      'Guest', DateTime.now().toUtc().toString(), "Home screen", "See all categories");
-                                }
-                                // pushNewScreen(context, screen: AllCategoriesScreen(), withNavBar: true);
-                              },
-                              child: Text(
-                                'seeAll'.tr(),
-                                style: textButtonStyle,
-                              ))
-                        ],
-                      ),
-                      Provider.of<ProductsProvider>(context, listen: true).categories.isEmpty
-                          ? const Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          : Container(
-                              height: ScreenUtil().screenHeight * 0.16,
-                              child: ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children:
-                                      Provider.of<ProductsProvider>(context, listen: true).categories.map((element) {
-                                    return Padding(
-                                      padding: EdgeInsets.only(
-                                        left: Provider.of<ProductsProvider>(context, listen: true).categories.first ==
-                                                element
-                                            ? 0
-                                            : 10.0,
-                                      ),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          pushNewScreen(context,
-                                              screen: CategoryScreen(
-                                                category: element.category,
-                                              ),
-                                              withNavBar: true);
-                                          try {
-                                            TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
-                                                "Open category page", DateTime.now().toUtc().toString(), "Home screen");
-                                          } catch (e) {
-                                            print(e);
-                                            TrackingUtils().trackButtonClick("Guest", "Open category page",
-                                                DateTime.now().toUtc().toString(), "Home screen");
-                                          }
-                                        },
-                                        child: Container(
-                                          // width: 71.w,
-                                          child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: [
-                                              Image.network(
-                                                element.image,
-                                                width: 90,
-                                                height: 60,
-                                                errorBuilder: (_, p, ctx) {
-                                                  return SvgPicture.asset(imageError);
-                                                },
-                                              ),
-                                              FutureBuilder(
-                                                  future: GoogleTranslator().translate(element.category, to: "nl"),
-                                                  builder: (context, snapshot) {
-                                                    if (snapshot.connectionState == ConnectionState.waiting)
-                                                      return Container();
-                                                    var translatedCategory = 'N/A';
-                                                    if (snapshot.data != null) translatedCategory = snapshot.data!.text;
-                                                    if (context.locale.languageCode == "nl") {
-                                                      return Flexible(
-                                                        child: Text(
-                                                          translatedCategory,
-                                                          maxLines: 3,
-                                                          textAlign: TextAlign.center,
-                                                          style: TextStyles.textViewMedium10.copyWith(color: gunmetal),
-                                                        ),
-                                                      );
-                                                    }
-                                                    return Text(
-                                                      element.category,
-                                                      style: TextStyles.textViewMedium10.copyWith(color: gunmetal),
-                                                      textAlign: TextAlign.center,
-                                                      maxLines: 3,
-                                                    );
-                                                  })
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList()),
-                            ),
-                      Showcase.withWidget(
-                        key: tutorialProvider.isTutorialRunning ? TooltipKeys.showCase3 : new GlobalKey<State<StatefulWidget>>(),
-                        targetBorderRadius: BorderRadius.circular(8.r),
-                        tooltipPosition: TooltipPosition.top,
-                        onBarrierClick: () async {
-                          await goToProductPageTutorial(context, builder);
-                        },
-                        container: Column(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                              width: ScreenUtil().screenWidth * 0.95,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(8.r),
-                                color: purple70,
-                              ),
-                              child: Column(children: [
-                                Text(
-                                  "StartHereTo".tr(),
-                                  maxLines: 4,
-                                  style: TextStyles.textViewRegular13.copyWith(color: white),
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Image.asset(personAva),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                                          margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 8),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.only(
-                                              topRight: const Radius.circular(18),
-                                              topLeft: const Radius.circular(18),
-                                              bottomLeft: const Radius.circular(0),
-                                              bottomRight: const Radius.circular(18),
-                                            ),
-                                            color: const Color.fromRGBO(233, 233, 235, 1),
-                                          ),
-                                          child: Text(
-                                            "Got any ideas for the plan",
-                                            style: TextStyles.textViewRegular16.copyWith(color: Colors.black),
-                                            textAlign: TextAlign.left,
-                                          ),
-                                        ),
-                                        SvgPicture.asset(whiteAdd),
-                                        Text(
-                                          "  Add to list",
-                                          style: TextStyles.textViewRegular10.copyWith(color: white),
-                                        ),
-                                      ],
-                                    ),
-                                    Text(
-                                      "Read 10:02",
-                                      style: TextStyles.textViewRegular10.copyWith(color: white),
-                                    ),
-                                  ],
-                                ),
-                                GestureDetector(
-                                  onTap: () async {
-                                    await goToProductPageTutorial(context, builder);
-                                  },
-                                  child: Row(
-                                    children: [
-                                      SkipTutorialButton(tutorialProvider: tutorialProvider, context: builder),
-                                      Spacer(),
-                                      Text(
-                                        "Next",
-                                        style: TextStyles.textViewSemiBold14.copyWith(color: white),
-                                      ),
-                                      Icon(
-                                        Icons.arrow_forward_ios,
-                                        color: white,
-                                        size: 15.sp,
-                                      )
-                                    ],
-                                  ),
-                                )
-                              ]),
-                            ),
-                            Container(
-                              height: 11,
-                              width: 13,
-                              child: CustomPaint(
-                                painter: DownTrianglePainter(
-                                  strokeColor: purple70,
-                                  strokeWidth: 1,
-                                  paintingStyle: PaintingStyle.fill,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        height: 110.h,
-                        width: ScreenUtil().screenWidth * 0.95,
-                        child: FutureBuilder(
-                            future: getAllListsFuture,
-                            builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
-                              if (snapshot.connectionState == ConnectionState.waiting) {
-                                return Container();
-                              }
-                              var allLists = snapshot.data?.docs ?? [];
-                              if (!snapshot.hasData || allLists.isEmpty || FirebaseAuth.instance.currentUser == null) {
-                                return GestureDetector(
-                                  onTap: () {
-                                    NavigatorController.jumpToTab(1);
-                                  },
-                                  child: Image.asset(
-                                    newChatList,
-                                  ),
-                                );
-                              }
-                              return Container();
-                            }),
-                      ),
+                      buildAllCategoriesRow(context),
+                      buildCategories(context),
+                      buildNewChatlistShowcase(tutorialProvider, context, builder),
                       SizedBox(
                         height: 10.h,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            LocaleKeys.latestBargains.tr(),
-                            style: TextStylesDMSans.textViewBold16.copyWith(color: prussian),
-                          ),
-                          TextButton(
-                              onPressed: () {
-                                AppNavigator.push(context: context, screen: LatestBargainsScreen());
-                                try {
-                                  TrackingUtils().trackTextLinkClicked(FirebaseAuth.instance.currentUser!.uid,
-                                      DateTime.now().toUtc().toString(), "Home screen", "See all latest bargains");
-                                } catch (e) {
-                                  print(e);
-                                  TrackingUtils().trackTextLinkClicked('Guest', DateTime.now().toUtc().toString(),
-                                      "Home screen", "See all latest bargains");
-                                }
-                              },
-                              child: Text(
-                                'seeAll'.tr(),
-                                style: textButtonStyle,
-                              ))
-                        ],
-                      ),
-                      Consumer<ProductsProvider>(
-                        builder: (ctx, provider, _) {
-                          var products = provider.products;
-                          allProducts = products;
-                          if (products.isEmpty) {
-                            return ListView(
-                              shrinkWrap: true,
-                              children: List<Widget>.generate(
-                                  20,
-                                  (index) => Shimmer(
-                                        duration: Duration(seconds: 2),
-                                        colorOpacity: 0.7,
-                                        child: Container(
-                                          height: 253.h,
-                                          width: 174.w,
-                                          margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                                          padding: EdgeInsets.symmetric(horizontal: 15.w),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10),
-                                            color: purple10,
-                                          ),
-                                        ),
-                                      )),
-                            );
-                          } else {
-                            return GridView.builder(
-                                physics: ScrollPhysics(), // to disable GridView's scrolling
-                                shrinkWrap: true,
-                                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 200,
-                                    mainAxisExtent: 275,
-                                    childAspectRatio: 0.67,
-                                    crossAxisSpacing: 5,
-                                    mainAxisSpacing: 5),
-                                itemCount: products.length,
-                                itemBuilder: (BuildContext ctx, index) {
-                                  Product p = Product(
-                                    id: products.elementAt(index).id,
-                                    oldPrice: products.elementAt(index).oldPrice ?? "",
-                                    storeId: products.elementAt(index).storeId,
-                                    name: products.elementAt(index).name,
-                                    brand: products.elementAt(index).brand,
-                                    link: products.elementAt(index).link,
-                                    category: products.elementAt(index).category,
-                                    price: products.elementAt(index).price,
-                                    unit: products.elementAt(index).unit,
-                                    image: products.elementAt(index).image,
-                                    description: products.elementAt(index).description,
-                                    gtin: products.elementAt(index).gtin,
-                                    subCategory: products.elementAt(index).subCategory,
-                                    offer: products.elementAt(index).offer,
-                                    englishName: products.elementAt(index).englishName,
-                                    similarId: products.elementAt(index).similarId,
-                                    similarStId: products.elementAt(index).similarStId,
-                                    availableNow: products.elementAt(index).availableNow,
-                                    dateAdded: products.elementAt(index).dateAdded,
-                                  );
-                                  return DiscountItem(
-                                    product: p,
-                                    inGridView: false,
-                                  );
-                                });
-                          }
-                        },
-                      ),
-                      isFetching
-                          ? Center(child: CircularProgressIndicator())
-                          : GenericButton(
-                              borderRadius: BorderRadius.circular(10),
-                              borderColor: mainPurple,
-                              color: Colors.white,
-                              onPressed: () async {
-                                var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
-                                setState(() {
-                                  isFetching = true;
-                                });
-                                try {
-                                  _pageNumber = _pageNumber + 1;
-                                  print("Page Number: " + _pageNumber.toString());
-                                  await productsProvider.getProducts(_pageNumber);
-                                } catch (e) {
-                                  print(e);
-                                }
-                                setState(() {
-                                  isFetching = false;
-                                });
-                                try {
-                                  TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "See more",
-                                      DateTime.now().toUtc().toString(), "Home screen");
-                                } catch (e) {
-                                  print(e);
-                                  TrackingUtils().trackButtonClick(
-                                      "Guest", "See more", DateTime.now().toUtc().toString(), "Home screen");
-                                }
-                              },
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "SEE MORE",
-                                    style: TextStyles.textViewMedium12.copyWith(color: blackSecondary),
-                                  ),
-                                  10.pw,
-                                  Icon(
-                                    Icons.keyboard_arrow_down,
-                                    color: Colors.black,
-                                  ),
-                                ],
-                              )),
+                      buildLatestBargainsRow(context),
+                      buildAllProducts(),
+                      isFetching ? Center(child: CircularProgressIndicator()) : buildSeeMore(context),
                     ],
                   ),
                 ),
@@ -628,6 +188,516 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       }),
+    );
+  }
+
+  Opacity buildFAB() {
+    return Opacity(
+          opacity: showFAB ? 0.6 : 0.0, //set obacity to 1 on visible, or hide
+          child: FloatingActionButton(
+            onPressed: () {
+              scrollController.animateTo(
+                  //go to top of scroll
+                  0, //scroll offset to go
+                  duration: Duration(milliseconds: 500), //duration of scroll
+                  curve: Curves.fastOutSlowIn //scroll type
+                  );
+            },
+            child: Icon(Icons.arrow_upward),
+            backgroundColor: Colors.grey,
+          ),
+        );
+  }
+
+  Showcase buildNewChatlistShowcase(TutorialProvider tutorialProvider, BuildContext context, BuildContext builder) {
+    return Showcase.withWidget(
+      key: tutorialProvider.isTutorialRunning ? TooltipKeys.showCase3 : new GlobalKey<State<StatefulWidget>>(),
+      targetBorderRadius: BorderRadius.circular(8.r),
+      tooltipPosition: TooltipPosition.top,
+      onBarrierClick: () async {
+        await goToProductPageTutorial(context, builder);
+      },
+      container: buildNewChatlistTutorial(context, builder, tutorialProvider),
+      height: 110.h,
+      width: ScreenUtil().screenWidth * 0.95,
+      child: buildNewChatlistImage(),
+    );
+  }
+
+  Consumer<ProductsProvider> buildAllProducts() {
+    return Consumer<ProductsProvider>(
+      builder: (ctx, provider, _) {
+        var products = provider.products;
+        allProducts = products;
+        if (products.isEmpty) {
+          return ShimmerList();
+        } else {
+          return GridView.builder(
+              physics: NeverScrollableScrollPhysics(), // to disable GridView's scrolling
+              shrinkWrap: true,
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 200,
+                  mainAxisExtent: 275,
+                  childAspectRatio: 0.67,
+                  crossAxisSpacing: 5,
+                  mainAxisSpacing: 5),
+              itemCount: products.length,
+              itemBuilder: (BuildContext ctx, index) {
+                Product p = Product(
+                  id: products.elementAt(index).id,
+                  oldPrice: products.elementAt(index).oldPrice ?? "",
+                  storeId: products.elementAt(index).storeId,
+                  name: products.elementAt(index).name,
+                  brand: products.elementAt(index).brand,
+                  link: products.elementAt(index).link,
+                  category: products.elementAt(index).category,
+                  price: products.elementAt(index).price,
+                  unit: products.elementAt(index).unit,
+                  image: products.elementAt(index).image,
+                  description: products.elementAt(index).description,
+                  gtin: products.elementAt(index).gtin,
+                  subCategory: products.elementAt(index).subCategory,
+                  offer: products.elementAt(index).offer,
+                  englishName: products.elementAt(index).englishName,
+                  similarId: products.elementAt(index).similarId,
+                  similarStId: products.elementAt(index).similarStId,
+                  availableNow: products.elementAt(index).availableNow,
+                  dateAdded: products.elementAt(index).dateAdded,
+                );
+                return DiscountItem(
+                  product: p,
+                  inGridView: false,
+                );
+              });
+        }
+      },
+    );
+  }
+
+  Future<void> onRefresh(BuildContext context) {
+    setState(() {
+      getAllListsFuture = Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlistsFuture();
+      if (FirebaseAuth.instance.currentUser != null) {
+        getUserDataFuture =
+            FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
+      }
+    });
+    return Future.value();
+  }
+
+  Showcase buildSearchTutorial(TutorialProvider tutorialProvider, BuildContext builder) {
+    return Showcase.withWidget(
+        targetBorderRadius: BorderRadius.circular(10),
+        key: tutorialProvider.isTutorialRunning ? TooltipKeys.showCase2 : new GlobalKey<State<StatefulWidget>>(),
+        container: Container(
+          child: Column(
+            children: [
+              Container(
+                height: 11,
+                width: 13,
+                child: CustomPaint(
+                  painter: TrianglePainter(
+                    strokeColor: purple70,
+                    strokeWidth: 1,
+                    paintingStyle: PaintingStyle.fill,
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.all(15),
+                width: 180.w,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8.r),
+                  color: purple70,
+                ),
+                child: Column(children: [
+                  Text(
+                    "ItIsSmartSearch".tr(),
+                    maxLines: 4,
+                    style: TextStyles.textViewRegular13.copyWith(color: white),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      ShowCaseWidget.of(builder).next();
+                    },
+                    child: Row(
+                      children: [
+                        SkipTutorialButton(tutorialProvider: tutorialProvider, context: builder),
+                        Spacer(),
+                        Text(
+                          "Next".tr(),
+                          style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: white,
+                          size: 15.sp,
+                        )
+                      ],
+                    ),
+                  )
+                ]),
+              ),
+            ],
+          ),
+        ),
+        height: 50,
+        width: 50,
+        child: SearchWidget(isBackButton: false));
+  }
+
+  Showcase buildNavigationBarTutorial(TutorialProvider tutorialProvider, BuildContext builder) {
+    return Showcase.withWidget(
+      key: tutorialProvider.isTutorialRunning ? TooltipKeys.showCase1 : new GlobalKey<State<StatefulWidget>>(),
+      container: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(15),
+            //margin: EdgeInsets.symmetric(vertical: 30.w),
+            width: 180.w,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8.r),
+              color: purple70,
+            ),
+            child: Column(children: [
+              Text(
+                "UseOurNavigation".tr(),
+                maxLines: 4,
+                style: TextStyles.textViewRegular13.copyWith(color: white),
+              ),
+              GestureDetector(
+                onTap: () {
+                  ShowCaseWidget.of(builder).next();
+                  // ShowCaseWidget.of(builder).dismiss();
+                },
+                child: Row(
+                  children: [
+                    SkipTutorialButton(tutorialProvider: tutorialProvider, context: builder),
+                    Spacer(),
+                    Text(
+                      LocaleKeys.next.tr(),
+                      style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                    ),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: white,
+                      size: 15.sp,
+                    )
+                  ],
+                ),
+              )
+            ]),
+          ),
+          Container(
+            height: 11,
+            width: 13,
+            child: CustomPaint(
+              painter: DownTrianglePainter(
+                strokeColor: purple70,
+                strokeWidth: 1,
+                paintingStyle: PaintingStyle.fill,
+              ),
+            ),
+          ),
+        ],
+      ),
+      height: 110.h,
+      width: 190.h,
+      child: Container(
+        height: 0,
+        color: Colors.transparent,
+      ),
+    );
+  }
+
+  Row buildAllCategoriesRow(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "allCategories".tr(),
+          style: TextStylesDMSans.textViewBold16.copyWith(color: prussian),
+        ),
+        TextButton(
+            onPressed: () {
+              AppNavigator.push(context: context, screen: AllCategoriesScreen());
+              try {
+                TrackingUtils().trackTextLinkClicked(FirebaseAuth.instance.currentUser!.uid,
+                    DateTime.now().toUtc().toString(), "Home screen", "See all categories");
+              } catch (e) {
+                print(e);
+                TrackingUtils().trackTextLinkClicked(
+                    'Guest', DateTime.now().toUtc().toString(), "Home screen", "See all categories");
+              }
+              // pushNewScreen(context, screen: AllCategoriesScreen(), withNavBar: true);
+            },
+            child: Text(
+              'seeAll'.tr(),
+              style: textButtonStyle,
+            ))
+      ],
+    );
+  }
+
+  Widget buildCategories(BuildContext context) {
+    return Provider.of<ProductsProvider>(context, listen: true).categories.isEmpty
+        ? const Center(
+            child: CircularProgressIndicator(),
+          )
+        : Container(
+            height: ScreenUtil().screenHeight * 0.16,
+            child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: Provider.of<ProductsProvider>(context, listen: true).categories.map((element) {
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      left: Provider.of<ProductsProvider>(context, listen: true).categories.first == element ? 0 : 10.0,
+                    ),
+                    child: GestureDetector(
+                      onTap: () {
+                        pushNewScreen(context,
+                            screen: CategoryScreen(
+                              category: element.category,
+                            ),
+                            withNavBar: true);
+                        try {
+                          TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open category page",
+                              DateTime.now().toUtc().toString(), "Home screen");
+                        } catch (e) {
+                          print(e);
+                          TrackingUtils().trackButtonClick(
+                              "Guest", "Open category page", DateTime.now().toUtc().toString(), "Home screen");
+                        }
+                      },
+                      child: Container(
+                        // width: 71.w,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.network(
+                              element.image,
+                              width: 90,
+                              height: 60,
+                              errorBuilder: (_, p, ctx) {
+                                return SvgPicture.asset(imageError);
+                              },
+                            ),
+                            FutureBuilder(
+                                future: getCategoryTranslations,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState == ConnectionState.waiting) return Container();
+                                  // var translatedCategory = 'N/A';
+                                  var translatedCategories = [];
+                                  if (snapshot.data != null) translatedCategories = snapshot.data ?? [];
+                                  var translatedCategoryIndex = translatedCategories.indexOf(element);
+                                  if (context.locale.languageCode == "nl") {
+                                    return Flexible(
+                                      child: Text(
+                                        translatedCategories[translatedCategoryIndex],
+                                        maxLines: 3,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyles.textViewMedium10.copyWith(color: gunmetal),
+                                      ),
+                                    );
+                                  }
+                                  return Text(
+                                    element.category,
+                                    style: TextStyles.textViewMedium10.copyWith(color: gunmetal),
+                                    textAlign: TextAlign.center,
+                                    maxLines: 3,
+                                  );
+                                })
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList()),
+          );
+  }
+
+  GenericButton buildSeeMore(BuildContext context) {
+    return GenericButton(
+        borderRadius: BorderRadius.circular(10),
+        borderColor: mainPurple,
+        color: Colors.white,
+        onPressed: () async {
+          var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
+          setState(() {
+            isFetching = true;
+          });
+          try {
+            _pageNumber = _pageNumber + 1;
+            print("Page Number: " + _pageNumber.toString());
+            await productsProvider.getProducts(_pageNumber);
+          } catch (e) {
+            print(e);
+          }
+          setState(() {
+            isFetching = false;
+          });
+          try {
+            TrackingUtils().trackButtonClick(
+                FirebaseAuth.instance.currentUser!.uid, "See more", DateTime.now().toUtc().toString(), "Home screen");
+          } catch (e) {
+            print(e);
+            TrackingUtils().trackButtonClick("Guest", "See more", DateTime.now().toUtc().toString(), "Home screen");
+          }
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              "SEE MORE",
+              style: TextStyles.textViewMedium12.copyWith(color: blackSecondary),
+            ),
+            10.pw,
+            Icon(
+              Icons.keyboard_arrow_down,
+              color: Colors.black,
+            ),
+          ],
+        ));
+  }
+
+  Row buildLatestBargainsRow(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          LocaleKeys.latestBargains.tr(),
+          style: TextStylesDMSans.textViewBold16.copyWith(color: prussian),
+        ),
+        TextButton(
+            onPressed: () {
+              AppNavigator.push(context: context, screen: LatestBargainsScreen());
+              try {
+                TrackingUtils().trackTextLinkClicked(FirebaseAuth.instance.currentUser!.uid,
+                    DateTime.now().toUtc().toString(), "Home screen", "See all latest bargains");
+              } catch (e) {
+                print(e);
+                TrackingUtils().trackTextLinkClicked(
+                    'Guest', DateTime.now().toUtc().toString(), "Home screen", "See all latest bargains");
+              }
+            },
+            child: Text(
+              'seeAll'.tr(),
+              style: textButtonStyle,
+            ))
+      ],
+    );
+  }
+
+  FutureBuilder<QuerySnapshot<Object?>> buildNewChatlistImage() {
+    return FutureBuilder(
+        future: getAllListsFuture,
+        builder: (ctx, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container();
+          }
+          var allLists = snapshot.data?.docs ?? [];
+          if (!snapshot.hasData || allLists.isEmpty || FirebaseAuth.instance.currentUser == null) {
+            return GestureDetector(
+              onTap: () {
+                NavigatorController.jumpToTab(1);
+              },
+              child: Image.asset(
+                newChatList,
+              ),
+            );
+          }
+          return Container();
+        });
+  }
+
+  Column buildNewChatlistTutorial(BuildContext context, BuildContext builder, TutorialProvider tutorialProvider) {
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+          width: ScreenUtil().screenWidth * 0.95,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8.r),
+            color: purple70,
+          ),
+          child: Column(children: [
+            Text(
+              "StartHereTo".tr(),
+              maxLines: 4,
+              style: TextStyles.textViewRegular13.copyWith(color: white),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Image.asset(personAva),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                      margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 8),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topRight: const Radius.circular(18),
+                          topLeft: const Radius.circular(18),
+                          bottomLeft: const Radius.circular(0),
+                          bottomRight: const Radius.circular(18),
+                        ),
+                        color: const Color.fromRGBO(233, 233, 235, 1),
+                      ),
+                      child: Text(
+                        "Got any ideas for the plan",
+                        style: TextStyles.textViewRegular16.copyWith(color: Colors.black),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                    SvgPicture.asset(whiteAdd),
+                    Text(
+                      "  Add to list",
+                      style: TextStyles.textViewRegular10.copyWith(color: white),
+                    ),
+                  ],
+                ),
+                Text(
+                  "Read 10:02",
+                  style: TextStyles.textViewRegular10.copyWith(color: white),
+                ),
+              ],
+            ),
+            GestureDetector(
+              onTap: () async {
+                await goToProductPageTutorial(context, builder);
+              },
+              child: Row(
+                children: [
+                  SkipTutorialButton(tutorialProvider: tutorialProvider, context: builder),
+                  Spacer(),
+                  Text(
+                    "Next",
+                    style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: white,
+                    size: 15.sp,
+                  )
+                ],
+              ),
+            )
+          ]),
+        ),
+        Container(
+          height: 11,
+          width: 13,
+          child: CustomPaint(
+            painter: DownTrianglePainter(
+              strokeColor: purple70,
+              strokeWidth: 1,
+              paintingStyle: PaintingStyle.fill,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -755,8 +825,7 @@ class _HomeScreenState extends State<HomeScreen> {
     AppNavigator.pop(context: context);
     try {
       // setState(() {
-        ShowCaseWidget.of(builder)
-            .startShowCase([TooltipKeys.showCase1, TooltipKeys.showCase2, TooltipKeys.showCase3]);
+      ShowCaseWidget.of(builder).startShowCase([TooltipKeys.showCase1, TooltipKeys.showCase2, TooltipKeys.showCase3]);
       // });
     } catch (e) {
       log(e.toString());
@@ -767,7 +836,37 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _pagingController.dispose();
+    scrollController.dispose();
     super.dispose();
+  }
+}
+
+class ShimmerList extends StatelessWidget {
+  const ShimmerList({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      shrinkWrap: true,
+      children: List<Widget>.generate(
+          20,
+          (index) => Shimmer(
+                duration: Duration(seconds: 2),
+                colorOpacity: 0.7,
+                child: Container(
+                  height: 253.h,
+                  width: 174.w,
+                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                  padding: EdgeInsets.symmetric(horizontal: 15.w),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: purple10,
+                  ),
+                ),
+              )),
+    );
   }
 }
 
@@ -789,7 +888,10 @@ class SkipTutorialButton extends StatelessWidget {
         onPressed: () {
           tutorialProvider.stopTutorial(this.context);
         },
-        child: Text(LocaleKeys.skip.tr(), style: TextStylesInter.textViewRegular14.copyWith(color: Colors.white),),
+        child: Text(
+          LocaleKeys.skip.tr(),
+          style: TextStylesInter.textViewRegular14.copyWith(color: Colors.white),
+        ),
       ),
     );
   }
