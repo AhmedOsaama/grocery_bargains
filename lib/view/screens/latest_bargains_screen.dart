@@ -30,7 +30,11 @@ class LatestBargainsScreen extends StatefulWidget {
 class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
   final PagingController<int, Product> _pagingController =
       PagingController(firstPageKey: 1);
+  ScrollController scrollController = ScrollController();
+
   static const _pageSize = 100;
+
+  bool showFAB = false;
 
   @override
   void initState() {
@@ -40,7 +44,43 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
     try{
       TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Latest bargains screen");
     }catch(e){}
+    addScrollListener();
+
     super.initState();
+  }
+
+  void addScrollListener() {
+    return scrollController.addListener(() {
+      double showOffset = 200.0;
+      if (scrollController.offset > showOffset) {
+        if (!showFAB)
+          setState(() {
+            showFAB = true;
+          });
+      } else {
+        if (showFAB)
+          setState(() {
+            showFAB = false;
+          });
+      }
+    });
+  }
+  Opacity buildFAB() {
+    return Opacity(
+      opacity: showFAB ? 0.6 : 0.0, //set obacity to 1 on visible, or hide
+      child: FloatingActionButton(
+        onPressed: () {
+          scrollController.animateTo(
+            //go to top of scroll
+              0, //scroll offset to go
+              duration: Duration(milliseconds: 500), //duration of scroll
+              curve: Curves.fastOutSlowIn //scroll type
+          );
+        },
+        child: Icon(Icons.arrow_upward),
+        backgroundColor: Colors.grey,
+      ),
+    );
   }
 
   @override
@@ -49,6 +89,8 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
         Provider.of<ProductsProvider>(context, listen: true).products;
     return Scaffold(
         backgroundColor: white,
+        floatingActionButton: buildFAB(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
         appBar: SearchAppBar(isBackButton: true,),
         body: comparisonProducts.isEmpty
             ? Center(
@@ -61,6 +103,7 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
                     10.ph,
                     Expanded(
                       child: PagedGridView<int, Product>(
+                        scrollController: scrollController,
                         // shrinkWrap: true,
                         gridDelegate:
                             const SliverGridDelegateWithMaxCrossAxisExtent(
