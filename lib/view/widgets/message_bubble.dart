@@ -264,17 +264,30 @@ class _MessageBubbleState extends State<MessageBubble> {
   }
 
   Future<Widget> getUserImage(String userId) async {
-    var docRef = await FirebaseFirestore.instance.collection('/users').doc(userId).get();
-    String userImage = docRef.get('imageURL');
-    if(userImage.isEmpty || userImage == null ){
+    // try {
+    String userImage = '';
+    if(userId.isNotEmpty) {
+      var docRef = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      userImage = docRef.get('imageURL');
+    }else{
+      userImage = widget.userImage;
+    }
+      if (userImage.isEmpty || userImage == null) {
+        return CircleAvatar(
+          child: SvgPicture.asset(bee),
+          radius: 20,
+        );
+      }
       return CircleAvatar(
-        child: SvgPicture.asset(bee),
+        backgroundImage: NetworkImage(userImage),
         radius: 20,
       );
-    }
-    return CircleAvatar(
-      backgroundImage: NetworkImage(userImage),
-      radius: 20,
-    );
+    // }catch(e){
+    //   print(e);
+    //   return CircleAvatar(
+    //     backgroundImage: NetworkImage(widget.userImage),
+    //     radius: 20,
+    //   );
+    // }
   }
 }

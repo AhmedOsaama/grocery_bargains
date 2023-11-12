@@ -80,7 +80,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       isFirstTime = prefs.getBool("firstTime") ?? true;
-      // isFirstTime = true;
     });
   }
 
@@ -90,20 +89,20 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     chatList = Provider.of<ChatlistsProvider>(context, listen: false)
         .chatlists
         .firstWhere((chatList) => chatList.id == widget.listId);
-    if (widget.isUsingDynamicLink) {
-      var currentUserId = FirebaseAuth.instance.currentUser?.uid;
-      FirebaseFirestore.instance.collection('/lists').doc(widget.listId).get().then((listSnapshot) {
-        final List userIds = listSnapshot.data()!['userIds'];
-        if (!userIds.contains(currentUserId)) {
-          userIds.add(currentUserId);
-          FirebaseFirestore.instance.collection('/lists').doc(widget.listId).update({"userIds": userIds});
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text("${LocaleKeys.userAddedToChatlist.tr()} ${chatList.name}")));
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(LocaleKeys.userAlreadyExists.tr())));
-        }
-      });
-    }
+    // if (widget.isUsingDynamicLink) {
+    //   var currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    //   FirebaseFirestore.instance.collection('/lists').doc(widget.listId).get().then((listSnapshot) {
+    //     final List userIds = listSnapshot.data()!['userIds'];
+    //     if (!userIds.contains(currentUserId)) {
+    //       userIds.add(currentUserId);
+    //       FirebaseFirestore.instance.collection('/lists').doc(widget.listId).update({"userIds": userIds});
+    //       ScaffoldMessenger.of(context)
+    //           .showSnackBar(SnackBar(content: Text("${LocaleKeys.userAddedToChatlist.tr()} ${chatList.name}")));
+    //     } else {
+    //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(LocaleKeys.userAlreadyExists.tr())));
+    //     }
+    //   });
+    // }
     getUserImagesFuture = getUserImages();
     FirebaseMessaging.instance.getToken().then((value) => print("USER TOKEN: $value"));
     TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Chatlist Screen");

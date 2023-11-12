@@ -76,12 +76,14 @@ class _ChatViewState extends State<ChatView> {
 
   bool isFirstTimeChatlist = false;
 
+  // bool isFirstTime = false;
+
   // Future<Null> getFirstTime() async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();
   //   setState(() {
   //     isFirstTime = prefs.getBool("firstTime") ?? true;
-  //     // isFirstTime = true;
-  //   });
+  //     isFirstTime = true;
+    // });
   // }
 
   Future getFirstTimeChatlist() async {
@@ -151,6 +153,7 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   void initState() {
+    // getFirstTime();
     getFirstTimeChatlist();
     final fbm = FirebaseMessaging.instance;
     fbm.requestPermission();
