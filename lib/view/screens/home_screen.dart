@@ -132,17 +132,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     var chatlistProvider = Provider.of<ChatlistsProvider>(context, listen: false);
     var tutorialProvider = Provider.of<TutorialProvider>(context);
-    // var userProvider = Provider.of<UserProvider>(context);
     return ShowCaseWidget(
       onStart: (_, i) {},
       builder: Builder(builder: (builder) {
-        // print("IS TUTORIAL RUNNING: ${tutorialProvider.isTutorialRunning}");
-        // print("CAN SHOW WELCOME: ${tutorialProvider.canShowWelcomeDialog}");
-        // print("Dialog: ${dialogOpened}");
         if (tutorialProvider.canShowWelcomeDialog) {
-          // print("INSIDE");
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            // print("INSIDE CALLBACK");
             showWelcomeDialog(context, builder);
             tutorialProvider.deactivateWelcomeTutorial();
             startTutorialStopwatch(chatlistProvider);
@@ -157,31 +151,52 @@ class _HomeScreenState extends State<HomeScreen> {
           body: SafeArea(
             child: RefreshIndicator(
               onRefresh: () => onRefresh(context),
-              child: SingleChildScrollView(
-                controller: scrollController,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15.w),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 15.h,
-                      ),
-                      buildSearchTutorial(tutorialProvider, builder),
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                      buildAllCategoriesRow(context),
-                      buildCategories(context),
-                      buildNewChatlistShowcase(tutorialProvider, context, builder),
-                      SizedBox(
-                        height: 10.h,
-                      ),
-                      buildLatestBargainsRow(context),
-                      buildAllProducts(),
-                      isFetching ? Center(child: CircularProgressIndicator()) : buildSeeMore(context),
-                    ],
-                  ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
+                child: CustomScrollView(
+                  controller: scrollController,
+                  slivers: [
+                    SliverToBoxAdapter(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              height: 15.h,
+                            ),
+                            buildSearchTutorial(tutorialProvider, builder),
+                            SizedBox(
+                              height: 10.h,
+                            ),
+                            buildAllCategoriesRow(context),
+                            buildCategories(context),
+                            buildNewChatlistShowcase(tutorialProvider, context, builder),
+                            SizedBox(
+                              height: 10.h,
+                            ),
+                            buildLatestBargainsRow(context),
+                          ],
+                        )),
+                    LatestBargainsList(),
+                    SliverToBoxAdapter(
+                      child: isFetching
+                          ? Center(child: CircularProgressIndicator())
+                          : Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: buildSeeMore(context),
+                            ),
+                    ),
+                    // SliverFillRemaining(
+                    //   // hasScrollBody: false,
+                    //   child: Padding(
+                    //     padding: EdgeInsets.symmetric(horizontal: 15.w),
+                    //     child: Column(
+                    //       children: [
+                    //         Expanded(child: LatestBargainsList()),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
+                  ],
                 ),
               ),
             ),
@@ -193,20 +208,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Opacity buildFAB() {
     return Opacity(
-          opacity: showFAB ? 0.6 : 0.0, //set obacity to 1 on visible, or hide
-          child: FloatingActionButton(
-            onPressed: () {
-              scrollController.animateTo(
-                  //go to top of scroll
-                  0, //scroll offset to go
-                  duration: Duration(milliseconds: 500), //duration of scroll
-                  curve: Curves.fastOutSlowIn //scroll type
-                  );
-            },
-            child: Icon(Icons.arrow_upward),
-            backgroundColor: Colors.grey,
-          ),
-        );
+      opacity: showFAB ? 0.6 : 0.0, //set obacity to 1 on visible, or hide
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 8.0),
+        child: FloatingActionButton(
+          onPressed: () {
+            scrollController.animateTo(
+                //go to top of scroll
+                0, //scroll offset to go
+                duration: Duration(milliseconds: 500), //duration of scroll
+                curve: Curves.fastOutSlowIn //scroll type
+                );
+          },
+          child: Icon(Icons.arrow_upward),
+          backgroundColor: Colors.grey,
+        ),
+      ),
+    );
   }
 
   Showcase buildNewChatlistShowcase(TutorialProvider tutorialProvider, BuildContext context, BuildContext builder) {
@@ -221,56 +239,6 @@ class _HomeScreenState extends State<HomeScreen> {
       height: 110.h,
       width: ScreenUtil().screenWidth * 0.95,
       child: buildNewChatlistImage(),
-    );
-  }
-
-  Consumer<ProductsProvider> buildAllProducts() {
-    return Consumer<ProductsProvider>(
-      builder: (ctx, provider, _) {
-        var products = provider.products;
-        allProducts = products;
-        if (products.isEmpty) {
-          return ShimmerList();
-        } else {
-          return GridView.builder(
-              physics: NeverScrollableScrollPhysics(), // to disable GridView's scrolling
-              shrinkWrap: true,
-              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 200,
-                  mainAxisExtent: 275,
-                  childAspectRatio: 0.67,
-                  crossAxisSpacing: 5,
-                  mainAxisSpacing: 5),
-              itemCount: products.length,
-              itemBuilder: (BuildContext ctx, index) {
-                Product p = Product(
-                  id: products.elementAt(index).id,
-                  oldPrice: products.elementAt(index).oldPrice ?? "",
-                  storeId: products.elementAt(index).storeId,
-                  name: products.elementAt(index).name,
-                  brand: products.elementAt(index).brand,
-                  link: products.elementAt(index).link,
-                  category: products.elementAt(index).category,
-                  price: products.elementAt(index).price,
-                  unit: products.elementAt(index).unit,
-                  image: products.elementAt(index).image,
-                  description: products.elementAt(index).description,
-                  gtin: products.elementAt(index).gtin,
-                  subCategory: products.elementAt(index).subCategory,
-                  offer: products.elementAt(index).offer,
-                  englishName: products.elementAt(index).englishName,
-                  similarId: products.elementAt(index).similarId,
-                  similarStId: products.elementAt(index).similarStId,
-                  availableNow: products.elementAt(index).availableNow,
-                  dateAdded: products.elementAt(index).dateAdded,
-                );
-                return DiscountItem(
-                  product: p,
-                  inGridView: false,
-                );
-              });
-        }
-      },
     );
   }
 
@@ -841,6 +809,65 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+class LatestBargainsList extends StatelessWidget {
+  const LatestBargainsList({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ProductsProvider>(
+      builder: (ctx, provider, _) {
+        var products = provider.products;
+        // allProducts = products;
+        if (products.isEmpty) {
+          return ShimmerList();
+          // return Container();
+        } else {
+          return SliverGrid(
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 200,
+                mainAxisExtent: 275,
+                childAspectRatio: 0.67,
+                crossAxisSpacing: 5,
+                mainAxisSpacing: 5),
+            delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                Product p = Product(
+                  id: products.elementAt(index).id,
+                  oldPrice: products.elementAt(index).oldPrice ?? "",
+                  storeId: products.elementAt(index).storeId,
+                  name: products.elementAt(index).name,
+                  brand: products.elementAt(index).brand,
+                  link: products.elementAt(index).link,
+                  category: products.elementAt(index).category,
+                  price: products.elementAt(index).price,
+                  unit: products.elementAt(index).unit,
+                  image: products.elementAt(index).image,
+                  description: products.elementAt(index).description,
+                  gtin: products.elementAt(index).gtin,
+                  subCategory: products.elementAt(index).subCategory,
+                  offer: products.elementAt(index).offer,
+                  englishName: products.elementAt(index).englishName,
+                  similarId: products.elementAt(index).similarId,
+                  similarStId: products.elementAt(index).similarStId,
+                  availableNow: products.elementAt(index).availableNow,
+                  dateAdded: products.elementAt(index).dateAdded,
+                );
+                return DiscountItem(
+                  product: p,
+                  inGridView: false,
+                );
+              },
+              childCount: products.length,
+            ),
+          );
+        }
+      },
+    );
+  }
+}
+
 class ShimmerList extends StatelessWidget {
   const ShimmerList({
     super.key,
@@ -848,24 +875,25 @@ class ShimmerList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      shrinkWrap: true,
-      children: List<Widget>.generate(
-          20,
-          (index) => Shimmer(
-                duration: Duration(seconds: 2),
-                colorOpacity: 0.7,
-                child: Container(
-                  height: 253.h,
-                  width: 174.w,
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                  padding: EdgeInsets.symmetric(horizontal: 15.w),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: purple10,
+    return SliverList(
+      delegate: SliverChildListDelegate(
+        List<Widget>.generate(
+            20,
+            (index) => Shimmer(
+                  duration: Duration(seconds: 2),
+                  colorOpacity: 0.7,
+                  child: Container(
+                    height: 253.h,
+                    width: 174.w,
+                    margin: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                    padding: EdgeInsets.symmetric(horizontal: 15.w),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: purple10,
+                    ),
                   ),
-                ),
-              )),
+                )),
+      ),
     );
   }
 }
