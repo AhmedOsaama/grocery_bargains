@@ -127,7 +127,7 @@ class _ProductDialogState extends State<ProductDialog> {
                     IconButton(
                       onPressed: () {
                         Provider.of<ChatlistsProvider>(context, listen: false)
-                            .deleteItemFromChatlist(widget.listId, widget.itemDocId, widget.itemPrice, widget.itemOldPrice, widget.itemQuantity.toString());
+                            .deleteItemFromChatlist(widget.listId, widget.itemDocId, widget.itemPrice, widget.itemOldPrice, widget.itemQuantity.toString(), widget.itemId.toString());
                         TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Delete chatlist item", DateTime.now().toUtc().toString(), "Chatlist screen");
                         AppNavigator.pop(context: context);
                       },

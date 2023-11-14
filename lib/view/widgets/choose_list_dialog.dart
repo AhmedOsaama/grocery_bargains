@@ -156,6 +156,7 @@ class _ChooseListDialogState extends State<ChooseListDialog> {
                                     selectedListId,
                                     chatlistName,
                                     widget.item.quantity.toString(),
+                                    productId: widget.item.id.toString(),
                                     'Add');
                                   TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "add to list", DateTime.now().toUtc().toString(), "Product screen");
                                 AppNavigator.pop(context: context);

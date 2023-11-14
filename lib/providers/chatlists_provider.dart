@@ -191,17 +191,19 @@ class ChatlistsProvider with ChangeNotifier {
         notifyListeners();
         return AppNavigator.pop(context: context);
       });
-    }catch(e){
+    } catch (e) {
       print(e);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("couldntDeleteList".tr())));
     }
-    TrackingUtils().trackSideMenuItemClicked(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Chatlist Side Menu", "Remove", "Chatlist Screen");
+    TrackingUtils().trackSideMenuItemClicked(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
+        "Chatlist Side Menu", "Remove", "Chatlist Screen");
   }
 
-  Future<void> deleteItemFromChatlist(String listId, String itemId, String itemPrice, String itemOldPrice, String itemQuantity) async {
+  Future<void> deleteItemFromChatlist(
+      String listId, String itemDocId, String itemPrice, String itemOldPrice, String itemQuantity, String itemId) async {
     try {
       var chatlist = chatlists.firstWhere((chatlist) => chatlist.id == listId);
-      var item = await FirebaseFirestore.instance.collection('/lists/${listId}/items').doc(itemId).get();
+      var item = await FirebaseFirestore.instance.collection('/lists/${listId}/items').doc(itemDocId).get();
       if (item.data()!.containsKey("chat_reference")) {
         if (item.data()!["chat_reference"].toString().isNotEmpty) {
           await FirebaseFirestore.instance
@@ -212,7 +214,7 @@ class ChatlistsProvider with ChangeNotifier {
           });
         }
       }
-      await FirebaseFirestore.instance.collection('/lists/${listId}/items').doc(itemId).delete();
+      await FirebaseFirestore.instance.collection('/lists/${listId}/items').doc(itemDocId).delete();
       //TODO: delete item from messages here using item_id field
       await FirebaseFirestore.instance.collection('lists').doc(listId).update({
         "size": FieldValue.increment(-1),
@@ -222,14 +224,9 @@ class ChatlistsProvider with ChangeNotifier {
       chatlist.itemLength -= 1;
       chatlist.totalPrice -= double.tryParse(itemPrice) ?? 0;
       notifyListeners();
-    TrackingUtils().trackProductAction(
-        FirebaseAuth.instance.currentUser!.uid,
-        DateTime.now().toUtc().toString(),
-        itemOldPrice.isNotEmpty,
-        listId,
-        chatlist.name,
-        itemQuantity,
-        'Delete');
+      TrackingUtils().trackProductAction(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
+          itemOldPrice.isNotEmpty, listId, chatlist.name, itemQuantity, 'Delete',
+          productId: itemId);
     } catch (e) {
       print(e);
     }
@@ -240,7 +237,8 @@ class ChatlistsProvider with ChangeNotifier {
     var chatlist = chatlists.firstWhere((chatlist) => chatlist.id == listId);
     chatlist.name = value;
     notifyListeners();
-    TrackingUtils().trackSideMenuItemClicked(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Chatlist Side Menu", "Rename", "Chatlist Screen");
+    TrackingUtils().trackSideMenuItemClicked(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
+        "Chatlist Side Menu", "Rename", "Chatlist Screen");
   }
 
   Future<void> addProductToList(BuildContext context, ListItem listItem) async {
@@ -261,7 +259,8 @@ class ChatlistsProvider with ChangeNotifier {
       if (chatlists.length > 1) showChooseListDialog(context: context, listItem: listItem);
       if (chatlists.length == 1) {
         await addItemToList(listItem, chatlists[0].id);
-        TrackingUtils().trackProductAction(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), listItem.oldPrice != null, chatlists[0].id, chatlists[0].name, listItem.quantity.toString(), 'Add');
+        TrackingUtils().trackProductAction(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
+            listItem.oldPrice != null, chatlists[0].id, chatlists[0].name, listItem.quantity.toString(), 'Add', productId: listItem.id.toString());
         showChatlistSnackBar(context, Text(LocaleKeys.addedTo.tr() + " ${chatlists[0].name}"), LocaleKeys.view.tr(),
             chatlists[0].id, false);
       }
@@ -269,7 +268,8 @@ class ChatlistsProvider with ChangeNotifier {
         showChatlistSnackBar(context, Text(LocaleKeys.pleaseCreateAList.tr()), LocaleKeys.create.tr(), "", true);
       }
     }
-      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "add product", DateTime.now().toUtc().toString(), "Product screen");
+    TrackingUtils().trackButtonClick(
+        FirebaseAuth.instance.currentUser!.uid, "add product", DateTime.now().toUtc().toString(), "Product screen");
   }
 
   Future<void> updateItemQuantity(String chatlistId, String itemId, int newQuantity) async {
@@ -310,9 +310,10 @@ class ChatlistsProvider with ChangeNotifier {
       });
       updateChatList(listId, message, userData);
     }
-    TrackingUtils().trackChatlistMessageSent(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), message, listId, chatlistName);
-    TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Send message", DateTime.now().toUtc().toString(), "Chatlist screen");
-
+    TrackingUtils().trackChatlistMessageSent(
+        FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), message, listId, chatlistName);
+    TrackingUtils().trackButtonClick(
+        FirebaseAuth.instance.currentUser!.uid, "Send message", DateTime.now().toUtc().toString(), "Chatlist screen");
   }
 
   Future<bool> shareItem({required ListItem item, required String docId}) async {
@@ -398,27 +399,27 @@ class ChatlistsProvider with ChangeNotifier {
     }).catchError((e) {
       done = false;
     });
-    if(item.text.isEmpty)
-    await FirebaseFirestore.instance.collection('/lists/$docId/messages').add({
-      'item_id': item.id,
-      "item_name": item.name,
-      "item_image": item.imageURL,
-      'item_description': "",
-      "item_brand": item.brand,
-      'item_size': item.size,
-      'store_name': item.storeName,
-      'item_quantity': item.quantity,
-      'isAddedToList': false,
-      "item_price": item.price,
-      'item_oldPrice': item.oldPrice,
-      'message': "",
-      'createdAt': Timestamp.fromDate(DateTime.now().toUtc()),
-      'userId': FirebaseAuth.instance.currentUser!.uid,
-      'username': userData['username'],
-      'userImageURL': userData['imageURL'],
-    }).catchError((e) {
-      print(e);
-    });
+    if (item.text.isEmpty)
+      await FirebaseFirestore.instance.collection('/lists/$docId/messages').add({
+        'item_id': item.id,
+        "item_name": item.name,
+        "item_image": item.imageURL,
+        'item_description': "",
+        "item_brand": item.brand,
+        'item_size': item.size,
+        'store_name': item.storeName,
+        'item_quantity': item.quantity,
+        'isAddedToList': false,
+        "item_price": item.price,
+        'item_oldPrice': item.oldPrice,
+        'message': "",
+        'createdAt': Timestamp.fromDate(DateTime.now().toUtc()),
+        'userId': FirebaseAuth.instance.currentUser!.uid,
+        'username': userData['username'],
+        'userImageURL': userData['imageURL'],
+      }).catchError((e) {
+        print(e);
+      });
     FirebaseFirestore.instance.collection('/lists').doc(docId).update({
       "last_message": "Added ${item.name}",
       "last_message_date": Timestamp.fromDate(DateTime.now().toUtc()),
@@ -553,7 +554,7 @@ class ChatlistsProvider with ChangeNotifier {
             await pushNewScreen(context,
                 screen: ChatListViewScreen(
                   listId: selectedListId,
-                isExpandingChatlist: true,
+                  isExpandingChatlist: true,
                 ),
                 withNavBar: true);
             NavigatorController.jumpToTab(1);

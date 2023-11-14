@@ -1,3 +1,4 @@
+import 'package:algolia/algolia.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,28 +51,11 @@ class TrackingUtils {
   static const chatlistMessageSentEvent = 'CLMessageSent';
   static const filterUsedEvent = 'FilterUsed';
 
-  static const userRegistrationSuccessEvent = 'User Registration Success';
-  static const userRegistrationFailedEvent = 'User Registration Failed';
-  static const onboardingStartedEvent = 'Onboarding Started';
-  static const onboardingFinishedEvent = 'Onboarding Finished';
-  static const phonePlatformRegisteredEvent = 'Phone Platform registered';
-  static const successfulLoginEvent = 'Successful login';
-  static const failedLoginEvent = 'Failed login';
-  static const userLoggedOutEvent = 'User Logged Out';
-  static const accountPlanSelectedEvent = 'Account Plan Selected';
-  static const userProfileViewedEvent = 'User Profile Viewed';
-  static const userProfileEditedEvent = 'User Profile Edited';
-  static const accountSettingsUpdatedEvent = 'Account Settings Updated';
-  static const productViewedEvent = 'Product Viewed';
-  static const shareEvent = 'Share';
-  static const userCreateChatlistEvent = 'User Create Chatlist';
-  static const chatlistActionEvent = 'Chatlist Action';
-  static const searchPerformedEvent = 'Search Performed';
-  static const pageVisitedEvent = 'Page Visited';
-  static const accountDeletedEvent = 'Account Deleted';
-  static const userFeedbackEvent = 'User Feedback';
+
+  static const algoliaIndexName = 'dev_PRODUCTS';
 
   Mixpanel mixpanel = Mixpanel('752b3abf782a7347499ccb3ebb504194');
+  Algolia algolia = Algolia.init(applicationId: 'DG62X9U03X', apiKey: 'e862c47c6741eef540abe9fb5f68eef6');
 
   void trackButtonClick(String userId, String buttonName, String timestamp, String pageName){
     mixpanel.track(buttonClickEvent, properties: {
@@ -228,7 +212,7 @@ class TrackingUtils {
     );
   }
 
-  void trackSearch(String userId, String timestamp, String searchQuery){
+  void trackSearch(String userId, String timestamp, String searchQuery, {required String queryId, required List<String> objectIDs, required List<int> positions}){
     mixpanel.track(searchEvent, properties: {
       userIdKey : userId,
       timeStampKey : timestamp,
@@ -239,9 +223,21 @@ class TrackingUtils {
         ..addCustomData(timeStampKey, timestamp)
         ..addCustomData(searchQueryKey, searchQuery)
     );
+    AlgoliaEvent event = AlgoliaEvent(
+      eventType: AlgoliaEventType.click,
+      eventName: searchEvent,
+      index: algoliaIndexName,
+      userToken: userId,
+      objectIDs: objectIDs,
+      queryID: queryId,
+      positions: positions
+    );
+    algolia.pushEvents([
+      event
+    ]);
   }
 
-  void trackProductAction(String userId, String timestamp, bool discounted, String chatlistId, String ChatlistName, String quantity, String actionType){
+  void trackProductAction(String userId, String timestamp, bool discounted, String chatlistId, String ChatlistName, String quantity, String actionType, {String? productId}){
     mixpanel.track(productActionEvent, properties: {
       userIdKey : userId,
       timeStampKey : timestamp,
@@ -260,6 +256,21 @@ class TrackingUtils {
         ..addCustomData(quantityKey, quantity)
         ..addCustomData(actionTypeKey, actionType)
     );
+    try {
+      AlgoliaEvent event = AlgoliaEvent(
+          eventType: AlgoliaEventType.click,
+          eventName: productActionEvent,
+          index: algoliaIndexName,
+          userToken: userId,
+          objectIDs: [productId!]
+      );
+      algolia.pushEvents([
+        event
+      ]);
+    }catch(e){
+      print(e);
+      print("ITEM ID: ${productId}");
+    }
   }
 
   void trackShareProduct(String userId, String timestamp, String productId, String productName, String productCategory){
@@ -324,7 +335,5 @@ class TrackingUtils {
         ..addCustomData(filterTypeKey, filterType)
     );
   }
-
-
 }
 

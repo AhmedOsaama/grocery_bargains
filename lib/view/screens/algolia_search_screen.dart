@@ -63,6 +63,7 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
         (state) => state.copyWith(
           query: _searchTextController.text,
           page: 0,
+          clickAnalytics: true
         ),
       ),
     );
@@ -79,6 +80,7 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
 
     _pagingController.addPageRequestListener((pageKey) => _productsSearcher.applyState((state) => state.copyWith(
           page: pageKey,
+      clickAnalytics: true
         )));
 
     _productsSearcher.connectFilterState(_filterState);
@@ -167,13 +169,6 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return const SizedBox.shrink();
-                }
-                try {
-                  TrackingUtils().trackSearch(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
-                      _searchTextController.text);
-                } catch (e) {
-                  print(e);
-                  TrackingUtils().trackSearch("Guest", DateTime.now().toUtc().toString(), _searchTextController.text);
                 }
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -292,6 +287,19 @@ class HitsPage {
     final isLastPage = response.page >= response.nbPages;
     final nextPageKey = isLastPage ? null : response.page + 1;
     // items.removeWhere((element) => element.availableNow == 0);
+    List<String> objectIDs = items.map((e) => e.id.toString()).toList();
+    List<int> positions = items.map((e) => items.indexOf(e) + 1).toList();
+    trackSearch(response.query, response.queryID, objectIDs: objectIDs, positions: positions);
     return HitsPage(items, response.page, nextPageKey);
+  }
+}
+
+void trackSearch(String query, String? queryId, {required List<String> objectIDs, required List<int> positions}) {
+  try {
+    TrackingUtils().trackSearch(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
+        query, queryId: queryId!, objectIDs: objectIDs, positions: positions);
+  } catch (e) {
+    print(e);
+    TrackingUtils().trackSearch("Guest", DateTime.now().toUtc().toString(), query, queryId: queryId!, objectIDs: objectIDs, positions: positions);
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:algolia/algolia.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
