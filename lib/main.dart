@@ -42,23 +42,22 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 @pragma('vm:entry-point')
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await EasyLocalization.ensureInitialized();
+  await Future.wait([
+    EasyLocalization.ensureInitialized(),
+    SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp],
+    ),
+    Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    ).then((value) => FirebaseAppCheck.instance.activate()),
+  ]);
   // await PurchaseApi.init();
 
-  await SystemChrome.setPreferredOrientations(
-    [DeviceOrientation.portraitUp],
-  );
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  await FirebaseAppCheck.instance.activate();
-  var notificationMessage =
-      await FirebaseMessaging.instance.getInitialMessage();
+  var notificationMessage = await FirebaseMessaging.instance.getInitialMessage();
 
   var pref = await SharedPreferences.getInstance();
   var isRemembered = pref.getBool("rememberMe") ?? false;
   var isFirstTime = pref.getBool("firstTime") ?? true;
-
 
   await SentryFlutter.init(
     (options) {
@@ -73,37 +72,23 @@ Future<void> main() async {
         fallbackLocale: const Locale('en'),
         child: MultiProvider(
           providers: [
-            ChangeNotifierProvider<GoogleSignInProvider>(
-                create: (_) => GoogleSignInProvider()),
-            ChangeNotifierProvider<ProductsProvider>(
-                create: (_) => ProductsProvider()),
-            ChangeNotifierProvider<ChatlistsProvider>(
-                create: (_) => ChatlistsProvider()),
-            ChangeNotifierProvider<InsightsProvider>(
-                create: (_) => InsightsProvider()),
-            ChangeNotifierProvider<TutorialProvider>(
-                create: (_) => TutorialProvider()),
-            ChangeNotifierProvider<UserProvider>(
-                create: (_) => UserProvider()),
+            ChangeNotifierProvider<GoogleSignInProvider>(create: (_) => GoogleSignInProvider()),
+            ChangeNotifierProvider<ProductsProvider>(create: (_) => ProductsProvider()),
+            ChangeNotifierProvider<ChatlistsProvider>(create: (_) => ChatlistsProvider()),
+            ChangeNotifierProvider<InsightsProvider>(create: (_) => InsightsProvider()),
+            ChangeNotifierProvider<TutorialProvider>(create: (_) => TutorialProvider()),
+            ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider()),
           ],
-          child: MyApp(
-              notificationMessage: notificationMessage,
-              isRemembered: isRemembered,
-              isFirstTime: isFirstTime),
+          child: MyApp(notificationMessage: notificationMessage, isRemembered: isRemembered, isFirstTime: isFirstTime),
         ))),
   );
-
 }
 
 class MyApp extends StatefulWidget {
   final RemoteMessage? notificationMessage;
   final bool isRemembered;
   final bool isFirstTime;
-  const MyApp(
-      {super.key,
-      required this.isRemembered,
-      required this.isFirstTime,
-      this.notificationMessage});
+  const MyApp({super.key, required this.isRemembered, required this.isFirstTime, this.notificationMessage});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -116,7 +101,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-
     super.initState();
     getAllProductsFuture = Provider.of<ProductsProvider>(context, listen: false)
         .getAllProducts()
@@ -127,8 +111,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initMixpanel() async {
-    mixPanel =
-    await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true);    //live
+    mixPanel = await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true); //live
     // await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true);  //dev
   }
 
@@ -151,23 +134,8 @@ class _MyAppState extends State<MyApp> {
             future: getAllProductsFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-                    overlays: []);
-                return Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: AssetImage(splashImage), fit: BoxFit.fill),
-                      ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(top: 250),
-                      alignment: Alignment.center,
-                      child: CircularProgressIndicator(),
-                    )
-                  ],
-                );
+                SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+                return SplashWithProgressIndicator();
               }
 
               return StreamBuilder(
@@ -175,41 +143,25 @@ class _MyAppState extends State<MyApp> {
                   builder: (context, snapshot) {
                     if (!widget.isRemembered && Platform.isAndroid) {
                       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-                          overlays: [
-                            SystemUiOverlay.top,
-                            SystemUiOverlay.bottom
-                          ]);
+                          overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
                       return RegisterScreen();
                     }
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-                          overlays: []);
-                      return Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage(splashImage), fit: BoxFit.fill),
-                        ),
-                      );
+                      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+                      return SplashWidget();
                     }
                     if (snapshot.hasData) {
                       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-                          overlays: [
-                            SystemUiOverlay.top,
-                            SystemUiOverlay.bottom
-                          ]);
+                          overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
 
                       if (widget.notificationMessage != null) {
                         return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
                       }
 
-                      return widget.isFirstTime
-                          ? OnBoardingScreen()
-                          : MainScreen();
+                      return widget.isFirstTime ? OnBoardingScreen() : MainScreen();
                     }
                     if (Platform.isIOS) {
-                      return widget.isFirstTime
-                          ? OnBoardingScreen()
-                          : MainScreen();
+                      return widget.isFirstTime ? OnBoardingScreen() : MainScreen();
                     }
                     return MainScreen();
                   });
@@ -217,6 +169,45 @@ class _MyAppState extends State<MyApp> {
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
+      ),
+    );
+  }
+}
+
+class SplashWithProgressIndicator extends StatelessWidget {
+  const SplashWithProgressIndicator({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(image: AssetImage(splashImage), fit: BoxFit.fill),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(top: 250),
+          alignment: Alignment.center,
+          child: CircularProgressIndicator(),
+        )
+      ],
+    );
+  }
+}
+
+class SplashWidget extends StatelessWidget {
+  const SplashWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(image: AssetImage(splashImage), fit: BoxFit.fill),
       ),
     );
   }
