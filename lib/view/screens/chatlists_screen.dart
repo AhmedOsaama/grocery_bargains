@@ -43,25 +43,23 @@ class ChatlistsScreen extends StatefulWidget {
 }
 
 class _ChatlistsScreenState extends State<ChatlistsScreen> {
-  late Future<QuerySnapshot> getListItemsFuture;
-  var isFabPressed = false;
-  bool isAdding = false;
-
-  bool canCreate = false;
 
   @override
   void initState() {
+    super.initState();
+    trackPageView();
+  }
+
+  void trackPageView() {
     try{
     TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "All chatlists screen");
     }catch(e){}
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    var chatlistsProvider = context.watch<ChatlistsProvider>();
+    var chatlistsProvider = Provider.of<ChatlistsProvider>(context, listen: false);
     return Scaffold(
-      // backgroundColor: Color.fromRGBO(245, 247, 254, 1),
       body: RefreshIndicator(
         onRefresh: () {
           chatlistsProvider.notifyListeners();
@@ -87,102 +85,13 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
               Expanded(
                 child: Consumer<ChatlistsProvider>(builder: (context, provider, _) {
                   var allLists = provider.chatlists;
-                  // List<ChatList> allLists = [];
                   if (FirebaseAuth.instance.currentUser == null) {
-                    return Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Image.asset(
-                          chatlistBackground,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.fitWidth,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            50.ph,
-                            DottedContainer(text: "Sign In to Use Chatlists"),
-                            SizedBox(
-                              height: 100.h,
-                            ),
-                            GenericButton(
-                              borderRadius: BorderRadius.circular(6),
-                              color: mainYellow,
-                              height: 60.h,
-                              width: 158.w,
-                              onPressed: () => pushNewScreen(context, screen: RegisterScreen(), withNavBar: false),
-                              child: Text(
-                                "Sign in",
-                                style: TextStyles.textViewSemiBold16.copyWith(color: white),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
+                    return SignInWidget();
                   }
                   if (allLists.isEmpty) {
-                    return Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Image.asset(
-                          chatlistBackground,
-                          width: double.infinity,
-                          height: double.infinity,
-                          fit: BoxFit.fitWidth,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            50.ph,
-                            DottedContainer(text: LocaleKeys.createYourFirstList.tr()),
-                            SizedBox(
-                              height: 45.h,
-                            ),
-                            getFab(),
-                          ],
-                        ),
-                      ],
-                    );
+                    return buildStack();
                   }
-                  return Stack(
-                    children: [
-                      Image.asset(
-                        chatlistBackground,
-                        height: double.infinity,
-                        fit: BoxFit.fitHeight,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 15,
-                        ),
-                        child: ListView.separated(
-                          separatorBuilder: (ctx, i) => 10.ph,
-                          itemCount: allLists.length,
-                          itemBuilder: (ctx, i) {
-                            return Column(
-                              children: [
-                                GestureDetector(
-                                    // onTap: () => pushNewScreen(context,
-                                    //     screen: ChatListViewScreen(
-                                    //       listId: allLists[i].id,
-                                    //     ),
-                                    //     withNavBar: true
-                                    // ),
-                                    child: ChatCard(allLists, i)),
-                                if (i == allLists.length - 1) ...[
-                                  30.ph,
-                                  getFab(),
-                                  15.ph,
-                                ]
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  );
+                  return buildAllChatlists(allLists);
                 }),
               ),
             ],
@@ -190,6 +99,65 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
         ),
       ),
     );
+  }
+
+  Stack buildAllChatlists(List<ChatList> allLists) {
+    return Stack(
+                  children: [
+                    Image.asset(
+                      chatlistBackground,
+                      height: double.infinity,
+                      fit: BoxFit.fitHeight,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 15,
+                      ),
+                      child: ListView.separated(
+                        separatorBuilder: (ctx, i) => 10.ph,
+                        itemCount: allLists.length,
+                        itemBuilder: (ctx, i) {
+                          return Column(
+                            children: [
+                              GestureDetector(
+                                  child: ChatCard(allLists, i)),
+                              if (i == allLists.length - 1) ...[
+                                30.ph,
+                                getFab(),
+                                15.ph,
+                              ]
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+  }
+
+  Stack buildStack() {
+    return Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Image.asset(
+                        chatlistBackground,
+                        width: double.infinity,
+                        height: double.infinity,
+                        fit: BoxFit.fitWidth,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          50.ph,
+                          DottedContainer(text: LocaleKeys.createYourFirstList.tr()),
+                          SizedBox(
+                            height: 45.h,
+                          ),
+                          getFab(),
+                        ],
+                      ),
+                    ],
+                  );
   }
 
   Widget getFab() {
@@ -210,6 +178,48 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
         color: Colors.black,
         size: 50,
       ),
+    );
+  }
+}
+
+class SignInWidget extends StatelessWidget {
+  const SignInWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Image.asset(
+          chatlistBackground,
+          width: double.infinity,
+          height: double.infinity,
+          fit: BoxFit.fitWidth,
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            50.ph,
+            DottedContainer(text: "Sign In to Use Chatlists"),
+            SizedBox(
+              height: 100.h,
+            ),
+            GenericButton(
+              borderRadius: BorderRadius.circular(6),
+              color: mainYellow,
+              height: 60.h,
+              width: 158.w,
+              onPressed: () => pushNewScreen(context, screen: RegisterScreen(), withNavBar: false),
+              child: Text(
+                "Sign in",
+                style: TextStyles.textViewSemiBold16.copyWith(color: white),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

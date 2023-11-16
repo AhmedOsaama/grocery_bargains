@@ -511,7 +511,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
   Future<void> deleteList(BuildContext context) async {
     Provider.of<ChatlistsProvider>(context, listen: false).deleteList(context, widget.listId);
-    // await pushDynamicScreen(context, screen: ChatlistsScreen());
   }
 
   shareListViaDeepLink() async {
