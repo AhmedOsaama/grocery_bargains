@@ -12,16 +12,14 @@ import '../../models/query_suggestions.dart';
 import '../../providers/suggestion_provider.dart';
 import '../../utils/style_utils.dart';
 
-
-
-class AutoCompleteScreen extends StatefulWidget {
-  const AutoCompleteScreen({Key? key}) : super(key: key);
+class AlgoliaAutoCompleteScreen extends StatefulWidget {
+  const AlgoliaAutoCompleteScreen({Key? key}) : super(key: key);
 
   @override
-  State<AutoCompleteScreen> createState() => _AutoCompleteScreenState();
+  State<AlgoliaAutoCompleteScreen> createState() => _AlgoliaAutoCompleteScreenState();
 }
 
-class _AutoCompleteScreenState extends State<AutoCompleteScreen> {
+class _AlgoliaAutoCompleteScreenState extends State<AlgoliaAutoCompleteScreen> {
   final _searchTextController = TextEditingController();
 
   @override
@@ -249,7 +247,10 @@ class SuggestionRowView extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 10),
               child: Row(
                 children: [
-                  Icon(Icons.arrow_forward_rounded, size: 12,),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 5),
+                    child: SvgPicture.asset(autocompleteArrow,),
+                  ),
                   5.pw,
                   Text.rich(TextSpan(text: "in ",children: [TextSpan(text: category, style: TextStyle(color: Colors.grey))]),),
                 ],

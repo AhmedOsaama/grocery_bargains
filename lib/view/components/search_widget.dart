@@ -2,7 +2,7 @@ import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/screens/algolia_search_screen.dart';
-import 'package:bargainb/view/screens/algolia_search_suggestion_screen.dart';
+import 'package:bargainb/view/screens/algolia_autocomplete_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +48,7 @@ class SearchWidget extends StatelessWidget {
           child: GestureDetector(
             onTap: () async {
               // AppNavigator.push(context: context, screen: AlgoliaSearchScreen());
-              AppNavigator.push(context: context, screen: AutoCompleteScreen());
+              AppNavigator.push(context: context, screen: AlgoliaAutoCompleteScreen());
               try{
                 TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open search", DateTime.now().toUtc().toString(), "Home screen");
               }catch(e){
