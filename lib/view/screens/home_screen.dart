@@ -185,17 +185,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: buildSeeMore(context),
                             ),
                     ),
-                    // SliverFillRemaining(
-                    //   // hasScrollBody: false,
-                    //   child: Padding(
-                    //     padding: EdgeInsets.symmetric(horizontal: 15.w),
-                    //     child: Column(
-                    //       children: [
-                    //         Expanded(child: LatestBargainsList()),
-                    //       ],
-                    //     ),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),

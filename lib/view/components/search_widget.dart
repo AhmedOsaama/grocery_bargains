@@ -2,6 +2,7 @@ import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:bargainb/view/screens/algolia_search_screen.dart';
+import 'package:bargainb/view/screens/algolia_search_suggestion_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -37,26 +38,22 @@ class SearchWidget extends StatelessWidget {
             children: [
               if(isBackButton)
               Icon(Icons.arrow_back_ios,color: mainPurple,),
-              SvgPicture.asset(bargainbIcon,height: 42.h,),
+              SvgPicture.asset(bargainbIcon, height: 42.h,),
             ],
           ),
-        ) :  SvgPicture.asset(bargainbIcon,height: 42.h,),
+        ) :  SvgPicture.asset(bargainbIcon, height: 42.h,),
 
         6.pw,
         Expanded(
           child: GestureDetector(
             onTap: () async {
-              AppNavigator.push(context: context, screen: AlgoliaSearchScreen());
+              // AppNavigator.push(context: context, screen: AlgoliaSearchScreen());
+              AppNavigator.push(context: context, screen: AutoCompleteScreen());
               try{
                 TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open search", DateTime.now().toUtc().toString(), "Home screen");
               }catch(e){
                 TrackingUtils().trackButtonClick("Guest", "Open search", DateTime.now().toUtc().toString(), "Home screen");
               }
-              // SharedPreferences pref =
-              // await SharedPreferences.getInstance();
-              // return showSearch(
-              //     context: context,
-              //     delegate: MySearchDelegate(pref: pref));
             },
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 10.w,vertical: 12.h),
