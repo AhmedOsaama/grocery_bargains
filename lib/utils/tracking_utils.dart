@@ -264,8 +264,19 @@ class TrackingUtils {
           userToken: userId,
           objectIDs: [productId!]
       );
+      AlgoliaEvent event2 = AlgoliaEvent(
+          eventType: AlgoliaEventType.conversion,
+          eventName: productActionEvent,
+          index: algoliaIndexName,
+          userToken: userId,
+          objectIDs: [productId]
+          // objectIDs: objectIDs,
+          // queryID: queryId,
+          // positions: positions
+      );
       algolia.pushEvents([
-        event
+        event,
+        event2
       ]);
     }catch(e){
       print(e);
