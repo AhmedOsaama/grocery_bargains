@@ -34,3 +34,4 @@ const String dirkLogo = "$imgPath/dirk.png";
 const String savingIllustration = "$imgPath/saving_illustration.png";
 const String chatlist = "$imgPath/chatlist.png";
 const String avocado = "$imgPath/avocado.png";
+const String chatbase = "$imgPath/chatbase.png";

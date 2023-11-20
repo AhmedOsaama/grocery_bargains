@@ -283,11 +283,11 @@ class ChatlistsProvider with ChangeNotifier {
   }
 
   //chat methods
-  Future<void> sendMessage(String message, String listId, String chatlistName) async {
+  Future<void> sendMessage(String message, String listId, String chatlistName, String collectionName) async {
     if (message.isNotEmpty) {
       final userData =
           await FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
-      await FirebaseFirestore.instance.collection('/lists/${listId}/messages').add({
+      await FirebaseFirestore.instance.collection('/lists/${listId}/${collectionName}').add({
         'item_name': "",
         'item_image': "",
         'item_description': "",
@@ -296,7 +296,6 @@ class ChatlistsProvider with ChangeNotifier {
         'item_price': 0.0,
         'item_oldPrice': "",
         'message': message,
-        // 'list_name': listId,
         'createdAt': Timestamp.fromDate(DateTime.now().toUtc()),
         'userId': FirebaseAuth.instance.currentUser!.uid,
         'username': userData['username'],
