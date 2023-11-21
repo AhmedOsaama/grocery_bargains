@@ -20,7 +20,7 @@ import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 import 'package:provider/provider.dart';
 import 'package:bargainb/view/screens/home_screen.dart';
-import 'package:bargainb/view/screens/chatlists_screen.dart';
+import 'package:bargainb/features/chatlists/presentation/views/chatlists_screen.dart';
 import 'package:bargainb/view/screens/profile_screen.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';

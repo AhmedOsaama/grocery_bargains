@@ -8,7 +8,7 @@ import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/button.dart';
 import 'package:bargainb/view/components/search_widget.dart';
-import 'package:bargainb/view/screens/chatlists_screen.dart';
+import 'package:bargainb/features/chatlists/presentation/views/chatlists_screen.dart';
 import 'package:bargainb/view/screens/contact_profile_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/widgets/invite_members_dialog.dart';
@@ -37,13 +37,6 @@ import 'package:showcaseview/showcaseview.dart';
 
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
-import '../../utils/tooltips_keys.dart';
-import '../../utils/triangle_painter.dart';
-import '../components/dotted_container.dart';
-import '../components/generic_field.dart';
-import '../components/search_delegate.dart';
-
-var imagesWidgets = ValueNotifier(<Widget>[]);
 
 class ChatListViewScreen extends StatefulWidget {
   final String listId;

@@ -260,6 +260,11 @@ abstract class TextStyles {
     fontWeight: FontWeight.w600,
     fontFamily: fontFamilyPoppins,
   );
+  static TextStyle textViewSemiBold15 = TextStyle(
+    fontSize: 14.sp,
+    fontWeight: FontWeight.w600,
+    fontFamily: fontFamilyPoppins,
+  );
   static TextStyle textViewSemiBold30 = TextStyle(
     fontSize: 30.sp,
     fontWeight: FontWeight.w600,
@@ -645,6 +650,11 @@ abstract class TextStylesInter {
   );
   static TextStyle textViewBold25 = TextStyle(
     fontSize: 25.sp,
+    fontWeight: FontWeight.bold,
+    fontFamily: fontFamilyInter,
+  );
+  static TextStyle textViewBold26 = TextStyle(
+    fontSize: 26.sp,
     fontWeight: FontWeight.bold,
     fontFamily: fontFamilyInter,
   );

@@ -23,7 +23,7 @@ import '../../utils/tooltips_keys.dart';
 import '../../utils/triangle_painter.dart';
 import '../components/button.dart';
 import '../components/close_button.dart';
-import '../screens/chatlists_screen.dart';
+import '../../features/chatlists/presentation/views/chatlists_screen.dart';
 import '../screens/contact_profile_screen.dart';
 import '../screens/main_screen.dart';
 

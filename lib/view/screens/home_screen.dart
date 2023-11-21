@@ -15,7 +15,7 @@ import 'package:bargainb/view/components/search_widget.dart';
 import 'package:bargainb/view/screens/all_categories_screen.dart';
 import 'package:bargainb/view/screens/category_screen.dart';
 import 'package:bargainb/view/screens/chatlist_view_screen.dart';
-import 'package:bargainb/view/screens/chatlists_screen.dart';
+import 'package:bargainb/features/chatlists/presentation/views/chatlists_screen.dart';
 import 'package:bargainb/view/screens/latest_bargains_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/widgets/store_list_widget.dart';
