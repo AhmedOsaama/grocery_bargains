@@ -87,8 +87,6 @@ class _ChatViewState extends State<ChatView> {
 
   bool isBotChat = false;
 
-
-
   Future getFirstTimeChatlist() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // setState(() {
@@ -881,47 +879,55 @@ class _ChatViewState extends State<ChatView> {
 
   Future<void> submitMessage(BuildContext context) async {
     var text = messageController.text.trim();
-    if((text == "@BargainB" || text == "@bargainb") && !isBotChat){
-      setState(() {
-        chatStream = FirebaseFirestore.instance
-            .collection("/lists/${widget.listId}/bot_messages")
-            .orderBy('createdAt', descending: true)
-            .snapshots();
-        isBotChat = true;
-      });
-    }else {
-      await FirebaseMessaging.instance.unsubscribeFromTopic(widget.listId);
+    if (['@BargainB', '@Bargainb', '@bargainb', '@bb', '@BB'].any((element) => text.startsWith(element))) {
+      messageController.clear();
+      // var question = text.replaceFirst('@BargainB', '');
+      await Provider.of<ChatlistsProvider>(context, listen: false)
+          .sendMessage(text, widget.listId, widget.chatlistName, "messages");
+      var chatbotResponse = await get(Uri.parse(
+          'https://us-central1-discountly.cloudfunctions.net/getChatbot?question=${text}&listId=${widget.listId}&collectionName=messages'));
+      // setState(() {
+      //   // chatStream = FirebaseFirestore.instance
+      //   //     .collection("/lists/${widget.listId}/bot_messages")
+      //   //     .orderBy('createdAt', descending: true)
+      //   //     .snapshots();
+      //   isBotChat = true;
+      // });
+    } else {
+      messageController.clear();
+       FirebaseMessaging.instance.unsubscribeFromTopic(widget.listId);
       await Provider.of<ChatlistsProvider>(context, listen: false)
           .sendMessage(text, widget.listId, widget.chatlistName, "messages");
       Future.delayed(Duration(seconds: 5), () {
         FirebaseMessaging.instance.subscribeToTopic(widget.listId);
       });
     }
-    if(isBotChat) {
-      await Provider.of<ChatlistsProvider>(context, listen: false)
-          .sendMessage(text, widget.listId, widget.chatlistName, "bot_messages");
-      var response = await post(Uri.parse('https://www.chatbase.co/api/v1/chat'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer 5b0c8ad5-1ade-40e0-b757-d8c6d36cac86'
-          },
-          body: jsonEncode({
-            'messages': [
-              // { 'content': 'How can I help you?', 'role': 'assistant' },
-              { 'content': '${text}', 'role': 'user' }
-            ],
-            'chatbotId': 'gpTwLMcc0OLmFzISyB5nQ',
-            'stream': false,
-            'model': 'gpt-3.5-turbo',
-            'temperature': 0
-      }));
-      var decodedResponse = jsonDecode(response.body);
-      if(response.statusCode == 200) print('CHATBOT RESPONSE: ${response.body}');
-      else print(response);
-      Provider.of<ChatlistsProvider>(context, listen: false)
-          .sendMessage(decodedResponse['text'], widget.listId, widget.chatlistName, "bot_messages");
-    }
-    messageController.clear();
+    // if (isBotChat) {
+
+
+      // var decodedResponse = jsonDecode(chatbotResponse.body);
+      // print(decodedResponse);
+      // var response = await post(Uri.parse('https://www.chatbase.co/api/v1/chat'),
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //       'Authorization': 'Bearer 5b0c8ad5-1ade-40e0-b757-d8c6d36cac86'
+      //     },
+      //     body: jsonEncode({
+      //       'messages': [
+      //         // { 'content': 'How can I help you?', 'role': 'assistant' },
+      //         { 'content': '${text}', 'role': 'user' }
+      //       ],
+      //       'chatbotId': 'gpTwLMcc0OLmFzISyB5nQ',
+      //       'stream': false,
+      //       'model': 'gpt-3.5-turbo',
+      //       'temperature': 0
+      // }));
+      // var decodedResponse = jsonDecode(response.body);
+      // if(response.statusCode == 200) print('CHATBOT RESPONSE: ${response.body}');
+      // else print(response);
+      // Provider.of<ChatlistsProvider>(context, listen: false)
+      //     .sendMessage(decodedResponse['text'], widget.listId, widget.chatlistName, "bot_messages");
+    // }
   }
 
   Widget quickItemField() {
