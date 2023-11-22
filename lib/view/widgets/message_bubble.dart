@@ -94,41 +94,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           children: [
             if (!widget.isMe)
               GestureDetector(
-                onTap: () async {
-                  List<ChatList> lists = [];
-                  var friends = await Provider.of<ChatlistsProvider>(context, listen: false).getAllFriends();
-
-                  friends.forEach((element) {
-                    if (element.id == widget.userId) {
-                      element.chatlists.forEach((element) {
-                        lists.add(ChatList(
-                            id: element.id,
-                            name: element.get("list_name"),
-                            storeName: element.get("storeName"),
-                            userIds: element.get("userIds"),
-                            totalPrice: element.get("total_price"),
-                            storeImageUrl: element.get("storeImageUrl"),
-                            itemLength: element.get("size"),
-                            lastMessage: element.get("last_message"),
-                            lastMessageDate: element.get("last_message_date"),
-                            lastMessageUserId: element.get("last_message_userId"),
-                            lastMessageUserName: element.get("last_message_userName")));
-                      });
-                    }
-                  });
-
-                  // AppNavigator.push(
-                  //     context: context,
-                  //     screen: ContactProfileScreen(
-                  //       lists: lists,
-                  //       user: UserContactInfo(
-                  //           email: "",
-                  //           id: widget.userId,
-                  //           imageURL: widget.userImage,
-                  //           name: widget.userName,
-                  //           phoneNumber: ''),
-                  //     ));
-                },
+                onTap: () {},
                 child: userImageWidget
               ),
             if (widget.message.isEmpty) //case of product as a message
@@ -158,30 +124,6 @@ class _MessageBubbleState extends State<MessageBubble> {
               Row(
                 children: widget.isMe
                     ? [
-                        GestureDetector(
-                            onTap: widget.isAddedToList
-                                ? () {}
-                                : () async {
-                                    await chatlistProvider.addMessageToList(
-                                      messageDocPath: widget.messageDocPath!,
-                                      userName: widget.userName,
-                                      userId: widget.userId,
-                                      message: widget.message,
-                                      item: ListItem(
-                                          id: -1,
-                                          storeName: "",
-                                          imageURL: '',
-                                          isChecked: false,
-                                          name: widget.message,
-                                          price: "0.0",
-                                          quantity: 0,
-                                          size: '',
-                                          text: widget.message,
-                                          brand: ''),
-                                    );
-                                  },
-                            child: widget.isAddedToList ? SvgPicture.asset(checkMark) : SvgPicture.asset(add)),
-                        5.pw,
                         Container(
                           width: widget.message.length > 30 ? MediaQuery.of(context).size.width * 0.6 : null,
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
@@ -190,44 +132,20 @@ class _MessageBubbleState extends State<MessageBubble> {
                             borderRadius: BorderRadius.only(
                               topRight: const Radius.circular(18),
                               topLeft: const Radius.circular(18),
-                              bottomLeft: widget.isMe ? const Radius.circular(18) : const Radius.circular(0),
-                              bottomRight: widget.isMe ? const Radius.circular(0) : const Radius.circular(18),
+                              bottomLeft: const Radius.circular(18) ,
+                              bottomRight: const Radius.circular(0),
                             ),
-                            color: widget.isMe ? iris : const Color.fromRGBO(233, 233, 235, 1),
+                            color: mainPurple,
                           ),
                           child: Text(
                             widget.message,
-                            style: TextStyles.textViewRegular15.copyWith(color: widget.isMe ? Colors.white : Colors.black),
+                            style: TextStyles.textViewRegular15.copyWith(color: Colors.white ),
                             softWrap: true,
-                            textAlign: widget.isMe ? TextAlign.right : TextAlign.left,
+                            textAlign: TextAlign.right,
                           ),
                         ),
                       ]
                     : [
-                        GestureDetector(
-                            onTap: widget.isAddedToList
-                                ? () {}
-                                : () async {
-                                    await chatlistProvider.addMessageToList(
-                                      messageDocPath: widget.messageDocPath!,
-                                      userName: widget.userName,
-                                      userId: widget.userId,
-                                      message: widget.message,
-                                      item: ListItem(
-                                          id: -1,
-                                          storeName: "",
-                                          imageURL: '',
-                                          isChecked: false,
-                                          name: widget.message,
-                                          price: "0.0",
-                                          quantity: 0,
-                                          size: '',
-                                          text: widget.message,
-                                          brand: ''),
-                                    );
-                                  },
-                            child: widget.isAddedToList ? SvgPicture.asset(checkMark) : SvgPicture.asset(add)),
-                        5.pw,
                         Container(
                           width: widget.message.length > 30 ? MediaQuery.of(context).size.width * 0.6 : null,
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
@@ -236,26 +154,18 @@ class _MessageBubbleState extends State<MessageBubble> {
                             borderRadius: BorderRadius.only(
                               topRight: const Radius.circular(18),
                               topLeft: const Radius.circular(18),
-                              bottomLeft: widget.isMe ? const Radius.circular(18) : const Radius.circular(0),
-                              bottomRight: widget.isMe ? const Radius.circular(0) : const Radius.circular(18),
+                              bottomLeft: const Radius.circular(0),
+                              bottomRight: const Radius.circular(18),
                             ),
-                            color: widget.isMe ? iris : const Color.fromRGBO(233, 233, 235, 1),
+                            color: widget.userId == "bargainb" ? Colors.white : purple50,
                           ),
                           child: Text(
                             widget.message,
-                            style: TextStyles.textViewRegular16.copyWith(color: widget.isMe ? Colors.white : Colors.black),
+                            style: TextStyles.textViewRegular16.copyWith(color:  widget.userId == "bargainb" ? Colors.black : Colors.white ),
                             textAlign: TextAlign.left,
                           ),
                         ),
                       ].reversed.toList(),
-              ),
-            if (widget.isMe)
-              GestureDetector(
-                onTap: () {
-                  AppNavigator.pop(context: context);
-                  NavigatorController.jumpToTab(2);
-                },
-                child: userImageWidget
               ),
           ],
         );

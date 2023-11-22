@@ -82,25 +82,120 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     chatList = Provider.of<ChatlistsProvider>(context, listen: false)
         .chatlists
         .firstWhere((chatList) => chatList.id == widget.listId);
-    // if (widget.isUsingDynamicLink) {
-    //   var currentUserId = FirebaseAuth.instance.currentUser?.uid;
-    //   FirebaseFirestore.instance.collection('/lists').doc(widget.listId).get().then((listSnapshot) {
-    //     final List userIds = listSnapshot.data()!['userIds'];
-    //     if (!userIds.contains(currentUserId)) {
-    //       userIds.add(currentUserId);
-    //       FirebaseFirestore.instance.collection('/lists').doc(widget.listId).update({"userIds": userIds});
-    //       ScaffoldMessenger.of(context)
-    //           .showSnackBar(SnackBar(content: Text("${LocaleKeys.userAddedToChatlist.tr()} ${chatList.name}")));
-    //     } else {
-    //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(LocaleKeys.userAlreadyExists.tr())));
-    //     }
-    //   });
-    // }
     getUserImagesFuture = getUserImages();
     FirebaseMessaging.instance.getToken().then((value) => print("USER TOKEN: $value"));
     TrackingUtils().trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Chatlist Screen");
 
     super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // bottomNavigationBar: null,
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: Container(
+          decoration: BoxDecoration(color: isFirstTime ? Color.fromRGBO(25, 27, 38, 0.6) : Color.fromRGBO(245, 247, 254, 1), boxShadow: [
+            BoxShadow(blurRadius: 50, offset: Offset(0, 20), color: Color.fromRGBO(52, 99, 237, 0.15)),
+          ]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Row(
+                  children: [
+                    GestureDetector(onTap: () => AppNavigator.pop(context: context), child: Icon(Icons.arrow_back_ios_new_outlined,color: mainPurple,)),
+                    5.pw,
+                    isEditingName
+                        ? Container(
+                            width: 200.w,
+                            child: TextFormField(
+                              initialValue: chatList.name,
+                              style: TextStyles.textViewSemiBold24.copyWith(color: prussian),
+                              onFieldSubmitted: (value) async {
+                                await updateListName(value);
+                              },
+                            ),
+                          )
+                        : Container(
+                            width: 150.w,
+                            child: Text(
+                              chatList.name,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStylesInter.textViewSemiBold26.copyWith(color: blackSecondary),
+                            ),
+                          ),
+                    Spacer(),
+                    Container(
+                      // width: listUsers.length >= 3 ? 60.w : 35.w,
+                      width: 60.w,
+                      height: 40,
+                      child: FutureBuilder(
+                          future: getUserImagesFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator(
+                                    color: verdigris,
+                                  ));
+                            }
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 11.0),
+                              child: snapshot.data ?? SvgPicture.asset(bee),
+                            );
+                          }),
+                    ),
+                    10.pw,
+                    IconButton(
+                      onPressed: () {
+                        showInviteMembersDialog(context);
+                        TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Show invite members dialog", DateTime.now().toUtc().toString(), "Chatlist screen");
+                      },
+                      icon: SvgPicture.asset(
+                        newperson,
+                        color: Colors.black,
+                      ),
+                    ),
+                    PopupMenuButton<String>(
+                      icon: Icon(Icons.more_vert),
+                        onSelected: (option){
+                      if (option == 'Rename') {
+                        setState(() {
+                          isEditingName = true;
+                        });
+                      } else if (option == 'Remove') {
+                        showRemoveDialog(context);
+                      }
+                    }, itemBuilder: (ctx) => [
+                      PopupMenuItem(
+                          value: 'Rename',
+                          child: Text(
+                            LocaleKeys.rename.tr(),
+                            style: TextStyles.textViewMedium12.copyWith(color: prussian),
+                          )),
+                      PopupMenuItem(
+                          value: 'Remove',
+                          child: Text(LocaleKeys.remove.tr(),
+                              style: TextStyles.textViewMedium12.copyWith(color: prussian)))
+                    ] ),
+                  ],
+                ),
+              ),
+              Expanded(
+                  child: ChatView(
+                listId: widget.listId,
+                showInviteMembersDialog: showInviteMembersDialog,
+                isExpandingChatlist: widget.isExpandingChatlist,
+                    chatlistName: chatList.name,
+              ))
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Future<Widget> getUserImages() async {
@@ -110,7 +205,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     imageWidgets.clear();
     try {
       final list =
-          await FirebaseFirestore.instance.collection('/lists').doc(widget.listId).get().timeout(Duration(seconds: 10));
+      await FirebaseFirestore.instance.collection('/lists').doc(widget.listId).get().timeout(Duration(seconds: 10));
       userIds = list['userIds'];
     } catch (e) {
       print(e);
@@ -163,7 +258,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       ));
     }
     var userInfo =
-        await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).get();
+    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser?.uid).get();
 
     if (userInfo.get('phoneNumber').isNotEmpty && userInfo.data()!["privacy"]["connectContacts"]) {
       var isPermissionGranted = await FlutterContacts.requestPermission();
@@ -241,139 +336,15 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
     }
 
     return Stack(
-      alignment: AlignmentDirectional.center,
+        alignment: AlignmentDirectional.center,
         children: imageWidgets
             .map((image) => Positioned(
-                  right: imageWidgets.indexOf(image) * 15,
-                  child: image,
-                ))
+          right: imageWidgets.indexOf(image) * 15,
+          child: image,
+        ))
             .toList());
   }
 
-  String getTotalListPrice(List items) {
-    var total = 0.0;
-    for (var item in items) {
-      try {
-        total += item['item_price'] ?? 99999;
-      } catch (e) {
-        total += 0;
-      }
-    }
-    return total.toStringAsFixed(2);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // bottomNavigationBar: null,
-      resizeToAvoidBottomInset: true,
-      body: Container(
-        decoration: BoxDecoration(color: isFirstTime ? Color.fromRGBO(25, 27, 38, 0.6) : Color.fromRGBO(245, 247, 254, 1), boxShadow: [
-          BoxShadow(blurRadius: 50, offset: Offset(0, 20), color: Color.fromRGBO(52, 99, 237, 0.15)),
-        ]),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 50,),
-            Opacity(
-              opacity: isFirstTime ? 0.3 : 1.0,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: SearchWidget(isBackButton: true),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Row(
-                children: [
-                  isEditingName
-                      ? Container(
-                          width: 200.w,
-                          child: TextFormField(
-                            initialValue: chatList.name,
-                            style: TextStyles.textViewSemiBold24.copyWith(color: prussian),
-                            onFieldSubmitted: (value) async {
-                              await updateListName(value);
-                            },
-                          ),
-                        )
-                      : Container(
-                          width: 150.w,
-                          child: Text(
-                            chatList.name,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStylesInter.textViewSemiBold26.copyWith(color: blackSecondary),
-                          ),
-                        ),
-                  Spacer(),
-                  Container(
-                    // width: listUsers.length >= 3 ? 60.w : 35.w,
-                    width: 60.w,
-                    height: 40,
-                    child: FutureBuilder(
-                        future: getUserImagesFuture,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(
-                                child: CircularProgressIndicator(
-                                  color: verdigris,
-                                ));
-                          }
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 11.0),
-                            child: snapshot.data ?? SvgPicture.asset(bee),
-                          );
-                        }),
-                  ),
-                  10.pw,
-                  IconButton(
-                    onPressed: () {
-                      showInviteMembersDialog(context);
-                      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Show invite members dialog", DateTime.now().toUtc().toString(), "Chatlist screen");
-                    },
-                    icon: SvgPicture.asset(
-                      newperson,
-                      color: Colors.black,
-                    ),
-                  ),
-                  PopupMenuButton<String>(
-                    icon: Icon(Icons.more_vert),
-                      onSelected: (option){
-                    if (option == 'Rename') {
-                      setState(() {
-                        isEditingName = true;
-                      });
-                    } else if (option == 'Remove') {
-                      showRemoveDialog(context);
-                    }
-                  }, itemBuilder: (ctx) => [
-                    PopupMenuItem(
-                        value: 'Rename',
-                        child: Text(
-                          LocaleKeys.rename.tr(),
-                          style: TextStyles.textViewMedium12.copyWith(color: prussian),
-                        )),
-                    PopupMenuItem(
-                        value: 'Remove',
-                        child: Text(LocaleKeys.remove.tr(),
-                            style: TextStyles.textViewMedium12.copyWith(color: prussian)))
-                  ] ),
-                ],
-              ),
-            ),
-            Expanded(
-                child: ChatView(
-              listId: widget.listId,
-              showInviteMembersDialog: showInviteMembersDialog,
-              isExpandingChatlist: widget.isExpandingChatlist,
-                  chatlistName: chatList.name,
-            ))
-          ],
-        ),
-      ),
-    );
-  }
 
   Future<dynamic> showRemoveDialog(BuildContext context) {
     return showDialog(
