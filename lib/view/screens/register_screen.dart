@@ -501,35 +501,47 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> loginWithSocial(BuildContext context, bool isApple) async {
     late UserCredential userCredential;
-    String providerName;
     if (isApple) {
-      final credential = await SignInWithApple.getAppleIDCredential(
-        scopes: [
-          AppleIDAuthorizationScopes.email,
-          AppleIDAuthorizationScopes.fullName,
-        ],
-      );
-      final appleCredential = OAuthProvider('apple.com').credential(
-        idToken: credential.identityToken,
-        accessToken: credential.authorizationCode,
-      );
-      // print(appleCredential);
-      userCredential =
-          await FirebaseAuth.instance.signInWithCredential(appleCredential);
-      providerName = 'Apple';
+      userCredential = await loginWithApple();
     } else {
       userCredential =
           await Provider.of<GoogleSignInProvider>(context, listen: false)
               .loginWithGoogle();
-      providerName = "Google";
     }
+    finalizeSocialLogin(userCredential, context);
+    print("SOCIAL LOGIN FINISHED");
+  }
+
+  Future<UserCredential> loginWithApple() async {
+     final credential = await SignInWithApple.getAppleIDCredential(
+      scopes: [
+        AppleIDAuthorizationScopes.email,
+        AppleIDAuthorizationScopes.fullName,
+      ],
+    );
+    final appleCredential = OAuthProvider('apple.com').credential(
+      idToken: credential.identityToken,
+      accessToken: credential.authorizationCode,
+    );
+    // print(appleCredential);
+    var userCredential =
+        await FirebaseAuth.instance.signInWithCredential(appleCredential);
+    return userCredential;
+  }
+
+  Future<void> finalizeSocialLogin(UserCredential userCredential, BuildContext context) async {
+    goToNextScreen(context);
+    checkAndStoreUserInfo(userCredential);
+  }
+
+  Future<void> checkAndStoreUserInfo(UserCredential userCredential) async {
     if (userCredential.user != null) {
       var userSnapshot = await FirebaseFirestore.instance
           .collection('users')
           .doc(userCredential.user!.uid)
           .get();
 
-      if (!userSnapshot.exists) {
+      if (!userSnapshot.exists) { //user doc doesn't exist
         try {
           email = userCredential.user!.email!;
           username = userCredential.user!.displayName ?? "User";
@@ -539,24 +551,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
           print(e);
         }
         await saveUserData(userCredential);
-      }else{
-        // print("Creating hubspot");
-        // if(!userSnapshot.data()!.containsKey('isHubspotContact')) createHubspotContact(userCredential, userSnapshot.data()!);
       }
       saveRememberMePref();
 
       TrackingUtils().trackLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
-      var pref = await SharedPreferences.getInstance();
-      var isFirstTime = pref.getBool("firstTime") ?? true;
-      print("IS FIRST TIME:" + isFirstTime.toString());
-      if (isFirstTime) {
-        // pref.setBool("firstTime", false);
+    }
+  }
 
-        AppNavigator.pushReplacement(
-            context: context, screen: OnBoardingScreen());
-      } else {
-        AppNavigator.pushReplacement(context: context, screen: MainScreen());
-      }
+  Future<void> goToNextScreen(BuildContext context) async {
+     var pref = await SharedPreferences.getInstance();
+    var isFirstTime = pref.getBool("firstTime") ?? true;
+    if (isFirstTime) {
+      AppNavigator.pushReplacement(
+          context: context, screen: OnBoardingScreen());
+    } else {
+      AppNavigator.pushReplacement(context: context, screen: MainScreen());
     }
   }
 
