@@ -500,7 +500,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> loginWithSocial(BuildContext context, bool isApple) async {
-    late UserCredential userCredential;
+    UserCredential? userCredential;
     if (isApple) {
       userCredential = await loginWithApple();
     } else {
@@ -508,23 +508,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
           await Provider.of<GoogleSignInProvider>(context, listen: false)
               .loginWithGoogle();
     }
+    if(userCredential != null)
     finalizeSocialLogin(userCredential, context);
   }
 
-  Future<UserCredential> loginWithApple() async {
-     final credential = await SignInWithApple.getAppleIDCredential(
-      scopes: [
-        AppleIDAuthorizationScopes.email,
-        AppleIDAuthorizationScopes.fullName,
-      ],
-    );
-    final appleCredential = OAuthProvider('apple.com').credential(
-      idToken: credential.identityToken,
-      accessToken: credential.authorizationCode,
-    );
-    // print(appleCredential);
-    var userCredential =
-        await FirebaseAuth.instance.signInWithCredential(appleCredential);
+  Future<UserCredential?> loginWithApple() async {
+    UserCredential? userCredential;
+    try {
+      final credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+      final appleCredential = OAuthProvider('apple.com').credential(
+        idToken: credential.identityToken,
+        accessToken: credential.authorizationCode,
+      );
+    userCredential = await FirebaseAuth.instance.signInWithCredential(appleCredential);
+    }catch(e){
+      print(e);
+      return null;
+    }
     return userCredential;
   }
 
