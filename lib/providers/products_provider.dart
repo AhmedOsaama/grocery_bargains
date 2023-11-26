@@ -80,9 +80,11 @@ class ProductsProvider with ChangeNotifier {
 
   Future<int> getAllCategories() async {
     var response = await NetworkServices.getAllCategories();
-
-    categories = productCategoryFromJson(response.body);
-
+    try {
+      categories = productCategoryFromJson(response.body);
+    }catch(e){
+      print("Error getting all categories: $e");
+    }
     print("categories length: ${categories.length}");
     notifyListeners();
     return response.statusCode;

@@ -1,7 +1,6 @@
-import 'package:algolia/algolia.dart';
+import 'package:bargainb/utils/algolia_tracking_utils.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TrackingUtils {
   static const userIdKey = 'UserID';
@@ -52,10 +51,8 @@ class TrackingUtils {
   static const filterUsedEvent = 'FilterUsed';
 
 
-  static const algoliaIndexName = 'dev_PRODUCTS';
 
   Mixpanel mixpanel = Mixpanel('752b3abf782a7347499ccb3ebb504194');
-  Algolia algolia = Algolia.init(applicationId: 'DG62X9U03X', apiKey: 'e862c47c6741eef540abe9fb5f68eef6');
 
   void trackButtonClick(String userId, String buttonName, String timestamp, String pageName){
     mixpanel.track(buttonClickEvent, properties: {
@@ -223,19 +220,9 @@ class TrackingUtils {
         ..addCustomData(timeStampKey, timestamp)
         ..addCustomData(searchQueryKey, searchQuery)
     );
-    AlgoliaEvent event = AlgoliaEvent(
-      eventType: AlgoliaEventType.click,
-      eventName: searchEvent,
-      index: algoliaIndexName,
-      userToken: userId,
-      objectIDs: objectIDs,
-      queryID: queryId,
-      positions: positions
-    );
-    algolia.pushEvents([
-      event
-    ]);
+    AlgoliaTrackingUtils.trackAlgoliaClickEvent(userId, objectIDs, queryId, positions, searchEvent);
   }
+
 
   void trackProductAction(String userId, String timestamp, bool discounted, String chatlistId, String ChatlistName, String quantity, String actionType, {String? productId}){
     mixpanel.track(productActionEvent, properties: {
@@ -256,32 +243,7 @@ class TrackingUtils {
         ..addCustomData(quantityKey, quantity)
         ..addCustomData(actionTypeKey, actionType)
     );
-    try {
-      AlgoliaEvent event = AlgoliaEvent(
-          eventType: AlgoliaEventType.click,
-          eventName: productActionEvent,
-          index: algoliaIndexName,
-          userToken: userId,
-          objectIDs: [productId!]
-      );
-      AlgoliaEvent event2 = AlgoliaEvent(
-          eventType: AlgoliaEventType.conversion,
-          eventName: productActionEvent,
-          index: algoliaIndexName,
-          userToken: userId,
-          objectIDs: [productId]
-          // objectIDs: objectIDs,
-          // queryID: queryId,
-          // positions: positions
-      );
-      algolia.pushEvents([
-        event,
-        event2
-      ]);
-    }catch(e){
-      print(e);
-      print("ITEM ID: ${productId}");
-    }
+    AlgoliaTrackingUtils.trackAlgoliaConversionEvent(userId, productId, productActionEvent);
   }
 
   void trackShareProduct(String userId, String timestamp, String productId, String productName, String productCategory){

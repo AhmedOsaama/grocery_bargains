@@ -509,7 +509,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
               .loginWithGoogle();
     }
     finalizeSocialLogin(userCredential, context);
-    print("SOCIAL LOGIN FINISHED");
   }
 
   Future<UserCredential> loginWithApple() async {
