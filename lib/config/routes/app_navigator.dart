@@ -4,7 +4,7 @@ class AppNavigator {
   static Future<void> push(
       {required BuildContext context, required Widget screen}) async {
     await Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => screen));
+        .push(MaterialPageRoute(builder: (context) => screen, settings: RouteSettings(name: screen.toString())));
   }
   static Future<void> pushReplacement(
       {required BuildContext context, required Widget screen}) async {

@@ -104,12 +104,20 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    final transaction = Sentry.startTransaction('main initstate', 'task');
+    try {
     getAllProductsFuture = Provider.of<ProductsProvider>(context, listen: false)
         .getAllProducts()
         .timeout(Duration(seconds: 3), onTimeout: () {});
     Provider.of<ProductsProvider>(context, listen: false).getAllCategories();
     authStateChangesStream = FirebaseAuth.instance.authStateChanges();
     initMixpanel();
+    } catch (exception) {
+      transaction.throwable = exception;
+      transaction.status = SpanStatus.internalError();
+    } finally {
+      transaction.finish();
+    }
   }
 
   Future<void> initMixpanel() async {
@@ -131,6 +139,9 @@ class _MyAppState extends State<MyApp> {
         theme: ThemeData(
           canvasColor: Colors.white,
         ),
+        navigatorObservers: [
+          SentryNavigatorObserver()
+        ],
         debugShowCheckedModeBanner: false,
         home: FutureBuilder(
             future: getAllProductsFuture,
