@@ -39,10 +39,9 @@ class _SupportScreenState extends State<SupportScreen> {
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: SearchAppBar(isBackButton: true),
-      body: SingleChildScrollView(
-        child: Padding(
+    return SafeArea(
+      child: Scaffold(
+        body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 15.w),
           child: Form(
             key: _formKey,
@@ -101,6 +100,7 @@ class _SupportScreenState extends State<SupportScreen> {
                   colorStyle: Color.fromRGBO(237, 237, 237, 1),
                 ),
                 30.ph,
+                Spacer(),
                 GenericButton(
                   onPressed: () {
                     var isValid = _formKey.currentState?.validate();
@@ -119,7 +119,7 @@ class _SupportScreenState extends State<SupportScreen> {
                         TextStylesDMSans.textViewSemiBold16.copyWith(color: Colors.white),
                   ),
                 ),
-                10.ph
+                20.ph
               ],
             ),
           ),

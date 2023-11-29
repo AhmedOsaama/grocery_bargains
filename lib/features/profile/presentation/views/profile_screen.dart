@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/features/profile/presentation/views/widgets/profile_settings_widget.dart';
 import 'package:bargainb/features/profile/presentation/views/widgets/user_image_widget.dart';
 import 'package:bargainb/providers/google_sign_in_provider.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
@@ -90,171 +91,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        if (isEditing)
-                          TextButton(
-                              onPressed: () async {
-                                try {
-                                  TrackingUtils().trackTextLinkClicked(FirebaseAuth.instance.currentUser!.uid,
-                                      DateTime.now().toUtc().toString(), "Profile screen", "Cancel profile editing");
-                                } catch (e) {
-                                  print(e);
-                                }
-                                setState(() {
-                                  isEditing = !isEditing;
-                                });
-                              },
-                              child: Text(LocaleKeys.cancel.tr())),
-                        Spacer(),
-                        isEditing
-                            ? TextButton(
-                                onPressed: () async {
-                                  await saveProfileChanges();
-                                  try {
-                                    TrackingUtils().trackTextLinkClicked(FirebaseAuth.instance.currentUser!.uid,
-                                        DateTime.now().toUtc().toString(), "Profile screen", "Save profile edits");
-                                  } catch (e) {
-                                    print(e);
-                                  }
-                                },
-                                child: Text(LocaleKeys.save.tr()))
-                            : TextButton(
-                                onPressed: () async {
-                                  try {
-                                    TrackingUtils().trackTextLinkClicked(FirebaseAuth.instance.currentUser!.uid,
-                                        DateTime.now().toUtc().toString(), "Profile screen", "Edit profile");
-                                  } catch (e) {
-                                    print(e);
-                                  }
-                                  setState(() {
-                                    isEditing = !isEditing;
-                                  });
-                                },
-                                child: Text(LocaleKeys.edit.tr())),
-                      ],
-                    ),
+                    buildCancelSaveChangesRow(),
                     UserImageWidget(userProfileSnapshot: snapshot, updateUserDataFuture: updateUserDataFuture,),
                     30.ph,
-                    if (!isEditing) ...[
-                      SettingRow(
-                        icon: Icon(
-                          Icons.person,
-                          color: mainPurple,
-                        ),
-                        settingText: "Your Status",
-                        value: snapshot.data!['status'],
-                        onTap: () {
-                          setState(() {
-                            isEditing = !isEditing;
-                          });
-                          TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open status",
-                              DateTime.now().toUtc().toString(), "Profile screen");
-                        },
-                      ),
-                      Divider(),
-                      10.ph,
-                      SettingRow(
-                        icon: SvgPicture.asset(
-                          masterCard,
-                          color: mainPurple,
-                        ),
-                        settingText: "Subscription",
-                        onTap: () {
-                          // AppNavigator.push(context: context, screen: SubscriptionScreen());
-                          AppNavigator.push(context: context, screen: DummySubscriptionScreen());
-                          TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
-                              "Open Subscription screen", DateTime.now().toUtc().toString(), "Profile screen");
-                        },
-                      ),
-                      Divider(),
-                      10.ph,
-                      SettingRow(
-                        icon: Icon(
-                          Icons.settings,
-                          color: mainPurple,
-                        ),
-                        settingText: LocaleKeys.settings.tr(),
-                        onTap: () {
-                          AppNavigator.push(context: context, screen: SettingsScreen());
-                          TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
-                              "Open Settings screen", DateTime.now().toUtc().toString(), "Profile screen");
-                        },
-                      ),
-                      Divider(),
-                      10.ph,
-                      SettingRow(
-                          icon: SvgPicture.asset(tutorial),
-                          settingText: "Tutorial".tr(),
-                          onTap: () {
-                            Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
-                            // pushNewScreen(context, screen: MainScreen(), withNavBar: false);
-                            NavigatorController.jumpToTab(0);
-                            // AppNavigator.pushReplacement(context: context, screen: MainScreen());
-                            TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
-                                "Activate tutorial", DateTime.now().toUtc().toString(), "Profile screen");
-                          }),
-                      Divider(),
-                      10.ph,
-                      SettingRow(
-                          icon: const Icon(
-                            Icons.help_outline_outlined,
-                            color: mainPurple,
-                          ),
-                          settingText: LocaleKeys.support.tr(),
-                          onTap: () {
-                            pushNewScreen(context, screen: SupportScreen(), withNavBar: true);
-                            TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
-                                "Open Support screen", DateTime.now().toUtc().toString(), "Profile screen");
-                          }),
-                      10.ph
-                    ],
-                    if (isEditing) ...[
-                      Text(
-                        "Name".tr(),
-                        style: TextStylesDMSans.textViewMedium13.copyWith(color: Colors.grey),
-                      ),
-                      TextFormField(
-                        onChanged: (value) {
-                          setState(() {
-                            name = value;
-                            isEdited = true;
-                          });
-                        },
-                        initialValue: snapshot.data!['username'],
-                      ),
-                      20.ph,
-                      Text(
-                        LocaleKeys.phone.tr(),
-                        style: TextStylesDMSans.textViewMedium13.copyWith(color: Colors.grey),
-                      ),
-                      TextFormField(
-                        onChanged: (value) {
-                          setState(() {
-                            phone = value;
-                            isPhoneEdited = true;
-                            isEdited = true;
-                          });
-                        },
-                        initialValue: snapshot.data!['phoneNumber'],
-                        decoration: InputDecoration(hintText: "+31 (097) 999-9999"),
-                      ),
-                      20.ph,
-                      Text(
-                        "YourStatus".tr(),
-                        style: TextStylesDMSans.textViewMedium13.copyWith(color: Colors.grey),
-                      ),
-                      TextFormField(
-                        onChanged: (value) {
-                          setState(() {
-                            status = value;
-                            isEdited = true;
-                          });
-                        },
-                        initialValue: snapshot.data!['status'].toString().isEmpty ? status : snapshot.data!['status'],
-                      ),
-                      10.ph,
-                    ]
+                    if (!isEditing) ProfileSettingsWidget(snapshot: snapshot, editProfile: switchEditProfile),
+                    if (isEditing) ...buildProfileTextFields(snapshot)
                   ],
                 );
               }),
@@ -263,8 +104,93 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  List<Widget> buildProfileTextFields(AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+    return [
+                    Text(
+                      "Name".tr(),
+                      style: TextStylesDMSans.textViewMedium13.copyWith(color: Colors.grey),
+                    ),
+                    TextFormField(
+                      onChanged: (value) {
+                        setState(() {
+                          name = value;
+                          isEdited = true;
+                        });
+                      },
+                      initialValue: snapshot.data!['username'],
+                    ),
+                    20.ph,
+                    Text(
+                      LocaleKeys.phone.tr(),
+                      style: TextStylesDMSans.textViewMedium13.copyWith(color: Colors.grey),
+                    ),
+                    TextFormField(
+                      onChanged: (value) {
+                        setState(() {
+                          phone = value;
+                          isPhoneEdited = true;
+                          isEdited = true;
+                        });
+                      },
+                      initialValue: snapshot.data!['phoneNumber'],
+                      decoration: InputDecoration(hintText: "+31 (097) 999-9999"),
+                    ),
+                    20.ph,
+                    Text(
+                      "YourStatus".tr(),
+                      style: TextStylesDMSans.textViewMedium13.copyWith(color: Colors.grey),
+                    ),
+                    TextFormField(
+                      onChanged: (value) {
+                        setState(() {
+                          status = value;
+                          isEdited = true;
+                        });
+                      },
+                      initialValue: snapshot.data!['status'].toString().isEmpty ? status : snapshot.data!['status'],
+                    ),
+                    10.ph,
+                  ];
+  }
 
+  void switchEditProfile(){
+    setState(() {
+      isEditing = !isEditing;
+    });
+  }
 
+  Row buildCancelSaveChangesRow() {
+    return Row(
+                    children: [
+                      if (isEditing)
+                        TextButton(
+                            onPressed: () async {
+                              try {
+                                TrackingUtils().trackTextLinkClicked(FirebaseAuth.instance.currentUser!.uid,
+                                    DateTime.now().toUtc().toString(), "Profile screen", "Cancel profile editing");
+                              } catch (e) {
+                                print(e);
+                              }
+                              setState(() {
+                                isEditing = !isEditing;
+                              });
+                            },
+                            child: Text(LocaleKeys.cancel.tr())),
+                      Spacer(),
+                      if(isEditing) TextButton(
+                              onPressed: () async {
+                                await saveProfileChanges();
+                                try {
+                                  TrackingUtils().trackTextLinkClicked(FirebaseAuth.instance.currentUser!.uid,
+                                      DateTime.now().toUtc().toString(), "Profile screen", "Save profile edits");
+                                } catch (e) {
+                                  print(e);
+                                }
+                              },
+                              child: Text(LocaleKeys.save.tr()))
+                    ],
+                  );
+  }
 
   TextButton buildNoProfileData(BuildContext context) {
     {
@@ -325,11 +251,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> saveProfileChanges() async {
-    print("Entered saveProfileChanges");
-    print(isEditing);
-    print(isEdited);
     if (isEditing && isEdited) {
-      print("Entered isEditing Condition");
 
       Map<String, Object?> data = {};
 
@@ -341,7 +263,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       }
 
       if (phone.isNotEmpty && isPhoneEdited) {
-        print("Entered Condition");
         await verifyPhoneNumber(phone);
       }
       if (!isPhoneEdited) {
@@ -355,7 +276,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         isEdited = !isEdited;
       });
   }
-
 
   Future<void> verifyPhoneNumber(String phone) async {
     print("Entered Verify Phone number");
