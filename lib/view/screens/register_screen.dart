@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bargainb/utils/tracking_utils.dart';
-import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:bargainb/view/widgets/otp_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';

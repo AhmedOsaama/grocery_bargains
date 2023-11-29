@@ -14,7 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/style_utils.dart';
-import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:bargainb/view/screens/product_detail_screen.dart';
 
 import '../../config/routes/app_navigator.dart';

@@ -39,7 +39,7 @@ import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/utils/utils.dart';
 import 'package:bargainb/view/components/dotted_container.dart';
 import 'package:bargainb/view/components/generic_field.dart';
-import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 
 import '../../features/chatlists/presentation/views/widgets/add_friends_widget.dart';
 import '../../features/chatlists/presentation/views/widgets/empty_list_widget.dart';

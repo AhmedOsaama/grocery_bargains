@@ -17,7 +17,7 @@ import 'package:bargainb/utils/app_colors.dart';
 
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
-import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:bargainb/view/widgets/product_item.dart';
 import 'package:provider/provider.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';

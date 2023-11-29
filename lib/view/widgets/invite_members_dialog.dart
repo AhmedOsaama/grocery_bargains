@@ -1,6 +1,6 @@
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/screens/home_screen.dart';
-import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

@@ -43,3 +43,4 @@ const String edit = "$imgPath/edit.svg";
 const String cheese = "$imgPath/cheese.svg";
 const String autocompleteArrow = "$imgPath/autocomplete_arrow.svg";
 const String chatbot = "$imgPath/chatbot.svg";
+const String pictureEdit = "$imgPath/picture_edit.svg";

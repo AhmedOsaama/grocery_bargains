@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bargainb/utils/utils.dart';
 import 'package:bargainb/view/components/generic_field.dart';
-import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:http/http.dart';
 
 import '../../generated/locale_keys.g.dart';

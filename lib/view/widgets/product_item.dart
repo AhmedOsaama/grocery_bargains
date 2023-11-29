@@ -6,7 +6,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/view/components/plus_button.dart';
-import 'package:bargainb/view/screens/profile_screen.dart';
+import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 
 import '../../utils/app_colors.dart';
 import '../../utils/icons_manager.dart';
