@@ -41,6 +41,7 @@ class _SupportScreenState extends State<SupportScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: MyAppBar(title: LocaleKeys.support.tr(),),
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 15.w),
           child: Form(
@@ -48,12 +49,7 @@ class _SupportScreenState extends State<SupportScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                10.ph,
-                Text(
-                  LocaleKeys.support.tr(),
-                  style: TextStyles.textViewSemiBold30.copyWith(color: black2),
-                ),
-                40.ph,
+                70.ph,
                 Text(
                   LocaleKeys.yourName.tr(),
                   style: TextStylesDMSans.textViewBold12.copyWith(color: black1),
@@ -64,9 +60,9 @@ class _SupportScreenState extends State<SupportScreen> {
                   onSaved: (value){
                     userName = value!;
                   },
+                  boxShadow: null,
                   validation: (value) => Validator.text(value),
-                  boxShadow: Utils.boxShadow[0],
-                  colorStyle: Color.fromRGBO(237, 237, 237, 1),
+                  // colorStyle: Color.fromRGBO(237, 237, 237, 1),
                 ),
                 20.ph,
                 Text(
@@ -79,9 +75,8 @@ class _SupportScreenState extends State<SupportScreen> {
                   onSaved: (value){
                     userEmail = value!;
                   },
-                  boxShadow: Utils.boxShadow[0],
                   validation: (value) => Validator.email(value),
-                  colorStyle: Color.fromRGBO(237, 237, 237, 1),
+                  // colorStyle: Color.fromRGBO(237, 237, 237, 1),
                 ),
                 20.ph,
                 Text(
@@ -95,9 +90,8 @@ class _SupportScreenState extends State<SupportScreen> {
                   onSaved: (value){
                     userMessage = value!;
                   },
-                  boxShadow: Utils.boxShadow[0],
                   validation: (value) => Validator.defaultValidator(value),
-                  colorStyle: Color.fromRGBO(237, 237, 237, 1),
+                  // colorStyle: Color.fromRGBO(237, 237, 237, 1),
                 ),
                 30.ph,
                 Spacer(),
@@ -153,4 +147,31 @@ class _SupportScreenState extends State<SupportScreen> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(LocaleKeys.somethingWentWrong.tr())));
     });
   }
+}
+
+class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final double height;
+  final String title;
+  const MyAppBar({
+    super.key,
+    this.height = kToolbarHeight,
+    required this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      centerTitle: true,
+      iconTheme: IconThemeData(
+        color: mainPurple
+      ),
+      title: Text(title, style: TextStylesInter.textViewBold26.copyWith(color: Colors.black),),
+      backgroundColor: Colors.transparent,
+      foregroundColor: Colors.black,
+      elevation: 0,
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(height);
 }

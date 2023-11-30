@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
+import 'package:bargainb/utils/assets_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../../config/routes/app_navigator.dart';
 import '../../../../../generated/locale_keys.g.dart';
@@ -27,6 +31,26 @@ class ProfileSettingsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
     children: [
+      SettingRow(
+          icon: Image.asset(diamond),
+          settingText: "Rate Us".tr(),
+          onTap: () async {
+            Uri url =  Uri.parse(
+                Platform.isIOS ?
+                'https://apps.apple.com/us/app/bargainb-grocery-savings/id6446258008'
+                    : 'https://play.google.com/store/apps/details?id=thebargainb.app');
+            if(await canLaunchUrl(url)) {
+              launchUrl(
+                  url,
+                mode: LaunchMode.externalApplication
+              );
+            }else{
+              throw "Can't launch url";
+            }
+            TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
+                "Open google/apple store rating page", DateTime.now().toUtc().toString(), "Profile screen");
+          }),
+        Divider(),
         SettingRow(
           icon: Icon(
             Icons.person,
@@ -40,7 +64,6 @@ class ProfileSettingsWidget extends StatelessWidget {
                 DateTime.now().toUtc().toString(), "Profile screen");
           },
         ),
-        Divider(),
         10.ph,
         SettingRow(
           icon: SvgPicture.asset(
@@ -54,11 +77,10 @@ class ProfileSettingsWidget extends StatelessWidget {
                 "Open Subscription screen", DateTime.now().toUtc().toString(), "Profile screen");
           },
         ),
-        Divider(),
         10.ph,
         SettingRow(
           icon: Icon(
-            Icons.settings,
+            Icons.settings_outlined,
             color: mainPurple,
           ),
           settingText: LocaleKeys.settings.tr(),
@@ -68,7 +90,6 @@ class ProfileSettingsWidget extends StatelessWidget {
                 "Open Settings screen", DateTime.now().toUtc().toString(), "Profile screen");
           },
         ),
-        Divider(),
         10.ph,
         SettingRow(
             icon: SvgPicture.asset(tutorial),
@@ -79,7 +100,6 @@ class ProfileSettingsWidget extends StatelessWidget {
               TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
                   "Activate tutorial", DateTime.now().toUtc().toString(), "Profile screen");
             }),
-        Divider(),
         10.ph,
         SettingRow(
             icon: const Icon(

@@ -20,41 +20,37 @@ class SettingRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return InkWell(
       onTap: onTap,
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10), color: purple30),
-            child: icon,
-          ),
-          12.pw,
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                settingText,
-                style: TextStyles.textViewMedium14.copyWith(color: Colors.grey),
-              ),
-              value != null && value!.isNotEmpty
-                  ? Text(
-                      value!,
-                      style:
-                          TextStyles.textViewMedium12.copyWith(color: black1),
-                    )
-                  : Container(),
-            ],
-          ),
-          Spacer(),
-          const Icon(
-            Icons.arrow_forward_ios,
-            size: 18,
-            color: mainPurple,
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(4),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10), color: purple10),
+              child: icon,
+            ),
+            12.pw,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  settingText,
+                  style: TextStylesInter.textViewMedium16,
+                ),
+                value != null && value!.isNotEmpty
+                    ? Text(
+                        value!,
+                        style:
+                            TextStylesInter.textViewRegular13.copyWith(color: Color(0xFF7C7C7C)),
+                      )
+                    : Container(),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

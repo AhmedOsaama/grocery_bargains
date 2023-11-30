@@ -35,3 +35,6 @@ const String savingIllustration = "$imgPath/saving_illustration.png";
 const String chatlist = "$imgPath/chatlist.png";
 const String avocado = "$imgPath/avocado.png";
 const String chatbase = "$imgPath/chatbase.png";
+// const String ellipses = "$imgPath/ellipses.svg";
+const String ellipses = "$imgPath/ellipses.png";
+const String diamond = "$imgPath/diamond.png";
