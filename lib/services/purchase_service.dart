@@ -8,8 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class PurchaseApi{
-  static const _apiKey = 'appl_HUpmOoVSBSzFEjDWMemOoWSxdBq';
-  // static const _apiKey = 'goog_TKFhZiVZKEYVhHGVqldnltUOYyJ';
 
   static var subscriptionPeriod = "None";
   static var subscriptionPrice = "None";
@@ -19,13 +17,13 @@ class PurchaseApi{
     var apiKey = Platform.isIOS ? 'appl_HUpmOoVSBSzFEjDWMemOoWSxdBq' : 'goog_TKFhZiVZKEYVhHGVqldnltUOYyJ';
     await Purchases.setLogLevel(LogLevel.debug);
     await Purchases.configure(PurchasesConfiguration(apiKey));
-    // try {
-    //   await Purchases.configure(PurchasesConfiguration(apiKey)
-    //     ..appUserID = FirebaseAuth.instance.currentUser!.uid);
-    // }catch(e){
-    //   print(e);
-    //   await Purchases.configure(PurchasesConfiguration(apiKey));
-    // }
+    try {
+      await Purchases.configure(PurchasesConfiguration(apiKey)
+        ..appUserID = FirebaseAuth.instance.currentUser!.uid);
+    }catch(e){
+      print(e);
+      await Purchases.configure(PurchasesConfiguration(apiKey));
+    }
     await checkSubscriptionStatus();
   }
 
@@ -49,18 +47,16 @@ class PurchaseApi{
        subscriptionPeriod = getSubscriptionPeriod(productIdentifier);
        subscriptionPrice = getSubscriptionPriceString(product);
        subscriptionPricePerMonth = getPricePerMonth(subscriptionPeriod, getSubscriptionPrice(product));
-       // return subscriptionStatus;
      }
    }catch(e){
      print(e);
    }
-    // return subscriptionStatus;
   }
 
   static Future<StoreProduct> getSubscriptionProduct(String productIdentifier) async {
     print("Product identifier: $productIdentifier");
     if(productIdentifier == "bargainb_1599_l" || productIdentifier == "bargain_lifetime_1599"){
-      var products = await Purchases.getProducts([productIdentifier],productCategory: ProductCategory.nonSubscription);
+      var products = await Purchases.getProducts([productIdentifier], productCategory: ProductCategory.nonSubscription);
       print("Products: ${products}");
       var product = products.first;
       return product;

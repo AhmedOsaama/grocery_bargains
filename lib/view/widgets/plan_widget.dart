@@ -41,7 +41,7 @@ class PlanWidget extends StatelessWidget {
                     children: [
                       Text(
                         price,
-                        style: TextStylesInter.textViewSemiBold24.copyWith(color: Color(0xFF181A26)),
+                        style: TextStylesInter.textViewSemiBold24.copyWith(color: Color(0xFF181A26), fontSize: 22.sp),
                       ),
                       5.pw,
                       Text(

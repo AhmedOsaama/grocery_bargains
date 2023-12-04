@@ -37,12 +37,11 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   var subscriptionPrice = "None";
   var subscriptionPricePerMonth = "None";
 
-
   @override
   void initState() {
-   subscriptionPlan = PurchaseApi.subscriptionPeriod;
-   subscriptionPrice = PurchaseApi.subscriptionPrice;
-   subscriptionPricePerMonth = PurchaseApi.subscriptionPricePerMonth;
+    subscriptionPlan = PurchaseApi.subscriptionPeriod;
+    subscriptionPrice = PurchaseApi.subscriptionPrice;
+    subscriptionPricePerMonth = PurchaseApi.subscriptionPricePerMonth;
     TrackingUtils().trackPageView(
         FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Subscription screen");
     super.initState();
@@ -104,39 +103,51 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               //   position: 0.0,
               // ),
               15.ph,
-              subscriptionPlan == 'None' ?
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  PlanWidget(
-                    promotion: LocaleKeys.mostFlexible.tr(),
-                    type: LocaleKeys.monthly.tr(),
-                    price: "1.09",
-                    pricePerMonth: "1.09 / month*",
-                  ),
-                  PlanWidget(
-                    promotion: LocaleKeys.mostFlexible.tr(),
-                    type: LocaleKeys.yearly.tr(),
-                    price: "9.49",
-                    pricePerMonth: "0.79 / month*",
-                  ),
-                  PlanWidget(
-                    promotion: LocaleKeys.onePayment.tr(),
-                    type: LocaleKeys.lifetime.tr(),
-                    price: "15.99",
-                    pricePerMonth: "Pay only once",
-                  ),
-                ],
-              )
+              subscriptionPlan == 'None'
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        PlanWidget(
+                          promotion: LocaleKeys.mostFlexible.tr(),
+                          type: LocaleKeys.monthly.tr(),
+                          price: "1.09",
+                          pricePerMonth: "1.09 / month*",
+                        ),
+                        PlanWidget(
+                          promotion: LocaleKeys.mostFlexible.tr(),
+                          type: LocaleKeys.yearly.tr(),
+                          price: "9.49",
+                          pricePerMonth: "0.79 / month*",
+                        ),
+                        PlanWidget(
+                          promotion: LocaleKeys.onePayment.tr(),
+                          type: LocaleKeys.lifetime.tr(),
+                          price: "15.99",
+                          pricePerMonth: "Pay only once",
+                        ),
+                      ],
+                    )
                   : Column(
-               children: [
-              Text(LocaleKeys.thankYou.tr(), style: TextStylesInter.textViewSemiBold18.copyWith(color: blackSecondary),),
-                 10.ph,
-                 Text(LocaleKeys.youAreUpgraded.tr(), style: TextStylesInter.textViewLight15.copyWith(color: Color(0xFF48484A)),),
-                 10.ph,
-                 SubscriptionPlanWidget(promotion: LocaleKeys.currentPlan.tr(), type: subscriptionPlan, price: subscriptionPrice, pricePerMonth: subscriptionPricePerMonth, selectedPlan: subscriptionPlan, onSubscriptionChanged: (){}),
-               ],
-             ),
+                      children: [
+                        Text(
+                          LocaleKeys.thankYou.tr(),
+                          style: TextStylesInter.textViewSemiBold18.copyWith(color: blackSecondary),
+                        ),
+                        10.ph,
+                        Text(
+                          LocaleKeys.youAreUpgraded.tr(),
+                          style: TextStylesInter.textViewLight15.copyWith(color: Color(0xFF48484A)),
+                        ),
+                        10.ph,
+                        SubscriptionPlanWidget(
+                            promotion: LocaleKeys.currentPlan.tr(),
+                            type: subscriptionPlan,
+                            price: subscriptionPrice,
+                            pricePerMonth: subscriptionPricePerMonth,
+                            selectedPlan: subscriptionPlan,
+                            onSubscriptionChanged: () {}),
+                      ],
+                    ),
               14.ph,
               GenericButton(
                 width: double.infinity,
@@ -147,22 +158,25 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   final offerings = await PurchaseApi.fetchOffers();
                   if (offerings.isEmpty) {
                     print("No plans found");
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Couldn't fetch plans from Google or Apple store. Please try again later")));
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("Couldn't fetch plans from Google or Apple store. Please try again later")));
                   } else {
                     final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
-                  var value = await showModalBottomSheet(
-                    clipBehavior: Clip.antiAlias,
-                    isScrollControlled: true,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-                    context: context,
-                    builder: (ctx) => SubscriptionPaywall(packages: packages,));
-                  if(value != null){
-                    setState(() {
-                      subscriptionPlan = PurchaseApi.subscriptionPeriod;
-                      subscriptionPrice = PurchaseApi.subscriptionPrice;
-                      subscriptionPricePerMonth = PurchaseApi.subscriptionPricePerMonth;
-                    });
-                  }
+                    var value = await showModalBottomSheet(
+                        clipBehavior: Clip.antiAlias,
+                        isScrollControlled: true,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+                        context: context,
+                        builder: (ctx) => SubscriptionPaywall(
+                              packages: packages,
+                            ));
+                    if (value != null) {
+                      setState(() {
+                        subscriptionPlan = PurchaseApi.subscriptionPeriod;
+                        subscriptionPrice = PurchaseApi.subscriptionPrice;
+                        subscriptionPricePerMonth = PurchaseApi.subscriptionPricePerMonth;
+                      });
+                    }
                   }
                 },
                 child: Text(
@@ -209,4 +223,4 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   //                   .toList(),
   //             ));
   //   }
-  }
+}

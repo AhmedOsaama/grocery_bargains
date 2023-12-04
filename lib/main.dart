@@ -52,7 +52,7 @@ Future<void> main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     ).then((value) => FirebaseAppCheck.instance.activate()),
   ]);
-  // await PurchaseApi.init();
+  PurchaseApi.init();
 
   var notificationMessage = await FirebaseMessaging.instance.getInitialMessage();
 

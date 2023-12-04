@@ -87,6 +87,9 @@ dependencies:
   syncfusion_flutter_charts: ^21.2.4
   table_calendar: ^3.0.8
   calendar_date_picker2: ^0.5.3
+  dartz: ^0.10.1
+  dio: ^5.4.0
+  flutter_bloc: ^8.1.3
 
 
 
