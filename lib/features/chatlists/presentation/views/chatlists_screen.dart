@@ -68,9 +68,6 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                 Expanded(
                   child: Consumer<ChatlistsProvider>(builder: (context, provider, _) {
                     var allLists = provider.chatlists;
-                    if (FirebaseAuth.instance.currentUser == null) {
-                      return SignInWidget();
-                    }
                     if (allLists.isEmpty) {
                       return buildStack();
                     }

@@ -557,7 +557,7 @@ class _HomeScreenState extends State<HomeScreen> {
           if (!snapshot.hasData || allLists.isEmpty || FirebaseAuth.instance.currentUser == null) {
             return GestureDetector(
               onTap: () {
-                NavigatorController.jumpToTab(1);
+                AppNavigator.goToChatlistTab(context);
               },
               child: Image.asset(
                 newChatList,
@@ -816,8 +816,7 @@ class LatestBargainsList extends StatelessWidget {
           return SliverGrid(
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 200,
-                mainAxisExtent: 275,
-                childAspectRatio: 0.67,
+                mainAxisExtent: 280,
                 crossAxisSpacing: 5,
                 mainAxisSpacing: 5),
             delegate: SliverChildBuilderDelegate(

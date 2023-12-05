@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
+import 'package:bargainb/view/screens/subscription_screen.dart';
 import 'package:bargainb/view/widgets/otp_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -68,9 +70,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _submitAuthForm(String email, String username,
       String phoneNumber, BuildContext ctx) async {
-    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
+    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
     try {
       if (!isLogin) {
+        print("Signing Up...");
         var result = await FirebaseFirestore.instance
             .collection('users')
             .where('phoneNumber', isEqualTo: phoneNumber)
@@ -95,15 +98,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (userCredential == null) {
           throw "credential error";
         }
-
         this.phoneNumber = userCredential.user!.phoneNumber!;
-        await saveUserData(userCredential);
-        TrackingUtils().trackSignup(userCredential.user!.uid, DateTime.now().toUtc().toString());
-
-        saveRememberMePref();
-        //saveFirstTimePref();
-        AppNavigator.pushReplacement(
-            context: context, screen: OnBoardingScreen());
+        await finalizePhoneSignup(userCredential);
+        goToNextScreen(context);
       } else {
         print("Logging in...");
         var result = await FirebaseFirestore.instance
@@ -121,13 +118,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (userCredential == null) {
           throw "credential error";
         }
-        print("logged in");
-        TrackingUtils().trackLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
-        saveRememberMePref();
-        if(!result.docs.first.data().containsKey('token')) saveUserDeviceToken(userCredential);
-        // if(!result.docs.first.data().containsKey('isHubspotContact')) createHubspotContact(userCredential, result.docs.first.data());
-        //saveFirstTimePref();
-        AppNavigator.pushReplacement(context: context, screen: MainScreen());
+        finalizePhoneLogin(userCredential, result);
+        goToNextScreen(context);
       }
     } on FirebaseAuthException catch (error) {
       var message = "An error occurred, please check your credentials";
@@ -141,6 +133,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
         backgroundColor: Theme.of(ctx).colorScheme.error,
       ));
     }
+  }
+
+  Future<void> finalizePhoneSignup(UserCredential userCredential) async {
+     await saveUserData(userCredential);
+    TrackingUtils().trackSignup(userCredential.user!.uid, DateTime.now().toUtc().toString());
+    saveRememberMePref();
+  }
+
+  void finalizePhoneLogin(UserCredential userCredential, QuerySnapshot<Map<String, dynamic>> result) {
+     TrackingUtils().trackLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
+    saveRememberMePref();
+    if(!result.docs.first.data().containsKey('token')) saveUserDeviceToken(userCredential);
   }
 
   @override
@@ -569,6 +573,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       AppNavigator.pushReplacement(
           context: context, screen: OnBoardingScreen());
     } else {
+      if(!PurchaseApi.isSubscribed){
+        await AppNavigator.pushReplacement(context: context, screen: SubscriptionScreen());
+      }
       AppNavigator.pushReplacement(context: context, screen: MainScreen());
     }
   }

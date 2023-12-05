@@ -252,8 +252,7 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
       padding: EdgeInsets.symmetric(horizontal: 10),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 200,
-          mainAxisExtent: 260,
-          childAspectRatio: 0.67,
+          mainAxisExtent: 280,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10),
       builderDelegate: PagedChildBuilderDelegate<Product>(

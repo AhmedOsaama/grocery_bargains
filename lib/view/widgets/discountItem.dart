@@ -1,11 +1,13 @@
 import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/view/widgets/size_container.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bargainb/utils/app_colors.dart';
@@ -45,7 +47,7 @@ class DiscountItem extends StatelessWidget {
 
   String getProductSize(Product product) {
     try {
-      if(product.unit == "N/A" || product.unit.isEmpty) return product.pricePerUnit!;
+      if (product.unit == "N/A" || product.unit.isEmpty) return product.pricePerUnit!;
       return product.unit;
     } catch (e) {
       // print("Error: failed to get size in discount item");
@@ -111,20 +113,25 @@ class DiscountItem extends StatelessWidget {
           children: [
             GestureDetector(
               onTap: () {
-                print("Product Category: ${product.category}");
-                var listItem = ListItem(
-                    storeName: selectedStore,
-                    brand: product.brand,
-                    id: product.id,
-                    name: product.name,
-                    price: getPrice(product),
-                    text: "",
-                    isChecked: false,
-                    quantity: 1,
-                    imageURL: product.image,
-                    category: product.category,
-                    size: getProductSize(product));
-                Provider.of<ChatlistsProvider>(context, listen: false).addProductToList(context, listItem);
+                if (FirebaseAuth.instance.currentUser == null) {
+                  AppNavigator.showSignInDialog(context);
+                } else if (!PurchaseApi.isSubscribed) {
+                  AppNavigator.showSubscribeDialog(context);
+                } else {
+                  var listItem = ListItem(
+                      storeName: selectedStore,
+                      brand: product.brand,
+                      id: product.id,
+                      name: product.name,
+                      price: getPrice(product),
+                      text: "",
+                      isChecked: false,
+                      quantity: 1,
+                      imageURL: product.image,
+                      category: product.category,
+                      size: getProductSize(product));
+                  Provider.of<ChatlistsProvider>(context, listen: false).addProductToList(context, listItem);
+                }
               },
               child: Container(
                 margin: EdgeInsets.only(bottom: 10.h),
@@ -226,11 +233,13 @@ class DiscountItem extends StatelessWidget {
           oldPrice: product.oldPrice,
           productCategory: product.category,
           price1: double.tryParse(product.price ?? "") ?? 0.0,
-          size1: getProductSize(product), gtin: product.gtin,
+          size1: getProductSize(product),
+          gtin: product.gtin,
         ));
-    try{
-      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open product page", DateTime.now().toUtc().toString(), "Home screen");
-    }catch(e){
+    try {
+      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open product page",
+          DateTime.now().toUtc().toString(), "Home screen");
+    } catch (e) {
       print(e);
       TrackingUtils().trackButtonClick("Guest", "Open product page", DateTime.now().toUtc().toString(), "Home screen");
     }

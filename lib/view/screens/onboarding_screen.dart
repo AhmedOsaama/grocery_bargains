@@ -64,7 +64,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       height: 70.h,
                     ),
                     // SvgPicture.asset(bargainbIcon),
-                    Image.asset(onboarding1,),
+                    Container(
+                        height: 500.h,
+                        child: Image.asset(onboarding1)),
                     Spacer(),
                     Text(
                       LocaleKeys.findAllTheDiscountsHere.tr(),

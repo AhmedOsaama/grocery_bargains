@@ -1,4 +1,12 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../../services/purchase_service.dart';
+import '../../utils/tracking_utils.dart';
+import '../../view/screens/main_screen.dart';
+import '../../view/widgets/signin_dialog.dart';
+import '../../view/widgets/subscribe_dialog.dart';
 
 class AppNavigator {
   static Future<void> push(
@@ -24,5 +32,77 @@ class AppNavigator {
       {required BuildContext context, required Widget screen}) {
     return Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => screen), (route) => false);
+  }
+
+  static showFeatureBlockedDialog(BuildContext context){
+    if (FirebaseAuth.instance.currentUser == null) {
+      showSignInDialog(context);
+    } else if (!PurchaseApi.isSubscribed) {
+      showSubscribeDialog(context);
+    }
+  }
+
+  static goToChatlistTab(BuildContext context) {
+    if (FirebaseAuth.instance.currentUser == null) {
+      showSignInDialog(context);
+    } else if (!PurchaseApi.isSubscribed) {
+      showSubscribeDialog(context);
+    } else {
+      NavigatorController.jumpToTab(1);
+      trackOpenChatlists();
+    }
+  }
+
+  static goToProfileTab(BuildContext context) {
+    if (FirebaseAuth.instance.currentUser == null) {
+      showSignInDialog(context);
+    } else if (!PurchaseApi.isSubscribed) {
+      showSubscribeDialog(context);
+    } else {
+      NavigatorController.jumpToTab(2);
+      trackOpenProfile();
+    }
+  }
+
+  static trackOpenProfile() {
+    try {
+      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open profile screen",
+          DateTime.now().toUtc().toString(), "Home screen");
+    } catch (e) {
+      print(e);
+      TrackingUtils()
+          .trackButtonClick("Guest", "open profile screen", DateTime.now().toUtc().toString(), "Home screen");
+    }
+  }
+
+  static showSignInDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (ctx) => SigninDialog(
+          body: 'You have to be signed in to use this feature.',
+          buttonText: 'Sign in',
+          title: 'Sign In',
+        ));
+  }
+
+  static showSubscribeDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (ctx) => SubscribeDialog(
+          body: 'You have to be subscribed to plan to use this premium feature.'.tr(),
+          buttonText: 'Upgrade',
+          title: 'Subscribe',
+        ));
+  }
+
+  static trackOpenChatlists() {
+    try {
+      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open Chatlists screen",
+          DateTime.now().toUtc().toString(), "Home screen");
+    } catch (e) {
+      print(e);
+      TrackingUtils()
+          .trackButtonClick("Guest", "open Chatlists screen", DateTime.now().toUtc().toString(), "Home screen");
+    }
   }
 }

@@ -243,19 +243,10 @@ class ChatlistsProvider with ChangeNotifier {
 
   Future<void> addProductToList(BuildContext context, ListItem listItem) async {
     //adds a product from home or product page to chatlist
-    print("Adding category ${listItem.id}");
-    print("Adding category ${listItem.name}");
-    print("Adding category ${listItem.price}");
-    print("Adding item ${listItem.category}");
-    if (FirebaseAuth.instance.currentUser == null) {
-      showDialog(
-          context: context,
-          builder: (ctx) => SigninDialog(
-                body: 'You have to be signed in to use this feature.',
-                buttonText: 'Sign in',
-                title: 'Sign In',
-              ));
-    } else {
+    // print("Adding category ${listItem.id}");
+    // print("Adding category ${listItem.name}");
+    // print("Adding category ${listItem.price}");
+    // print("Adding item ${listItem.category}");
       if (chatlists.length > 1) showChooseListDialog(context: context, listItem: listItem);
       if (chatlists.length == 1) {
         await addItemToList(listItem, chatlists[0].id);
@@ -267,7 +258,6 @@ class ChatlistsProvider with ChangeNotifier {
       if (chatlists.isEmpty) {
         showChatlistSnackBar(context, Text(LocaleKeys.pleaseCreateAList.tr()), LocaleKeys.create.tr(), "", true);
       }
-    }
     TrackingUtils().trackButtonClick(
         FirebaseAuth.instance.currentUser!.uid, "add product", DateTime.now().toUtc().toString(), "Product screen");
   }

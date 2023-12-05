@@ -2,11 +2,13 @@ import 'dart:convert';
 
 import 'package:algolia/algolia.dart';
 import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/screens/insights_screen.dart';
 import 'package:bargainb/view/screens/product_detail_screen.dart';
 import 'package:bargainb/view/widgets/signin_dialog.dart';
+import 'package:bargainb/view/widgets/subscribe_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -45,7 +47,6 @@ class _MainScreenState extends State<MainScreen> {
   final unSelectedColor = purple30;
   late bool isFirstTime;
 
-
   Future<Null> getSharedPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -55,11 +56,9 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Future<void> saveUserDeviceToken() async {
-    var deviceToken = await FirebaseMessaging.instance.getToken();              //could produce a problem if permission is not accepted especially on iOS
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .update({
+    var deviceToken = await FirebaseMessaging.instance
+        .getToken(); //could produce a problem if permission is not accepted especially on iOS
+    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
       'token': deviceToken,
       'timestamp': Timestamp.now(),
     });
@@ -72,8 +71,7 @@ class _MainScreenState extends State<MainScreen> {
     getSharedPrefs();
     NavigatorController.index = 0;
     FlutterBranchSdk.initSession().listen((data) {
-      if (data.containsKey("+clicked_branch_link") &&
-          data["+clicked_branch_link"] == true) {
+      if (data.containsKey("+clicked_branch_link") && data["+clicked_branch_link"] == true) {
         //Link clicked. Add logic to get link data and route user to correct screen
         var listId = data["list_id"];
         var productData = data["product_data"];
@@ -82,82 +80,68 @@ class _MainScreenState extends State<MainScreen> {
         print('Custom string: ${listId}');
         print('Custom string: ${productData}');
         print('Custom string: ${page}');
-        if(page != null){
-          if(page == '/profile-screen') AppNavigator.push(context: context, screen: ProfileScreen());
+        if (page != null) {
+          if (page == '/profile-screen') AppNavigator.push(context: context, screen: ProfileScreen());
         }
-        if(productData != null){
+        if (productData != null) {
           try {
-              productData = jsonDecode(productData);
-              Provider.of<ProductsProvider>(context, listen: false).goToProductPage(
-                  productData['store_name'], context, productData['product_id']);
-          }catch(e){
+            productData = jsonDecode(productData);
+            Provider.of<ProductsProvider>(context, listen: false)
+                .goToProductPage(productData['store_name'], context, productData['product_id']);
+          } catch (e) {
             Provider.of<ProductsProvider>(context, listen: false).getAllProducts().then((value) {
-              Provider.of<ProductsProvider>(context, listen: false).goToProductPage(
-                  productData['store_name'], context, productData['product_id']);
-            }).catchError((e){
+              Provider.of<ProductsProvider>(context, listen: false)
+                  .goToProductPage(productData['store_name'], context, productData['product_id']);
+            }).catchError((e) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
             });
           }
-          }
+        }
         if (listId != null) {
           var currentUserId = FirebaseAuth.instance.currentUser?.uid;
-          FirebaseFirestore.instance
-              .collection('/lists')
-              .doc(listId)
-              .get()
-              .then((listSnapshot) async {
+          FirebaseFirestore.instance.collection('/lists').doc(listId).get().then((listSnapshot) async {
             final List userIds = listSnapshot.data()!['userIds'];
             if (!userIds.contains(currentUserId)) {
               userIds.add(currentUserId);
-              var userData = await FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(currentUserId)
-                  .get();
-              await FirebaseFirestore.instance
-                  .collection('/lists')
-                  .doc(listId)
-                  .update({
+              var userData = await FirebaseFirestore.instance.collection('users').doc(currentUserId).get();
+              await FirebaseFirestore.instance.collection('/lists').doc(listId).update({
                 "userIds": userIds,
                 // "user_num": FieldValue.increment(1),
                 "new_participant_username": userData['username'],
               });
-              await Provider.of<ChatlistsProvider>(context, listen: false)
-                  .getAllChatlists();
-              var chatList =
-                  Provider.of<ChatlistsProvider>(context, listen: false)
-                      .chatlists
-                      .firstWhere((chatList) => chatList.id == listId);
-              AppNavigator.push(
-                  context: context, screen: ChatListViewScreen(listId: listId));
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(
-                      "User added successfully to list ${chatList.name}")));
+              await Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists();
+              var chatList = Provider.of<ChatlistsProvider>(context, listen: false)
+                  .chatlists
+                  .firstWhere((chatList) => chatList.id == listId);
+              AppNavigator.push(context: context, screen: ChatListViewScreen(listId: listId));
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text("User added successfully to list ${chatList.name}")));
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text("User Already Exists in the list")));
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(const SnackBar(content: Text("User Already Exists in the list")));
             }
           });
         }
       }
     }, onError: (error) {
       PlatformException platformException = error as PlatformException;
-      print(
-          'InitSession error: ${platformException.code} - ${platformException.message}');
+      print('InitSession error: ${platformException.code} - ${platformException.message}');
     });
     if (FirebaseAuth.instance.currentUser != null)
       Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists().then((value) {
-        if(widget.notificationData != null){
+        if (widget.notificationData != null) {
           AppNavigator.push(context: context, screen: ChatListViewScreen(listId: widget.notificationData!));
         }
       });
-    try{
+    try {
       TrackingUtils().trackAppOpen(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString());
       // Purchases.logIn(FirebaseAuth.instance.currentUser!.uid);
       saveUserDeviceToken();
-    }catch(e){
+    } catch (e) {
       print(e);
       TrackingUtils().trackAppOpen('Guest', DateTime.now().toUtc().toString());
     }
+    PurchaseApi.init();
   }
 
   @override
@@ -182,7 +166,7 @@ class _MainScreenState extends State<MainScreen> {
       HomeScreen(),
       ChatlistsScreen(),
       // InsightsScreen(),
-      FirebaseAuth.instance.currentUser == null ? Container() : ProfileScreen(),
+      ProfileScreen(),
     ];
   }
 
@@ -199,44 +183,16 @@ class _MainScreenState extends State<MainScreen> {
         inactiveColorPrimary: unSelectedColor,
       ),
       PersistentBottomNavBarItem(
-        icon: Icon(
-          Icons.chat_outlined,
-          size: 24.sp,
-        ),
-        title: ("chatlists".tr()),
-        textStyle: TextStyle(fontSize: 12.sp),
-        activeColorPrimary: selectedColor,
-        inactiveColorPrimary: unSelectedColor,
-        onPressed: (_){
-          NavigatorController.jumpToTab(1);
-          try{
-            TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open Chatlists screen", DateTime.now().toUtc().toString(), "Home screen");
-          }catch(e){
-            print(e);
-            TrackingUtils().trackButtonClick("Guest", "open Chatlists screen", DateTime.now().toUtc().toString(), "Home screen");
-          }
-        }
+          icon: Icon(
+            Icons.chat_outlined,
+            size: 24.sp,
+          ),
+          title: ("chatlists".tr()),
+          textStyle: TextStyle(fontSize: 12.sp),
+          activeColorPrimary: selectedColor,
+          inactiveColorPrimary: unSelectedColor,
+          onPressed: (_) => AppNavigator.goToChatlistTab(context)
       ),
-      // PersistentBottomNavBarItem(
-      //     icon: Icon(
-      //       Icons.analytics_outlined,
-      //       size: 24.sp,
-      //     ),
-      //     title: ("Insights".tr()),
-      //     textStyle: TextStyle(fontSize: 12.sp),
-      //     activeColorPrimary: selectedColor,
-      //     inactiveColorPrimary: unSelectedColor,
-      //     onPressed: (_){
-      //       NavigatorController.jumpToTab(2);
-      //       try{
-      //         TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open Insights screen", DateTime.now().toUtc().toString(), "Home screen");
-      //       }catch(e){
-      //         print(e);
-      //         TrackingUtils().trackButtonClick("Guest", "open Insights screen", DateTime.now().toUtc().toString(), "Home screen");
-      //       }
-      //     }
-      // ),
-
       PersistentBottomNavBarItem(
           icon: Icon(
             Icons.account_circle_outlined,
@@ -246,25 +202,31 @@ class _MainScreenState extends State<MainScreen> {
           textStyle: TextStyle(fontSize: 12.sp),
           activeColorPrimary: selectedColor,
           inactiveColorPrimary: unSelectedColor,
-          onPressed: (p) {
-            if (FirebaseAuth.instance.currentUser == null) {
-              showDialog(
-                  context: context,
-                  builder: (ctx) => SigninDialog(
-                        body: 'You have to be signed in to use this feature.',
-                        buttonText: 'Sign in',
-                        title: 'Sign In',
-                      ));
-            } else {
-              NavigatorController.jumpToTab(2);
-              try{
-                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open profile screen", DateTime.now().toUtc().toString(), "Home screen");
-              }catch(e){
-                print(e);
-                TrackingUtils().trackButtonClick("Guest", "open profile screen", DateTime.now().toUtc().toString(), "Home screen");
-              }
-            }
-          }),
+          onPressed: (_) => AppNavigator.goToProfileTab(context)),
     ];
   }
+
+  // goToProfileTab(_) {
+  //   if (FirebaseAuth.instance.currentUser == null) {
+  //     showSignInDialog();
+  //   } else if (!PurchaseApi.isSubscribed) {
+  //     showSubscribeDialog();
+  //   } else {
+  //     NavigatorController.jumpToTab(2);
+  //     trackOpenProfile();
+  //   }
+  // }
+  //
+  // goToChatlistTab(_) {
+  //   if (FirebaseAuth.instance.currentUser == null) {
+  //     showSignInDialog();
+  //   } else if (!PurchaseApi.isSubscribed) {
+  //     showSubscribeDialog();
+  //   } else {
+  //     NavigatorController.jumpToTab(1);
+  //     trackOpenChatlists();
+  //   }
+  // }
+
+
 }

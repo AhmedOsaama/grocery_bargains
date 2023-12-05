@@ -17,6 +17,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 // import 'package:gdpr_dialog/gdpr_dialog.dart';
@@ -52,7 +53,6 @@ Future<void> main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     ).then((value) => FirebaseAppCheck.instance.activate()),
   ]);
-  PurchaseApi.init();
 
   var notificationMessage = await FirebaseMessaging.instance.getInitialMessage();
 
@@ -105,6 +105,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     final transaction = Sentry.startTransaction('main initstate', 'task');
+    FlutterBranchSdk.disableTracking(true);
     try {
     getAllProductsFuture = Provider.of<ProductsProvider>(context, listen: false)
         .getAllProducts()
@@ -121,8 +122,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initMixpanel() async {
-    mixPanel = await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true); //live
-    // await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true);  //dev
+    // mixPanel = await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true); //live
+    await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true, optOutTrackingDefault: true);  //dev
   }
 
   @override
@@ -154,11 +155,6 @@ class _MyAppState extends State<MyApp> {
               return StreamBuilder(
                   stream: authStateChangesStream,
                   builder: (context, snapshot) {
-                    if (!widget.isRemembered && Platform.isAndroid) {
-                      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-                          overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
-                      return RegisterScreen();
-                    }
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
                       return SplashWidget();
@@ -171,9 +167,6 @@ class _MyAppState extends State<MyApp> {
                         return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
                       }
 
-                      return widget.isFirstTime ? OnBoardingScreen() : MainScreen();
-                    }
-                    if (Platform.isIOS) {
                       return widget.isFirstTime ? OnBoardingScreen() : MainScreen();
                     }
                     return MainScreen();

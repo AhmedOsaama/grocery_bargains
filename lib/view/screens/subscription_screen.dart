@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/button.dart';
@@ -98,10 +99,6 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   ],
                 ),
               ),
-              // DotsIndicator(
-              //   dotsCount: 4,
-              //   position: 0.0,
-              // ),
               15.ph,
               subscriptionPlan == 'None'
                   ? Row(
@@ -149,41 +146,35 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       ],
                     ),
               14.ph,
-              GenericButton(
-                width: double.infinity,
-                borderRadius: BorderRadius.circular(10),
-                padding: EdgeInsets.symmetric(vertical: 20),
-                color: brightOrange,
-                onPressed: () async {
-                  final offerings = await PurchaseApi.fetchOffers();
-                  if (offerings.isEmpty) {
-                    print("No plans found");
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                        content: Text("Couldn't fetch plans from Google or Apple store. Please try again later")));
-                  } else {
-                    final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
-                    var value = await showModalBottomSheet(
-                        clipBehavior: Clip.antiAlias,
-                        isScrollControlled: true,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-                        context: context,
-                        builder: (ctx) => SubscriptionPaywall(
-                              packages: packages,
-                            ));
-                    if (value != null) {
-                      setState(() {
-                        subscriptionPlan = PurchaseApi.subscriptionPeriod;
-                        subscriptionPrice = PurchaseApi.subscriptionPrice;
-                        subscriptionPricePerMonth = PurchaseApi.subscriptionPricePerMonth;
-                      });
-                    }
-                  }
-                },
-                child: Text(
-                  LocaleKeys.upgradeNow.tr(),
-                  style: TextStylesInter.textViewSemiBold16.copyWith(color: white),
+              if(!PurchaseApi.isSubscribed) ...[
+                GenericButton(
+                  width: double.infinity,
+                  borderRadius: BorderRadius.circular(10),
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  color: brightOrange,
+                  onPressed: () async {
+                    await initiateSubscription(context);
+                  },
+                  child: Text(
+                    LocaleKeys.upgradeNow.tr(),
+                    style: TextStylesInter.textViewSemiBold16.copyWith(color: white),
+                  ),
                 ),
-              ),
+                10.ph,
+                GenericButton(
+                  width: double.infinity,
+                  borderRadius: BorderRadius.circular(10),
+                  padding: EdgeInsets.symmetric(vertical: 20),
+                  color: Color(0xFFEBEBEB),
+                  onPressed: () async {
+                    AppNavigator.pop(context: context);
+                  },
+                  child: Text(
+                    "Use it for free, No grocery buddy, Sharing".tr(),
+                    style: TextStylesInter.textViewSemiBold16.copyWith(color: Color(0xFF7C7C7C)),
+                  ),
+                ),
+              ],
               10.ph,
               Text(
                 LocaleKeys.subscriptionRenew.tr(),
@@ -196,31 +187,30 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     );
   }
 
-  // Future<void> fetchOffers() async {
-  //
-  //
-  //     showModalBottomSheet(
-  //         context: context,
-  //         builder: (context) => Column(
-  //               children: packages
-  //                   .map((package) => InkWell(
-  //                         onTap: () {
-  //                           print("Purchasing");
-  //                           PurchaseApi.purchasePackage(package);
-  //                         },
-  //                         child: Container(
-  //                           margin: EdgeInsets.all(5),
-  //                           decoration: BoxDecoration(border: Border.all(color: Colors.black)),
-  //                           child: Column(
-  //                             children: [
-  //                               Text(package.storeProduct.title),
-  //                               Text(package.storeProduct.description),
-  //                               Text(package.storeProduct.priceString),
-  //                             ],
-  //                           ),
-  //                         ),
-  //                       ))
-  //                   .toList(),
-  //             ));
-  //   }
+  Future<void> initiateSubscription(BuildContext context) async {
+      final offerings = await PurchaseApi.fetchOffers();
+    if (offerings.isEmpty) {
+      print("No plans found");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("Couldn't fetch plans from Google or Apple store. Please try again later")));
+    } else {
+      final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
+      var value = await showModalBottomSheet(
+          clipBehavior: Clip.antiAlias,
+          isScrollControlled: true,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+          context: context,
+          builder: (ctx) => SubscriptionPaywall(
+                packages: packages,
+              ));
+      if (value != null) {
+        setState(() {
+          subscriptionPlan = PurchaseApi.subscriptionPeriod;
+          subscriptionPrice = PurchaseApi.subscriptionPrice;
+          subscriptionPricePerMonth = PurchaseApi.subscriptionPricePerMonth;
+        });
+      }
+    }
+  }
+
 }

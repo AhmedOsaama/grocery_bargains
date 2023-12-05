@@ -1,6 +1,5 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:bargainb/utils/assets_manager.dart';
+import 'package:bargainb/view/screens/subscription_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,12 +14,12 @@ import '../../utils/tracking_utils.dart';
 import '../components/button.dart';
 import '../screens/register_screen.dart';
 
-class SigninDialog extends StatefulWidget {
+class SubscribeDialog extends StatefulWidget {
   final String title;
   final String body;
   final String buttonText;
 
-  const SigninDialog({
+  const SubscribeDialog({
     Key? key,
     required this.title,
     required this.body,
@@ -28,10 +27,10 @@ class SigninDialog extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<SigninDialog> createState() => _SigninDialogState();
+  State<SubscribeDialog> createState() => _SubscribeDialogState();
 }
 
-class _SigninDialogState extends State<SigninDialog> {
+class _SubscribeDialogState extends State<SubscribeDialog> {
   @override
   void initState() {
     try {
@@ -50,7 +49,7 @@ class _SigninDialogState extends State<SigninDialog> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: Padding(
         padding:
-            const EdgeInsets.only(left: 16, top: 16, right: 14, bottom: 16),
+        const EdgeInsets.only(left: 16, top: 16, right: 14, bottom: 16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -96,7 +95,7 @@ class _SigninDialogState extends State<SigninDialog> {
                         onPressed: () async {
                           AppNavigator.pop(context: context);
                           pushNewScreen(context,
-                              screen: RegisterScreen(), withNavBar: false);
+                              screen: SubscriptionScreen(), withNavBar: false);
                         },
                         child: Text(
                           widget.buttonText,

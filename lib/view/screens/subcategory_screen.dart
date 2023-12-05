@@ -219,8 +219,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                         shrinkWrap: true,
                         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                             maxCrossAxisExtent: 200,
-                            mainAxisExtent: 260,
-                            childAspectRatio: 0.67,
+                            mainAxisExtent: 280,
                             crossAxisSpacing: 5,
                             mainAxisSpacing: 5),
                         itemCount: results.length,

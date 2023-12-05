@@ -1,6 +1,7 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/widgets/quantity_counter.dart';
 import 'package:bargainb/view/widgets/signin_dialog.dart';
@@ -129,7 +130,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         if (product.availableNow == 1) {
           addComparisonItem(storeName, chatlistsProvider, product, productsProvider);
         }
-      }else {
+      } else {
         List<Product> similarProducts = await productsProvider.getSimilarProducts(widget.gtin);
         for (var product in similarProducts) {
           var storeName = productsProvider.getStoreName(product.storeId);
@@ -144,20 +145,29 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
   }
 
-  void addComparisonItem(String storeName, ChatlistsProvider chatlistsProvider, Product product, ProductsProvider productsProvider) {
-     comparisonItems.add(GestureDetector(
-          onTap: widget.storeName == storeName
-              ? () => chatlistsProvider.addProductToList(context, listItem)
-              : () => goToStoreProductPage(context, storeName, product),
-          child: PriceComparisonItem(
-              isSameStore: widget.storeName == storeName,
-              price: product.price ?? "N/A",
-              size: product.unit,
-              storeImagePath: productsProvider.getStoreLogoPath(storeName)),
-        ));
-     setState(() {
-       canUpdateQuantity = true;
-     });
+  void addComparisonItem(
+      String storeName, ChatlistsProvider chatlistsProvider, Product product, ProductsProvider productsProvider) {
+    comparisonItems.add(GestureDetector(
+      onTap: widget.storeName == storeName
+          ? () => addProductToList(chatlistsProvider)
+          : () => goToStoreProductPage(context, storeName, product),
+      child: PriceComparisonItem(
+          isSameStore: widget.storeName == storeName,
+          price: product.price ?? "N/A",
+          size: product.unit,
+          storeImagePath: productsProvider.getStoreLogoPath(storeName)),
+    ));
+    setState(() {
+      canUpdateQuantity = true;
+    });
+  }
+
+  void addProductToList(ChatlistsProvider chatlistsProvider) {
+    if (PurchaseApi.isSubscribed) {
+      chatlistsProvider.addProductToList(context, listItem);
+    } else {
+      AppNavigator.showFeatureBlockedDialog(context);
+    }
   }
 
   void goToStoreProductPage(BuildContext context, String selectedStore, Product product) {

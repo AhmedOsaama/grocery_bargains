@@ -12,11 +12,12 @@ class PurchaseApi{
   static var subscriptionPeriod = "None";
   static var subscriptionPrice = "None";
   static var subscriptionPricePerMonth = "None";
+  static bool isSubscribed = false;
 
   static Future init() async{
     var apiKey = Platform.isIOS ? 'appl_HUpmOoVSBSzFEjDWMemOoWSxdBq' : 'goog_TKFhZiVZKEYVhHGVqldnltUOYyJ';
     await Purchases.setLogLevel(LogLevel.debug);
-    await Purchases.configure(PurchasesConfiguration(apiKey));
+    // await Purchases.configure(PurchasesConfiguration(apiKey));
     try {
       await Purchases.configure(PurchasesConfiguration(apiKey)
         ..appUserID = FirebaseAuth.instance.currentUser!.uid);
@@ -47,6 +48,7 @@ class PurchaseApi{
        subscriptionPeriod = getSubscriptionPeriod(productIdentifier);
        subscriptionPrice = getSubscriptionPriceString(product);
        subscriptionPricePerMonth = getPricePerMonth(subscriptionPeriod, getSubscriptionPrice(product));
+       isSubscribed = true;
      }
    }catch(e){
      print(e);
