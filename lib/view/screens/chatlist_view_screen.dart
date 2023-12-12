@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bargainb/main.dart';
 import 'package:bargainb/models/chatlist.dart';
 import 'package:bargainb/models/user_info.dart';
+import 'package:bargainb/providers/tutorial_provider.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/button.dart';
@@ -37,6 +38,8 @@ import 'package:showcaseview/showcaseview.dart';
 
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
+import '../../utils/tooltips_keys.dart';
+import '../../utils/triangle_painter.dart';
 
 class ChatListViewScreen extends StatefulWidget {
   final String listId;
@@ -91,112 +94,189 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var tutorialProvider = Provider.of<TutorialProvider>(context);
     return Scaffold(
       // bottomNavigationBar: null,
       resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: Container(
-          decoration: BoxDecoration(color: isFirstTime ? Color.fromRGBO(25, 27, 38, 0.6) : Color.fromRGBO(245, 247, 254, 1), boxShadow: [
-            BoxShadow(blurRadius: 50, offset: Offset(0, 20), color: Color.fromRGBO(52, 99, 237, 0.15)),
-          ]),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
-                  children: [
-                    GestureDetector(onTap: () => AppNavigator.pop(context: context), child: Icon(Icons.arrow_back_ios_new_outlined,color: mainPurple,)),
-                    5.pw,
-                    isEditingName
-                        ? Container(
-                            width: 200.w,
-                            child: TextFormField(
-                              initialValue: chatList.name,
-                              style: TextStyles.textViewSemiBold24.copyWith(color: prussian),
-                              onFieldSubmitted: (value) async {
-                                await updateListName(value);
-                              },
+      body: ShowCaseWidget(
+        disableBarrierInteraction: true,
+          builder: Builder(builder: (showcaseContext) {
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              if (tutorialProvider.isTutorialRunning) {
+                ShowCaseWidget.of(showcaseContext).startShowCase([TooltipKeys.showCase5, TooltipKeys.showCase6]);
+                // ShowCaseWidget.of(showcaseContext).startShowCase([TooltipKeys.showCase6]);
+              }
+            });
+        return SafeArea(
+          child: Container(
+            decoration: BoxDecoration(color: isFirstTime ? Color.fromRGBO(25, 27, 38, 0.6) : Color.fromRGBO(245, 247, 254, 1), boxShadow: [
+              BoxShadow(blurRadius: 50, offset: Offset(0, 20), color: Color.fromRGBO(52, 99, 237, 0.15)),
+            ]),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Row(
+                    children: [
+                      GestureDetector(onTap: () => AppNavigator.pop(context: context), child: Icon(Icons.arrow_back_ios_new_outlined,color: mainPurple,)),
+                      5.pw,
+                      isEditingName
+                          ? Container(
+                              width: 200.w,
+                              child: TextFormField(
+                                initialValue: chatList.name,
+                                style: TextStyles.textViewSemiBold24.copyWith(color: prussian),
+                                onFieldSubmitted: (value) async {
+                                  await updateListName(value);
+                                },
+                              ),
+                            )
+                          : Container(
+                              width: 150.w,
+                              child: Text(
+                                chatList.name,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStylesInter.textViewSemiBold26.copyWith(color: blackSecondary),
+                              ),
                             ),
-                          )
-                        : Container(
-                            width: 150.w,
-                            child: Text(
-                              chatList.name,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStylesInter.textViewSemiBold26.copyWith(color: blackSecondary),
-                            ),
+                      Spacer(),
+                      Showcase.withWidget(
+                        height: 50,
+                        width: 150.w,
+                        targetBorderRadius: BorderRadius.circular(10),
+                        key: tutorialProvider.isTutorialRunning ? TooltipKeys.showCase5 : new GlobalKey<State<StatefulWidget>>(),
+                        tooltipPosition: TooltipPosition.bottom,
+                        container: buildTutorialContainer(showcaseContext),
+                        child: IconButton(
+                          onPressed: () {
+                            showInviteMembersDialog(context);
+                            TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Show invite members dialog", DateTime.now().toUtc().toString(), "Chatlist screen");
+                          },
+                          icon: SvgPicture.asset(
+                            newperson,
+                            color: Colors.black,
                           ),
-                    Spacer(),
-                    Container(
-                      // width: listUsers.length >= 3 ? 60.w : 35.w,
-                      width: 60.w,
-                      height: 40,
-                      child: FutureBuilder(
-                          future: getUserImagesFuture,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState == ConnectionState.waiting) {
-                              return const Center(
-                                  child: CircularProgressIndicator(
-                                    color: verdigris,
-                                  ));
-                            }
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 11.0),
-                              child: snapshot.data ?? SvgPicture.asset(bee),
-                            );
-                          }),
-                    ),
-                    10.pw,
-                    IconButton(
-                      onPressed: () {
-                        showInviteMembersDialog(context);
-                        TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Show invite members dialog", DateTime.now().toUtc().toString(), "Chatlist screen");
-                      },
-                      icon: SvgPicture.asset(
-                        newperson,
-                        color: Colors.black,
+                        ),
                       ),
-                    ),
-                    PopupMenuButton<String>(
-                      icon: Icon(Icons.more_vert),
-                        onSelected: (option){
-                      if (option == 'Rename') {
-                        setState(() {
-                          isEditingName = true;
-                        });
-                      } else if (option == 'Remove') {
-                        showRemoveDialog(context);
-                      }
-                    }, itemBuilder: (ctx) => [
-                      PopupMenuItem(
-                          value: 'Rename',
-                          child: Text(
-                            LocaleKeys.rename.tr(),
-                            style: TextStyles.textViewMedium12.copyWith(color: prussian),
-                          )),
-                      PopupMenuItem(
-                          value: 'Remove',
-                          child: Text(LocaleKeys.remove.tr(),
-                              style: TextStyles.textViewMedium12.copyWith(color: prussian)))
-                    ] ),
-                  ],
+                      10.pw,
+                      Container(
+                        width: listUsers.length > 1 ? 60.w : 30.w,
+                        height: 40,
+                        child: FutureBuilder(
+                            future: getUserImagesFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(
+                                    child: CircularProgressIndicator(
+                                      color: verdigris,
+                                    ));
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.only(top: 11.0),
+                                child: snapshot.data ?? SvgPicture.asset(bee),
+                              );
+                            }),
+                      ),
+                      PopupMenuButton<String>(
+                        icon: Icon(Icons.more_vert),
+                          onSelected: (option){
+                        if (option == 'Rename') {
+                          setState(() {
+                            isEditingName = true;
+                          });
+                        } else if (option == 'Remove') {
+                          showRemoveDialog(context);
+                        }
+                      }, itemBuilder: (ctx) => [
+                        PopupMenuItem(
+                            value: 'Rename',
+                            child: Text(
+                              LocaleKeys.rename.tr(),
+                              style: TextStyles.textViewMedium12.copyWith(color: prussian),
+                            )),
+                        PopupMenuItem(
+                            value: 'Remove',
+                            child: Text(LocaleKeys.remove.tr(),
+                                style: TextStyles.textViewMedium12.copyWith(color: prussian)))
+                      ] ),
+                    ],
+                  ),
                 ),
-              ),
-              Expanded(
-                  child: ChatView(
-                listId: widget.listId,
-                showInviteMembersDialog: showInviteMembersDialog,
-                isExpandingChatlist: widget.isExpandingChatlist,
-                    chatlistName: chatList.name,
-              ))
-            ],
+                Expanded(
+                    child: ChatView(
+                  listId: widget.listId,
+                  showInviteMembersDialog: showInviteMembersDialog,
+                  isExpandingChatlist: widget.isExpandingChatlist,
+                      chatlistName: chatList.name,
+                      showcaseContext: showcaseContext,
+                ))
+              ],
+            ),
           ),
-        ),
+        );
+  }
       ),
+      )
     );
   }
+
+  Container buildTutorialContainer(BuildContext showcaseContext) {
+    return Container(
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 11,
+                              width: 13,
+                              child: CustomPaint(
+                                painter: TrianglePainter(
+                                  strokeColor: purple70,
+                                  strokeWidth: 1,
+                                  paintingStyle: PaintingStyle.fill,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.all(15),
+                              width: 160.w,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: purple70,
+                              ),
+                              child: Column(
+                                  children: [
+                                    Text(
+                                      "Collaborate with your loved ones, share grocery lists, and  your AI sidekick".tr(),
+                                      maxLines: 4,
+                                      style: TextStyles.textViewRegular13.copyWith(color: white),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        ShowCaseWidget.of(showcaseContext).next();
+                                      },
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          Text(
+                                            "Next".tr(),
+                                            style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: white,
+                                            size: 15.sp,
+                                          )
+                                        ],
+                                      ),
+                                    )
+                                  ]),
+                            ),
+                          ],
+                        ),
+                      );
+  }
+
 
   Future<Widget> getUserImages() async {
     listUsers.clear();

@@ -29,6 +29,7 @@ class PurchaseApi{
   }
 
   static Future<List<Offering>> fetchOffers() async {
+    await init();
     try {
       final offerings = await Purchases.getOfferings();
       final current = offerings.current;
@@ -57,12 +58,12 @@ class PurchaseApi{
 
   static Future<StoreProduct> getSubscriptionProduct(String productIdentifier) async {
     print("Product identifier: $productIdentifier");
-    if(productIdentifier == "bargainb_1599_l" || productIdentifier == "bargain_lifetime_1599"){
-      var products = await Purchases.getProducts([productIdentifier], productCategory: ProductCategory.nonSubscription);
-      print("Products: ${products}");
-      var product = products.first;
-      return product;
-    }
+    // if(productIdentifier == "bargainb_1599_l" || productIdentifier == "bargain_lifetime_1599"){
+    //   var products = await Purchases.getProducts([productIdentifier], productCategory: ProductCategory.nonSubscription);
+    //   print("Products: ${products}");
+    //   var product = products.first;
+    //   return product;
+    // }
     var products = await Purchases.getProducts([productIdentifier]);
     print("Products: ${products}");
     var product = products.first;
@@ -105,9 +106,6 @@ class PurchaseApi{
       if (productIdentifier == "bargain_0949_1m") {
         return "Yearly";
       }
-      if (productIdentifier == "bargainb_1599_l") {
-        return "Lifetime";
-      }
     } else {
       if (productIdentifier == "bargain_0109_1m") {
         return "Monthly";
@@ -115,8 +113,24 @@ class PurchaseApi{
       if (productIdentifier == "bargain_0949_1y") {
         return "Yearly";
       }
-      if (productIdentifier == "bargain_lifetime_1599") {
-        return "Lifetime";
+    }
+    return "None";
+  }
+
+  static String getProductIdentifier(String productPeriod) {
+    if (Platform.isIOS) {
+      if (productPeriod == "Monthly") {
+        return "bargain_0109_1m";
+      }
+      if (productPeriod == "Yearly") {
+        return "bargain_0949_1m";
+      }
+    } else {
+      if (productPeriod == "Monthly") {
+        return "bargain_0109_1m";
+      }
+      if (productPeriod == "Yearly") {
+        return "bargain_0949_1y";
       }
     }
     return "None";

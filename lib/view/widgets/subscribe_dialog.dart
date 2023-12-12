@@ -1,3 +1,4 @@
+import 'package:bargainb/features/onboarding/presentation/views/confirm_subscription_screen.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/screens/subscription_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -95,7 +96,7 @@ class _SubscribeDialogState extends State<SubscribeDialog> {
                         onPressed: () async {
                           AppNavigator.pop(context: context);
                           pushNewScreen(context,
-                              screen: SubscriptionScreen(), withNavBar: false);
+                              screen: ConfirmSubscriptionScreen(), withNavBar: false);
                         },
                         child: Text(
                           widget.buttonText,

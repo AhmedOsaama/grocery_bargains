@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:math';
 
+import 'package:bargainb/features/onboarding/presentation/views/widgets/onboarding_stepper.dart';
 import 'package:bargainb/models/bestValue_item.dart';
 import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/providers/tutorial_provider.dart';
@@ -20,6 +22,7 @@ import 'package:bargainb/view/screens/latest_bargains_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/widgets/store_list_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:confetti/confetti.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -60,31 +63,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final PagingController<int, Product> _pagingController = PagingController(firstPageKey: 0);
   ScrollController scrollController = ScrollController();
-
-  static const _pageSize = 100;
   var _pageNumber = 1;
-
   Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
-  // late Future<int> getAllProductsFuture;
   late Future<QuerySnapshot> getAllListsFuture;
-  // late Future<List<BestValueItem>> getAllValueBargainsFuture;
   List allProducts = [];
-
   var isLoading = false;
   TextStyle textButtonStyle = TextStylesInter.textViewRegular16.copyWith(color: mainPurple);
-
   List<BestValueItem> bestValueBargains = [];
-  // int startingIndex = 0;
   bool dialogOpened = false;
-
   var isFetching = false;
-
   late Future getProductsFuture;
   late Future<List<Translation>> getCategoryTranslations;
-
   var showFAB = false;
-
   List<Future<Translation>> translatedCategoryList = [];
+
 
   @override
   void initState() {
@@ -269,12 +261,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: Column(children: [
                   Text(
-                    "ItIsSmartSearch".tr(),
-                    maxLines: 4,
-                    style: TextStyles.textViewRegular13.copyWith(color: white),
+                    "Use the search bar to locate products and uncover the best deals".tr(),
+                    style: TextStyles.textViewRegular16.copyWith(color: white),
                   ),
                   GestureDetector(
-                    onTap: () {
+                    onTap: () async {
+                      await goToProductPageTutorial(context, builder);
                       ShowCaseWidget.of(builder).next();
                     },
                     child: Row(
@@ -318,9 +310,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: Column(children: [
               Text(
-                "UseOurNavigation".tr(),
-                maxLines: 4,
-                style: TextStyles.textViewRegular13.copyWith(color: white),
+                "Navigate easily with the navigation bar: Discover deals, access your sidekick, and manage your profile".tr(),
+                // maxLines: 4,
+                style: TextStyles.textViewRegular16.copyWith(color: white),
               ),
               GestureDetector(
                 onTap: () {
@@ -447,16 +439,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                   // var translatedCategory = 'N/A';
                                   var translatedCategories = [];
                                   if (snapshot.data != null) translatedCategories = snapshot.data ?? [];
-                                  var translatedCategoryIndex = translatedCategories.indexOf(element);
-                                  if (context.locale.languageCode == "nl") {
-                                    return Flexible(
-                                      child: Text(
-                                        translatedCategories[translatedCategoryIndex],
-                                        maxLines: 3,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyles.textViewMedium10.copyWith(color: gunmetal),
-                                      ),
-                                    );
+                                  try {
+                                    var translatedCategoryIndex = translatedCategories.indexOf(element);
+                                    if (context.locale.languageCode == "nl") {
+                                      return Flexible(
+                                        child: Text(
+                                          translatedCategories[translatedCategoryIndex],
+                                          maxLines: 3,
+                                          textAlign: TextAlign.center,
+                                          style: TextStyles.textViewMedium10.copyWith(color: gunmetal),
+                                        ),
+                                      );
+                                    }
+                                  }catch(e){
                                   }
                                   return Text(
                                     element.category,
@@ -704,7 +699,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<dynamic> showWelcomeDialog(BuildContext context, BuildContext builder) {
+  Future<dynamic> showWelcomeDialog(BuildContext context, BuildContext builder) async {
+    await Future.delayed(Duration(seconds: 2));
+
     return showDialog(
         context: context,
         barrierDismissible: false,
@@ -743,9 +740,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 Expanded(
                   child: Text(
-                    "QuickTuto".tr(),
+                    "Let's take a quick tour of our app's features before diving into your AI sidekick".tr(),
                     maxLines: 4,
-                    style: TextStyles.textViewRegular13.copyWith(color: white),
+                    style: TextStyles.textViewRegular16.copyWith(color: white),
                   ),
                 ),
                 GestureDetector(
@@ -782,10 +779,10 @@ class _HomeScreenState extends State<HomeScreen> {
     AppNavigator.pop(context: context);
     try {
       // setState(() {
-      ShowCaseWidget.of(builder).startShowCase([TooltipKeys.showCase1, TooltipKeys.showCase2, TooltipKeys.showCase3]);
+      ShowCaseWidget.of(builder).startShowCase([TooltipKeys.showCase1, TooltipKeys.showCase2]);
       // });
     } catch (e) {
-      log(e.toString());
+      print(e.toString());
     }
     Provider.of<TutorialProvider>(context, listen: false).startTutorial();
   }

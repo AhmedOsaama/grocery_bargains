@@ -903,4 +903,9 @@ abstract class TextStylesInter {
     fontWeight: light,
     fontFamily: fontFamilyInter,
   );
+  static TextStyle textViewLight13 = TextStyle(
+    fontSize: 13.sp,
+    fontWeight: light,
+    fontFamily: fontFamilyInter,
+  );
 }

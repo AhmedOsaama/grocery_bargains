@@ -1,9 +1,0 @@
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="menu tabs/Chatlist/inactive">
-<path id="Vector" d="M5.33301 28.6667V10.25C5.33301 9.12283 5.75442 8.04183 6.50455 7.2448C7.25467 6.44777 8.27206 6 9.3329 6H22.6659C23.7267 6 24.7441 6.44777 25.4942 7.2448C26.2443 8.04183 26.6657 9.12283 26.6657 10.25V17.9298C26.6657 19.1228 26.7311 20.6046 25.4942 21.7552C24.156 23 23.5286 23 20.3914 23H10.6662L5.33301 28.6667Z" stroke="#C2D0FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<line id="Line 71" x1="2.33301" y1="12.333" x2="5.66634" y2="12.333" stroke="#C2D0FA" stroke-width="2" stroke-linecap="round"/>
-<line id="Line 74" x1="11.667" y1="12.333" x2="21.667" y2="12.333" stroke="#C2D0FA" stroke-width="2" stroke-linecap="round"/>
-<line id="Line 72" x1="2.33301" y1="17.667" x2="5.66634" y2="17.667" stroke="#C2D0FA" stroke-width="2" stroke-linecap="round"/>
-<line id="Line 73" x1="11.667" y1="17.667" x2="19.0003" y2="17.667" stroke="#C2D0FA" stroke-width="2" stroke-linecap="round"/>
-</g>
-</svg>

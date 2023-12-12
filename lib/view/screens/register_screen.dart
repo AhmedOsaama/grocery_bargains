@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:bargainb/features/onboarding/presentation/views/confirm_subscription_screen.dart';
+import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
@@ -21,6 +23,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../config/routes/app_navigator.dart';
+import '../../features/onboarding/presentation/views/onboarding_screen.dart';
 import '../../generated/locale_keys.g.dart';
 import '../../providers/google_sign_in_provider.dart';
 import '../../utils/app_colors.dart';
@@ -70,7 +73,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _submitAuthForm(String email, String username,
       String phoneNumber, BuildContext ctx) async {
-    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
+    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
     try {
       if (!isLogin) {
         print("Signing Up...");
@@ -574,7 +577,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           context: context, screen: OnBoardingScreen());
     } else {
       if(!PurchaseApi.isSubscribed){
-        await AppNavigator.pushReplacement(context: context, screen: SubscriptionScreen());
+        await AppNavigator.pushReplacement(context: context, screen: ConfirmSubscriptionScreen());
       }
       AppNavigator.pushReplacement(context: context, screen: MainScreen());
     }
@@ -632,12 +635,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           .collection('users')
           .doc(userCredential.user!.uid)
           .set(userData);
-      var contactData = {
-        "email": email,
-        "firstname": username,
-        'phone': phoneNumber,
-      };
-      await createHubspotContact(userCredential, contactData);
+      Provider.of<UserProvider>(context,listen: false).setUserData(userCredential.user!.uid, username, email, phoneNumber, deviceToken!, photoURL);
     }catch(e){
       print(e);
     }
@@ -655,28 +653,4 @@ class _RegisterScreenState extends State<RegisterScreen> {
     // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Added device token")));
   } 
   
-  Future<void> createHubspotContact(UserCredential userCredential, Map userData) async {
-    print("creating contact");
-    var contactData = jsonEncode({
-      "properties": userData
-    });
-    try {
-      await post(Uri.parse('https://api.hubapi.com/crm/v3/objects/contacts'),
-        headers: {
-          'Authorization': 'Bearer pat-eu1-6afeefb9-6630-45c6-b31e-e292f251c251',
-          'Content-Type': 'application/json'
-        },
-        body: contactData,
-      ).then((value) => print(value.body));
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .update({
-        'isHubspotContact': true,
-      });
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Added Hubspot Contact")));
-    }catch(e){
-      print(e);
-    }
-    }
 }

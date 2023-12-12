@@ -22,6 +22,7 @@ import 'package:bargainb/features/profile/presentation/views/profile_screen.dart
 
 import '../../../../utils/tracking_utils.dart';
 import '../../../../view/components/search_widget.dart';
+import '../../../onboarding/presentation/views/widgets/onboarding_stepper.dart';
 
 class ChatlistsScreen extends StatefulWidget {
   const ChatlistsScreen({Key? key}) : super(key: key);

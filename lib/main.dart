@@ -1,14 +1,12 @@
 import 'dart:io';
 
+import 'package:bargainb/features/onboarding/data/repos/onboarding_repo.dart';
+import 'package:bargainb/features/onboarding/presentation/manager/bot_response_cubit.dart';
 import 'package:bargainb/providers/insights_provider.dart';
 import 'package:bargainb/providers/suggestion_provider.dart';
 import 'package:bargainb/providers/tutorial_provider.dart';
 import 'package:bargainb/providers/user_provider.dart';
-import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/app_colors.dart';
-import 'package:bargainb/utils/assets_manager.dart';
-import 'package:bargainb/view/screens/chatlist_view_screen.dart';
-import 'package:bargainb/view/screens/register_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,18 +18,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
-// import 'package:gdpr_dialog/gdpr_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'features/onboarding/presentation/views/onboarding_screen.dart';
+import 'features/onboarding/presentation/views/splash_progress_screen.dart';
 import 'firebase_options.dart';
 import 'providers/chatlists_provider.dart';
 import 'providers/google_sign_in_provider.dart';
 import 'providers/products_provider.dart';
-import 'services/dynamic_link_service.dart';
 import 'view/screens/main_screen.dart';
-import 'view/screens/onboarding_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 //To apply keys for the various languages used.
 // flutter pub run easy_localization:generate -S ./assets/translations -f keys -o locale_keys.g.dart
@@ -105,7 +103,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     final transaction = Sentry.startTransaction('main initstate', 'task');
-    FlutterBranchSdk.disableTracking(true);
     try {
     getAllProductsFuture = Provider.of<ProductsProvider>(context, listen: false)
         .getAllProducts()
@@ -122,15 +119,16 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initMixpanel() async {
-    // mixPanel = await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true); //live
-    await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true, optOutTrackingDefault: true);  //dev
+    mixPanel = await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true); //live
+    FlutterBranchSdk.disableTracking(false);
+    // await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true, optOutTrackingDefault: true);  //dev
   }
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-      statusBarColor: white,
-    ));
+    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+    //   statusBarColor: white,
+    // ));
     return ScreenUtilInit(
       designSize: Size(390, 844),
       minTextAdapt: true,
@@ -148,7 +146,7 @@ class _MyAppState extends State<MyApp> {
             future: getAllProductsFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+                // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
                 return SplashWithProgressIndicator();
               }
 
@@ -156,20 +154,19 @@ class _MyAppState extends State<MyApp> {
                   stream: authStateChangesStream,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
-                      return SplashWidget();
+                      // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+                      return SplashWithProgressIndicator();
                     }
                     if (snapshot.hasData) {
-                      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-                          overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+                      // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+                      //     overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
 
                       if (widget.notificationMessage != null) {
                         return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
                       }
-
-                      return widget.isFirstTime ? OnBoardingScreen() : MainScreen();
+                      return MainScreen();
                     }
-                    return MainScreen();
+                      return widget.isFirstTime ? OnBoardingScreen() : MainScreen();
                   });
             }),
         localizationsDelegates: context.localizationDelegates,
@@ -180,41 +177,4 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-class SplashWithProgressIndicator extends StatelessWidget {
-  const SplashWithProgressIndicator({
-    super.key,
-  });
 
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(image: AssetImage(splashImage), fit: BoxFit.fill),
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.only(top: 250),
-          alignment: Alignment.center,
-          child: CircularProgressIndicator(),
-        )
-      ],
-    );
-  }
-}
-
-class SplashWidget extends StatelessWidget {
-  const SplashWidget({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(image: AssetImage(splashImage), fit: BoxFit.fill),
-      ),
-    );
-  }
-}

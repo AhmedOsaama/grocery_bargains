@@ -5,14 +5,21 @@ import '../../utils/app_colors.dart';
 import 'button.dart';
 
 class MyCloseButton extends StatelessWidget {
-  const MyCloseButton({Key? key}) : super(key: key);
+  final double? width;
+  final Function? onPressed;
+  const MyCloseButton({Key? key, this.width, this.onPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GenericButton(onPressed: () => AppNavigator.pop(context: context),
+    return GenericButton(
+        onPressed: onPressed == null ? () => AppNavigator.pop(context: context) : () => onPressed!(),
         shape: CircleBorder(),
         padding: EdgeInsets.zero,
-        width: 36,
-        color: purple70, child: Icon(Icons.close,color: white,));
+        width: width ?? 36,
+        color: purple70,
+        child: Icon(
+          Icons.close,
+          color: white,
+        ));
   }
 }

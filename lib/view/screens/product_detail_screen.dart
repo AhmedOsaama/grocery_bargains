@@ -198,7 +198,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         builder: Builder(
           builder: (ctx) {
             WidgetsBinding.instance.addPostFrameCallback((_) async {
-              if (tutorialProvider.isTutorialRunning && FirebaseAuth.instance.currentUser != null) {
+              if (tutorialProvider.isTutorialRunning) {
                 getComparisonsFuture.whenComplete(() {
                   ShowCaseWidget.of(ctx).startShowCase([TooltipKeys.showCase4]);
                 });
@@ -323,31 +323,34 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                       ),
                                       Container(
                                         padding: EdgeInsets.all(15),
-                                        width: 180.w,
+                                        width: 210.w,
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(8.r),
                                           color: purple70,
                                         ),
                                         child: Column(children: [
                                           Text(
-                                            "toAddItemsInChat".tr(),
-                                            maxLines: 4,
-                                            style: TextStyles.textViewRegular13.copyWith(color: white),
+                                            " View all the available prices, add to your list, and streamline your shopping experience".tr(),
+                                            style: TextStyles.textViewRegular16.copyWith(color: white),
                                           ),
                                           GestureDetector(
                                             onTap: () async {
-                                              var id = await Provider.of<ChatlistsProvider>(context, listen: false)
-                                                  .createChatList([]);
-                                              await pushNewScreen(context,
-                                                  screen: ChatListViewScreen(
-                                                    listId: id,
-                                                  ),
-                                                  withNavBar: false);
-                                              NavigatorController.jumpToTab(1);
-                                              // setState(() {
-                                              //   isFirstTime = false;
-                                              // });
-                                              ShowCaseWidget.of(ctx).next();
+                                              if(FirebaseAuth.instance.currentUser != null && PurchaseApi.isSubscribed) {
+                                                ShowCaseWidget.of(ctx).dismiss();
+                                                var id = await Provider.of<ChatlistsProvider>(context, listen: false)
+                                                    .createChatList([]);
+                                                await pushNewScreen(context,
+                                                    screen: ChatListViewScreen(
+                                                      listId: id,
+                                                    ),
+                                                    withNavBar: true);
+                                                NavigatorController.jumpToTab(1);
+                                                ShowCaseWidget.of(ctx).next();
+                                              }else{
+                                                tutorialProvider.stopTutorial(context);
+                                                AppNavigator.pop(context: context);
+                                                NavigatorController.jumpToTab(0);
+                                              }
                                             },
                                             child: Row(
                                               // mainAxisAlignment: MainAxisAlignment.end,

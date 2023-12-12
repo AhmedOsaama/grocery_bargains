@@ -295,5 +295,72 @@
   "subscriptionRenew"                          : "Subscription renew automatically.",
   "subscribe"                          : "Subscribe",
   "thankYou"                          : "Thank you!",
-  "youAreUpgraded"                          : "You are upgraded to Premium"
+  "youAreUpgraded"                          : "You are upgraded to Premium",
+  "Welcome to BargainB"                      : "Welcome to BargainB",
+  "Your Grocery Assistant"                      :  "Your Grocery Assistant",
+  "Tired of overpaying for groceries? Feeling overwhelmed by the endless aisles? Let BargainB be your sidekick to smarter, more affordable grocery shopping."                      :  "Tired of overpaying for groceries? Feeling overwhelmed by the endless aisles? Let BargainB be your sidekick to smarter, more affordable grocery shopping.",
+  "Our smart app helps you find the best deals, discover delicious recipes, and streamline your shopping experience, saving you every month" : "Our smart app helps you find the best deals, discover delicious recipes, and streamline your shopping experience, saving you every month",
+  "Let’s show you" : "Let’s show you",
+  "What’s your preferred grocery store?" : "What’s your preferred grocery store?",
+  "Choose one" : "Choose one",
+
+  "Your Data. Your Choice": "Your Data. Your Choice",
+  "How We Collect and Use Your Data": "How We Collect and Use Your Data",
+  "At BargainB, we value your privacy and are committed to protecting your personal information. We collect data about how and when you use our app to provide you with the best possible experience and personalize the content, products, and recipes you see. Read our": "At BargainB, we value your privacy and are committed to protecting your personal information. We collect data about how and when you use our app to provide you with the best possible experience and personalize the content, products, and recipes you see. Read our",
+  "policy": "policy",
+  " for more ": " for more ",
+  "We use your data to personalise your Assistant, recommend products, send you alerts about deals, and track your savings. We also use your data to improve our app and services.": "We use your data to personalise your Assistant, recommend products, send you alerts about deals, and track your savings. We also use your data to improve our app and services.",
+  "Yes, Personalise My Assistant": "Yes, Personalise My Assistant",
+  "Not now, leave App": "Not now, leave App",
+
+  "Feeling Hungry?": "Feeling Hungry?",
+  "Not sure what to do with those leftover groceries?" : "Not sure what to do with those leftover groceries?",
+  "Let BargainB turn them into a delicious meal": "Let BargainB turn them into a delicious meal",
+
+  "Share BargainB today!": "Share BargainB today!",
+  "Let your family and friends in on the secret to smarter grocery shopping. ": "Let your family and friends in on the secret to smarter grocery shopping. ",
+  "Spread the savings and culinary delights ": "Spread the savings and culinary delights ",
+
+  "Create, Share, & Save": "Create, Share, & Save",
+  "Create a single master list for all your grocery and non-grocery items": "Create a single master list for all your grocery and non-grocery items",
+  "Invite , Collaborate & Save": "Invite , Collaborate & Save",
+
+  "Upgrade to BargainB Premium": "Upgrade to BargainB Premium",
+  "With Premium, get the ultimate grocery sidekick tailored to your needs and preferences": "With Premium, get the ultimate grocery sidekick tailored to your needs and preferences",
+  "Seize the opportunity to save big – these deals won't last long": "Seize the opportunity to save big – these deals won't last long",
+  "Use it for free, No Sidekick, No Sharing": "Use it for free, No Sidekick, No Sharing",
+  "Subscription renew automatically. You can cancel in the store settings.": "Subscription renew automatically. You can cancel in the store settings.",
+  "Monthly": "Monthly",
+  "Yearly": "Yearly",
+  "SUBSCRIBE NOW!": "SUBSCRIBE NOW!",
+  "AI grocery sidekick" :  "Grocery Assistant",
+  "Unlimited shopping list management":  "Unlimited shopping list management",
+  "Personalised product recommendations": "Personalised product recommendations",
+  "Share with family & friends" : "Share with family & friends",
+  "Exclusive access to the best deals" : "Exclusive access to the best deals",
+  "Track your savings" : "Track your savings",
+  "20 messages per month (you can add more)" : "20 messages per month (you can add more)",
+
+  "Review and Confirm Your Subscription": "Review and Confirm Your Subscription",
+  "No Ads": "No Ads",
+  "Change Plan": "Change Plan",
+
+  "Lets Customise Your Experience": "Lets Customise Your Experience",
+  "Tell us about your grocery shopping habits and goals to help us tailor the app to your specific needs.": "Tell us about your grocery shopping habits and goals to help us tailor the app to your specific needs.",
+  "What are your top grocery shopping goals?": "What are your top grocery shopping goals?",
+  "(e.g., Save money on groceries)": "(e.g., Save money on groceries)",
+  "What are your favorite stores to shop at?": "What are your favorite stores to shop at?",
+  "What are your biggest frustrations with grocery shopping?": "What are your biggest frustrations with grocery shopping?",
+
+  "You've successfully completed BargainB's onboarding process. Now, you're ready to unlock the power of your grocery assistant and start saving big on your groceries": "You've successfully completed BargainB's onboarding process. Now, you're ready to unlock the power of your grocery assistant and start saving big on your groceries",
+  "Let's take a quick tour of our app's features before diving into your AI sidekick": "Let's take a quick tour of our app's features before diving into your AI sidekick",
+
+  "Navigate easily with the navigation bar: Discover deals, access your sidekick, and manage your profile": "Navigate easily with the navigation bar: Discover deals, access your sidekick, and manage your profile",
+  "Use the search bar to locate products and uncover the best deals": "Use the search bar to locate products and uncover the best deals",
+  " View all the available prices, add to your list, and streamline your shopping experience": " View all the available prices, add to your list, and streamline your shopping experience",
+  "Collaborate with your loved ones, share grocery lists, and  your AI sidekick": "Collaborate with your loved ones, share grocery lists, and  your AI sidekick",
+  "\nLet's activate your AI sidekick! Invite friends and family to chat with your BargainB sidekick. Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals. Type @BB Show me the Top Deal from {preferred store}": "\nLet's activate your AI sidekick! Invite friends and family to chat with your BargainB sidekick. Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals. Type @BB Show me the Top Deal from {preferred store}",
+  "Grocery shopping just got smarter!": "Grocery shopping just got smarter!",
+  "Assistant": "Assistant"
+
 }

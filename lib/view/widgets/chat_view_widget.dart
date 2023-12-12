@@ -48,6 +48,7 @@ import '../../models/list_item.dart';
 import '../../providers/products_provider.dart';
 import '../../providers/tutorial_provider.dart';
 import '../../utils/tracking_utils.dart';
+import '../../utils/triangle_painter.dart';
 import 'discountItem.dart';
 import 'message_bubble.dart';
 
@@ -56,13 +57,14 @@ class ChatView extends StatefulWidget {
   final String chatlistName;
   final Function showInviteMembersDialog;
   final bool? isExpandingChatlist;
+  final BuildContext showcaseContext;
 
   ChatView(
       {Key? key,
       required this.listId,
       required this.showInviteMembersDialog,
       this.isExpandingChatlist,
-      required this.chatlistName})
+      required this.chatlistName, required this.showcaseContext})
       : super(key: key);
 
   @override
@@ -139,261 +141,35 @@ class _ChatViewState extends State<ChatView> {
   @override
   Widget build(BuildContext context) {
     var tutorialProvider = Provider.of<TutorialProvider>(context);
-    return ShowCaseWidget(
-      builder: Builder(builder: (ctx) {
-        WidgetsBinding.instance.addPostFrameCallback((_) async {
-          if (tutorialProvider.isTutorialRunning) {
-            ShowCaseWidget.of(ctx).startShowCase([TooltipKeys.showCase6]);
-          }
-        });
-        return Stack(
-          children: [
-            if (tutorialProvider.isTutorialRunning) ...buildChatTutorial(ctx, tutorialProvider),
-            if (!tutorialProvider.isTutorialRunning)
-              StreamBuilder<QuerySnapshot>(
-                  stream: chatlistItemsStream,
-                  builder: (context, snapshot) {
-                    final items = snapshot.data?.docs ?? [];
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Container();
-                    }
-                    return Column(
+        return StreamBuilder<QuerySnapshot>(
+            stream: chatlistItemsStream,
+            builder: (context, snapshot) {
+              final items = snapshot.data?.docs ?? [];
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Container();
+              }
+              return Column(
+                children: [
+                  Expanded(
+                    child: PageView(
+                      controller: pageController,
+                      onPageChanged: (page) {
+                        setState(() {
+                          pageNumber = page;
+                        });
+                      },
                       children: [
-                        Expanded(
-                          child: PageView(
-                            controller: pageController,
-                            onPageChanged: (page) {
-                              setState(() {
-                                pageNumber = page;
-                              });
-                            },
-                            children: [
-                              buildChatView(items),
-                              buildListView(items, context),
-                            ],
-                          ),
-                        ),
-                        // 20.ph,
+                        buildChatView(items, widget.showcaseContext),
+                        buildListView(items, context),
                       ],
-                    );
-                  }),
-          ],
-        );
-      }),
-    );
+                    ),
+                  ),
+                  // 20.ph,
+                ],
+              );
+            });
   }
 
-  List<Widget> buildChatTutorial(BuildContext ctx, TutorialProvider tutorialProvider) {
-    return [
-            Container(
-              decoration: BoxDecoration(color: Color.fromRGBO(25, 27, 38, 0.6)),
-            ),
-            Column(
-              children: [
-                Container(
-                  // height: 55.h,
-                  padding: EdgeInsets.symmetric(horizontal: 15.w),
-                  margin: EdgeInsets.symmetric(horizontal: 10.w),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
-                    boxShadow: Utils.boxShadow,
-                  ),
-                  child: Row(
-                    children: [
-                      Text.rich(TextSpan(
-                          text: "${LocaleKeys.chatlist.tr()} ",
-                          style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
-                          children: [
-                            TextSpan(
-                                text: "9 items",
-                                style: TextStylesInter.textViewBold12.copyWith(color: blackSecondary))
-                          ])),
-                      15.pw,
-                      Text.rich(TextSpan(
-                          text: "${LocaleKeys.total.tr()} ",
-                          style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
-                          children: [
-                            TextSpan(
-                                text: "€17.32", style: TextStylesInter.textViewBold12.copyWith(color: mainPurple))
-                          ])),
-                      15.pw,
-                      Text.rich(TextSpan(
-                          text: "${LocaleKeys.savings.tr()} ",
-                          style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
-                          children: [
-                            TextSpan(
-                                text: "€4.32", style: TextStylesInter.textViewBold12.copyWith(color: greenSecondary))
-                          ])),
-                      Spacer(),
-                      IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.keyboard_arrow_down,
-                            color: mainPurple,
-                            size: 45.sp,
-                          )),
-                    ],
-                  ), //TODO: duplicate
-                ),
-                Expanded(
-                  child: ListView(
-                    padding: EdgeInsets.zero,
-                    children: [
-                      MessageBubble(
-                          itemName: "",
-                          itemImage: "",
-                          userName: "Ahmed",
-                          userImage:
-                              "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1084",
-                          isMe: false,
-                          message: "Hey I made the grocery list, check it out.",
-                          isAddedToList: false,
-                          itemPrice: "",
-                          itemOldPrice: "",
-                          itemSize: "",
-                          storeName: "",
-                          userId: "",
-                          itemId: -1,
-                          itemBrand: "",
-                          itemQuantity: 0),
-                      MessageBubble(
-                          itemName: "",
-                          itemImage: "",
-                          userName: "Ahmed",
-                          userImage: "https://www.himalmag.com/wp-content/uploads/2019/07/sample-profile-picture.png",
-                          isMe: true,
-                          message: "okay",
-                          isAddedToList: false,
-                          itemPrice: "",
-                          itemOldPrice: "",
-                          itemSize: "",
-                          storeName: "",
-                          userId: "",
-                          itemId: -1,
-                          itemBrand: "",
-                          itemQuantity: 0),
-                      MessageBubble(
-                          itemName: "",
-                          itemImage: "",
-                          userName: "Ahmed",
-                          userImage:
-                              "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1084",
-                          isMe: false,
-                          message: "Can you add butter to the list ?",
-                          isAddedToList: false,
-                          itemPrice: "",
-                          itemOldPrice: "",
-                          itemSize: "",
-                          storeName: "",
-                          userId: "",
-                          itemId: -1,
-                          itemBrand: "",
-                          itemQuantity: 0),
-                      MessageBubble(
-                          itemName: "Spreadable Blend of Butter & Rapeseed Oil",
-                          itemImage:
-                              "https://images.arla.com/recordid/520C13F1-C489-4BBC-9590546669B7C3FE/picture.png?width=1200&height=630",
-                          userName: "Ahmed",
-                          userImage: "https://www.himalmag.com/wp-content/uploads/2019/07/sample-profile-picture.png",
-                          isMe: true,
-                          message: "",
-                          isAddedToList: true,
-                          itemPrice: "2.20",
-                          itemOldPrice: "3.20",
-                          itemSize: "500g",
-                          storeName: "Albert",
-                          userId: "",
-                          itemId: 2,
-                          itemBrand: "Lurpak",
-                          itemQuantity: 1),
-                      MessageBubble(
-                          itemName: "",
-                          itemImage: "",
-                          userName: "Ahmed",
-                          userImage:
-                              "https://wac-cdn.atlassian.com/dam/jcr:ba03a215-2f45-40f5-8540-b2015223c918/Max-R_Headshot%20(1).jpg?cdnVersion=1084",
-                          isMe: false,
-                          message: "Anything else not on the list ?",
-                          isAddedToList: false,
-                          itemPrice: "",
-                          itemOldPrice: "",
-                          itemSize: "",
-                          storeName: "",
-                          userId: "",
-                          itemId: -1,
-                          itemBrand: "",
-                          itemQuantity: 0),
-                      MessageBubble(
-                          itemName: "",
-                          itemImage: "",
-                          userName: "Ahmed",
-                          userImage: "https://www.himalmag.com/wp-content/uploads/2019/07/sample-profile-picture.png",
-                          isMe: true,
-                          message: "Stop by at the dry cleaners to pick up clothes",
-                          isAddedToList: true,
-                          itemPrice: "",
-                          itemOldPrice: "",
-                          itemSize: "",
-                          storeName: "",
-                          userId: "",
-                          itemId: -1,
-                          itemBrand: "",
-                          itemQuantity: 0),
-                      ShowCaseWidget(
-                        builder: Builder(builder: (context) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(15),
-                                margin: EdgeInsets.only(left: 30),
-                                width: 300.w,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8.r),
-                                  color: purple70,
-                                ),
-                                child: Column(children: [
-                                  Text(
-                                    LocaleKeys.shareGroceriesToChat.tr(),
-                                    maxLines: 5,
-                                    style: TextStyles.textViewRegular13.copyWith(color: white),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      ShowCaseWidget.of(context).dismiss();
-                                      widget.showInviteMembersDialog(context);
-                                      ShowCaseWidget.of(ctx).next();
-                                    },
-                                    child: Row(
-                                      children: [
-                                        SkipTutorialButton(tutorialProvider: tutorialProvider, context: ctx),
-                                        Spacer(),
-                                        Text(
-                                          LocaleKeys.next.tr(),
-                                          style: TextStyles.textViewSemiBold14.copyWith(color: white),
-                                        ),
-                                        Icon(
-                                          Icons.arrow_forward_ios,
-                                          color: white,
-                                          size: 15.sp,
-                                        )
-                                      ],
-                                    ),
-                                  )
-                                ]),
-                              ),
-                            ],
-                          );
-                        }),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            )
-          ];
-  }
 
   Consumer<ChatlistsProvider> buildListView(List<QueryDocumentSnapshot<Object?>> items, BuildContext context) {
     return Consumer<ChatlistsProvider>(
@@ -464,7 +240,8 @@ class _ChatViewState extends State<ChatView> {
     quicklyAddedItems.clear();
   }
 
-  StreamBuilder<QuerySnapshot<Object?>> buildChatView(List<QueryDocumentSnapshot<Object?>> items) {
+  StreamBuilder<QuerySnapshot<Object?>> buildChatView(List<QueryDocumentSnapshot<Object?>> items, BuildContext showcaseContext) {
+    var tutorialProvider = Provider.of<TutorialProvider>(context);
     return StreamBuilder<QuerySnapshot>(
         stream: chatStream,
         builder: (context, snapshot) {
@@ -520,35 +297,85 @@ class _ChatViewState extends State<ChatView> {
                                 ),
                               )),
                     ),
-              Padding(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  children: [
-                    SvgPicture.asset(chatbot),
-                    5.pw,
-                    Expanded(
-                      child: GenericField(
-                        controller: messageController,
-                        hintText: LocaleKeys.textHere.tr(),
-                        hintStyle: TextStylesInter.textViewRegular14.copyWith(color: hintText),
-                        contentPadding: EdgeInsets.only(left: 10),
-                        borderRaduis: 99999,
-                        onSubmitted: (_) async {
+              Showcase.withWidget(
+                height: 120,
+                width: 200.w,
+                disableDefaultTargetGestures: true,
+                targetBorderRadius: BorderRadius.circular(10),
+                key: tutorialProvider.isTutorialRunning ? TooltipKeys.showCase6 : new GlobalKey<State<StatefulWidget>>(),
+                tooltipPosition: TooltipPosition.top,
+                container: Container(
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(15),
+                        width: 300.w,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: purple70,
+                        ),
+                        child: Column(
+                            children: [
+                              Text(
+                                "Let's activate your AI sidekick!"
+                                    " Invite friends and family to chat with your BargainB sidekick."
+                                    " Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals."
+                                    " Type @BB Show me the Top Deal from {preferred store}".tr(),
+                                // maxLines: 4,
+                                style: TextStyles.textViewRegular13.copyWith(color: white),
+                              ),
+                              SkipTutorialButton(tutorialProvider: tutorialProvider, context: showcaseContext)
+                            ]),
+                      ),
+                      Container(
+                        height: 11,
+                        width: 13,
+                        child: CustomPaint(
+                          painter: DownTrianglePainter(
+                            strokeColor: purple70,
+                            strokeWidth: 1,
+                            paintingStyle: PaintingStyle.fill,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    children: [
+                      SvgPicture.asset(chatbot),
+                      5.pw,
+                      Expanded(
+                        child: GenericField(
+                          controller: messageController,
+                          hintText: LocaleKeys.textHere.tr(),
+                          hintStyle: TextStylesInter.textViewRegular14.copyWith(color: hintText),
+                          contentPadding: EdgeInsets.only(left: 10),
+                          borderRaduis: 99999,
+                          onSubmitted: (_) async {
+                            submitMessage(context);
+                            if(tutorialProvider.isTutorialRunning){
+                              ShowCaseWidget.of(context).dismiss();
+                              await Future.delayed(Duration(seconds: 3));
+                              tutorialProvider.stopTutorial(context);
+                            }
+                          },
+                        ),
+                      ),
+                      5.pw,
+                      GestureDetector(
+                        onTap: () async {
                           await submitMessage(context);
+                          FocusScope.of(context).unfocus();
                         },
+                        child: SvgPicture.asset(
+                          send,
+                        ),
                       ),
-                    ),
-                    5.pw,
-                    GestureDetector(
-                      onTap: () async {
-                        await submitMessage(context);
-                        FocusScope.of(context).unfocus();
-                      },
-                      child: SvgPicture.asset(
-                        send,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -560,11 +387,10 @@ class _ChatViewState extends State<ChatView> {
     var text = messageController.text.trim();
     if (['@BargainB', '@Bargainb', '@bargainb', '@bb', '@BB'].any((element) => text.startsWith(element))) {
       messageController.clear();
-      // var question = text.replaceFirst('@BargainB', '');
       await Provider.of<ChatlistsProvider>(context, listen: false)
           .sendMessage(text, widget.listId, widget.chatlistName, "messages");
-      var chatbotResponse = await get(Uri.parse(
-          'https://us-central1-discountly.cloudfunctions.net/getChatbot?question=${text}&listId=${widget.listId}&collectionName=messages'));
+      // var chatbotResponse = await get(Uri.parse(
+      //     'https://us-central1-discountly.cloudfunctions.net/getChatbot?question=${text}&listId=${widget.listId}&collectionName=messages'));
       // setState(() {
       //   // chatStream = FirebaseFirestore.instance
       //   //     .collection("/lists/${widget.listId}/bot_messages")

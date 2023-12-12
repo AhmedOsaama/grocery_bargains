@@ -7,10 +7,20 @@ import '../utils/tooltips_keys.dart';
 
 class TutorialProvider with ChangeNotifier{
   bool isTutorialRunning = false;
-  bool canShowWelcomeDialog = false;
+  bool canShowWelcomeDialog = true;
+  bool canShowConfetti = false;
 
   void startTutorial(){
     isTutorialRunning = true;
+    notifyListeners();
+  }
+
+  void showTutorialConfetti(){
+    canShowConfetti = true;
+    // notifyListeners();
+  }
+  void hideTutorialConfetti(){
+    canShowConfetti = false;
     notifyListeners();
   }
 
@@ -27,6 +37,7 @@ class TutorialProvider with ChangeNotifier{
   void stopTutorial(BuildContext context){
     isTutorialRunning = false;
     ShowCaseWidget.of(context).dismiss();
+    showTutorialConfetti();
     notifyListeners();
   }
 

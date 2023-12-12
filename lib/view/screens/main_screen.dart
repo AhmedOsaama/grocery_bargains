@@ -1,15 +1,23 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:algolia/algolia.dart';
 import 'package:bargainb/providers/products_provider.dart';
+import 'package:bargainb/providers/tutorial_provider.dart';
 import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/app_colors.dart';
+import 'package:bargainb/utils/icons_manager.dart';
+import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
+import 'package:bargainb/view/components/close_button.dart';
+import 'package:bargainb/view/components/dotted_container.dart';
 import 'package:bargainb/view/screens/insights_screen.dart';
 import 'package:bargainb/view/screens/product_detail_screen.dart';
 import 'package:bargainb/view/widgets/signin_dialog.dart';
 import 'package:bargainb/view/widgets/subscribe_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:confetti/confetti.dart';
+import 'package:dotted_border/dotted_border.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -17,6 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
@@ -28,6 +37,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../config/routes/app_navigator.dart';
+import '../../features/onboarding/presentation/views/widgets/onboarding_stepper.dart';
 import '../../providers/chatlists_provider.dart';
 import 'chatlist_view_screen.dart';
 
@@ -46,6 +56,9 @@ class _MainScreenState extends State<MainScreen> {
   final selectedColor = mainPurple;
   final unSelectedColor = purple30;
   late bool isFirstTime;
+
+  ConfettiController _confettiController = ConfettiController(duration: const Duration(seconds: 1));
+
 
   Future<Null> getSharedPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -145,17 +158,128 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   @override
+  void dispose() {
+   _confettiController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    var tutorialProvider = Provider.of<TutorialProvider>(context);
+    if(tutorialProvider.canShowConfetti) _confettiController.play();
     return Scaffold(
         resizeToAvoidBottomInset: true,
-        body: PersistentTabView(
-          key: tabKey,
-          context,
-          controller: NavigatorController,
-          items: _navBarsItems(),
-          screens: _buildScreens(),
-          navBarStyle: NavBarStyle.simple,
-          stateManagement: true,
+        body: Stack(
+          children: [
+            PersistentTabView(
+              key: tabKey,
+              context,
+              controller: NavigatorController,
+              items: _navBarsItems(),
+              screens: _buildScreens(),
+              navBarStyle: NavBarStyle.simple,
+              stateManagement: true,
+            ),
+            if(tutorialProvider.canShowConfetti) ...[
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.center,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0x00181A26), Color(0xFF181A26)],
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 200.h,left: 40, right: 40),
+                child: Center(
+                  child: DottedBorder(
+                    strokeCap: StrokeCap.round,
+                    borderType: BorderType.RRect,
+                    radius: Radius.circular(10),
+                    dashPattern: [3, 3],
+                    strokeWidth: 1,
+                    color: Color(0xFF7192F2),
+                    child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.white
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: MyCloseButton(width: 25, onPressed: (){
+                              tutorialProvider.hideTutorialConfetti();
+                            },),
+                          ),
+                          if(PurchaseApi.isSubscribed) OnboardingStepper(activeStep: 4, stepSize: 11),
+                          Text('Grocery shopping just got smarter!'.tr(), style: TextStylesInter.textViewSemiBold20,textAlign: TextAlign.center,),
+                          15.ph,
+                          if(PurchaseApi.isSubscribed)
+                            Text("You've successfully completed BargainB's onboarding process."
+                                " Now, you're ready to unlock the power of our AI-powered grocery sidekick and start saving big on your groceries".tr(),
+                              style: TextStylesInter.textViewRegular13,
+                              textAlign: TextAlign.center,),
+                          if(!PurchaseApi.isSubscribed)
+                          Text("You've successfully completed BargainB's onboarding process."
+                              " Now, you're ready start saving big on your groceries".tr(),
+                            style: TextStylesInter.textViewRegular13,
+                            textAlign: TextAlign.center,),
+                          10.ph,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: ConfettiWidget(
+                  confettiController: _confettiController,
+                  blastDirection: pi / 2,
+                  blastDirectionality: BlastDirectionality.explosive,
+                  maxBlastForce: 3, // set a lower max blast force
+                  minBlastForce: 2, // set a lower min blast force
+                  emissionFrequency: 0.01,
+                  numberOfParticles: 2, // a lot of particles at once
+                  gravity: 0.2,
+                ),
+              ),
+              Align(
+                alignment: Alignment.topCenter,
+                child: ConfettiWidget(
+                  confettiController: _confettiController,
+                  blastDirection: pi / 2,
+                  blastDirectionality: BlastDirectionality.explosive,
+                  maxBlastForce: 3, // set a lower max blast force
+                  minBlastForce: 2, // set a lower min blast force
+                  emissionFrequency: 0.02,
+                  numberOfParticles: 10, // a lot of particles at once
+                  gravity: 0.2,
+                ),
+              ),
+              Align(
+                alignment: Alignment.topRight,
+                child: ConfettiWidget(
+                  confettiController: _confettiController,
+                  blastDirection: pi / 2,
+                  blastDirectionality: BlastDirectionality.explosive,
+                  maxBlastForce: 3, // set a lower max blast force
+                  minBlastForce: 2, // set a lower min blast force
+                  emissionFrequency: 0.02,
+                  numberOfParticles: 10, // a lot of particles at once
+                  gravity: 0.2,
+                ),
+              ),
+            ],
+            // Container(
+            //   color: Color(0x99181A26),
+            // ),
+            // Text("data")
+          ],
         ));
     // }
     // );
@@ -183,11 +307,9 @@ class _MainScreenState extends State<MainScreen> {
         inactiveColorPrimary: unSelectedColor,
       ),
       PersistentBottomNavBarItem(
-          icon: Icon(
-            Icons.chat_outlined,
-            size: 24.sp,
-          ),
-          title: ("chatlists".tr()),
+          icon: SvgPicture.asset(bbIcon,color: selectedColor ,),
+          inactiveIcon: SvgPicture.asset(bbIcon,color: unSelectedColor ,),
+          title: ("Assistant".tr()),
           textStyle: TextStyle(fontSize: 12.sp),
           activeColorPrimary: selectedColor,
           inactiveColorPrimary: unSelectedColor,
