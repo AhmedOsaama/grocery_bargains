@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/features/onboarding/presentation/views/onboarding_subscription_screen.dart';
@@ -154,8 +155,17 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                       var plan = userProvider.onboardingSubscriptionPlan;
                       var monthlyPrice = packages[0].storeProduct.priceString;
                       var yearlyPrice = packages[1].storeProduct.priceString;
-                      var offer = packages[1].storeProduct.subscriptionOptions;
-                      log(offer.toString());
+                      // var offer = packages[1].storeProduct.introductoryPrice;
+                      if(Platform.isIOS){
+                        var introductoryPrice = packages[1].storeProduct.introductoryPrice;
+                        if(introductoryPrice != null) yearlyPrice = introductoryPrice.priceString;
+                      }
+                      if(Platform.isAndroid){
+                        var subscriptionOptions = packages[1].storeProduct.subscriptionOptions;
+                        log(subscriptionOptions.toString());
+                        if(subscriptionOptions != null) yearlyPrice = subscriptionOptions.first!.introPhase!.price.formatted;
+                      }
+                      // log(offer.toString());
                       if(plan == "Yearly") {
                         userProvider.onboardingSubscriptionPlanPrice = yearlyPrice;
                         return PlanContainer(
