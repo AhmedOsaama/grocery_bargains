@@ -5,11 +5,23 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../utils/assets_manager.dart';
 import '../../../../../utils/style_utils.dart';
+import '../../../../../utils/tracking_utils.dart';
 
-class FifthOnboarding extends StatelessWidget {
+class FifthOnboarding extends StatefulWidget {
   FifthOnboarding({Key? key}) : super(key: key);
+
+  @override
+  State<FifthOnboarding> createState() => _FifthOnboardingState();
+}
+
+class _FifthOnboardingState extends State<FifthOnboarding> {
   bool loading = true;
 
+  @override
+  void initState() {
+    TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), "Fifth onboarding screen");
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

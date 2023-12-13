@@ -27,6 +27,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   int _totalPages = 6;
   final PageController _pageController = PageController();
 
+
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(

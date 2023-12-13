@@ -6,6 +6,7 @@ import 'package:bargainb/providers/insights_provider.dart';
 import 'package:bargainb/providers/suggestion_provider.dart';
 import 'package:bargainb/providers/tutorial_provider.dart';
 import 'package:bargainb/providers/user_provider.dart';
+import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
@@ -51,6 +52,7 @@ Future<void> main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     ).then((value) => FirebaseAppCheck.instance.activate()),
   ]);
+  await PurchaseApi.init();
 
   var notificationMessage = await FirebaseMessaging.instance.getInitialMessage();
 
@@ -119,9 +121,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initMixpanel() async {
-    mixPanel = await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true); //live
-    FlutterBranchSdk.disableTracking(false);
-    // await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true, optOutTrackingDefault: true);  //dev
+    // mixPanel = await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true); //live
+    FlutterBranchSdk.disableTracking(true);
+    await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true, optOutTrackingDefault: true);  //dev
   }
 
   @override

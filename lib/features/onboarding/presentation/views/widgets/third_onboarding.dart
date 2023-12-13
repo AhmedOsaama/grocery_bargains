@@ -13,10 +13,22 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../../utils/app_colors.dart';
 import '../../../../../utils/assets_manager.dart';
 import '../../../../../utils/style_utils.dart';
+import '../../../../../utils/tracking_utils.dart';
 import '../../../../../view/components/button.dart';
-class ThirdOnboarding extends StatelessWidget {
+class ThirdOnboarding extends StatefulWidget {
   final Function goToNextPage;
   const ThirdOnboarding({Key? key, required this.goToNextPage}) : super(key: key);
+
+  @override
+  State<ThirdOnboarding> createState() => _ThirdOnboardingState();
+}
+
+class _ThirdOnboardingState extends State<ThirdOnboarding> {
+  @override
+  void initState() {
+    TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), "Third onboarding screen");
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +55,7 @@ class ThirdOnboarding extends StatelessWidget {
                   text: ' policy'.tr(),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () async {
+                    TrackingUtils().trackTextLinkClicked("Guest", DateTime.now().toUtc().toString(), "Third onboarding screen", "Click Policy link");
                       final url = Uri.parse('https://thebargainb.com/privacy-policy');
                       try {
                         await launchUrl(url);
@@ -75,6 +88,7 @@ class ThirdOnboarding extends StatelessWidget {
           color: brightOrange,
           width: double.infinity,
           onPressed: () {
+            TrackingUtils().trackButtonClick("Guest", "Personalize Assistant", DateTime.now().toUtc().toString(), "Third onboarding screen");
             personalizeAI();
             // AppNavigator.pushReplacement(
             //     context: context, screen: MainScreen());
@@ -94,6 +108,7 @@ class ThirdOnboarding extends StatelessWidget {
           color: Colors.white,
           width: double.infinity,
           onPressed: () async {
+            TrackingUtils().trackButtonClick("Guest", "Not now, exit app", DateTime.now().toUtc().toString(), "Third onboarding screen");
             exit(1);
           },
           child: Text(
@@ -113,6 +128,6 @@ class ThirdOnboarding extends StatelessWidget {
     if (appTrackingStatus == TrackingStatus.denied) {
       exit(1);
     }
-    goToNextPage();
+    widget.goToNextPage();
   }
 }

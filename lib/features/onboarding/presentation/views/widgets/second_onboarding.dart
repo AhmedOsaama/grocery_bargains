@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../utils/app_colors.dart';
 import '../../../../../utils/assets_manager.dart';
 import '../../../../../utils/style_utils.dart';
+import '../../../../../utils/tracking_utils.dart';
 
 class SecondOnboarding extends StatefulWidget {
   const SecondOnboarding({Key? key}) : super(key: key);
@@ -31,6 +32,12 @@ class _SecondOnboardingState extends State<SecondOnboarding> {
     "Lidl": lidle_store,
     "Aldi": aldi,
   };
+
+  @override
+  void initState() {
+    TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), "Second onboarding screen");
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,6 +75,7 @@ class _SecondOnboardingState extends State<SecondOnboarding> {
                 setState(() {
                   _selectedStore = entry.key;
                 });
+                TrackingUtils().trackFavouriteStores("Guest", DateTime.now().toUtc().toString(), "Second onboarding screen", _selectedStore);
               },
               child: Container(
                 padding: const EdgeInsets.all(16),

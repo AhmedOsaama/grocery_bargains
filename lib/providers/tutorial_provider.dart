@@ -7,7 +7,7 @@ import '../utils/tooltips_keys.dart';
 
 class TutorialProvider with ChangeNotifier{
   bool isTutorialRunning = false;
-  bool canShowWelcomeDialog = true;
+  bool canShowWelcomeDialog = false;
   bool canShowConfetti = false;
 
   void startTutorial(){

@@ -43,6 +43,8 @@ class AppNavigator {
   }
 
   static goToChatlistTab(BuildContext context) {
+    print(PurchaseApi.subscriptionPeriod);
+    print(PurchaseApi.isSubscribed);
     if (FirebaseAuth.instance.currentUser == null) {
       showSignInDialog(context);
     } else if (!PurchaseApi.isSubscribed) {

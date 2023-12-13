@@ -31,6 +31,7 @@ class TrackingUtils {
   static const chatlistIdKey = 'ChatlistID';
   static const chatlistNameKey = 'ChatlistName';
   static const filterTypeKey = 'Filter type';
+  static const favouriteStoreKey = 'Favourite store';
 
   static const buttonClickEvent = 'ButtonClick';
   static const pageViewEvent = 'PageView';
@@ -49,6 +50,8 @@ class TrackingUtils {
   static const phoneNumberVerifiedEvent = 'PhoneNumberVerified';
   static const chatlistMessageSentEvent = 'CLMessageSent';
   static const filterUsedEvent = 'FilterUsed';
+  static const formSubmittedEvent = 'FormSubmitted';
+  static const chooseFavouriteStoreEvent = 'chooseFavouriteStore';
 
 
 
@@ -306,6 +309,34 @@ class TrackingUtils {
         ..addCustomData(timeStampKey, timestamp)
         ..addCustomData(pageNameKey, pageName)
         ..addCustomData(filterTypeKey, filterType)
+    );
+  }
+
+  void trackFormSubmitted(String userId, String timestamp, String pageName){
+    mixpanel.track(formSubmittedEvent, properties: {
+      userIdKey : userId,
+      timeStampKey : timestamp,
+      pageNameKey : pageName,
+    });
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(formSubmittedEvent)
+      ..addCustomData(userIdKey, userId)
+        ..addCustomData(timeStampKey, timestamp)
+        ..addCustomData(pageNameKey, pageName)
+    );
+  }
+
+  void trackFavouriteStores(String userId, String timestamp, String pageName, String favouriteStore){
+    mixpanel.track(chooseFavouriteStoreEvent, properties: {
+      userIdKey : userId,
+      timeStampKey : timestamp,
+      pageNameKey : pageName,
+      favouriteStoreKey : favouriteStore,
+    });
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(chooseFavouriteStoreEvent)
+      ..addCustomData(userIdKey, userId)
+        ..addCustomData(timeStampKey, timestamp)
+        ..addCustomData(pageNameKey, pageName)
+        ..addCustomData(favouriteStoreKey, favouriteStore)
     );
   }
 }

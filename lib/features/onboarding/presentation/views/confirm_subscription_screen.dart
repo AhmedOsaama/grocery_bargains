@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/features/onboarding/presentation/views/onboarding_subscription_screen.dart';
 import 'package:bargainb/utils/assets_manager.dart';
@@ -14,6 +16,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
+import 'package:purchases_flutter/models/offering_wrapper.dart';
 
 import '../../../../generated/locale_keys.g.dart';
 import '../../../../providers/user_provider.dart';
@@ -73,13 +76,18 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
     premium5,
   ];
 
+  late Future<List> offersFuture;
+
   @override
   void initState() {
-    subscriptionPlan = PurchaseApi.subscriptionPeriod;
-    subscriptionPrice = PurchaseApi.subscriptionPrice;
-    TrackingUtils().trackPageView(
-        FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "confirm subscription screen");
+    offersFuture = PurchaseApi.fetchOffers();
+    trackPage();
     super.initState();
+  }
+
+  void trackPage() {
+     TrackingUtils().trackPageView(
+        FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Confirm Subscription Screen");
   }
 
   @override
@@ -135,19 +143,53 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                   ),
                 ),
                 if (!PurchaseApi.isSubscribed)
-                  userProvider.onboardingSubscriptionPlan == "Yearly"
-                      ? PlanContainer(
-                          selectedPlan: userProvider.onboardingSubscriptionPlan,
-                          changePlan: (value) {},
-                          price: userProvider.onboardingSubscriptionPlanPrice,
-                          plan: userProvider.onboardingSubscriptionPlan,
+                  // FutureBuilder<List<Offering>>(
+                  FutureBuilder(
+                    future: offersFuture,
+                    builder: (ctx, snapshot) {
+                      if(snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator(),);
+                      var offerings = snapshot.data ?? [];
+                      final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
+                      log(packages[1].toString());
+                      var plan = userProvider.onboardingSubscriptionPlan;
+                      var monthlyPrice = packages[0].storeProduct.priceString;
+                      var yearlyPrice = packages[1].storeProduct.priceString;
+                      var offer = packages[1].storeProduct.subscriptionOptions;
+                      log(offer.toString());
+                      if(plan == "Yearly") {
+                        userProvider.onboardingSubscriptionPlanPrice = yearlyPrice;
+                        return PlanContainer(
+                          selectedPlan: plan,
+                          changePlan: (value) {
+                            trackSubscriptionChoice("Choose Yearly");
+                          },
+                          price: yearlyPrice,
+                          plan: plan,
                           offerText: "You save 63%",
-                        )
-                      : PlanContainer(
-                          selectedPlan: userProvider.onboardingSubscriptionPlan,
-                          changePlan: (value) {},
-                          price: userProvider.onboardingSubscriptionPlanPrice,
-                          plan: userProvider.onboardingSubscriptionPlan),
+                        );
+                      }else{
+                        userProvider.onboardingSubscriptionPlanPrice = monthlyPrice;
+                        return PlanContainer(
+                          selectedPlan: plan,
+                          changePlan: (value) {
+                            trackSubscriptionChoice("Choose Monthly");
+                          },
+                          price: monthlyPrice,
+                          plan: plan,
+                        );
+                      }
+                      
+                    }
+                ),
+
+
+                      // : PlanContainer(
+                      //     selectedPlan: userProvider.onboardingSubscriptionPlan,
+                      //     changePlan: (value) {
+                      //       trackSubscriptionChoice("Choose Monthly");
+                      //     },
+                      //     price: userProvider.onboardingSubscriptionPlanPrice,
+                      //     plan: userProvider.onboardingSubscriptionPlan),
                 if (PurchaseApi.isSubscribed)
                   Column(
                     children: [
@@ -182,9 +224,9 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                     },
                     child: Text(
                       userProvider.onboardingSubscriptionPlan == "Yearly"
-                          ? 'Pay ${userProvider.onboardingSubscriptionPlanPrice} eur, get an Assistant for 1 year'
+                          ? 'Pay ${userProvider.onboardingSubscriptionPlanPrice}, get an Assistant for 1 year'
                               .tr()
-                          : 'Pay ${userProvider.onboardingSubscriptionPlanPrice} eur Monthly, get an Assistant'.tr(),
+                          : 'Pay ${userProvider.onboardingSubscriptionPlanPrice} Monthly, get an Assistant'.tr(),
                       style: TextStylesInter.textViewSemiBold13.copyWith(color: white),
                     ),
                   ),
@@ -221,6 +263,10 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
     );
   }
 
+  void trackSubscriptionChoice(String choice) {
+    TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, choice, DateTime.now().toUtc().toString(), "Confirm Subscription Screen");
+  }
+
   Future<bool> initiateSubscription(BuildContext context, String selectedPlan) async {
     final offerings = await PurchaseApi.fetchOffers();
     bool hasPurchased = false;
@@ -246,6 +292,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
       }
     }
     if(hasPurchased) {
+      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Confirm and buy Subscription",DateTime.now().toUtc().toString(), "Confirm Subscription Screen");
       setState(() {
         subscriptionPlan = PurchaseApi.subscriptionPeriod;
         subscriptionPrice = PurchaseApi.subscriptionPrice;

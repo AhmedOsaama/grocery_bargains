@@ -5,6 +5,7 @@ import 'package:bargainb/features/onboarding/presentation/views/widgets/onboardi
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/utils/style_utils.dart';
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -33,6 +34,16 @@ class _CustomizeExperienceScreenState extends State<CustomizeExperienceScreen> {
   TextEditingController _favouriteController = TextEditingController();
 
   TextEditingController _biggestFrustrationsController = TextEditingController();
+  
+  @override
+  void initState() {
+    trackPage();
+    super.initState();
+  }
+
+  void trackPage() {
+    TrackingUtils().trackPageView('Guest', DateTime.now().toUtc().toString(), "Onboarding Form Screen");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -165,8 +176,13 @@ class _CustomizeExperienceScreenState extends State<CustomizeExperienceScreen> {
             };
             createHubspotContact(contactData);
             AppNavigator.pushReplacement(context: context, screen: MainScreen());
+            trackFormSubmitted();
           }
         };
+  }
+
+  void trackFormSubmitted() {
+    TrackingUtils().trackFormSubmitted('Guest', DateTime.now().toUtc().toString(), "Onboarding Form Submission");
   }
   Future<void> createHubspotContact(Map userData) async {
     print("creating hubspot contact");

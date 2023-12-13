@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bargainb/generated/locale_keys.g.dart';
@@ -42,16 +43,24 @@ class PurchaseApi{
 
   static Future<void> checkSubscriptionStatus() async {
    var value = await Purchases.getCustomerInfo();
+   log('subscription status: $value');
    try {
      if (value.entitlements.all['all_analysis_features']!.isActive) {
        var productIdentifier = value.entitlements.all['all_analysis_features']!.productIdentifier;
+       print("period" + subscriptionPeriod);
+       print("price" + subscriptionPrice);
+       print("is subscribed" + isSubscribed.toString());
        var product = await getSubscriptionProduct(productIdentifier);
        subscriptionPeriod = getSubscriptionPeriod(productIdentifier);
        subscriptionPrice = getSubscriptionPriceString(product);
        subscriptionPricePerMonth = getPricePerMonth(subscriptionPeriod, getSubscriptionPrice(product));
        isSubscribed = true;
+       print("period" + subscriptionPeriod);
+       print("price" + subscriptionPrice);
+       print("is subscribed" + isSubscribed.toString());
      }
    }catch(e){
+     log("ERROR IN SUBSCRIPTION: $e");
      print(e);
    }
   }

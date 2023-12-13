@@ -4,9 +4,21 @@ import 'package:flutter/material.dart';
 
 import '../../../../../utils/assets_manager.dart';
 import '../../../../../utils/style_utils.dart';
+import '../../../../../utils/tracking_utils.dart';
 
-class SixthOnboarding extends StatelessWidget {
+class SixthOnboarding extends StatefulWidget {
   const SixthOnboarding({Key? key}) : super(key: key);
+
+  @override
+  State<SixthOnboarding> createState() => _SixthOnboardingState();
+}
+
+class _SixthOnboardingState extends State<SixthOnboarding> {
+  @override
+  void initState() {
+    TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), "Sixth onboarding screen");
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -117,7 +117,6 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
                         });
                       },
                         price: packages[1].storeProduct.priceString, plan: "Yearly".tr(), offerText: "You save 63%",),
-
                     ],
                   );
                   }
@@ -161,7 +160,7 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
     }
   }
 
-class PlanContainer extends StatelessWidget {
+class PlanContainer extends StatefulWidget {
   final String plan;
   final String selectedPlan;
   final Function changePlan;
@@ -170,8 +169,13 @@ class PlanContainer extends StatelessWidget {
   PlanContainer({Key? key, required this.selectedPlan, required this.changePlan, this.offerText, required this.price, required this.plan}) : super(key: key);
 
   @override
+  State<PlanContainer> createState() => _PlanContainerState();
+}
+
+class _PlanContainerState extends State<PlanContainer> {
+  @override
   Widget build(BuildContext context) {
-  Color accentColor = plan == "Monthly".tr() ? Color(0xFFFF8A1F) : Color(0xFF3463ED);
+  Color accentColor = widget.plan == "Monthly".tr() ? Color(0xFFFF8A1F) : Color(0xFF3463ED);
     return Stack(
       // alignment: Alignment.topCenter,
       children: [
@@ -185,21 +189,21 @@ class PlanContainer extends StatelessWidget {
           child: Row(
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Radio(value: plan, groupValue: selectedPlan, onChanged: (value) => changePlan(value), activeColor: accentColor,),
-              Text(plan, style: TextStylesInter.textViewRegular19,),
+              Radio(value: widget.plan, groupValue: widget.selectedPlan, onChanged: (value) => widget.changePlan(value), activeColor: accentColor,),
+              Text(widget.plan, style: TextStylesInter.textViewRegular19,),
               10.pw,
-              if(offerText != null)
+              if(widget.offerText != null)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(7),
                   color: accentColor,
                 ),
-                child: Text(offerText!, style: TextStylesInter.textViewRegular10.copyWith(color: Colors.white),),
+                child: Text(widget.offerText!, style: TextStylesInter.textViewRegular10.copyWith(color: Colors.white),),
               ),
               Spacer(),
               Text(
-                  price,
+                  widget.price,
                   textAlign: TextAlign.center,
                   style: TextStylesInter.textViewSemiBold20.copyWith(fontSize: 18.sp)
               ),
