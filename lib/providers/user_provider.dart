@@ -11,6 +11,7 @@ class UserProvider with ChangeNotifier{
   String deviceToken = 'GuestNumber';
   String onboardingSubscriptionPlan = 'Yearly';
   String onboardingSubscriptionPlanPrice = '11.84';
+  String onboardingStore = 'Store';
 
   Future<Null> setOnboardingSubscriptionPlan(String plan, String price) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -18,6 +19,20 @@ class UserProvider with ChangeNotifier{
     prefs.setString("planPrice", price);
     onboardingSubscriptionPlan = plan;
     onboardingSubscriptionPlanPrice = price;
+    notifyListeners();
+  }
+
+  Future<Null> setOnboardingStore(String store) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("store", store);
+    onboardingStore = store;
+    notifyListeners();
+  }
+
+  Future<Null> getOnboardingStore() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var store = prefs.getString("store") ?? "Store";
+    onboardingStore = store;
     notifyListeners();
   }
 

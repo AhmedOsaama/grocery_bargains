@@ -40,5 +40,10 @@ const String premium2 = "$imgPath/premium2.png";
 const String premium3 = "$imgPath/premium3.png";
 const String premium4 = "$imgPath/premium4.png";
 const String premium5 = "$imgPath/premium5.png";
+const String premium1Dutch = "$imgPath/premium1_dutch.png";
+const String premium2Dutch = "$imgPath/premium2_dutch.png";
+const String premium3Dutch = "$imgPath/premium3_dutch.png";
+const String premium4Dutch = "$imgPath/premium4_dutch.png";
+const String premium5Dutch = "$imgPath/premium5_dutch.png";
 
 

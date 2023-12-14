@@ -576,6 +576,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       AppNavigator.pushReplacement(
           context: context, screen: OnBoardingScreen());
     } else {
+      await PurchaseApi.init();
       if(!PurchaseApi.isSubscribed){
         await AppNavigator.pushReplacement(context: context, screen: ConfirmSubscriptionScreen());
       }
@@ -597,6 +598,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'imageURL': photoURL,
         'phoneNumber': phoneNumber,
         'token': deviceToken,
+        "message_tokens": 30,
         'timestamp': DateTime.now().toUtc().toString(),
         'language': 'en',
         'status': "Hello! I'm using BargainB. Join the app",

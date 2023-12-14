@@ -1,5 +1,7 @@
 import 'package:bargainb/features/onboarding/presentation/views/confirm_subscription_screen.dart';
+import 'package:bargainb/features/profile/presentation/views/subscription_screen.dart';
 import 'package:bargainb/utils/assets_manager.dart';
+import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/subscription_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -96,7 +98,9 @@ class _SubscribeDialogState extends State<SubscribeDialog> {
                         onPressed: () async {
                           AppNavigator.pop(context: context);
                           pushNewScreen(context,
-                              screen: ConfirmSubscriptionScreen(), withNavBar: false);
+                              screen: SubscriptionScreen(), withNavBar: true);
+                          // pushNewScreen(context, screen: ConfirmSubscriptionScreen());
+
                         },
                         child: Text(
                           widget.buttonText,

@@ -1,3 +1,6 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/features/onboarding/presentation/views/confirm_subscription_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/onboarding_stepper.dart';
@@ -9,6 +12,7 @@ import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/button.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/register_screen.dart';
+import 'package:bargainb/view/screens/support_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -35,7 +39,7 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
     'Share with family & friends',
     'Exclusive access to the best deals',
     'Track your savings',
-    '20 messages per month (you can add more)'
+    '30 messages per month (you can add more)'
   ];
 
   List<String> subscriptionPlans = ['Yearly', 'Monthly'];
@@ -56,109 +60,161 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
       child: Scaffold(
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Column(
-            children: [
-              Text(
-                'Upgrade to BargainB Premium'.tr(),
-                style: TextStylesInter.textViewBold26,
-                textAlign: TextAlign.center,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Text(
+                  'Upgrade to BargainB Premium'.tr(),
+                  style: TextStylesInter.textViewBold26,
+                  textAlign: TextAlign.center,
+                ),
+                20.ph,
+                Text(
+                  'With Premium, get the ultimate grocery sidekick tailored to your needs and preferences'.tr(),
+                  style: TextStylesInter.textViewLight15,
+                  textAlign: TextAlign.center,
+                ),
+                15.ph,
+                Container(
+                  height: 250.h,
+                  child: ListView(
+                    physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                      children: premiumFeatures
+                          .map((featureText) => Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 7),
+                                child: Row(
+                                  children: [
+                                    SvgPicture.asset(checkmark_icon),
+                                    15.pw,
+                                    Text(
+                                      featureText.tr(),
+                                      style: TextStylesInter.textViewSemiBold14,
+                                    )
+                                  ],
+                                ),
+                              ))
+                          .toList()),
+                ),
+                Text(
+                  "Seize the opportunity to save big – these deals won't last long".tr(),
+                  style: TextStylesInter.textViewLight15,
+                  textAlign: TextAlign.center,
+                ),
+                15.ph,
+                FutureBuilder(
+                    future: offersFuture,
+                    builder: (ctx, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting)
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      var offerings = snapshot.data ?? [];
+                      final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
+                      var monthlyPrice = packages[0].storeProduct.priceString;
+                      var yearlyPrice = packages[1].storeProduct.priceString;
+                      try {
+                        if (Platform.isIOS) {
+                          var introductoryPrice = packages[1].storeProduct.introductoryPrice;
+                          if (introductoryPrice != null) yearlyPrice = introductoryPrice.priceString;
+                        }
+                        if (Platform.isAndroid) {
+                          var subscriptionOptions = packages[1].storeProduct.subscriptionOptions;
+                          if (subscriptionOptions!.first.introPhase != null)
+                            yearlyPrice = subscriptionOptions.first.introPhase!.price.formatted;
+                        }
+                      } catch (e) {
+                        print("Something went wrong while fetching offers: $e");
+                      }
+                      // log(offer.toString());
+                      return Column(
+                        children: [
+                          PlanContainer(
+                            selectedPlan: selectedPlan,
+                            changePlan: (value) {
+                              setState(() {
+                                selectedPlan = value!;
+                                selectedPlanPrice = yearlyPrice;
+                              });
+                            },
+                            price: yearlyPrice,
+                            plan: "Yearly",
+                            offerText: "You save 63%",
+                          ),
+                          PlanContainer(
+                            selectedPlan: selectedPlan,
+                            changePlan: (value) {
+                              setState(() {
+                                selectedPlan = value!;
+                                selectedPlanPrice = monthlyPrice;
+                              });
+                            },
+                            price: monthlyPrice,
+                            plan: "Monthly",
+                          ),
+                        ],
+                      );
+                    }),
 
-              ),
-              20.ph,
-              Text(
-                'With Premium, get the ultimate grocery sidekick tailored to your needs and preferences'.tr(),
-                style: TextStylesInter.textViewLight15,
-                textAlign: TextAlign.center,
-              ),
-              15.ph,
-              Container(
-                height: 250.h,
-                child: ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    children: premiumFeatures
-                        .map((featureText) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 7),
-                          child: Row(
-                                children: [
-                                  SvgPicture.asset(checkmark_icon),
-                                  15.pw,
-                                  Text(
-                                    featureText.tr(),
-                                    style: TextStylesInter.textViewSemiBold14,
-                                  )
-                                ],
-                              ),
-                        ))
-                        .toList()),
-              ),
-              Text("Seize the opportunity to save big – these deals won't last long".tr(), style: TextStylesInter.textViewLight15, textAlign: TextAlign.center,),
-              15.ph,
-              FutureBuilder(
-                future: offersFuture,
-                  builder: (ctx, snapshot) {
-                  if(snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator(),);
-                  var offerings = snapshot.data ?? [];
-                  final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
-                  print(packages);
-                  return Column(
-                    children: [
-                      PlanContainer(
-                        selectedPlan: selectedPlan, changePlan: (value){
-                        setState(() {
-                          selectedPlan = value!;
-                          selectedPlanPrice = packages[0].storeProduct.priceString;
-                        });
-                      },
-                        price: packages[0].storeProduct.priceString, plan: "Monthly".tr(),),
-                      PlanContainer(selectedPlan: selectedPlan, changePlan: (value){
-                        setState(() {
-                          selectedPlan = value!;
-                          selectedPlanPrice = packages[1].storeProduct.priceString;
-                        });
-                      },
-                        price: packages[1].storeProduct.priceString, plan: "Yearly".tr(), offerText: "You save 63%",),
-                    ],
-                  );
-                  }
-              ),
-              10.ph,
-              GenericButton(
-                width: double.infinity,
-                  borderRadius: BorderRadius.circular(10),
-                  color: brightOrange,
-                  height: 60,
-                  onPressed: (){
-                    finishOnboarding(context, RegisterScreen());
-                  }, child: Text("SUBSCRIBE NOW!".tr(), style: TextStylesInter.textViewSemiBold16,)),
-              15.ph,
-              Text('Subscription renew automatically. You can cancel in the store settings.'.tr(), style: TextStylesInter.textViewLight12, textAlign: TextAlign.center,),
-              15.ph,
-              GenericButton(
-                  width: double.infinity,
-                  borderRadius: BorderRadius.circular(10),
-                  color: Color(0xFFEBEBEB),
-                  height: 60,
-                  onPressed: (){
-                    finishOnboarding(context, MainScreen());
-                  }, child: Text("Use it for free, No Sidekick, No Sharing".tr(), style: TextStylesInter.textViewSemiBold16.copyWith(color: Color(0xFF7C7C7C),), textAlign: TextAlign.center,))
-            ],
+                10.ph,
+                GenericButton(
+                    width: double.infinity,
+                    borderRadius: BorderRadius.circular(10),
+                    color: brightOrange,
+                    height: 60,
+                    onPressed: () {
+                      if(selectedPlan != "None")
+                      finishOnboarding(context);
+                    },
+                    child: Text(
+                      "SUBSCRIBE NOW!".tr(),
+                      style: TextStylesInter.textViewSemiBold16,
+                    )),
+                15.ph,
+                Text(
+                  'Subscription renew automatically. You can cancel in the store settings.'.tr(),
+                  style: TextStylesInter.textViewLight12,
+                  textAlign: TextAlign.center,
+                ),
+                15.ph,
+                GenericButton(
+                    width: double.infinity,
+                    borderRadius: BorderRadius.circular(10),
+                    color: Color(0xFFEBEBEB),
+                    height: 60,
+                    onPressed: () {
+                      finishOnboarding(context, isSkipping: true);
+                    },
+                    child: Text(
+                      "Use it for free, No Assistant, No Sharing".tr(),
+                      style: TextStylesInter.textViewSemiBold16.copyWith(
+                        color: Color(0xFF7C7C7C),
+                      ),
+                      textAlign: TextAlign.center,
+                    ))
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  void finishOnboarding(BuildContext context, Widget screen) {
-      Provider.of<UserProvider>(context, listen: false).setOnboardingSubscriptionPlan(selectedPlan, selectedPlanPrice);
-    if(widget.isChangingPlan) {
-      AppNavigator.pushReplacement(context: context, screen: ConfirmSubscriptionScreen());
-      return;
-    }
+  Future<void> finishOnboarding(BuildContext context,{bool isSkipping = false}) async {
       Provider.of<UserProvider>(context, listen: false).turnOffFirstTime();
       Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
-      AppNavigator.pushReplacement(context: context, screen: screen);
+    if(isSkipping){
+      AppNavigator.pushReplacement(context: context, screen: MainScreen());
+    }else if (widget.isChangingPlan) {
+    await Provider.of<UserProvider>(context, listen: false).setOnboardingSubscriptionPlan(selectedPlan, selectedPlanPrice);
+      AppNavigator.pushReplacement(context: context, screen: ConfirmSubscriptionScreen());
+    }else{
+      Provider.of<UserProvider>(context, listen: false).setOnboardingSubscriptionPlan(selectedPlan, selectedPlanPrice);
+      AppNavigator.pushReplacement(context: context, screen: RegisterScreen());       //case: choosing plan before creating account
     }
+
   }
+}
 
 class PlanContainer extends StatefulWidget {
   final String plan;
@@ -166,7 +222,14 @@ class PlanContainer extends StatefulWidget {
   final Function changePlan;
   final String? offerText;
   final String price;
-  PlanContainer({Key? key, required this.selectedPlan, required this.changePlan, this.offerText, required this.price, required this.plan}) : super(key: key);
+  PlanContainer(
+      {Key? key,
+      required this.selectedPlan,
+      required this.changePlan,
+      this.offerText,
+      required this.price,
+      required this.plan})
+      : super(key: key);
 
   @override
   State<PlanContainer> createState() => _PlanContainerState();
@@ -175,7 +238,7 @@ class PlanContainer extends StatefulWidget {
 class _PlanContainerState extends State<PlanContainer> {
   @override
   Widget build(BuildContext context) {
-  Color accentColor = widget.plan == "Monthly".tr() ? Color(0xFFFF8A1F) : Color(0xFF3463ED);
+    Color accentColor = widget.plan == "Monthly" ? Color(0xFFFF8A1F) : Color(0xFF3463ED);
     return Stack(
       // alignment: Alignment.topCenter,
       children: [
@@ -189,24 +252,32 @@ class _PlanContainerState extends State<PlanContainer> {
           child: Row(
             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Radio(value: widget.plan, groupValue: widget.selectedPlan, onChanged: (value) => widget.changePlan(value), activeColor: accentColor,),
-              Text(widget.plan, style: TextStylesInter.textViewRegular19,),
-              10.pw,
-              if(widget.offerText != null)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(7),
-                  color: accentColor,
-                ),
-                child: Text(widget.offerText!, style: TextStylesInter.textViewRegular10.copyWith(color: Colors.white),),
+              Radio(
+                value: widget.plan,
+                groupValue: widget.selectedPlan,
+                onChanged: (value) => widget.changePlan(value),
+                activeColor: accentColor,
               ),
-              Spacer(),
               Text(
-                  widget.price,
-                  textAlign: TextAlign.center,
-                  style: TextStylesInter.textViewSemiBold20.copyWith(fontSize: 18.sp)
+                widget.plan.tr(),
+                style: TextStylesInter.textViewRegular19,
               ),
+              10.pw,
+              if (widget.offerText != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(7),
+                    color: accentColor,
+                  ),
+                  child: Text(
+                    widget.offerText!,
+                    style: TextStylesInter.textViewRegular10.copyWith(color: Colors.white),
+                  ),
+                ),
+              Spacer(),
+              Text(widget.price,
+                  textAlign: TextAlign.center, style: TextStylesInter.textViewSemiBold20.copyWith(fontSize: 18.sp)),
             ],
           ),
         ),
@@ -215,14 +286,13 @@ class _PlanContainerState extends State<PlanContainer> {
           height: 15,
           alignment: Alignment.center,
           margin: EdgeInsets.only(top: 4, left: 30),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              color: accentColor
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), color: accentColor),
+          child: Text(
+            "LIMITED TIME OFFER".tr(),
+            style: TextStyles.textViewBold7.copyWith(color: Colors.white),
           ),
-          child: Text("LIMITED TIME OFFER".tr(), style: TextStyles.textViewBold7.copyWith(color: Colors.white),),
         ),
       ],
     );
   }
 }
-

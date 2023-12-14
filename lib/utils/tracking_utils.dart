@@ -32,6 +32,8 @@ class TrackingUtils {
   static const chatlistNameKey = 'ChatlistName';
   static const filterTypeKey = 'Filter type';
   static const favouriteStoreKey = 'Favourite store';
+  static const subscriptionPlanKey = 'Subscription plan';
+  static const subscriptionPriceKey = 'Subscription price';
 
   static const buttonClickEvent = 'ButtonClick';
   static const pageViewEvent = 'PageView';
@@ -52,6 +54,7 @@ class TrackingUtils {
   static const filterUsedEvent = 'FilterUsed';
   static const formSubmittedEvent = 'FormSubmitted';
   static const chooseFavouriteStoreEvent = 'chooseFavouriteStore';
+  static const subscriptionEvent = 'subscriptionEvent';
 
 
 
@@ -337,6 +340,23 @@ class TrackingUtils {
         ..addCustomData(timeStampKey, timestamp)
         ..addCustomData(pageNameKey, pageName)
         ..addCustomData(favouriteStoreKey, favouriteStore)
+    );
+  }
+
+  void trackSubscriptionAction(String userId, String timestamp, String pageName, String plan, String price){
+    mixpanel.track(subscriptionEvent, properties: {
+      userIdKey : userId,
+      timeStampKey : timestamp,
+      pageNameKey : pageName,
+      subscriptionPlanKey : plan,
+      subscriptionPriceKey : price,
+    });
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(subscriptionEvent)
+      ..addCustomData(userIdKey, userId)
+        ..addCustomData(timeStampKey, timestamp)
+        ..addCustomData(pageNameKey, pageName)
+        ..addCustomData(subscriptionPlanKey, plan)
+        ..addCustomData(subscriptionPriceKey, price)
     );
   }
 }

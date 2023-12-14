@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:bargainb/features/onboarding/presentation/views/confirm_subscription_screen.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
+import 'package:bargainb/features/profile/presentation/views/subscription_screen.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/screens/subscription_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -74,7 +75,7 @@ class ProfileSettingsWidget extends StatelessWidget {
           ),
           settingText: "Subscription",
           onTap: () {
-            pushNewScreen(context, screen: ConfirmSubscriptionScreen());
+            pushNewScreen(context, screen: SubscriptionScreen());
             TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
                 "Open Subscription screen", DateTime.now().toUtc().toString(), "Profile screen");
           },

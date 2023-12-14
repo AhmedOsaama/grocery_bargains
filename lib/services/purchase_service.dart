@@ -43,21 +43,14 @@ class PurchaseApi{
 
   static Future<void> checkSubscriptionStatus() async {
    var value = await Purchases.getCustomerInfo();
-   log('subscription status: $value');
    try {
      if (value.entitlements.all['all_analysis_features']!.isActive) {
        var productIdentifier = value.entitlements.all['all_analysis_features']!.productIdentifier;
-       print("period" + subscriptionPeriod);
-       print("price" + subscriptionPrice);
-       print("is subscribed" + isSubscribed.toString());
        var product = await getSubscriptionProduct(productIdentifier);
        subscriptionPeriod = getSubscriptionPeriod(productIdentifier);
        subscriptionPrice = getSubscriptionPriceString(product);
        subscriptionPricePerMonth = getPricePerMonth(subscriptionPeriod, getSubscriptionPrice(product));
        isSubscribed = true;
-       print("period" + subscriptionPeriod);
-       print("price" + subscriptionPrice);
-       print("is subscribed" + isSubscribed.toString());
      }
    }catch(e){
      log("ERROR IN SUBSCRIPTION: $e");
@@ -67,12 +60,6 @@ class PurchaseApi{
 
   static Future<StoreProduct> getSubscriptionProduct(String productIdentifier) async {
     print("Product identifier: $productIdentifier");
-    // if(productIdentifier == "bargainb_1599_l" || productIdentifier == "bargain_lifetime_1599"){
-    //   var products = await Purchases.getProducts([productIdentifier], productCategory: ProductCategory.nonSubscription);
-    //   print("Products: ${products}");
-    //   var product = products.first;
-    //   return product;
-    // }
     var products = await Purchases.getProducts([productIdentifier]);
     print("Products: ${products}");
     var product = products.first;

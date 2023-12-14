@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/features/chatlists/presentation/views/widgets/chatlist_overview_widget.dart';
 import 'package:bargainb/features/chatlists/presentation/views/widgets/first_time_empty_list_widget.dart';
 import 'package:bargainb/features/chatlists/presentation/views/widgets/quick_item_text_field.dart';
 import 'package:bargainb/models/product_category.dart';
+import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/down_triangle_painter.dart';
 import 'package:bargainb/utils/tooltips_keys.dart';
@@ -125,6 +127,7 @@ class _ChatViewState extends State<ChatView> {
   @override
   void initState() {
     getFirstTimeChatlist();
+    Provider.of<UserProvider>(context,listen: false).getOnboardingStore();
     final fbm = FirebaseMessaging.instance;
     fbm.requestPermission();
     fbm.subscribeToTopic(widget.listId);
@@ -242,6 +245,8 @@ class _ChatViewState extends State<ChatView> {
 
   StreamBuilder<QuerySnapshot<Object?>> buildChatView(List<QueryDocumentSnapshot<Object?>> items, BuildContext showcaseContext) {
     var tutorialProvider = Provider.of<TutorialProvider>(context);
+    var userProvider = Provider.of<UserProvider>(context);
+    log(showcaseContext.toString());
     return StreamBuilder<QuerySnapshot>(
         stream: chatStream,
         builder: (context, snapshot) {
@@ -320,11 +325,10 @@ class _ChatViewState extends State<ChatView> {
                                 "Let's activate your AI sidekick!"
                                     " Invite friends and family to chat with your BargainB sidekick."
                                     " Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals."
-                                    " Type @BB Show me the Top Deal from {preferred store}".tr(),
+                                    " Type @BB Show me the Top Deal from ".tr() + "${userProvider.onboardingStore}",
                                 // maxLines: 4,
                                 style: TextStyles.textViewRegular13.copyWith(color: white),
                               ),
-                              SkipTutorialButton(tutorialProvider: tutorialProvider, context: showcaseContext)
                             ]),
                       ),
                       Container(
@@ -345,8 +349,6 @@ class _ChatViewState extends State<ChatView> {
                   padding: const EdgeInsets.all(10),
                   child: Row(
                     children: [
-                      SvgPicture.asset(chatbot),
-                      5.pw,
                       Expanded(
                         child: GenericField(
                           controller: messageController,
@@ -355,11 +357,11 @@ class _ChatViewState extends State<ChatView> {
                           contentPadding: EdgeInsets.only(left: 10),
                           borderRaduis: 99999,
                           onSubmitted: (_) async {
-                            submitMessage(context);
+                            await submitMessage(context);
+                              ShowCaseWidget.of(showcaseContext).dismiss();
                             if(tutorialProvider.isTutorialRunning){
-                              ShowCaseWidget.of(context).dismiss();
                               await Future.delayed(Duration(seconds: 3));
-                              tutorialProvider.stopTutorial(context);
+                              tutorialProvider.stopTutorial(showcaseContext);
                             }
                           },
                         ),
@@ -389,15 +391,9 @@ class _ChatViewState extends State<ChatView> {
       messageController.clear();
       await Provider.of<ChatlistsProvider>(context, listen: false)
           .sendMessage(text, widget.listId, widget.chatlistName, "messages");
-      // var chatbotResponse = await get(Uri.parse(
-      //     'https://us-central1-discountly.cloudfunctions.net/getChatbot?question=${text}&listId=${widget.listId}&collectionName=messages'));
-      // setState(() {
-      //   // chatStream = FirebaseFirestore.instance
-      //   //     .collection("/lists/${widget.listId}/bot_messages")
-      //   //     .orderBy('createdAt', descending: true)
-      //   //     .snapshots();
-      //   isBotChat = true;
-      // });
+      //TODO: include user id in request
+      get(Uri.parse(
+          'https://us-central1-discountly.cloudfunctions.net/getChatbot?question=${text}&listId=${widget.listId}&collectionName=messages'));
     } else {
       messageController.clear();
       FirebaseMessaging.instance.unsubscribeFromTopic(widget.listId);
@@ -407,31 +403,6 @@ class _ChatViewState extends State<ChatView> {
         FirebaseMessaging.instance.subscribeToTopic(widget.listId);
       });
     }
-    // if (isBotChat) {
-
-    // var decodedResponse = jsonDecode(chatbotResponse.body);
-    // print(decodedResponse);
-    // var response = await post(Uri.parse('https://www.chatbase.co/api/v1/chat'),
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //       'Authorization': 'Bearer 5b0c8ad5-1ade-40e0-b757-d8c6d36cac86'
-    //     },
-    //     body: jsonEncode({
-    //       'messages': [
-    //         // { 'content': 'How can I help you?', 'role': 'assistant' },
-    //         { 'content': '${text}', 'role': 'user' }
-    //       ],
-    //       'chatbotId': 'gpTwLMcc0OLmFzISyB5nQ',
-    //       'stream': false,
-    //       'model': 'gpt-3.5-turbo',
-    //       'temperature': 0
-    // }));
-    // var decodedResponse = jsonDecode(response.body);
-    // if(response.statusCode == 200) print('CHATBOT RESPONSE: ${response.body}');
-    // else print(response);
-    // Provider.of<ChatlistsProvider>(context, listen: false)
-    //     .sendMessage(decodedResponse['text'], widget.listId, widget.chatlistName, "bot_messages");
-    // }
   }
 
 

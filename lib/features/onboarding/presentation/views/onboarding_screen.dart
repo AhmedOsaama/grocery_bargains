@@ -1,4 +1,5 @@
 
+import 'package:audioplayers/audioplayers.dart';
 import 'package:bargainb/features/onboarding/presentation/views/onboarding_subscription_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/fifth_onboarding.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/first_onboarding.dart';
@@ -6,6 +7,7 @@ import 'package:bargainb/features/onboarding/presentation/views/widgets/fourth_o
 import 'package:bargainb/features/onboarding/presentation/views/widgets/second_onboarding.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/sixth_onboarding.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/third_onboarding.dart';
+import 'package:bargainb/utils/sounds_manager.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +27,7 @@ class OnBoardingScreen extends StatefulWidget {
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
   double pageNumber = 0;
   int _totalPages = 6;
+  bool showFAB = true;
   final PageController _pageController = PageController();
 
 
@@ -34,7 +37,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     return SafeArea(
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        floatingActionButton: Padding(
+        floatingActionButton: showFAB ? Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child: GenericButton(
             onPressed: () {
@@ -52,13 +55,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
             ),
             color: brightOrange,
           ),
-        ),
+        ) : null,                     //controlled by second onboarding screen
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(
+              Flexible(
                 child: PageView(
                   controller: _pageController,
                   onPageChanged: (page) {
@@ -69,7 +72,15 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   physics: getPhysics(),
                   children: [
                     FirstOnboarding(),
-                    SecondOnboarding(),
+                    SecondOnboarding(
+                      showFAB: (){
+                        setState(() {
+                        showFAB = true;
+                        });
+                      },
+                      disableFAB: (){
+                        showFAB = false;
+                    },),
                     ThirdOnboarding(goToNextPage: goToNextPage),
                     FourthOnboarding(),
                     FifthOnboarding(),

@@ -323,7 +323,7 @@
   "Share with family & friends" : "Deel met familie en vrienden",
   "Exclusive access to the best deals" : "Exclusieve toegang tot de beste deals",
   "Track your savings" : "Volg uw besparingen",
-  "20 messages per month (you can add more)" : "30 berichten per maand",
+  "30 messages per month (you can add more)" : "30 berichten per maand",
 
   "Review and Confirm Your Subscription": "Controleer en bevestig je abonnement",
   "No Ads": "Geen advertenties",
@@ -345,6 +345,14 @@
   "Collaborate with your loved ones, share grocery lists, and  your AI sidekick": "Werk samen met je vrienden, deel boodschappenlijstjes en je AI-sidekick",
   "\nLet's activate your AI sidekick! Invite friends and family to chat with your BargainB sidekick. Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals. Type @BB Show me the Top Deal from {preferred store}": "Laten we je AI-sidekick activeren! Nodig vrienden en familie uit om te chatten met je BargainB-assistent. Typ @BB of @bargainb om vragen te stellen, persoonlijk advies te krijgen en de beste deals te vinden. Type bijvoorbeeld “@BB Laat mij de topdeal van {voorkeurswinkel} zien”. ",
   "Grocery shopping just got smarter!": "Boodschappen doen is nu nog slimmer!",
-  "Assistant": "Assistent"
+  "Assistant": "Assistent",
+  "get an Assistant for 1 year": " KRIJG EEN AI ASSISTENT VOOR 1 JAAR",
+  "get an Assistant": "KRIJG EEN AI ASSISTENT ",
+  "Pay": "BETAAL",
+  "(e.g., findind discounts)": "(de prijzen stijgen te snel en ik kan de juiste producten niet vinden.)",
+  "Select Plan": "Selecteer Abonnement",
+  "Payment": "Betaling",
+  "Setup": "Instellen",
+  "Start Saving": "Start met sparen"
 
 }

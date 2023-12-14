@@ -328,7 +328,7 @@
   "Upgrade to BargainB Premium": "Upgrade to BargainB Premium",
   "With Premium, get the ultimate grocery sidekick tailored to your needs and preferences": "With Premium, get the ultimate grocery sidekick tailored to your needs and preferences",
   "Seize the opportunity to save big – these deals won't last long": "Seize the opportunity to save big – these deals won't last long",
-  "Use it for free, No Sidekick, No Sharing": "Use it for free, No Sidekick, No Sharing",
+  "Use it for free, No Assistant, No Sharing": "Use it for free, No Assistant, No Sharing",
   "Subscription renew automatically. You can cancel in the store settings.": "Subscription renew automatically. You can cancel in the store settings.",
   "Monthly": "Monthly",
   "Yearly": "Yearly",
@@ -339,7 +339,7 @@
   "Share with family & friends" : "Share with family & friends",
   "Exclusive access to the best deals" : "Exclusive access to the best deals",
   "Track your savings" : "Track your savings",
-  "20 messages per month (you can add more)" : "20 messages per month (you can add more)",
+  "30 messages per month (you can add more)" : "30 messages per month (you can add more)",
 
   "Review and Confirm Your Subscription": "Review and Confirm Your Subscription",
   "No Ads": "No Ads",
@@ -361,6 +361,15 @@
   "Collaborate with your loved ones, share grocery lists, and  your AI sidekick": "Collaborate with your loved ones, share grocery lists, and  your AI sidekick",
   "\nLet's activate your AI sidekick! Invite friends and family to chat with your BargainB sidekick. Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals. Type @BB Show me the Top Deal from {preferred store}": "\nLet's activate your AI sidekick! Invite friends and family to chat with your BargainB sidekick. Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals. Type @BB Show me the Top Deal from {preferred store}",
   "Grocery shopping just got smarter!": "Grocery shopping just got smarter!",
-  "Assistant": "Assistant"
+  "Assistant": "Assistant",
+  "get an Assistant for 1 year": " get an Assistant for 1 year",
+  "get an Assistant": "get an Assistant ",
+  "Pay": "Pay",
+  "(e.g., findind discounts)": "(e.g., findind discounts)",
+  "Select Plan": "Select Plan",
+  "Payment": "Payment",
+  "Setup": "Setup",
+  "Start Saving": "Start Saving"
+
 
 }

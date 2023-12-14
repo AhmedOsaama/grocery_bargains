@@ -1,11 +1,15 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:bargainb/core/utils/bot_service.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
+import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/utils/icons_manager.dart';
+import 'package:bargainb/utils/sounds_manager.dart';
 import 'package:bargainb/view/widgets/message_bubble.dart';
 import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../../utils/app_colors.dart';
 import '../../../../../utils/assets_manager.dart';
@@ -13,7 +17,9 @@ import '../../../../../utils/style_utils.dart';
 import '../../../../../utils/tracking_utils.dart';
 
 class SecondOnboarding extends StatefulWidget {
-  const SecondOnboarding({Key? key}) : super(key: key);
+  final Function disableFAB;
+  final Function showFAB;
+  const SecondOnboarding({Key? key, required this.disableFAB, required this.showFAB}) : super(key: key);
 
   @override
   State<SecondOnboarding> createState() => _SecondOnboardingState();
@@ -21,6 +27,10 @@ class SecondOnboarding extends StatefulWidget {
 
 class _SecondOnboardingState extends State<SecondOnboarding> {
   String _selectedStore = "None";
+  late Future botFuture;
+  late Future userMessageFuture;
+  final player = AudioPlayer();
+
 
   final Map stores = {
     "Albert Heijn": albert,
@@ -35,129 +45,153 @@ class _SecondOnboardingState extends State<SecondOnboarding> {
 
   @override
   void initState() {
+    widget.disableFAB();
+    botFuture = BotService(Dio()).post(message: '@BB show me the top deals from $_selectedStore');
+    userMessageFuture = Future.delayed(Duration(milliseconds: 500));
     TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), "Second onboarding screen");
     super.initState();
   }
 
+  Future<void> playSound() async {
+    await player.play(AssetSource(messageSound));
+    // player.stop();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          "Let’s show you".tr(),
-          style: TextStylesInter.textViewBold26,
-        ),
-        10.ph,
-        Text(
-          "What’s your preferred grocery store?".tr(),
-          style: TextStylesInter.textViewSemiBold16,
-        ),
-        10.ph,
-        AnimatedOpacity(
-          opacity: 1,
-          duration: Duration(seconds: 1),
-          child: Text(
-            "Choose one".tr(),
-            style: TextStylesInter.textViewLight15,
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        children: [
+          Text(
+            "Let’s show you".tr(),
+            style: TextStylesInter.textViewBold26,
           ),
-        ),
-        40.ph,
-        Container(
-          width: 324.w,
-          height: 130.h,
-          child: Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 10,
-            runSpacing: 10,
-            children: stores.entries
-                .map((entry) => GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedStore = entry.key;
-                });
-                TrackingUtils().trackFavouriteStores("Guest", DateTime.now().toUtc().toString(), "Second onboarding screen", _selectedStore);
-              },
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(5),
-                    border: _selectedStore == entry.key ? Border.all(color: Color(0xFF3463ED)) : null,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0x19000000),
-                        blurRadius: 15,
-                        offset: Offset(0, 4),
-                        spreadRadius: 0,
-                      )
-                    ]),
-                child: Image.asset(
-                  entry.value,
-                  width: 28,
-                  height: 28,
+          10.ph,
+          Text(
+            "What’s your preferred grocery store?".tr(),
+            style: TextStylesInter.textViewSemiBold16,
+          ),
+          10.ph,
+          AnimatedOpacity(
+            opacity: 1,
+            duration: Duration(seconds: 1),
+            child: Text(
+              "Choose one".tr(),
+              style: TextStylesInter.textViewLight15,
+            ),
+          ),
+          40.ph,
+          Container(
+            width: 324.w,
+            height: 130.h,
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 10,
+              runSpacing: 10,
+              children: stores.entries
+                  .map((entry) => GestureDetector(
+                onTap: () async {
+                  setState(() {
+                    _selectedStore = entry.key;
+                  botFuture = BotService(Dio()).post(message: '@BB show me the top deals from $_selectedStore');
+                  });
+                  Provider.of<UserProvider>(context, listen: false).setOnboardingStore(_selectedStore);
+                  botFuture.whenComplete(() => playSound());
+                  userMessageFuture.whenComplete(() => playSound());
+                  TrackingUtils().trackFavouriteStores("Guest", DateTime.now().toUtc().toString(), "Second onboarding screen", _selectedStore);
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5),
+                      border: _selectedStore == entry.key ? Border.all(color: Color(0xFF3463ED)) : null,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(0x19000000),
+                          blurRadius: 15,
+                          offset: Offset(0, 4),
+                          spreadRadius: 0,
+                        )
+                      ]),
+                  child: Image.asset(
+                    entry.value,
+                    width: 28,
+                    height: 28,
+                  ),
                 ),
-              ),
-            ))
-                .toList(),
+              ))
+                  .toList(),
+            ),
           ),
-        ),
-        50.ph,
-        _selectedStore == "None" ? Image.asset(onboarding2) : FutureBuilder(
-          future: BotService(Dio()).post(message: '@BB show me the top deals from $_selectedStore'),
-          builder: (context, snapshot) {
-            // if(snapshot.connectionState == ConnectionState.waiting) return Center(child: CircularProgressIndicator(),);
-            var loading = snapshot.connectionState == ConnectionState.waiting;
-            Map botResponse = snapshot.data ?? {};
-            var message = loading ? "" : (botResponse.containsKey('text') ? botResponse['text'] : "");
-            return Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Container(
-                    height: loading ? 100.h : 70.h,
-                    child: Stack(
-                      alignment: Alignment.centerRight,
-                      children: [
-                        AnimatedPositioned(
+          50.ph,
+          if(_selectedStore != "None")
+            FutureBuilder(
+              future: userMessageFuture,
+              builder: (context, snapshot) {
+                var loading = snapshot.connectionState == ConnectionState.waiting;
+                return Container(
+                  height: loading ? 0.h : 70.h,
+                  child: Stack(
+                    alignment: Alignment.centerRight,
+                    children: [
+                      AnimatedPositioned(
+                        duration: Duration(milliseconds: 500),
+                        top: loading ? 50 : 0,
+                        child: AnimatedOpacity(
                           duration: Duration(milliseconds: 500),
-                          top: loading ? 50 : 0,
-                          child: AnimatedOpacity(
-                            duration: Duration(milliseconds: 500),
-                            opacity: loading ? 0 : 1,
-                            child: SimpleMessageBubble(message: '@BB show me the top deals from $_selectedStore', isBot: false,),
-                          ),
+                          opacity: loading ? 0 : 1,
+                          child: SimpleMessageBubble(message: '@BB show me the top deals from $_selectedStore', isBot: false,),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  20.ph,
-                  Container(
-                    height: loading ? 300.h : 280.h,
-                    child: Stack(
-                      alignment: Alignment.centerRight,
-                      children: [
-                        AnimatedPositioned(
-                          duration: Duration(milliseconds: 500),
-                          top: loading ? 50 : 0,
-                          child: AnimatedOpacity(
-                            duration: Duration(milliseconds: 500),
-                            opacity: loading ? 0 : 1,
-                            child: SimpleMessageBubble(message: message, isBot: true,),
-                          ),
+                );
+              }
+            ),
+
+          _selectedStore == "None" ? Image.asset(onboarding2) : FutureBuilder(
+              future: botFuture,
+              builder: (context, snapshot) {
+                var loading = snapshot.connectionState == ConnectionState.waiting;
+                Map botResponse = snapshot.data ?? {};
+                var message = loading ? "" : (botResponse.containsKey('text') ? botResponse['text'] : "");
+                if(!loading)
+                  Future.delayed(Duration(seconds: 2), (){
+                  widget.showFAB();
+                });
+                // player.play(AssetSource(messageSound));
+                return Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      20.ph,
+                      Container(
+                        height: loading ? 200.h : 1500.h,
+                        child: Stack(
+                          alignment: Alignment.centerLeft,
+                          children: [
+                            AnimatedPositioned(
+                              duration: Duration(milliseconds: 500),
+                              top: loading ? 50 : 0,
+                              child: AnimatedOpacity(
+                                duration: Duration(milliseconds: 500),
+                                opacity: loading ? 0 : 1,
+                                child: SimpleMessageBubble(message: message, isBot: true,),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-
-
-                  // Text('@BB show me the top deals from $_selectedStore', style: TextStylesInter.textViewRegular14,),
-                ],
-              ),
-            );
-          }
-        )
-      ],
+                );
+              }
+          )
+        ],
+      ),
     );
   }
 }
@@ -201,7 +235,8 @@ class SimpleMessageBubble extends StatelessWidget {
             message,
             style: TextStyles.textViewRegular15.copyWith(color: isBot ? Color(0xFF868889) : Colors.white ),
             softWrap: true,
-            textAlign: isBot ? TextAlign.right : TextAlign.left,
+            // textAlign: isBot ? TextAlign.right : TextAlign.left,
+            textAlign: TextAlign.left,
           ),
         ),
       ],
