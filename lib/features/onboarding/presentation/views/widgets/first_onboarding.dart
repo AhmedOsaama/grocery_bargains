@@ -38,14 +38,14 @@ class _FirstOnboardingState extends State<FirstOnboarding> {
         Text(
           "Tired of overpaying for groceries? Feeling overwhelmed by the endless aisles? Let BargainB be your sidekick to smarter, more affordable grocery shopping."
               .tr(),
-          style: TextStylesInter.textViewLight12,
+          style: TextStylesInter.textViewLight13,
           textAlign: TextAlign.center,
         ),
         14.ph,
         Text(
           'Our smart app helps you find the best deals, discover delicious recipes, and streamline your shopping experience, saving you every month'
               .tr(),
-          style: TextStyles.textViewLight12,
+          style: TextStylesInter.textViewLight13,
           textAlign: TextAlign.center,
         ),
         60.ph,

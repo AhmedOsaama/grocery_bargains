@@ -10,16 +10,6 @@ import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/down_triangle_painter.dart';
 import 'package:bargainb/utils/tooltips_keys.dart';
-import 'package:bargainb/view/components/button.dart';
-import 'package:bargainb/view/components/close_button.dart';
-import 'package:bargainb/view/components/search_delegate.dart';
-import 'package:bargainb/view/screens/category_screen.dart';
-import 'package:bargainb/view/screens/home_screen.dart';
-import 'package:bargainb/view/screens/main_screen.dart';
-import 'package:bargainb/view/widgets/chatlist_item.dart';
-import 'package:bargainb/view/widgets/product_dialog.dart';
-import 'package:bargainb/view/widgets/quantity_counter.dart';
-import 'package:bargainb/view/widgets/size_container.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -32,7 +22,6 @@ import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
@@ -89,25 +78,8 @@ class _ChatViewState extends State<ChatView> {
   List dirkItems = [];
   List quicklyAddedItems = [];
   TextEditingController quickItemController = TextEditingController();
-  bool isFirstTimeChatlist = false;
   var pageNumber = 0;
 
-  Future getFirstTimeChatlist() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    // setState(() {
-    //   isFirstTimeChatlist = true;
-    // });
-    if (prefs.containsKey('firstTimeChatlist')) {
-      setState(() {
-        isFirstTimeChatlist = prefs.getBool("firstTimeChatlist") ?? true;
-      });
-    } else {
-      prefs.setBool('firstTimeChatlist', true);
-      setState(() {
-        isFirstTimeChatlist = true;
-      });
-    }
-  }
 
   Future turnOffFirstTimeChatlist() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -120,13 +92,11 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   void dispose() {
-    if (isFirstTimeChatlist) turnOffFirstTimeChatlist();
     super.dispose();
   }
 
   @override
   void initState() {
-    getFirstTimeChatlist();
     Provider.of<UserProvider>(context,listen: false).getOnboardingStore();
     final fbm = FirebaseMessaging.instance;
     fbm.requestPermission();
@@ -186,14 +156,10 @@ class _ChatViewState extends State<ChatView> {
                 children: [
                   ChatlistOverviewWidget(
                     items: items,
-                    isFirstTimeChatlist: isFirstTimeChatlist,
                     pageController: pageController,
                     pageNumber: pageNumber,
                   ),
                   Builder(builder: (ctx) {
-                    if (isFirstTimeChatlist && items.isEmpty) return buildFirstTimeEmptyListWidget();
-                    if (!isFirstTimeChatlist && items.isEmpty) //not first time case and items are empty
-                      return buildEmptyListWidget();
                     return buildItemList(context, items);      //default case: items are not empty
                   }),
                 ],
@@ -258,7 +224,6 @@ class _ChatViewState extends State<ChatView> {
             children: [
               ChatlistOverviewWidget(
                 items: items,
-                isFirstTimeChatlist: isFirstTimeChatlist,
                 pageController: pageController,
                 pageNumber: pageNumber,
               ),
@@ -358,11 +323,7 @@ class _ChatViewState extends State<ChatView> {
                           borderRaduis: 99999,
                           onSubmitted: (_) async {
                             await submitMessage(context);
-                              ShowCaseWidget.of(showcaseContext).dismiss();
-                            if(tutorialProvider.isTutorialRunning){
-                              await Future.delayed(Duration(seconds: 3));
-                              tutorialProvider.stopTutorial(showcaseContext);
-                            }
+                            finishTutorial(tutorialProvider, showcaseContext);
                           },
                         ),
                       ),
@@ -370,7 +331,7 @@ class _ChatViewState extends State<ChatView> {
                       GestureDetector(
                         onTap: () async {
                           await submitMessage(context);
-                          FocusScope.of(context).unfocus();
+                          finishTutorial(tutorialProvider, showcaseContext);
                         },
                         child: SvgPicture.asset(
                           send,
@@ -383,6 +344,14 @@ class _ChatViewState extends State<ChatView> {
             ],
           );
         });
+  }
+
+  Future<void> finishTutorial(TutorialProvider tutorialProvider, BuildContext showcaseContext) async {
+    if(tutorialProvider.isTutorialRunning){
+      ShowCaseWidget.of(showcaseContext).dismiss();
+      await Future.delayed(Duration(seconds: 3));
+      tutorialProvider.stopTutorial(showcaseContext);
+    }
   }
 
   Future<void> submitMessage(BuildContext context) async {

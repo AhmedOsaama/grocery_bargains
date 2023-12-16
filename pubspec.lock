@@ -590,14 +590,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.12.0"
-  flutter_layout_grid:
-    dependency: "direct main"
-    description:
-      name: flutter_layout_grid
-      sha256: "31728ce6e9c8eaa48f8a3f928a7c308da4b74ab867aec2dc5b80b0c9f9b79d0d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.3"
   flutter_localizations:
     dependency: transitive
     description: flutter
@@ -611,14 +603,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.14"
-  flutter_reorderable_list:
-    dependency: "direct main"
-    description:
-      name: flutter_reorderable_list
-      sha256: "0400ef34fa00b7cac69f71efc92d7e49727f425bc1080180ebe70bf47618afe0"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.3.1"
   flutter_screenutil:
     dependency: "direct main"
     description:
@@ -627,14 +611,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.7.0"
-  flutter_staggered_grid_view:
-    dependency: "direct main"
-    description:
-      name: flutter_staggered_grid_view
-      sha256: "1312314293acceb65b92754298754801b0e1f26a1845833b740b30415bbbcf07"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.6.2"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -893,14 +869,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.2"
-  overlay_tooltip:
-    dependency: "direct main"
-    description:
-      name: overlay_tooltip
-      sha256: a41eaf4abce6dac5044875122afc0f015698ee4ef9b5c1d811a9fbe0f20a4ebb
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.1"
   package_info_plus:
     dependency: transitive
     description:
@@ -1258,14 +1226,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
-  sliding_up_panel:
-    dependency: "direct main"
-    description:
-      name: sliding_up_panel
-      sha256: "578e90956a6212d1e406373250b2436a0f3afece29aee3c24c8360094d6cf968"
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0+1"
   sliver_tools:
     dependency: transitive
     description:

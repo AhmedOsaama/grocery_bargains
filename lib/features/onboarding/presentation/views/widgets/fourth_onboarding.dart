@@ -58,7 +58,7 @@ class _FourthOnboardingState extends State<FourthOnboarding> {
                 builder: (context, snapshot) {
                   var loading = snapshot.connectionState == ConnectionState.waiting;
                   return Container(
-                    height: loading ? 0.h : 100.h,
+                    height: loading ? 0.h : 130.h,
                     child: Stack(
                       alignment: Alignment.centerRight,
                       children: [
@@ -68,7 +68,7 @@ class _FourthOnboardingState extends State<FourthOnboarding> {
                           child: AnimatedOpacity(
                             duration: Duration(milliseconds: 500),
                             opacity: loading ? 0 : 1,
-                            child: Image.asset(onboarding_bubble1, width: 270.w,),
+                            child: Image.asset(context.locale.languageCode == "en" ? onboarding_bubble1 : onboarding_bubble1_dutch, width: 270.w,),
                           ),
                         ),
                       ],
@@ -85,7 +85,6 @@ class _FourthOnboardingState extends State<FourthOnboarding> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      20.ph,
                       Container(
                         height: loading ? 200.h : 800.h,
                         child: Stack(
@@ -97,7 +96,7 @@ class _FourthOnboardingState extends State<FourthOnboarding> {
                               child: AnimatedOpacity(
                                 duration: Duration(milliseconds: 500),
                                 opacity: loading ? 0 : 1,
-                                child: Image.asset(onboarding_bubble2, width: 330.w,),
+                                child: Image.asset(context.locale.languageCode == "en" ? onboarding_bubble2 : onboarding_bubble2_dutch, width: 330.w,),
                               ),
                             ),
                           ],

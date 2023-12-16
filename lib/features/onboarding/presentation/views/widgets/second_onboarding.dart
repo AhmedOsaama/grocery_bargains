@@ -233,7 +233,7 @@ class SimpleMessageBubble extends StatelessWidget {
           ),
           child: Text(
             message,
-            style: TextStyles.textViewRegular15.copyWith(color: isBot ? Color(0xFF868889) : Colors.white ),
+            style: TextStyles.textViewRegular16.copyWith(color: isBot ? Color(0xFF868889) : Colors.white ),
             softWrap: true,
             // textAlign: isBot ? TextAlign.right : TextAlign.left,
             textAlign: TextAlign.left,

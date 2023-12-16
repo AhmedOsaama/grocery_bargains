@@ -107,7 +107,12 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     );
   }
 
-  ScrollPhysics getPhysics() => pageNumber == 2 ? const NeverScrollableScrollPhysics() : const BouncingScrollPhysics();
+  ScrollPhysics getPhysics() {
+    if(pageNumber == 2 || pageNumber == 1)
+      return NeverScrollableScrollPhysics();
+    return BouncingScrollPhysics();
+    // return pageNumber == 2 ? const NeverScrollableScrollPhysics() : const BouncingScrollPhysics();
+  }
 
   void goToNextPage() {
     if (pageNumber < _totalPages - 1) {

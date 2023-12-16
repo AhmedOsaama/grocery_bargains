@@ -12,11 +12,10 @@ import '../../../../../utils/utils.dart';
 
 class ChatlistOverviewWidget extends StatefulWidget {
   ChatlistOverviewWidget(
-      {Key? key,required this.pageNumber, required this.items, required this.isFirstTimeChatlist, required this.pageController})
+      {Key? key,required this.pageNumber, required this.items, required this.pageController})
       : super(key: key);
 
   List items = [];
-  bool isFirstTimeChatlist = false;
   late PageController pageController;
   int pageNumber;
 
@@ -43,7 +42,7 @@ class _ChatlistOverviewWidgetState extends State<ChatlistOverviewWidget> {
               style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
               children: [
                 TextSpan(
-                    text: widget.isFirstTimeChatlist ? "9 items" : " ${widget.items.length} ${LocaleKeys.items.tr()}",
+                    text: " ${widget.items.length} ${LocaleKeys.items.tr()}",
                     style: TextStylesInter.textViewBold12.copyWith(color: blackSecondary))
               ])),
           15.pw,
@@ -52,7 +51,7 @@ class _ChatlistOverviewWidgetState extends State<ChatlistOverviewWidget> {
               style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
               children: [
                 TextSpan(
-                    text: widget.isFirstTimeChatlist ? "€17.32" : " €${getTotalListPrice(widget.items)}",
+                    text: " €${getTotalListPrice(widget.items)}",
                     style: TextStylesInter.textViewBold12.copyWith(color: mainPurple))
               ])),
           15.pw,
@@ -61,7 +60,7 @@ class _ChatlistOverviewWidgetState extends State<ChatlistOverviewWidget> {
               style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
               children: [
                 TextSpan(
-                    text: widget.isFirstTimeChatlist ? "€4.32" : " €${getTotalListSavings(widget.items)}",
+                    text: " €${getTotalListSavings(widget.items)}",
                     style: TextStylesInter.textViewBold12.copyWith(color: greenSecondary))
               ])),
           Spacer(),

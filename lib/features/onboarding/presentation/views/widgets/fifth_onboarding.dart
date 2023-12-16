@@ -55,7 +55,7 @@ class _FifthOnboardingState extends State<FifthOnboarding> {
               builder: (context, snapshot) {
                 var loading = snapshot.connectionState == ConnectionState.waiting;
                 return Container(
-                  height: loading ? 0.h : 100.h,
+                  height: loading ? 0.h : 130.h,
                   child: Stack(
                     alignment: Alignment.centerRight,
                     children: [
@@ -65,7 +65,7 @@ class _FifthOnboardingState extends State<FifthOnboarding> {
                         child: AnimatedOpacity(
                           duration: Duration(milliseconds: 500),
                           opacity: loading ? 0 : 1,
-                          child: Image.asset(onboarding_bubble3, width: 270.w,),
+                          child: Image.asset(context.locale.languageCode == "en" ? onboarding_bubble3 : onboarding_bubble3_dutch, width: 270.w,),
                         ),
                       ),
                     ],
@@ -83,7 +83,6 @@ class _FifthOnboardingState extends State<FifthOnboarding> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      20.ph,
                       Container(
                         height: loading ? 200.h : 800.h,
                         child: Stack(
@@ -95,7 +94,7 @@ class _FifthOnboardingState extends State<FifthOnboarding> {
                               child: AnimatedOpacity(
                                 duration: Duration(milliseconds: 500),
                                 opacity: loading ? 0 : 1,
-                                child: Image.asset(onboarding_bubble4, width: 330.w,),
+                                child: Image.asset(context.locale.languageCode == "en" ? onboarding_bubble4 : onboarding_bubble4_dutch, width: 330.w,),
                               ),
                             ),
                           ],
