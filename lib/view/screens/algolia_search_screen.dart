@@ -250,9 +250,9 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
   Widget _hits(BuildContext context) => PagedGridView<int, Product>(
       pagingController: _pagingController,
       padding: EdgeInsets.symmetric(horizontal: 10),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 200,
-          mainAxisExtent: 280,
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 174.w,
+          mainAxisExtent: 332.h,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10),
       builderDelegate: PagedChildBuilderDelegate<Product>(

@@ -531,6 +531,8 @@ class ChatlistsProvider with ChangeNotifier {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
       backgroundColor: mainPurple,
+      showCloseIcon: true,
+      closeIconColor: Colors.white,
       content: content,
       action: SnackBarAction(
           label: actionLabel,

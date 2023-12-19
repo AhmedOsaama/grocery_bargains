@@ -518,7 +518,7 @@ class _HomeScreenState extends State<HomeScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          LocaleKeys.latestBargains.tr(),
+          "Today's Latest Discounts".tr(),
           style: TextStylesDMSans.textViewBold16.copyWith(color: prussian),
         ),
         TextButton(
@@ -811,9 +811,9 @@ class LatestBargainsList extends StatelessWidget {
           // return Container();
         } else {
           return SliverGrid(
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 200,
-                mainAxisExtent: 280,
+            gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 174.w,
+                mainAxisExtent: 332.h,
                 crossAxisSpacing: 5,
                 mainAxisSpacing: 5),
             delegate: SliverChildBuilderDelegate(

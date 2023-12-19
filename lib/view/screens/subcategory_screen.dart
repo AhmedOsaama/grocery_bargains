@@ -217,9 +217,9 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                     return GridView.builder(
                         physics: ScrollPhysics(), // to disable GridView's scrolling
                         shrinkWrap: true,
-                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                            maxCrossAxisExtent: 200,
-                            mainAxisExtent: 280,
+                        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                            maxCrossAxisExtent: 174.w,
+                            mainAxisExtent: 332.h,
                             crossAxisSpacing: 5,
                             mainAxisSpacing: 5),
                         itemCount: results.length,

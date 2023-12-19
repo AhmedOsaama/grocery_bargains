@@ -111,6 +111,7 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
                         );
                       var offerings = snapshot.data ?? [];
                       final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
+                      if(packages.isEmpty) return Center(child: Text("You have to have a google or apple account to see subscriptions"));
                       var monthlyPrice = packages[0].storeProduct.priceString;
                       var yearlyPrice = packages[1].storeProduct.priceString;
                       try {

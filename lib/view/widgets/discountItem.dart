@@ -167,6 +167,7 @@ class DiscountItem extends StatelessWidget {
                     ),
                   ),
                 ),
+                15.ph,
                 SizeContainer(itemSize: getProductSize(product)),
                 5.ph,
                 if (getProductBrand(product).isNotEmpty)
@@ -181,11 +182,11 @@ class DiscountItem extends StatelessWidget {
                 5.ph,
                 Text(
                   getProductName(product),
-                  maxLines: 2,
+                  maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: TextStylesInter.textViewRegular12.copyWith(color: blackSecondary),
                 ),
-                5.ph,
+                15.ph,
                 Image.asset(
                   getStoreLogoPath(),
                   width: 60,

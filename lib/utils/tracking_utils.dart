@@ -54,7 +54,7 @@ class TrackingUtils {
   static const filterUsedEvent = 'FilterUsed';
   static const formSubmittedEvent = 'FormSubmitted';
   static const chooseFavouriteStoreEvent = 'chooseFavouriteStore';
-  static const subscriptionEvent = 'subscriptionEvent';
+  static const subscriptionEvent = 'subscription_Successful';
 
 
 

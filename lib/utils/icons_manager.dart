@@ -28,3 +28,4 @@ const String unreachedStepIcon = "$imgPath/unreached_step.svg";
 const String activeStepIcon = "$imgPath/active_step.svg";
 const String pendingStepIcon = "$imgPath/pending_step.svg";
 const String bbIcon = "$imgPath/bb_icon.svg";
+const String loadingIcon = "$imgPath/loading.svg";

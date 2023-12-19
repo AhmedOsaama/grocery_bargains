@@ -10,6 +10,7 @@ import 'package:bargainb/view/components/search_delegate.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -106,9 +107,9 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
                         scrollController: scrollController,
                         // shrinkWrap: true,
                         gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                                maxCrossAxisExtent: 200,
-                                mainAxisExtent: 260,
+                        SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 174.w,
+                                mainAxisExtent: 332.h,
                                 childAspectRatio: 0.67,
                                 crossAxisSpacing: 10,
                                 mainAxisSpacing: 10),
