@@ -39,7 +39,7 @@ class SignInWidget extends StatelessWidget {
               color: mainYellow,
               height: 60.h,
               width: 158.w,
-              onPressed: () => pushNewScreen(context, screen: RegisterScreen(), withNavBar: false),
+              onPressed: () => pushNewScreen(context, screen: RegisterScreen(isLogin: false), withNavBar: false),
               child: Text(
                 "Sign in",
                 style: TextStyles.textViewSemiBold16.copyWith(color: white),

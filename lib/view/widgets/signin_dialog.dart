@@ -96,7 +96,7 @@ class _SigninDialogState extends State<SigninDialog> {
                         onPressed: () async {
                           AppNavigator.pop(context: context);
                           pushNewScreen(context,
-                              screen: RegisterScreen(), withNavBar: false);
+                              screen: RegisterScreen(isLogin: false), withNavBar: false);
                         },
                         child: Text(
                           widget.buttonText,

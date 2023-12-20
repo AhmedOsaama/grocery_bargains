@@ -356,13 +356,12 @@ class _ChatViewState extends State<ChatView> {
 
   Future<void> submitMessage(BuildContext context) async {
     var text = messageController.text.trim();
-    if (['@BargainB', '@Bargainb', '@bargainb', '@bb', '@BB'].any((element) => text.startsWith(element))) {
+    if (['@BargainB', '@Bargainb', '@bargainb', '@bb', '@BB'].any((element) => text.contains(element))) {
       messageController.clear();
       await Provider.of<ChatlistsProvider>(context, listen: false)
           .sendMessage(text, widget.listId, widget.chatlistName, "messages");
-      //TODO: include user id in request
       get(Uri.parse(
-          'https://us-central1-discountly.cloudfunctions.net/getChatbot?question=${text}&listId=${widget.listId}&collectionName=messages'));
+          "https://us-central1-discountly.cloudfunctions.net/getChatbot-new?question=${text}&listId=${widget.listId}&collectionName=messages&userId=${FirebaseAuth.instance.currentUser?.uid}"));
     } else {
       messageController.clear();
       FirebaseMessaging.instance.unsubscribeFromTopic(widget.listId);

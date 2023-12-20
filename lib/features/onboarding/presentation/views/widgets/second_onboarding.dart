@@ -161,14 +161,13 @@ class _SecondOnboardingState extends State<SecondOnboarding> {
                 if(loading) return Column(
                   children: [
                     50.ph,
-                    Image.asset(loadingIndicator),
+                    Image.asset(loadingIndicator, width: 50,),
                   ],
                     );
                 if(!loading)
                   Future.delayed(Duration(seconds: 2), (){
                   widget.showFAB();
                 });
-                // player.play(AssetSource(messageSound));
                 return Padding(
                   padding: const EdgeInsets.only(left: 10),
                   child: Column(

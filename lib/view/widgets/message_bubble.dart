@@ -141,13 +141,13 @@ class _MessageBubbleState extends State<MessageBubble> {
                             widget.message,
                             style: TextStyles.textViewRegular15.copyWith(color: Colors.white ),
                             softWrap: true,
-                            textAlign: TextAlign.right,
+                            textAlign: TextAlign.left,
                           ),
                         ),
                       ]
                     : [
                         Container(
-                          width: widget.message.length > 30 ? MediaQuery.of(context).size.width * 0.6 : null,
+                          width: MediaQuery.of(context).size.width * 0.77,
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                           margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
                           decoration: BoxDecoration(

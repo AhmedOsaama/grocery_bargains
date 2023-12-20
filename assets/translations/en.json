@@ -369,7 +369,10 @@
   "Select Plan": "Select Plan",
   "Payment": "Payment",
   "Setup": "Setup",
-  "Start Saving": "Start Saving"
+  "Start Saving": "Start Saving",
+  "Sign in with Apple" : "Sign in with Apple",
+  "Sign in with Google" : "Sign in with Google"
+
 
 
 }

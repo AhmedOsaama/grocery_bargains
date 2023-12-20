@@ -67,6 +67,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
   List<UserContactInfo> contactsList = [];
   var inviteFriendController = TextEditingController();
   bool isContactsPermissionGranted = false;
+  FocusNode chatlistNameFocus = FocusNode();
 
   late ChatList chatList;
 
@@ -127,7 +128,9 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                               child: TextFormField(
                                 initialValue: chatList.name,
                                 style: TextStyles.textViewSemiBold24.copyWith(color: prussian),
+                                focusNode: chatlistNameFocus,
                                 onFieldSubmitted: (value) async {
+                                  chatlistNameFocus.unfocus();
                                   await updateListName(value);
                                 },
                               ),
@@ -185,6 +188,9 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                         if (option == 'Rename') {
                           setState(() {
                             isEditingName = true;
+                          });
+                          Future.delayed(Duration(milliseconds: 500), (){
+                            FocusScope.of(context).requestFocus(chatlistNameFocus);
                           });
                         } else if (option == 'Remove') {
                           showRemoveDialog(context);

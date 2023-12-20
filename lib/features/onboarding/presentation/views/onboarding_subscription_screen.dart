@@ -156,7 +156,6 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
                         ],
                       );
                     }),
-
                 10.ph,
                 GenericButton(
                     width: double.infinity,
@@ -201,8 +200,8 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
     );
   }
 
-  Future<void> finishOnboarding(BuildContext context,{bool isSkipping = false}) async {
-      Provider.of<UserProvider>(context, listen: false).turnOffFirstTime();
+  Future<void> finishOnboarding(BuildContext context, {bool isSkipping = false}) async {
+      await Provider.of<UserProvider>(context, listen: false).turnOffFirstTime();
       Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
     if(isSkipping){
       AppNavigator.pushReplacement(context: context, screen: MainScreen());
@@ -211,7 +210,7 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
       AppNavigator.pushReplacement(context: context, screen: ConfirmSubscriptionScreen());
     }else{
       Provider.of<UserProvider>(context, listen: false).setOnboardingSubscriptionPlan(selectedPlan, selectedPlanPrice);
-      AppNavigator.pushReplacement(context: context, screen: RegisterScreen());       //case: choosing plan before creating account
+      AppNavigator.pushReplacement(context: context, screen: RegisterScreen(isLogin: false,));       //case: choosing plan before creating account
     }
 
   }

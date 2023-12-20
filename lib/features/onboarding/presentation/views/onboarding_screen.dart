@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:bargainb/features/onboarding/presentation/views/onboarding_subscription_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/fifth_onboarding.dart';
@@ -37,25 +39,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     return SafeArea(
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        floatingActionButton: showFAB ? Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: GenericButton(
-            onPressed: () {
-              if (pageNumber == 2) (){};
-              else setState(() {
-                goToNextPage();
-              });
-            },
-            width: 60,
-            height: 60,
-            borderRadius: BorderRadius.circular(20),
-            child: Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.white,
-            ),
-            color: brightOrange,
-          ),
-        ) : null,                     //controlled by second onboarding screen
+        floatingActionButton: buildFAB(),                                                                  //controlled by second onboarding screen
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
           child: Column(
@@ -74,6 +58,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     FirstOnboarding(),
                     SecondOnboarding(
                       showFAB: (){
+                        if(showFAB == false)
                         setState(() {
                         showFAB = true;
                         });
@@ -81,7 +66,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                       disableFAB: (){
                         showFAB = false;
                     },),
-                    ThirdOnboarding(goToNextPage: goToNextPage),
+                    ThirdOnboarding(goToNextPage: goToNextPage,),
                     FourthOnboarding(),
                     FifthOnboarding(),
                     SixthOnboarding(),
@@ -107,11 +92,36 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     );
   }
 
+  Widget? buildFAB() {
+    if(pageNumber == 2) return null;
+    if(showFAB) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: GenericButton(
+          onPressed: () {
+            if (pageNumber == 2) (){};
+            else setState(() {
+              goToNextPage();
+            });
+          },
+          width: 60,
+          height: 60,
+          borderRadius: BorderRadius.circular(20),
+          child: Icon(
+            Icons.arrow_forward_ios,
+            color: Colors.white,
+          ),
+          color: brightOrange,
+        ),
+      );
+    }
+    return null;
+  }
+
   ScrollPhysics getPhysics() {
     if(pageNumber == 2 || pageNumber == 1)
       return NeverScrollableScrollPhysics();
     return BouncingScrollPhysics();
-    // return pageNumber == 2 ? const NeverScrollableScrollPhysics() : const BouncingScrollPhysics();
   }
 
   void goToNextPage() {

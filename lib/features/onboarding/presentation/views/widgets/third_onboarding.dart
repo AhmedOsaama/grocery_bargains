@@ -90,10 +90,6 @@ class _ThirdOnboardingState extends State<ThirdOnboarding> {
           onPressed: () {
             TrackingUtils().trackButtonClick("Guest", "Personalize Assistant", DateTime.now().toUtc().toString(), "Third onboarding screen");
             personalizeAI();
-            // AppNavigator.pushReplacement(
-            //     context: context, screen: MainScreen());
-            // Provider.of<UserProvider>(context, listen: false).turnOffFirstTime();
-            // Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
           },
           child: Text(
             'Yes, Personalise My Assistant'.tr(),

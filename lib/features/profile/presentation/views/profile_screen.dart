@@ -6,9 +6,6 @@ import 'package:bargainb/features/profile/presentation/views/widgets/profile_set
 import 'package:bargainb/features/profile/presentation/views/widgets/user_image_widget.dart';
 import 'package:bargainb/providers/google_sign_in_provider.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
-import 'package:bargainb/view/components/search_appBar.dart';
-import 'package:bargainb/view/screens/dummy_subscription_screen.dart';
-import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/register_screen.dart';
 import 'package:bargainb/view/screens/subscription_screen.dart';
 import 'package:bargainb/view/screens/support_screen.dart';
@@ -28,11 +25,6 @@ import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
-import 'package:bargainb/view/screens/settings_screen.dart';
-import 'package:bargainb/view/widgets/setting_row.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
-import 'package:provider/provider.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -227,7 +219,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ScaffoldMessenger.of(context)
                 .showSnackBar(SnackBar(content: Text("UID Copied successfully, please send it to the developer")));
             FirebaseAuth.instance.signOut();
-            AppNavigator.pushReplacement(context: context, screen: RegisterScreen());
+            AppNavigator.pushReplacement(context: context, screen: RegisterScreen(isLogin: true));
             try {
               TrackingUtils().trackTextLinkClicked(FirebaseAuth.instance.currentUser!.uid,
                   DateTime.now().toUtc().toString(), "Profile Screen", "Error profile sign-out link");

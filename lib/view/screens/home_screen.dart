@@ -812,7 +812,7 @@ class LatestBargainsList extends StatelessWidget {
         } else {
           return SliverGrid(
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 174.w,
+                maxCrossAxisExtent: 200.w,
                 mainAxisExtent: 332.h,
                 crossAxisSpacing: 5,
                 mainAxisSpacing: 5),

@@ -37,7 +37,8 @@ import 'main_screen.dart';
 import 'onboarding_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
-  RegisterScreen({Key? key}) : super(key: key);
+  final bool isLogin;
+  RegisterScreen({Key? key, required this.isLogin}) : super(key: key);
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -50,7 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String email = "";
   String password = "";
 
-  bool isLogin = true;
+  bool isLogin = false;
   bool isObscured = true;
 
   bool rememberMe = true;
@@ -66,10 +67,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     pref.setBool("rememberMe", rememberMe);
   }
 
-  Future<void> saveFirstTimePref() async {
-    var pref = await SharedPreferences.getInstance();
-    pref.setBool("firstTime", false);
-  }
 
   Future<void> _submitAuthForm(String email, String username,
       String phoneNumber, BuildContext ctx) async {
@@ -148,6 +145,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
      TrackingUtils().trackLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
     saveRememberMePref();
     if(!result.docs.first.data().containsKey('token')) saveUserDeviceToken(userCredential);
+  }
+
+  @override
+  void initState() {
+    isLogin = widget.isLogin;
+    super.initState();
   }
 
   @override
@@ -311,15 +314,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ],
                     ),
-                    // TextButton(
-                    //   onPressed: () => AppNavigator.push(
-                    //       context: context, screen: ForgotPasswordScreen()),
-                    //   child: Text(
-                    //     LocaleKeys.forgotPassword.tr(),
-                    //     style: TextStylesDMSans.textViewRegular12
-                    //         .copyWith(color: Color.fromRGBO(13, 1, 64, 1)),
-                    //   ),
-                    // ),
                   ],
                 ),
                 SizedBox(
@@ -333,7 +327,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           color: verdigris.withOpacity(0.25))
                     ],
                     height: 70.h,
-                    color: verdigris,
+                    color: brightOrange,
                     borderRadius: BorderRadius.circular(6),
                     width: double.infinity,
                     onPressed: () async {
@@ -362,7 +356,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           width: 10.w,
                         ),
                         Text(
-                          LocaleKeys.signUpWithGoogle.tr(),
+                          !isLogin ? LocaleKeys.signUpWithGoogle.tr() : "Sign in with Google".tr(),
                           style: TextStyles.textViewSemiBold16
                               .copyWith(color: Colors.black),
                         ),
@@ -386,7 +380,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             width: 10.w,
                           ),
                           Text(
-                            LocaleKeys.signUpWithApple.tr(),
+                           !isLogin ? LocaleKeys.signUpWithApple.tr() : "Sign in with Apple".tr(),
                             style: TextStyles.textViewSemiBold16
                                 .copyWith(color: Colors.white),
                           ),

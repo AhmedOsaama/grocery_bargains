@@ -122,17 +122,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initMixpanel() async {
-    mixPanel = await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true); //live
-    FlutterBranchSdk.disableTracking(false);
-    // FlutterBranchSdk.disableTracking(true);
-    // await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true, optOutTrackingDefault: true);  //dev
+    // mixPanel = await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true); //live
+    // FlutterBranchSdk.disableTracking(false);
+    FlutterBranchSdk.disableTracking(true);
+    await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true, optOutTrackingDefault: true);  //dev
   }
 
   @override
   Widget build(BuildContext context) {
-    // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
-    //   statusBarColor: white,
-    // ));
     return ScreenUtilInit(
       designSize: Size(390, 844),
       minTextAdapt: true,
@@ -169,6 +166,7 @@ class _MyAppState extends State<MyApp> {
                         return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
                       }
                       return MainScreen();
+                      // return OnBoardingScreen();
                     }
                       return widget.isFirstTime ? OnBoardingScreen() : MainScreen();
                   });
