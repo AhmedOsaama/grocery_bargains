@@ -1,5 +1,6 @@
 import 'package:algolia/algolia.dart';
 import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
+import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/utils/algolia_utils.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:provider/provider.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../generated/locale_keys.g.dart';
@@ -36,6 +38,8 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
   // indexName: 'productss');
 
   final GlobalKey<ScaffoldState> _mainScaffoldKey = GlobalKey();
+  String sortDropdownValue = 'Sort';
+
 
   final _filterState = FilterState();
 
@@ -85,6 +89,7 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
 
     _productsSearcher.connectFilterState(_filterState);
     _filterState.filters.listen((_) => _pagingController.refresh());
+
 
     try {
       TrackingUtils()
@@ -191,44 +196,91 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
         }
         final selectableFacets = snapshot.data ?? [];
         if (selectableFacets.length != storeList.length - 1) return SizedBox.shrink();
-        return Container(
-          margin: EdgeInsets.symmetric(horizontal: 10),
-          padding: EdgeInsets.symmetric(horizontal: 15.w),
-          decoration: BoxDecoration(
-              color: white, borderRadius: BorderRadius.all(Radius.circular(6.r)), border: Border.all(color: grey)),
-          child: DropdownButton<String>(
-            value: storeDropdownValue,
-            icon: Icon(
-              Icons.keyboard_arrow_down,
-              color: greyDropdownText,
-            ),
-            iconSize: 24,
-            underline: Container(),
-            style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
-            borderRadius: BorderRadius.circular(4.r),
-            onChanged: changeFilter,
-            items: storeList.map<DropdownMenuItem<String>>((String value) {
-              var index = storeList.indexOf(value) - 1;
-              if (value == 'Store' || selectableFacets.isEmpty) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(
-                    value,
-                    style: TextStyles.textViewMedium12,
-                  ),
-                );
-              }
-              // if(index >= 0 && index < selectableFacets.length)
-              var selectableFacet = selectableFacets[index];
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(
-                  "$value (${selectableFacet.item.count})",
-                  style: TextStyles.textViewMedium12,
+        return Row(
+          children: [
+            15.pw,
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 15.w),
+              decoration: BoxDecoration(color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r)),border: Border.all(color: grey)),
+              child: DropdownButton<String>(
+                value: sortDropdownValue,
+                icon: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: Colors.white,
                 ),
-              );
-            }).toList(),
-          ),
+                iconSize: 24,
+                underline: Container(),
+                dropdownColor: orange70,
+                style: TextStylesInter.textViewRegular14.copyWith(color: Colors.white),
+                borderRadius: BorderRadius.circular(4.r),
+                onChanged: (String? newValue) {
+                  try {
+                    TrackingUtils().trackFilterUsed(
+                        FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
+                        "Category screen", 'price');
+                  }catch(e){
+                    print(e);
+                    TrackingUtils().trackFilterUsed(
+                        "Guest", DateTime.now().toUtc().toString(),
+                        "Category screen", 'price');
+                  }
+                  setState(() {
+                    sortDropdownValue = newValue!;
+                    Provider.of<ProductsProvider>(context, listen: false).sortProducts(sortDropdownValue, _pagingController.itemList!);
+                    // _pagingController.refresh();
+                  });
+                },
+                items: <String>['Sort', 'Low price', 'High price'].map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      value,
+                      style: TextStyles.textViewMedium12,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 10),
+              padding: EdgeInsets.symmetric(horizontal: 15.w),
+              decoration: BoxDecoration(
+                  color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r)), border: Border.all(color: grey)),
+              child: DropdownButton<String>(
+                value: storeDropdownValue,
+                icon: Icon(
+                  Icons.keyboard_arrow_down,
+                  color: Colors.white,
+                ),
+                dropdownColor: orange70,
+                iconSize: 24,
+                underline: Container(),
+                style: TextStylesInter.textViewRegular14.copyWith(color: Colors.white),
+                borderRadius: BorderRadius.circular(4.r),
+                onChanged: changeFilter,
+                items: storeList.map<DropdownMenuItem<String>>((String value) {
+                  var index = storeList.indexOf(value) - 1;
+                  if (value == 'Store' || selectableFacets.isEmpty) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        value,
+                        style: TextStyles.textViewMedium12,
+                      ),
+                    );
+                  }
+                  var selectableFacet = selectableFacets[index];
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(
+                      "$value (${selectableFacet.item.count})",
+                      style: TextStyles.textViewMedium12,
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
         );
       });
 
@@ -251,7 +303,7 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
       pagingController: _pagingController,
       padding: EdgeInsets.symmetric(horizontal: 10),
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 174.w,
+          maxCrossAxisExtent: 200.w,
           mainAxisExtent: 332.h,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10),

@@ -124,6 +124,7 @@ class DiscountItem extends StatelessWidget {
                       id: product.id,
                       name: product.name,
                       price: getPrice(product),
+                      oldPrice: product.oldPrice,
                       text: "",
                       isChecked: false,
                       quantity: 1,

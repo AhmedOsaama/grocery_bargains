@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
@@ -15,6 +16,7 @@ import '../../../../../utils/assets_manager.dart';
 import '../../../../../utils/style_utils.dart';
 import '../../../../../utils/tracking_utils.dart';
 import '../../../../../view/components/button.dart';
+import '../policy_screen.dart';
 class ThirdOnboarding extends StatefulWidget {
   final Function goToNextPage;
   const ThirdOnboarding({Key? key, required this.goToNextPage}) : super(key: key);
@@ -55,13 +57,8 @@ class _ThirdOnboardingState extends State<ThirdOnboarding> {
                   text: ' policy'.tr(),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () async {
-                    TrackingUtils().trackTextLinkClicked("Guest", DateTime.now().toUtc().toString(), "Third onboarding screen", "Click Policy link");
-                      final url = Uri.parse('https://thebargainb.com/privacy-policy');
-                      try {
-                        await launchUrl(url);
-                      } catch (e) {
-                        log(e.toString());
-                      }
+                    TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), "Policy Page",);
+                     AppNavigator.push(context: context, screen: PolicyScreen());
                     },
                   style: TextStylesInter.textViewSemiBold12.copyWith(decoration: TextDecoration.underline)),
               TextSpan(

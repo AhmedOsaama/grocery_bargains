@@ -108,7 +108,7 @@ class _LatestBargainsScreenState extends State<LatestBargainsScreen> {
                         // shrinkWrap: true,
                         gridDelegate:
                         SliverGridDelegateWithMaxCrossAxisExtent(
-                                maxCrossAxisExtent: 174.w,
+                                maxCrossAxisExtent: 200.w,
                                 mainAxisExtent: 332.h,
                                 childAspectRatio: 0.67,
                                 crossAxisSpacing: 10,

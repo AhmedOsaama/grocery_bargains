@@ -126,10 +126,6 @@ class ProductsProvider with ChangeNotifier {
         case 'High price':
           sortedProducts.sort((a, b) => double.parse(b!.price!).compareTo(double.parse(a!.price!)));
           break;
-
-        /* case 'Nutri Score A - E':
-
-        break; */
       }
     } catch (e) {
       log(e.toString());

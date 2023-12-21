@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:bargainb/features/onboarding/data/repos/onboarding_repo.dart';
 import 'package:bargainb/features/onboarding/presentation/manager/bot_response_cubit.dart';
 import 'package:bargainb/features/onboarding/presentation/views/customize_experience_screen.dart';
+import 'package:bargainb/features/onboarding/presentation/views/policy_screen.dart';
+import 'package:bargainb/features/onboarding/presentation/views/terms_of_service_screen.dart';
 import 'package:bargainb/providers/insights_provider.dart';
 import 'package:bargainb/providers/suggestion_provider.dart';
 import 'package:bargainb/providers/tutorial_provider.dart';
@@ -122,10 +124,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initMixpanel() async {
-    // mixPanel = await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true); //live
-    // FlutterBranchSdk.disableTracking(false);
-    FlutterBranchSdk.disableTracking(true);
-    await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true, optOutTrackingDefault: true);  //dev
+    mixPanel = await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true); //live
+    FlutterBranchSdk.disableTracking(false);
+    // FlutterBranchSdk.disableTracking(true);
+    // await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true, optOutTrackingDefault: true);  //dev
   }
 
   @override
@@ -166,7 +168,6 @@ class _MyAppState extends State<MyApp> {
                         return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
                       }
                       return MainScreen();
-                      // return OnBoardingScreen();
                     }
                       return widget.isFirstTime ? OnBoardingScreen() : MainScreen();
                   });

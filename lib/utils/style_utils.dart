@@ -657,6 +657,10 @@ abstract class TextStylesInter {
     fontSize: 26.sp,
     fontWeight: FontWeight.bold,
     fontFamily: fontFamilyInter,
+  ); static TextStyle textViewBold28 = TextStyle(
+    fontSize: 28.sp,
+    fontWeight: FontWeight.bold,
+    fontFamily: fontFamilyInter,
   );
   static TextStyle textViewBold30 = TextStyle(
     fontSize: 30.sp,

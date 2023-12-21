@@ -152,16 +152,18 @@ class _SupportScreenState extends State<SupportScreen> {
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   final double height;
   final String title;
+  final bool centerTitle;
   const MyAppBar({
     super.key,
     this.height = kToolbarHeight,
     required this.title,
+    this.centerTitle = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      centerTitle: true,
+      centerTitle: centerTitle,
       iconTheme: IconThemeData(
         color: mainPurple
       ),

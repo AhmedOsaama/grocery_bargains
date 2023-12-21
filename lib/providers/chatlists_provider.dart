@@ -243,10 +243,6 @@ class ChatlistsProvider with ChangeNotifier {
 
   Future<void> addProductToList(BuildContext context, ListItem listItem) async {
     //adds a product from home or product page to chatlist
-    // print("Adding category ${listItem.id}");
-    // print("Adding category ${listItem.name}");
-    // print("Adding category ${listItem.price}");
-    // print("Adding item ${listItem.category}");
       if (chatlists.length > 1) showChooseListDialog(context: context, listItem: listItem);
       if (chatlists.length == 1) {
         await addItemToList(listItem, chatlists[0].id);

@@ -301,17 +301,17 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 Row(children: [
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 15.w),
-                    decoration: BoxDecoration(color: white, borderRadius: BorderRadius.all(Radius.circular(6.r)),border: Border.all(color: grey)),
+                    decoration: BoxDecoration(color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r)),border: Border.all(color: grey)),
                     child: DropdownButton<String>(
                       value: sortDropdownValue,
                       icon: Icon(
                         Icons.keyboard_arrow_down,
-                        color: greyDropdownText,
+                        color: Colors.white,
                       ),
                       iconSize: 24,
                       underline: Container(),
-                      // dropdownColor: Colors.white,
-                      style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
+                      dropdownColor: orange70,
+                      style: TextStylesInter.textViewRegular14.copyWith(color: white),
                       borderRadius: BorderRadius.circular(4.r),
                       onChanged: (String? newValue) {
                         try {
@@ -343,18 +343,18 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   8.pw,
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 15.w),
-                    decoration: BoxDecoration(color: white, borderRadius: BorderRadius.all(Radius.circular(6.r)),border: Border.all(color: grey)),
+                    decoration: BoxDecoration(color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r)),border: Border.all(color: grey)),
                     child: Center(
                       child: DropdownButton<String>(
                         value: storeDropdownValue,
                         icon: Icon(
                           Icons.keyboard_arrow_down,
-                          color: greyDropdownText,
+                          color: Colors.white,
                         ),
                         iconSize: 24,
                         underline: Container(),
-                        // dropdownColor: Colors.white,
-                        style: TextStylesInter.textViewRegular14.copyWith(color: greyDropdownText),
+                        dropdownColor: orange70,
+                        style: TextStylesInter.textViewRegular14.copyWith(color: Colors.white),
                         borderRadius: BorderRadius.circular(4.r),
                         onChanged: (String? newValue) {
                           try {
@@ -418,7 +418,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           physics: ScrollPhysics(), // to disable GridView's scrolling
                           shrinkWrap: true,
                           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                              maxCrossAxisExtent: 174.w,
+                              maxCrossAxisExtent: 200.w,
                               mainAxisExtent: 332.h,
                               crossAxisSpacing: 5,
                               mainAxisSpacing: 5),
