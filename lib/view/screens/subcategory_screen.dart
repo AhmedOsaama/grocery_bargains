@@ -143,7 +143,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                       return DropdownMenuItem<String>(
                         value: value,
                         child: Text(
-                          value,
+                          value.tr(),
                           style: TextStyles.textViewMedium12,
                         ),
                       );
@@ -187,7 +187,7 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(
-                            value,
+                            value.tr(),
                             style: TextStyles.textViewMedium12,
                           ),
                         );

@@ -51,7 +51,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
     return Scaffold(
       appBar: MyAppBar(title: ''),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -96,12 +96,12 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 Column(
                   children: [
                     Text(
-                      LocaleKeys.thankYou.tr(),
+                      "Thank you".tr(),
                       style: TextStylesInter.textViewSemiBold18.copyWith(color: blackSecondary),
                     ),
                     10.ph,
                     Text(
-                      LocaleKeys.youAreUpgraded.tr(),
+                      "You are upgraded to premium".tr(),
                       style: TextStylesInter.textViewLight15.copyWith(color: Color(0xFF48484A)),
                     ),
                     10.ph,
@@ -151,7 +151,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                             },
                             price: yearlyPrice,
                             plan: "Yearly",
-                            offerText: "You save 63%",
+                            offerText: "You Save".tr() + " 63%",
                           ),
                           PlanContainer(
                             selectedPlan: selectedPlan,

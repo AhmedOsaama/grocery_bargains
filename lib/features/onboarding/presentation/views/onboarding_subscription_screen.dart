@@ -59,7 +59,7 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
     return SafeArea(
       child: Scaffold(
         body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -260,7 +260,7 @@ class _PlanContainerState extends State<PlanContainer> {
               ),
               Text(
                 widget.plan.tr(),
-                style: TextStylesInter.textViewRegular19,
+                style: TextStylesInter.textViewRegular17,
               ),
               10.pw,
               if (widget.offerText != null)
@@ -277,7 +277,7 @@ class _PlanContainerState extends State<PlanContainer> {
                 ),
               Spacer(),
               Text(widget.price,
-                  textAlign: TextAlign.center, style: TextStylesInter.textViewSemiBold20.copyWith(fontSize: 18.sp)),
+                  textAlign: TextAlign.center, style: TextStylesInter.textViewSemiBold20.copyWith(fontSize: 16.sp)),
             ],
           ),
         ),

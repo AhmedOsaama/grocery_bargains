@@ -359,7 +359,8 @@
   "Use the search bar to locate products and uncover the best deals": "Use the search bar to locate products and uncover the best deals",
   " View all the available prices, add to your list, and streamline your shopping experience": " View all the available prices, add to your list, and streamline your shopping experience",
   "Collaborate with your loved ones, share grocery lists, and  your AI sidekick": "Collaborate with your loved ones, share grocery lists, and  your AI sidekick",
-  "\nLet's activate your AI sidekick! Invite friends and family to chat with your BargainB sidekick. Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals. Type @BB Show me the Top Deal from {preferred store}": "\nLet's activate your AI sidekick! Invite friends and family to chat with your BargainB sidekick. Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals. Type @BB Show me the Top Deal from {preferred store}",
+  "Let's activate your AI sidekick! Invite friends and family to chat with your BargainB sidekick. Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals. Type @BB Show me the Top Deal from": "Let's activate your AI sidekick! Invite friends and family to chat with your BargainB sidekick. Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals. Type @BB Show me the Top Deal from",
+  "{preferred store}": "{preferred store}",
   "Grocery shopping just got smarter!": "Grocery shopping just got smarter!",
   "Assistant": "Assistant",
   "get an Assistant for 1 year": " get an Assistant for 1 year",
@@ -371,7 +372,19 @@
   "Setup": "Setup",
   "Start Saving": "Start Saving",
   "Sign in with Apple" : "Sign in with Apple",
-  "Sign in with Google" : "Sign in with Google"
+  "Sign in with Google" : "Sign in with Google",
+  "You Save": "You Save",
+  "You have to be subscribed to plan to use this premium feature": "You have to be subscribed to plan to use this premium feature",
+  "Subscribe": "Subscribe",
+  "Thank you": "Thank you",
+  "You are upgraded to premium": "You are upgraded to premium",
+  "Store": "Store",
+  "Sort": "Sort",
+  "Low price": "Low price",
+  "High price": "High price",
+  "Today's Latest Discounts": "Today's Latest Discounts"
+
+
 
 
 

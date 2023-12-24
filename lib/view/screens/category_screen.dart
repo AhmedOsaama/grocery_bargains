@@ -92,13 +92,11 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         translatedSubCategory = snapshot.data!.text;
                       } catch (e) {
                         translatedSubCategory = "N/A";
-                        print(e);
+                        print("ERROR IN TRANSLATING: $e");
                       }
                       if (context.locale.languageCode == "nl") {
-                        return Flexible(
-                          child: Text(
-                            translatedSubCategory,
-                          ),
+                        return Text(
+                          translatedSubCategory,
                         );
                       }
 
@@ -244,7 +242,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   }
 
   void rebuildScreen() {
-    print("Rebuild: $canRebuild");
+    // print("Rebuild: $canRebuild");
       if(canRebuild)
     Future.delayed(Duration(milliseconds: 1), (){
       setState(() {
@@ -285,11 +283,9 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         print(e);
                       }
                       if (context.locale.languageCode == "nl") {
-                        return Flexible(
-                          child: Text(
-                            translatedCategory,
-                            style: TextStylesInter.textViewSemiBold16.copyWith(color: black2),
-                          ),
+                        return Text(
+                          translatedCategory,
+                          style: TextStylesInter.textViewSemiBold16.copyWith(color: black2),
                         );
                       }
                       return Text(
@@ -333,7 +329,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(
-                            value,
+                            value.tr(),
                             style: TextStyles.textViewMedium12,
                           ),
                         );
@@ -378,7 +374,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                           return DropdownMenuItem<String>(
                             value: value,
                             child: Text(
-                              value,
+                              value.tr(),
                               style: TextStyles.textViewMedium12,
                             ),
                           );

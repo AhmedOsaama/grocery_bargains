@@ -287,10 +287,7 @@ class _ChatViewState extends State<ChatView> {
                         child: Column(
                             children: [
                               Text(
-                                "Let's activate your AI sidekick!"
-                                    " Invite friends and family to chat with your BargainB sidekick."
-                                    " Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals."
-                                    " Type @BB Show me the Top Deal from ".tr() + "${userProvider.onboardingStore}",
+                                "Let's activate your AI sidekick! Invite friends and family to chat with your BargainB sidekick. Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals. Type @BB Show me the Top Deal from".tr() + "${userProvider.onboardingStore}",
                                 // maxLines: 4,
                                 style: TextStyles.textViewRegular13.copyWith(color: white),
                               ),

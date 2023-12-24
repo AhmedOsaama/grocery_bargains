@@ -7,7 +7,6 @@ import 'package:bargainb/features/profile/presentation/views/widgets/user_image_
 import 'package:bargainb/providers/google_sign_in_provider.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/screens/register_screen.dart';
-import 'package:bargainb/view/screens/subscription_screen.dart';
 import 'package:bargainb/view/screens/support_screen.dart';
 import 'package:bargainb/view/widgets/otp_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

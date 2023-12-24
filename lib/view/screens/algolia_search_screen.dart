@@ -234,7 +234,7 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(
-                      value,
+                      value.tr(),
                       style: TextStyles.textViewMedium12,
                     ),
                   );
@@ -264,7 +264,7 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(
-                        value,
+                        value.tr(),
                         style: TextStyles.textViewMedium12,
                       ),
                     );

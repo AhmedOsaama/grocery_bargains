@@ -215,17 +215,15 @@ class _MainScreenState extends State<MainScreen> {
                               tutorialProvider.hideTutorialConfetti();
                             },),
                           ),
-                          if(PurchaseApi.isSubscribed) OnboardingStepper(activeStep: 4, stepSize: 11),
+                          if(PurchaseApi.isSubscribed) OnboardingStepper(activeStep: 4, stepSize: 10),
                           Text('Grocery shopping just got smarter!'.tr(), style: TextStylesInter.textViewSemiBold20,textAlign: TextAlign.center,),
                           15.ph,
                           if(PurchaseApi.isSubscribed)
-                            Text("You've successfully completed BargainB's onboarding process."
-                                " Now, you're ready to unlock the power of our AI-powered grocery sidekick and start saving big on your groceries".tr(),
+                            Text("You've successfully completed BargainB's onboarding process. Now, you're ready to unlock the power of your grocery assistant and start saving big on your groceries".tr(),
                               style: TextStylesInter.textViewRegular13,
                               textAlign: TextAlign.center,),
                           if(!PurchaseApi.isSubscribed)
-                          Text("You've successfully completed BargainB's onboarding process."
-                              " Now, you're ready start saving big on your groceries".tr(),
+                          Text("You've successfully completed BargainB's onboarding process. Now, you're ready start saving big on your groceries".tr(),
                             style: TextStylesInter.textViewRegular13,
                             textAlign: TextAlign.center,),
                           10.ph,

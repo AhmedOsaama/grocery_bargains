@@ -389,7 +389,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildCategories(BuildContext context) {
-    return Provider.of<ProductsProvider>(context, listen: true).categories.isEmpty
+    var allCategories = Provider.of<ProductsProvider>(context, listen: false).categories;
+    return allCategories.isEmpty
         ? const Center(
             child: CircularProgressIndicator(),
           )
@@ -397,10 +398,10 @@ class _HomeScreenState extends State<HomeScreen> {
             height: ScreenUtil().screenHeight * 0.16,
             child: ListView(
                 scrollDirection: Axis.horizontal,
-                children: Provider.of<ProductsProvider>(context, listen: true).categories.map((element) {
+                children: allCategories.map((element) {
                   return Padding(
                     padding: EdgeInsets.only(
-                      left: Provider.of<ProductsProvider>(context, listen: true).categories.first == element ? 0 : 10.0,
+                      left: allCategories.first == element ? 0 : 10.0,
                     ),
                     child: GestureDetector(
                       onTap: () {
@@ -440,11 +441,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                   var translatedCategories = [];
                                   if (snapshot.data != null) translatedCategories = snapshot.data ?? [];
                                   try {
-                                    var translatedCategoryIndex = translatedCategories.indexOf(element);
+                                    var translatedCategoryIndex = allCategories.indexOf(element);
                                     if (context.locale.languageCode == "nl") {
                                       return Flexible(
                                         child: Text(
-                                          translatedCategories[translatedCategoryIndex],
+                                          translatedCategories[translatedCategoryIndex].toString(),
                                           maxLines: 3,
                                           textAlign: TextAlign.center,
                                           style: TextStyles.textViewMedium10.copyWith(color: gunmetal),
@@ -452,6 +453,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       );
                                     }
                                   }catch(e){
+                                    print("ERROR: $e");
                                   }
                                   return Text(
                                     element.category,
@@ -517,9 +519,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          "Today's Latest Discounts".tr(),
-          style: TextStylesDMSans.textViewBold16.copyWith(color: prussian),
+        Container(
+          width: 200.w,
+          child: Text(
+            "Today's Latest Discounts".tr(),
+            style: TextStylesDMSans.textViewBold16.copyWith(color: prussian),
+          ),
         ),
         TextButton(
             onPressed: () {

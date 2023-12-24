@@ -19,6 +19,11 @@ abstract class TextStyles {
     fontFamily: fontFamilyPoppins,
     fontWeight: FontWeight.bold,
   );
+  static TextStyle textViewBold6 = TextStyle(
+    fontSize: 6.sp,
+    fontFamily: fontFamilyPoppins,
+    fontWeight: FontWeight.bold,
+  );
   static TextStyle textViewBold7 = TextStyle(
     fontSize: 7.sp,
     fontFamily: fontFamilyPoppins,

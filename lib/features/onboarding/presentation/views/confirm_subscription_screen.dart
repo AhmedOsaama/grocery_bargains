@@ -80,7 +80,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20.h),
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -186,7 +186,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                           GenericButton(
                             width: double.infinity,
                             borderRadius: BorderRadius.circular(10),
-                            padding: EdgeInsets.symmetric(vertical: 20),
+                            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 10),
                             color: brightOrange,
                             onPressed: () async {
                               var hasPurchased =
@@ -201,6 +201,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                                   ? '${"Pay".tr()} ${userProvider.onboardingSubscriptionPlanPrice.tr()}, ${"get an Assistant for 1 year".tr()}'
                                   : '${"Pay".tr()} ${userProvider.onboardingSubscriptionPlanPrice.tr()} ${"Monthly".tr()}, ${"get an Assistant".tr()} ',
                               style: TextStylesInter.textViewSemiBold13.copyWith(color: white),
+                              textAlign: TextAlign.center,
                             ),
                           ),
                           10.ph,

@@ -4,7 +4,6 @@ import 'package:bargainb/features/onboarding/presentation/views/confirm_subscrip
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:bargainb/features/profile/presentation/views/subscription_screen.dart';
 import 'package:bargainb/utils/assets_manager.dart';
-import 'package:bargainb/view/screens/subscription_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

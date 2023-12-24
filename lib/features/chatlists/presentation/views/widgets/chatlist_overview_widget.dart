@@ -43,25 +43,25 @@ class _ChatlistOverviewWidgetState extends State<ChatlistOverviewWidget> {
               children: [
                 TextSpan(
                     text: " ${widget.items.length} ${LocaleKeys.items.tr()}",
-                    style: TextStylesInter.textViewBold12.copyWith(color: blackSecondary))
+                    style: TextStylesInter.textViewBold10.copyWith(color: blackSecondary))
               ])),
-          15.pw,
+          5.pw,
           Text.rich(TextSpan(
               text: "${LocaleKeys.total.tr()} ",
               style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
               children: [
                 TextSpan(
                     text: " €${getTotalListPrice(widget.items)}",
-                    style: TextStylesInter.textViewBold12.copyWith(color: mainPurple))
+                    style: TextStylesInter.textViewBold10.copyWith(color: mainPurple))
               ])),
-          15.pw,
+          5.pw,
           Text.rich(TextSpan(
               text: "${LocaleKeys.savings.tr()} ",
               style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
               children: [
                 TextSpan(
                     text: " €${getTotalListSavings(widget.items)}",
-                    style: TextStylesInter.textViewBold12.copyWith(color: greenSecondary))
+                    style: TextStylesInter.textViewBold10.copyWith(color: greenSecondary))
               ])),
           Spacer(),
           IconButton(

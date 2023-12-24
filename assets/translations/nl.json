@@ -278,7 +278,7 @@
   "chooseAPlan"                          : "Choose a plan",
   "currentPlan"                          : "CURRENT PLAN",
   "subscriptionRenew"                          : "Subscription renew automatically.",
-  "subscribe"                          : "Subscribe",
+  "subscribe"                          : "abonneren",
   "Welcome to BargainB"                      : "Welkom bij BargainB",
   "Your Grocery Assistant"                      :  "Uw boodschappenassistent",
   "Tired of overpaying for groceries? Feeling overwhelmed by the endless aisles? Let BargainB be your sidekick to smarter, more affordable grocery shopping." :  "Bent u het beu om te veel te betalen voor uw boodschappen? Voel je je overweldigd door de eindeloze gangpaden? Laat BargainB jouw assistent zijn bij het slimmer en voordeliger doen van boodschappen.",
@@ -343,7 +343,8 @@
   "Use the search bar to locate products and uncover the best deals": "Gebruik de zoekbalk om producten te vinden en de beste deals te ontdekken",
   " View all the available prices, add to your list, and streamline your shopping experience": " Bekijk alle beschikbare prijzen, voeg ze toe aan je lijst en stroomlijn je winkelervaring",
   "Collaborate with your loved ones, share grocery lists, and  your AI sidekick": "Werk samen met je vrienden, deel boodschappenlijstjes en je AI-sidekick",
-  "\nLet's activate your AI sidekick! Invite friends and family to chat with your BargainB sidekick. Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals. Type @BB Show me the Top Deal from {preferred store}": "Laten we je AI-sidekick activeren! Nodig vrienden en familie uit om te chatten met je BargainB-assistent. Typ @BB of @bargainb om vragen te stellen, persoonlijk advies te krijgen en de beste deals te vinden. Type bijvoorbeeld “@BB Laat mij de topdeal van {voorkeurswinkel} zien”. ",
+  "Let's activate your AI sidekick! Invite friends and family to chat with your BargainB sidekick. Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals. Type @BB Show me the Top Deal from": "Laten we je AI-sidekick activeren! Nodig vrienden en familie uit om te chatten met je BargainB-assistent. Typ @BB of @bargainb om vragen te stellen, persoonlijk advies te krijgen en de beste deals te vinden. Type bijvoorbeeld “@BB Laat mij de topdeal van zien” ",
+  "{preferred store}": "{voorkeur winkel}",
   "Grocery shopping just got smarter!": "Boodschappen doen is nu nog slimmer!",
   "Assistant": "Assistent",
   "get an Assistant for 1 year": " KRIJG EEN AI ASSISTENT VOOR 1 JAAR",
@@ -355,6 +356,21 @@
   "Setup": "Instellen",
   "Start Saving": "Start met sparen",
   "Sign in with Apple" : "inloggen met Apple",
-  "Sign in with Google" : "inloggen met Google"
+  "Sign in with Google" : "inloggen met Google",
+  "You Save": "Je spaart",
+  "You have to be subscribed to plan to use this premium feature": "U moet geabonneerd zijn om deze premiumfunctie te kunnen gebruiken",
+  "Subscribe": "Abonneren",
+  "Thank you": "Bedankt",
+  "You are upgraded to premium": "U wordt geüpgraded naar premium",
+  "Store": "winkel",
+  "Sort": "soort",
+  "Low price": "lage prijs",
+  "High price": "hoge prijs",
+  "Today's Latest Discounts": "De nieuwste kortingen van vandaag"
+
+
+
+
+
 
 }
