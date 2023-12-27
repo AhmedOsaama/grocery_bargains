@@ -82,18 +82,14 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     getSharedPrefs();
-    // PurchaseApi.init();
     NavigatorController.index = 0;
     FlutterBranchSdk.initSession().listen((data) {
       if (data.containsKey("+clicked_branch_link") && data["+clicked_branch_link"] == true) {
-        //Link clicked. Add logic to get link data and route user to correct screen
         var listId = data["list_id"];
         var productData = data["product_data"];
         var page = data["page"];
 
-        print('Custom string: ${listId}');
-        print('Custom string: ${productData}');
-        print('Custom string: ${page}');
+
         if (page != null) {
           if (page == '/profile-screen') AppNavigator.push(context: context, screen: ProfileScreen());
         }
@@ -273,10 +269,6 @@ class _MainScreenState extends State<MainScreen> {
                 ),
               ),
             ],
-            // Container(
-            //   color: Color(0x99181A26),
-            // ),
-            // Text("data")
           ],
         ));
     // }
@@ -287,7 +279,6 @@ class _MainScreenState extends State<MainScreen> {
     return [
       HomeScreen(),
       ChatlistsScreen(),
-      // InsightsScreen(),
       ProfileScreen(),
     ];
   }
@@ -299,14 +290,14 @@ class _MainScreenState extends State<MainScreen> {
           Icons.home_outlined,
           size: 24.sp,
         ),
-        title: ("Home"),
+        title: ("Home".tr()),
         textStyle: TextStyle(fontSize: 12.sp),
         activeColorPrimary: selectedColor,
         inactiveColorPrimary: unSelectedColor,
       ),
       PersistentBottomNavBarItem(
-          icon: SvgPicture.asset(bbIcon,color: selectedColor ,),
-          inactiveIcon: SvgPicture.asset(bbIcon,color: unSelectedColor ,),
+          icon: SvgPicture.asset(bbIcon, color: selectedColor ,),
+          inactiveIcon: SvgPicture.asset(bbIcon, color: unSelectedColor ,),
           title: ("Assistant".tr()),
           textStyle: TextStyle(fontSize: 12.sp),
           activeColorPrimary: selectedColor,
@@ -322,31 +313,11 @@ class _MainScreenState extends State<MainScreen> {
           textStyle: TextStyle(fontSize: 12.sp),
           activeColorPrimary: selectedColor,
           inactiveColorPrimary: unSelectedColor,
-          onPressed: (_) => AppNavigator.goToProfileTab(context)),
+          onPressed: (_) => AppNavigator.goToProfileTab(context)
+    ),
     ];
   }
 
-  // goToProfileTab(_) {
-  //   if (FirebaseAuth.instance.currentUser == null) {
-  //     showSignInDialog();
-  //   } else if (!PurchaseApi.isSubscribed) {
-  //     showSubscribeDialog();
-  //   } else {
-  //     NavigatorController.jumpToTab(2);
-  //     trackOpenProfile();
-  //   }
-  // }
-  //
-  // goToChatlistTab(_) {
-  //   if (FirebaseAuth.instance.currentUser == null) {
-  //     showSignInDialog();
-  //   } else if (!PurchaseApi.isSubscribed) {
-  //     showSubscribeDialog();
-  //   } else {
-  //     NavigatorController.jumpToTab(1);
-  //     trackOpenChatlists();
-  //   }
-  // }
 
 
 }

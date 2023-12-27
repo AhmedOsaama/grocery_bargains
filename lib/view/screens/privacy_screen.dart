@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../features/profile/presentation/views/widgets/policy_terms_widget.dart';
 import '../../generated/locale_keys.g.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
@@ -150,29 +151,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                                   .copyWith(color: Colors.grey),
                             ),
                             Spacer(),
-                            Center(
-                              child: TextButton(
-                                  onPressed: () async {
-                                    final url = Uri.parse(
-                                        'https://thebargainb.com/privacy-policy');
-                                    try {
-                                      await launchUrl(url);
-                                    } catch (e) {
-                                      log(e.toString());
-                                    }
-                                    try {
-                                      TrackingUtils().trackTextLinkClicked(
-                                          FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Privacy screen", "Open privacy policy");
-                                    }catch(e){
-                                      print(e);
-                                    }
-                                  },
-                                  child: Text(
-                                    "PrivacyPolicy".tr(),
-                                    style: TextStyles.textViewMedium10
-                                        .copyWith(color: Colors.grey),
-                                  )),
-                            ),
+                            PolicyTermsWidget(),
                             100.ph
                           ],
                         ),

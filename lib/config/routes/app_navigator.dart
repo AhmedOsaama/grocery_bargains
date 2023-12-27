@@ -1,3 +1,4 @@
+import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -43,8 +44,6 @@ class AppNavigator {
   }
 
   static goToChatlistTab(BuildContext context) {
-    print(PurchaseApi.subscriptionPeriod);
-    print(PurchaseApi.isSubscribed);
     if (FirebaseAuth.instance.currentUser == null) {
       showSignInDialog(context);
     } else if (!PurchaseApi.isSubscribed) {

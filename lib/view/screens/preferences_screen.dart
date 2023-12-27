@@ -1,5 +1,9 @@
 import 'dart:developer';
 
+import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/features/onboarding/presentation/views/policy_screen.dart';
+import 'package:bargainb/features/onboarding/presentation/views/terms_of_service_screen.dart';
+import 'package:bargainb/features/profile/presentation/views/widgets/policy_terms_widget.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -201,28 +205,7 @@ class _PreferencesScreenState extends State<PreferencesScreen> {
                                   .copyWith(color: Colors.grey),
                             ),
                             Spacer(),
-                            Center(
-                                child: TextButton(
-                                    onPressed: () async {
-                                      final url = Uri.parse(
-                                          'https://thebargainb.com/privacy-policy');
-                                      try {
-                                        await launchUrl(url);
-                                      } catch (e) {
-                                        log(e.toString());
-                                      }
-                                      try {
-                                        TrackingUtils().trackTextLinkClicked(
-                                            FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Preferences screen", "Open privacy policy");
-                                      }catch(e){
-                                        print(e);
-                                      }
-                                    },
-                                    child: Text(
-                                      "PrivacyPolicy".tr(),
-                                      style: TextStyles.textViewMedium10
-                                          .copyWith(color: Colors.grey),
-                                    ))),
+                           PolicyTermsWidget(),
                             100.ph
                           ],
                         ),

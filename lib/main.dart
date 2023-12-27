@@ -74,7 +74,7 @@ Future<void> main() async {
         supportedLocales: const [Locale('ar'), Locale('en'), Locale('nl')],
         path: 'assets/translations',
         fallbackLocale: const Locale('en'),
-        startLocale: const Locale('nl'),
+        // startLocale: const Locale('nl'),
         child: MultiProvider(
           providers: [
             ChangeNotifierProvider<GoogleSignInProvider>(create: (_) => GoogleSignInProvider()),
