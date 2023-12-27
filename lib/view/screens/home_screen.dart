@@ -810,10 +810,8 @@ class LatestBargainsList extends StatelessWidget {
     return Consumer<ProductsProvider>(
       builder: (ctx, provider, _) {
         var products = provider.products;
-        // allProducts = products;
         if (products.isEmpty) {
           return ShimmerList();
-          // return Container();
         } else {
           return SliverGrid(
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(

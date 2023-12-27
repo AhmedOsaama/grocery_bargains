@@ -74,7 +74,6 @@ class ProductsProvider with ChangeNotifier {
   Future<void> getAllProducts() async {
     await getProducts(0).catchError((e) => print(e));
     print("Total number of products: ${products.length}");
-    print("Best value bargains Length: ${bestValueBargains.length}");
     notifyListeners();
   }
 

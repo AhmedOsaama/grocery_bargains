@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:algolia/algolia.dart';
 import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
 
@@ -6,6 +8,7 @@ class AlgoliaTrackingUtils{
   static const algoliaIndexName = 'dev_PRODUCTS';
 
   static void trackAlgoliaClickEvent(String userId, List<String> objectIDs, String queryId, List<int> positions, String eventName) {
+    log("ALOGLIA CLICK");
     try {
       AlgoliaEvent event = AlgoliaEvent(
           eventType: AlgoliaEventType.click,
@@ -20,12 +23,13 @@ class AlgoliaTrackingUtils{
         event
       ]);
     } on AlgoliaException catch(e){
-      print(e);
+      print("ALGOLIA CLICK EVENT ERROR: $e");
     }
   }
 
  static void trackAlgoliaConversionEvent(String userId, String? productId, String eventName) {
-    try {
+   log("ALOGLIA conversion");
+   try {
       AlgoliaEvent event = AlgoliaEvent(
           eventType: AlgoliaEventType.click,
           eventName: eventName,
@@ -45,7 +49,7 @@ class AlgoliaTrackingUtils{
         event2
       ]);
     }catch(e){
-      print(e);
+      print("ALGOLIA Conversion EVENT ERROR: $e");
       print("ITEM ID: ${productId}");
     }
   }

@@ -307,7 +307,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                               onPressed: () {
                                 AppNavigator.pop(context: context, object: "Phone Added");
                                 pushNewScreen(context, screen: ProfileScreen(isEditing: true, isBackButton: true),
-                                    withNavBar: false);
+                                    withNavBar: true);
                                 TrackingUtils().trackButtonClick(
                                     FirebaseAuth.instance.currentUser!.uid, "add phone number",
                                     DateTime.now().toUtc().toString(), "Chatlist screen(invite popup)");

@@ -228,7 +228,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         this.selectedPlan = PurchaseApi.subscriptionPeriod;
         selectedPlanPrice = PurchaseApi.subscriptionPrice;
       });
-
+      AppNavigator.pop(context: context);
     }
     return hasPurchased;
   }

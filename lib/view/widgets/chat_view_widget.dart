@@ -5,6 +5,7 @@ import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/features/chatlists/presentation/views/widgets/chatlist_overview_widget.dart';
 import 'package:bargainb/features/chatlists/presentation/views/widgets/first_time_empty_list_widget.dart';
 import 'package:bargainb/features/chatlists/presentation/views/widgets/quick_item_text_field.dart';
+import 'package:bargainb/features/onboarding/presentation/views/widgets/second_onboarding.dart';
 import 'package:bargainb/models/product_category.dart';
 import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/utils/assets_manager.dart';
@@ -79,6 +80,8 @@ class _ChatViewState extends State<ChatView> {
   List quicklyAddedItems = [];
   TextEditingController quickItemController = TextEditingController();
   var pageNumber = 0;
+
+  bool isBotLoading = false;
 
 
   Future turnOffFirstTimeChatlist() async {
@@ -267,6 +270,36 @@ class _ChatViewState extends State<ChatView> {
                                 ),
                               )),
                     ),
+              if(isBotLoading)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Image.asset(bee1, width: 30, height: 30,),
+                  Container(
+                    // width: message.length > 30 ? MediaQuery.of(context).size.width * 0.6 : null,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topRight: const Radius.circular(18),
+                          topLeft: const Radius.circular(18),
+                          bottomLeft: Radius.circular(0) ,
+                          bottomRight: Radius.circular(18),
+                        ),
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0x263463ED),
+                            blurRadius: 28,
+                            offset: Offset(0, 10),
+                            spreadRadius: 0,
+                          )
+                        ]
+                    ),
+                    child: Image.asset(loadingIndicator, width: 30,),
+                  ),
+                ],
+              ),
               Showcase.withWidget(
                 height: 120,
                 width: 200.w,
@@ -357,8 +390,14 @@ class _ChatViewState extends State<ChatView> {
       messageController.clear();
       await Provider.of<ChatlistsProvider>(context, listen: false)
           .sendMessage(text, widget.listId, widget.chatlistName, "messages");
-      get(Uri.parse(
+      setState(() {
+      isBotLoading = true;
+      });
+      await get(Uri.parse(
           "https://us-central1-discountly.cloudfunctions.net/getChatbot-new?question=${text}&listId=${widget.listId}&collectionName=messages&userId=${FirebaseAuth.instance.currentUser?.uid}"));
+      setState(() {
+        isBotLoading = false;
+      });
     } else {
       messageController.clear();
       FirebaseMessaging.instance.unsubscribeFromTopic(widget.listId);
