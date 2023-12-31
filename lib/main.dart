@@ -125,10 +125,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initMixpanel() async {
-    mixPanel = await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true); //live
-    FlutterBranchSdk.disableTracking(false);
-    // FlutterBranchSdk.disableTracking(true);
-    // await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true, optOutTrackingDefault: true);  //dev
+    // mixPanel = await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac", trackAutomaticEvents: true); //live
+    // FlutterBranchSdk.disableTracking(false);
+    FlutterBranchSdk.disableTracking(true);
+    await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true, optOutTrackingDefault: true);  //dev
   }
 
   @override

@@ -246,16 +246,23 @@ class ChatlistsProvider with ChangeNotifier {
       if (chatlists.length > 1) showChooseListDialog(context: context, listItem: listItem);
       if (chatlists.length == 1) {
         await addItemToList(listItem, chatlists[0].id);
-        TrackingUtils().trackProductAction(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
-            listItem.oldPrice != null, chatlists[0].id, chatlists[0].name, listItem.quantity.toString(), 'Add', productId: listItem.id.toString());
-        showChatlistSnackBar(context, Text(LocaleKeys.addedTo.tr() + " ${chatlists[0].name}"), LocaleKeys.view.tr(),
-            chatlists[0].id, false);
+        trackProductAction(listItem);
+        showChatlistSnackBar(context,
+            Text(LocaleKeys.addedTo.tr() + " ${chatlists[0].name}"),
+            LocaleKeys.view.tr(),
+            chatlists[0].id,
+            false);
       }
       if (chatlists.isEmpty) {
         showChatlistSnackBar(context, Text(LocaleKeys.pleaseCreateAList.tr()), LocaleKeys.create.tr(), "", true);
       }
     TrackingUtils().trackButtonClick(
         FirebaseAuth.instance.currentUser!.uid, "add product", DateTime.now().toUtc().toString(), "Product screen");
+  }
+
+  void trackProductAction(ListItem listItem) {
+     TrackingUtils().trackProductAction(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
+        listItem.oldPrice != null, chatlists[0].id, chatlists[0].name, listItem.quantity.toString(), 'Add', productId: listItem.id.toString());
   }
 
   Future<void> updateItemQuantity(String chatlistId, String itemId, int newQuantity) async {
@@ -366,45 +373,54 @@ class ChatlistsProvider with ChangeNotifier {
     bool done = true;
     final userData =
         await FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
-    await FirebaseFirestore.instance.collection('/lists/$docId/items').add({
-      'item_id': item.id,
-      "item_name": item.name,
-      "item_brand": item.brand,
-      "item_size": item.size,
-      "item_price": item.price,
-      "item_image": item.imageURL,
-      'store_name': item.storeName,
-      'item_quantity': item.quantity,
-      'item_oldPrice': item.oldPrice,
-      'item_category': item.category,
-      "item_isChecked": false,
-      "text": item.text,
-      "owner": userData['username'],
-      "time": Timestamp.fromDate(DateTime.now().toUtc()),
-    }).catchError((e) {
-      done = false;
-    });
-    if (item.text.isEmpty)
-      await FirebaseFirestore.instance.collection('/lists/$docId/messages').add({
+    var itemQuery = FirebaseFirestore.instance.collection('/lists/$docId/items').where("item_id", isEqualTo: item.id);
+    var docsSnapshot = await itemQuery.get();
+    if(docsSnapshot.docs.isNotEmpty) {
+      var doc = docsSnapshot.docs.firstWhere((doc) => doc.get('item_id') == item.id);
+      doc.reference.update({
+        "item_quantity": FieldValue.increment(1),
+      });
+    }else {
+      await FirebaseFirestore.instance.collection('/lists/$docId/items').add({
         'item_id': item.id,
         "item_name": item.name,
-        "item_image": item.imageURL,
-        'item_description': "",
         "item_brand": item.brand,
-        'item_size': item.size,
+        "item_size": item.size,
+        "item_price": item.price,
+        "item_image": item.imageURL,
         'store_name': item.storeName,
         'item_quantity': item.quantity,
-        'isAddedToList': false,
-        "item_price": item.price,
         'item_oldPrice': item.oldPrice,
-        'message': "",
-        'createdAt': Timestamp.fromDate(DateTime.now().toUtc()),
-        'userId': FirebaseAuth.instance.currentUser!.uid,
-        'username': userData['username'],
-        'userImageURL': userData['imageURL'],
+        'item_category': item.category,
+        "item_isChecked": false,
+        "text": item.text,
+        "owner": userData['username'],
+        "time": Timestamp.fromDate(DateTime.now().toUtc()),
       }).catchError((e) {
-        print(e);
+        done = false;
       });
+      if (item.text.isEmpty)
+        await FirebaseFirestore.instance.collection('/lists/$docId/messages').add({
+          'item_id': item.id,
+          "item_name": item.name,
+          "item_image": item.imageURL,
+          'item_description': "",
+          "item_brand": item.brand,
+          'item_size': item.size,
+          'store_name': item.storeName,
+          'item_quantity': item.quantity,
+          'isAddedToList': false,
+          "item_price": item.price,
+          'item_oldPrice': item.oldPrice,
+          'message': "",
+          'createdAt': Timestamp.fromDate(DateTime.now().toUtc()),
+          'userId': FirebaseAuth.instance.currentUser!.uid,
+          'username': userData['username'],
+          'userImageURL': userData['imageURL'],
+        }).catchError((e) {
+          print(e);
+        });
+    }
     FirebaseFirestore.instance.collection('/lists').doc(docId).update({
       "last_message": "Added ${item.name}",
       "last_message_date": Timestamp.fromDate(DateTime.now().toUtc()),
