@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:bargainb/features/chatlists/presentation/views/chatlists_screen.dart';
 import 'package:bargainb/features/onboarding/data/repos/onboarding_repo.dart';
 import 'package:bargainb/features/onboarding/presentation/manager/bot_response_cubit.dart';
 import 'package:bargainb/features/onboarding/presentation/views/customize_experience_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/policy_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/terms_of_service_screen.dart';
+import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:bargainb/providers/insights_provider.dart';
 import 'package:bargainb/providers/suggestion_provider.dart';
 import 'package:bargainb/providers/tutorial_provider.dart';
@@ -150,21 +152,15 @@ class _MyAppState extends State<MyApp> {
             future: getAllProductsFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
                 return SplashWithProgressIndicator();
               }
-
               return StreamBuilder(
                   stream: authStateChangesStream,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
                       return SplashWithProgressIndicator();
                     }
                     if (snapshot.hasData) {
-                      // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-                      //     overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
-
                       if (widget.notificationMessage != null) {
                         return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
                       }
