@@ -141,6 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void finalizePhoneLogin(UserCredential userCredential, QuerySnapshot<Map<String, dynamic>> result) {
+    //TODO save user info to user provider and trigger create contact if not already created
      TrackingUtils().trackLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
     saveRememberMePref();
     if(!result.docs.first.data().containsKey('token')) saveUserDeviceToken(userCredential);
@@ -630,7 +631,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           .collection('users')
           .doc(userCredential.user!.uid)
           .set(userData);
-      Provider.of<UserProvider>(context,listen: false).setUserData(userCredential.user!.uid, username, email, phoneNumber, deviceToken!, photoURL);
+      Provider.of<UserProvider>(context, listen: false).setUserData(userCredential.user!.uid, username, email, phoneNumber, deviceToken!, photoURL);
     }catch(e){
       print(e);
     }

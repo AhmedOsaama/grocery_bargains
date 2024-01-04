@@ -255,6 +255,7 @@ class _CustomizeExperienceScreenState extends State<CustomizeExperienceScreen> {
         },
         body: contactData,
       ).catchError((e) {
+        print("ERROR CREATING HUBSPOT CONTACT");
         print(e);
       });
       await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({

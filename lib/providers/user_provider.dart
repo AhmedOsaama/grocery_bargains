@@ -55,7 +55,7 @@ class UserProvider with ChangeNotifier{
     notifyListeners();
   }
 
-  void setUserData(String id,String name,String email,String phoneNumber, String deviceToken, String photoURL){
+  void setUserData(String id, String name, String email, String phoneNumber, String deviceToken, String photoURL){
     this.id = id;
     this.name = name;
     this.email = email;
