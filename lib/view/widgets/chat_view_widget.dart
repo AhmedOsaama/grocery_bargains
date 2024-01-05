@@ -352,6 +352,7 @@ class _ChatViewState extends State<ChatView> {
                           contentPadding: EdgeInsets.only(left: 10),
                           borderRaduis: 99999,
                           onSubmitted: (_) async {
+                            ShowCaseWidget.of(showcaseContext).dismiss();
                             await submitMessage(context);
                             finishTutorial(tutorialProvider, showcaseContext);
                           },
@@ -360,6 +361,7 @@ class _ChatViewState extends State<ChatView> {
                       5.pw,
                       GestureDetector(
                         onTap: () async {
+                          ShowCaseWidget.of(showcaseContext).dismiss();
                           await submitMessage(context);
                           finishTutorial(tutorialProvider, showcaseContext);
                         },
@@ -379,7 +381,7 @@ class _ChatViewState extends State<ChatView> {
   Future<void> finishTutorial(TutorialProvider tutorialProvider, BuildContext showcaseContext) async {
     if(tutorialProvider.isTutorialRunning){
       ShowCaseWidget.of(showcaseContext).dismiss();
-      await Future.delayed(Duration(seconds: 3));
+      await Future.delayed(Duration(seconds: 1));
       tutorialProvider.stopTutorial(showcaseContext);
     }
   }

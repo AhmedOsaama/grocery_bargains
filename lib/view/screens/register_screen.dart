@@ -140,11 +140,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     saveRememberMePref();
   }
 
-  void finalizePhoneLogin(UserCredential userCredential, QuerySnapshot<Map<String, dynamic>> result) {
-    //TODO save user info to user provider and trigger create contact if not already created
-     TrackingUtils().trackLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
+  Future<void> finalizePhoneLogin(UserCredential userCredential, QuerySnapshot<Map<String, dynamic>> result) async {
+    var deviceToken = await FirebaseMessaging.instance.getToken() ?? "default token";
+    var userMap = result.docs.first.data();
+    TrackingUtils().trackLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
     saveRememberMePref();
-    if(!result.docs.first.data().containsKey('token')) saveUserDeviceToken(userCredential);
+    if(!userMap.containsKey('token')) saveUserDeviceToken(userCredential);
+      Provider.of<UserProvider>(context, listen: false).setUserData(userCredential.user!.uid, userMap['username'],  userMap['email'], userMap['phoneNumber'], deviceToken, userMap['imageURL']);
   }
 
   @override
@@ -557,8 +559,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         }
         await saveUserData(userCredential);
       }
+      var userMap = userSnapshot.data()!;
+      Provider.of<UserProvider>(context, listen: false).setUserData(userCredential.user!.uid, userMap['username'],  userMap['email'], userMap['phoneNumber'], userMap['token'], userMap['imageURL']);
       saveRememberMePref();
-
       TrackingUtils().trackLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
     }
   }
@@ -637,7 +640,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-  Future<void> saveUserDeviceToken(UserCredential userCredential) async {           //duplicate in main screen
+  Future<String> saveUserDeviceToken(UserCredential userCredential) async {           //duplicate in main screen
     var deviceToken = await FirebaseMessaging.instance.getToken();              //could produce a problem if permission is not accepted especially on iOS
     await FirebaseFirestore.instance
         .collection('users')
@@ -646,6 +649,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       'token': deviceToken,
       'timestamp': Timestamp.now(),
     });
+    return deviceToken!;
     // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Added device token")));
   } 
   

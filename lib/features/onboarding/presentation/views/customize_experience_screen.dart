@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/onboarding_stepper.dart';
@@ -223,14 +224,13 @@ class _CustomizeExperienceScreenState extends State<CustomizeExperienceScreen> {
             if (isValid!) {
               _formKey.currentState!.save();
               var contactData = {
-                "id": userProvider.id,
                 "email": userProvider.email,
                 "firstname": userProvider.name,
                 'phone': userProvider.phoneNumber,
                 'shopping_goals': _goalsController.text.trim(),
-                'favorite_grocery': selectedStore,
+                'favorite_store': selectedStore,
                 'biggest_frustration': _biggestFrustrationsController.text.trim(),
-                "contact_owner_id": "support@bargainb.com",
+                "hubspot_owner_id": "1252705237",
               };
               createHubspotContact(contactData);
               AppNavigator.pushReplacement(context: context, screen: MainScreen());
@@ -247,7 +247,7 @@ class _CustomizeExperienceScreenState extends State<CustomizeExperienceScreen> {
     print("creating hubspot contact");
     var contactData = jsonEncode({"properties": userData});
     try {
-      await post(
+      var response = await post(
         Uri.parse('https://api.hubapi.com/crm/v3/objects/contacts'),
         headers: {
           'Authorization': 'Bearer pat-eu1-6afeefb9-6630-45c6-b31e-e292f251c251',
@@ -258,11 +258,14 @@ class _CustomizeExperienceScreenState extends State<CustomizeExperienceScreen> {
         print("ERROR CREATING HUBSPOT CONTACT");
         print(e);
       });
-      await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
-        'isHubspotContact': true,
-      });
-      print("DONE creating hubspot contact");
-
+      if(response.statusCode == 201) {
+        await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
+          'isHubspotContact': true,
+        });
+        print("DONE creating hubspot contact");
+      }else{
+        log("ERROR CREATING HUBSPOT CONTACT: ${response.statusCode} ---> ${response.body}");
+      }
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Added Hubspot Contact")));
     } catch (e) {
       print(e);
