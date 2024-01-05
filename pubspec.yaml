@@ -88,6 +88,7 @@ dependencies:
   confetti: ^0.7.0
   easy_stepper: ^0.6.0
   audioplayers: ^4.1.0
+  package_info_plus: ^3.1.2
 
 
 

@@ -1,4 +1,5 @@
 
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:audioplayers/audioplayers.dart';
@@ -12,7 +13,10 @@ import 'package:bargainb/features/onboarding/presentation/views/widgets/third_on
 import 'package:bargainb/utils/sounds_manager.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../config/routes/app_navigator.dart';
 import '../../../../utils/app_colors.dart';
@@ -137,13 +141,45 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   @override
   void initState() {
     trackOnboarding();
+    trackFirstTimeUser();
+    if(kReleaseMode)
+      sendNewInstallEmail();
     super.initState();
   }
 
+  Future<void> sendNewInstallEmail() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    var url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
+    await post(url,
+        headers: {
+          "Content-Type": "Application/json",
+          'origin': "http://localhost",
+        },
+        body: jsonEncode({
+          'service_id': 'service_in1p4en',
+          'template_id': 'template_lso7get',
+          'user_id': 'oVDOMhMkZ5BgtIH4g',
+          'template_params': {
+            'user_name': "BargainB App",
+            'user_email': "support@thebargainB.com",
+            'user_message': "This is to notify you of a new first time user that installed the app. \n Store: ${packageInfo.installerStore} Package Name: ${packageInfo.packageName}, version: ${packageInfo.version}, Build Number: ${packageInfo.buildNumber}",
+          }
+        })
+    ).catchError((e){
+      print(e);
+    });
+  }
+
+
   void trackOnboarding() {
     try {
-      TrackingUtils().trackPageView(
-          FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Onboarding screen");
+      TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), "Onboarding screen");
+    } catch (e) {}
+  }
+
+  void trackFirstTimeUser() {
+    try {
+      TrackingUtils().trackFirstTimeUser(DateTime.now().toUtc().toString());
     } catch (e) {}
   }
 }

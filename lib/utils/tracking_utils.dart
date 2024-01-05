@@ -55,6 +55,7 @@ class TrackingUtils {
   static const formSubmittedEvent = 'FormSubmitted';
   static const chooseFavouriteStoreEvent = 'chooseFavouriteStore';
   static const subscriptionEvent = 'subscription_Successful';
+  static const firstTimeEvent = 'firstTime_User';
 
 
 
@@ -181,6 +182,15 @@ class TrackingUtils {
   }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  void trackFirstTimeUser(String timestamp){
+    mixpanel.track(firstTimeEvent, properties: {
+      timeStampKey : timestamp,
+    });
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(firstTimeEvent)
+        ..addCustomData(timeStampKey, timestamp)
+    );
+  }
 
   void trackSignup(String userId, String timestamp){
     mixpanel.track(signUpEvent, properties: {
