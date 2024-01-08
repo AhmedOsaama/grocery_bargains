@@ -39,7 +39,6 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
     'Share with family & friends',
     'Exclusive access to the best deals',
     'Track your savings',
-    '30 messages per month (you can add more)'
   ];
 
   List<String> subscriptionPlans = ['Yearly', 'Monthly'];
