@@ -16,7 +16,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart';
@@ -87,9 +86,6 @@ class _ChatViewState extends State<ChatView> {
   Future turnOffFirstTimeChatlist() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     pref.setBool('firstTimeChatlist', false);
-    // setState(() {
-    //   isFirstTimeChatlist = false;
-    // });
     print('turned off first time');
   }
 
@@ -215,7 +211,6 @@ class _ChatViewState extends State<ChatView> {
   StreamBuilder<QuerySnapshot<Object?>> buildChatView(List<QueryDocumentSnapshot<Object?>> items, BuildContext showcaseContext) {
     var tutorialProvider = Provider.of<TutorialProvider>(context);
     var userProvider = Provider.of<UserProvider>(context);
-    log(showcaseContext.toString());
     return StreamBuilder<QuerySnapshot>(
         stream: chatStream,
         builder: (context, snapshot) {
@@ -412,52 +407,6 @@ class _ChatViewState extends State<ChatView> {
   }
 
 
-  List<Widget> getItemsPlaceholder() {
-    return List.generate(
-        3,
-        (index) => Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(15),
-                  margin: EdgeInsets.symmetric(vertical: 7),
-                  decoration: BoxDecoration(
-                    color: purple30,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: SvgPicture.asset(
-                    cheese,
-                    width: 27,
-                    height: 27,
-                  ),
-                ),
-                10.pw,
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 75.w,
-                      height: 10.h,
-                      decoration: BoxDecoration(color: purple50, borderRadius: BorderRadius.circular(6)),
-                    ),
-                    5.ph,
-                    Container(
-                      width: 220.w,
-                      height: 8.h,
-                      decoration: BoxDecoration(color: purple10, borderRadius: BorderRadius.circular(6)),
-                    ),
-                    5.ph,
-                    Container(
-                      width: 220.w,
-                      height: 8.h,
-                      decoration: BoxDecoration(color: purple10, borderRadius: BorderRadius.circular(6)),
-                    ),
-                  ],
-                ),
-                Spacer(),
-                Text("€ 1.25"),
-              ],
-            ));
-  }
 }
 
 

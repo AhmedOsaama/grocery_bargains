@@ -56,13 +56,6 @@ class UserProvider with ChangeNotifier{
   }
 
   void setUserData(String id, String name, String email, String phoneNumber, String deviceToken, String photoURL){
-    print("SETTING USER DATA:");
-    print(id);
-    print(name);
-    print(email);
-    print(phoneNumber);
-    print(deviceToken);
-    print(photoURL);
     this.id = id;
     this.name = name;
     this.email = email;
