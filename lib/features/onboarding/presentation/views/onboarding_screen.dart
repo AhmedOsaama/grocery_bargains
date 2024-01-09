@@ -140,7 +140,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
 
   @override
   void initState() {
-    trackOnboarding();
     trackFirstTimeUser();
     if(kReleaseMode)
       sendNewInstallEmail();
@@ -170,12 +169,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     });
   }
 
-
-  void trackOnboarding() {
-    try {
-      TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), "Onboarding screen");
-    } catch (e) {}
-  }
 
   void trackFirstTimeUser() {
     try {
