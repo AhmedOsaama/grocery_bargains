@@ -133,7 +133,7 @@ class _TermsOfServiceScreenState extends State<TermsOfServiceScreen> {
                 TermsOfServiceText.introductionBody3,
                 style: bodyFont,
               ),
-              TextButton(onPressed: () => launchLink('https://thebargainb.com/privacy-policy/'), child: Text(TermsOfServiceText.introductionBody3Link)),
+              // TextButton(onPressed: () => launchLink('https://thebargainb.com/privacy-policy/'), child: Text(TermsOfServiceText.introductionBody3Link)),
               20.ph,
               Text(
                 TermsOfServiceText.introductionBody4,

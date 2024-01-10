@@ -29,14 +29,14 @@ abstract class TermsOfServiceText{
   static const String acknowledgementHeader = "Acknowledgement";
   static const String contactUsHeader = "Contact Us";
 
-  static const String introductionBody1 = "Welcome to BargainB (“Company”, “we”, “our”, “us”)! As you have just clicked our Terms of Service, please pause, grab a cup of coffee and carefully read the following pages. It will take you approximately 20 minutes.";
-  static const String introductionBody2 = "These Terms of Service (“Terms”, “Terms of Service”) govern your use of our web pages located at www.thebargainB.com and our mobile application BargainB (together or individually “Service”) operated by BargainB.";
-  static const String introductionBody3 = "Our Privacy Policy also governs your use of our Service and explains how we collect, safeguard and disclose information that results from your use of our web pages. ";
-  static const String introductionBody3Link = "Please read it here www.thebargainB.com/privacy.";
+  static const String introductionBody1 = "Welcome to BargainB (“Company”, “we”, “our”, “us”)! As you engage with our Terms of Service, we encourage you to read these pages thoroughly. It should take about 20 minutes.";
+  static const String introductionBody2 = "These Terms of Service (“Terms”, “Terms of Service”) govern your use of our web pages at www.thebargainB.com and our mobile application BargainB (“Service”). Your use of our Service also adheres to the standard Apple Terms of Use (EULA), which can be found at https://www.apple.com/legal/internet-services/itunes/dev/stdeula/.";
+  static const String introductionBody3 = """Our Privacy Policy also governs your use of our Service and explains our data handling practices.
+By using our Service, you agree to these Terms and our Privacy Policy (“Agreements”). If you disagree with any part of the Agreements, you may discontinue using our Service and contact us at customersupport@bargainb.com for assistance""";
   static const String introductionBody4 = "Your agreement with us includes these Terms and our Privacy Policy (“Agreements”). You acknowledge that you have read and understood Agreements, and agree to be bound of them.";
   static const String introductionBody5 = """If you do not agree with (or cannot comply with) Agreements, then you may not use the Service, but please let us know by emailing at customersupport@bargainb.com. so we can try to find a solution. These Terms apply to all visitors, users and others who wish to access or use Service.
 
-Thank you for being responsible.""";
+Thank you for being responsible""";
   static const String communicationsBody = "By creating an Account on our Service, you agree to subscribe to newsletters, marketing or promotional materials and other information we may send. However, you may opt out of receiving any, or all, of these communications from us by following the unsubscribe link or by emailing at.";
   static const String purchasesBody1 = "If you wish to purchase any product or service made available through Service (“Purchase”), you may be asked to supply certain information relevant to your Purchase including, without limitation, your credit card number, the expiration date of your credit card, your billing address, and your shipping information.";
   static const String purchasesBody2 = "You represent and warrant that: (i) you have the legal right to use any credit card(s) or other payment method(s) in connection with any Purchase; and that (ii) the information you supply to us is true, correct and complete.";
