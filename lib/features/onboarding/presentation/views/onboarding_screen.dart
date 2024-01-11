@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'dart:developer';
 
@@ -36,14 +35,12 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   bool showFAB = true;
   final PageController _pageController = PageController();
 
-
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        floatingActionButton: buildFAB(),                                                                  //controlled by second onboarding screen
+        floatingActionButton: buildFAB(), //controlled by second onboarding screen
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 30),
           child: Column(
@@ -61,16 +58,19 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   children: [
                     FirstOnboarding(),
                     SecondOnboarding(
-                      showFAB: (){
-                        if(showFAB == false)
-                        setState(() {
-                        showFAB = true;
-                        });
+                      showFAB: () {
+                        if (showFAB == false)
+                          setState(() {
+                            showFAB = true;
+                          });
                       },
-                      disableFAB: (){
+                      disableFAB: () {
                         showFAB = false;
-                    },),
-                    ThirdOnboarding(goToNextPage: goToNextPage,),
+                      },
+                    ),
+                    ThirdOnboarding(
+                      goToNextPage: goToNextPage,
+                    ),
                     FourthOnboarding(),
                     FifthOnboarding(),
                     SixthOnboarding(),
@@ -97,16 +97,18 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   Widget? buildFAB() {
-    if(pageNumber == 2) return null;
-    if(showFAB) {
+    if (pageNumber == 2) return null;
+    if (showFAB) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: GenericButton(
           onPressed: () {
-            if (pageNumber == 2) (){};
-            else setState(() {
-              goToNextPage();
-            });
+            if (pageNumber == 2)
+              () {};
+            else
+              setState(() {
+                goToNextPage();
+              });
           },
           width: 60,
           height: 60,
@@ -123,8 +125,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   ScrollPhysics getPhysics() {
-    if(pageNumber == 2 || pageNumber == 1)
-      return NeverScrollableScrollPhysics();
+    if (pageNumber == 2 || pageNumber == 1) return NeverScrollableScrollPhysics();
     return BouncingScrollPhysics();
   }
 
@@ -133,42 +134,37 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       _pageController.animateToPage(pageNumber.toInt() + 1,
           duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
       pageNumber++;
-    }else if(pageNumber >= _totalPages - 1){
-      AppNavigator.pushReplacement(context: context, screen: OnboardingSubscriptionScreen(isChangingPlan: false,));
+    } else if (pageNumber >= _totalPages - 1) {
+      AppNavigator.pushReplacement(
+          context: context,
+          screen: OnboardingSubscriptionScreen(
+            isChangingPlan: false,
+          ));
     }
   }
 
   @override
   void initState() {
     trackFirstTimeUser();
-    if(kReleaseMode)
-      sendNewInstallEmail();
+    if (kReleaseMode) sendNewInstallMessage();
     super.initState();
   }
 
-  Future<void> sendNewInstallEmail() async {
+  Future<void> sendNewInstallMessage() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    var url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
+    var url =
+        Uri.parse('https://connect.pabbly.com/workflow/sendwebhookdata/IjU3NjUwNTY5MDYzMTA0MzU1MjY4NTUzMTUxMzIi_pc');
     await post(url,
         headers: {
           "Content-Type": "Application/json",
-          'origin': "http://localhost",
         },
         body: jsonEncode({
-          'service_id': 'service_in1p4en',
-          'template_id': 'template_lso7get',
-          'user_id': 'oVDOMhMkZ5BgtIH4g',
-          'template_params': {
-            'user_name': "BargainB App",
-            'user_email': "support@thebargainB.com",
-            'user_message': "This is to notify you of a new first time user that installed the app. \n Store: ${packageInfo.installerStore} Package Name: ${packageInfo.packageName}, version: ${packageInfo.version}, Build Number: ${packageInfo.buildNumber}",
-          }
-        })
-    ).catchError((e){
+          'user_message':
+              "This is to notify you of a new first time user that installed the app. \n Store: ${packageInfo.installerStore} Package Name: ${packageInfo.packageName}, version: ${packageInfo.version}, Build Number: ${packageInfo.buildNumber}",
+        })).catchError((e) {
       print(e);
     });
   }
-
 
   void trackFirstTimeUser() {
     try {
@@ -176,10 +172,3 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
     } catch (e) {}
   }
 }
-
-
-
-
-
-
-
