@@ -236,6 +236,7 @@ class TrackingUtils {
         ..addCustomData(timeStampKey, timestamp)
         ..addCustomData(searchQueryKey, searchQuery)
     );
+    if(objectIDs.isNotEmpty || positions.isNotEmpty)
     AlgoliaTrackingUtils.trackAlgoliaClickEvent(userId, objectIDs, queryId, positions, searchEvent);
   }
 
