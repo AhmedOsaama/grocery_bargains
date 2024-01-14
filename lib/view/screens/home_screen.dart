@@ -208,19 +208,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Showcase buildNewChatlistShowcase(TutorialProvider tutorialProvider, BuildContext context, BuildContext builder) {
-    return Showcase.withWidget(
-      key: tutorialProvider.isTutorialRunning ? TooltipKeys.showCase3 : new GlobalKey<State<StatefulWidget>>(),
-      targetBorderRadius: BorderRadius.circular(8.r),
-      tooltipPosition: TooltipPosition.top,
-      onBarrierClick: () async {
-        await goToProductPageTutorial(context, builder);
-      },
-      container: buildNewChatlistTutorial(context, builder, tutorialProvider),
-      height: 110.h,
-      width: ScreenUtil().screenWidth * 0.95,
-      child: buildNewChatlistImage(),
-    );
+  Widget buildNewChatlistShowcase(TutorialProvider tutorialProvider, BuildContext context, BuildContext builder) {
+    return buildNewChatlistImage();
   }
 
   Future<void> onRefresh(BuildContext context) {

@@ -82,6 +82,7 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     getSharedPrefs();
+    PurchaseApi.init();
     NavigatorController.index = 0;
     FlutterBranchSdk.initSession().listen((data) {
       if (data.containsKey("+clicked_branch_link") && data["+clicked_branch_link"] == true) {

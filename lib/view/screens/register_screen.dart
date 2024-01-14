@@ -573,8 +573,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await PurchaseApi.init();
       if (!PurchaseApi.isSubscribed) {
         await AppNavigator.pushReplacement(context: context, screen: ConfirmSubscriptionScreen());
+      }else{
+        AppNavigator.pushReplacement(context: context, screen: CustomizeExperienceScreen());
       }
-      AppNavigator.pushReplacement(context: context, screen: MainScreen());
+      // AppNavigator.pushReplacement(context: context, screen: MainScreen());
   }
 
   Future<void> saveUserData(UserCredential userCredential) async {

@@ -14,6 +14,7 @@ import 'package:bargainb/providers/tutorial_provider.dart';
 import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/app_colors.dart';
+import 'package:bargainb/view/screens/register_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -166,8 +167,8 @@ class _MyAppState extends State<MyApp> {
                       }
                       return MainScreen();
                     }
-                      // return widget.isFirstTime ? WelcomeScreen() : MainScreen();
-                    return WelcomeScreen();
+                      return widget.isFirstTime ? WelcomeScreen() : MainScreen();
+                    // return WelcomeScreen();
                   });
             }),
         localizationsDelegates: context.localizationDelegates,

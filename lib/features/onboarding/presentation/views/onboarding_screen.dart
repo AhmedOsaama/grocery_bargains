@@ -11,6 +11,7 @@ import 'package:bargainb/features/onboarding/presentation/views/widgets/sixth_on
 import 'package:bargainb/features/onboarding/presentation/views/widgets/third_onboarding.dart';
 import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/sounds_manager.dart';
+import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/register_screen.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:firebase_auth/firebase_auth.dart';

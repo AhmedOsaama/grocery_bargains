@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 
+import '../../../../providers/tutorial_provider.dart';
 import '../../../../utils/app_colors.dart';
 import '../../../../utils/validator.dart';
 import '../../../../view/components/button.dart';
@@ -163,27 +164,6 @@ class _CustomizeExperienceScreenState extends State<CustomizeExperienceScreen> {
                       isExpanded: true,
                     ),
                   ),
-                  // GenericField(
-                  //   controller: _favouriteController,
-                  //   hintText: "(e.g., Jumbo)".tr(),
-                  //   onSaved: (value){
-                  //
-                  //   },
-                  //   onChanged: (_){
-                  //     setState(() {
-                  //
-                  //     });
-                  //   },
-                  //   contentPadding: EdgeInsets.symmetric(vertical: 5,horizontal: 7),
-                  //   boxShadow: BoxShadow(
-                  //     color: Color(0x0F000000),
-                  //     blurRadius: 14,
-                  //     offset: Offset(0, 2),
-                  //     spreadRadius: 1,
-                  //   ),
-                  //   validation: (value) => Validator.text(value),
-                  //   // colorStyle: Color.fromRGBO(237, 237, 237, 1),
-                  // ),
                   20.ph,
                   Text(
                     "What are your biggest frustrations with grocery shopping?".tr(),
@@ -233,7 +213,10 @@ class _CustomizeExperienceScreenState extends State<CustomizeExperienceScreen> {
                 "hubspot_owner_id": "1252705237",
               };
               createHubspotContact(contactData);
-              AppNavigator.pushReplacement(context: context, screen: MainScreen());
+              // AppNavigator.pushReplacement(context: context, screen: MainScreen());
+              AppNavigator.pop(context: context);
+              Provider.of<UserProvider>(context, listen: false).turnOffFirstTime();
+              Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
               trackFormSubmitted();
             }
           };

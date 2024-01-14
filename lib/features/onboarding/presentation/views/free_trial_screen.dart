@@ -52,13 +52,8 @@ class FreeTrialScreen extends StatelessWidget {
                   color: brightOrange,
                   height: 60,
                   onPressed: () async {
-                    // await initiateFreeSubscription(context);
+                    await initiateFreeSubscription(context);
                     AppNavigator.pushReplacement(context: context, screen: OnBoardingScreen());
-                    log("IS IN FIRST TIME");
-                    await Provider.of<UserProvider>(context, listen: false).turnOffFirstTime();
-                    // Future.delayed(Duration(seconds: 2), (){
-                      Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
-                    // });
                   },
                   child: Text(
                     "Begin Free Trial".tr(),

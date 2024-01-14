@@ -9,6 +9,7 @@ import 'package:bargainb/view/components/button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -30,69 +31,154 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              Image.asset(groceryGames),
-              10.ph,
-              Image.asset(chats),
-              21.ph,
-              Text(
-                "Welcome to BargainB".tr(),
-                style: TextStylesInter.textViewBold26,
-              ),
-              10.ph,
-              Text(
-                "We're done playing by their rules. We've built BargainB to be your champion against the grocery chains,"
-                        " ensuring you always get the best deals, hassle-free."
-                    .tr(),
-                style: TextStylesInter.textViewLight15,
-                textAlign: TextAlign.center,
-              ),
-              10.ph,
-              Text("Special Welcome Offer for Our Early Birds!".tr(),
-                  style: TextStylesInter.textViewSemiBold14, textAlign: TextAlign.center),
-              10.ph,
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: Text(
-                    "As one of our first users, we're thrilled to offer you a FREE one-month trial of BargainB. But hey, there's a twist."
-                        .tr(),
-                    style: TextStylesInter.textViewLight15,
-                    textAlign: TextAlign.center),
-              ),
-              10.ph,
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: Text(
-                    "Help us make BargainB awesome for you and us, as we use it too. Take a quick survey Your feedback is gold!"
-                        .tr(),
-                    style: TextStylesInter.textViewLight15,
-                    textAlign: TextAlign.center),
-              ),
-              10.ph,
-              GenericButton(
-                  width: double.infinity,
-                  borderRadius: BorderRadius.circular(10),
-                  color: brightOrange,
-                  height: 60,
-                  onPressed: () => AppNavigator.push(context: context, screen: SurveyScreen()),
-                  child: Text(
-                    "Yes, FREE one-month trial of BargainB".tr(),
-                    style: TextStylesInter.textViewSemiBold16,
-                  )),
-              10.ph,
-              GenericButton(
-                  width: double.infinity,
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.white,
-                  height: 60,
-                  borderColor: Color(0xFFEBEBEB),
-                  onPressed: () => AppNavigator.push(context: context, screen: OnBoardingScreen()),
-                  child: Text(
-                    "Nope, I don’t want a free trial",
-                    style: TextStylesInter.textViewSemiBold16.copyWith(color: Colors.black),
-                  )),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                FutureBuilder(
+                    future: Future.delayed(Duration(milliseconds: 500)),
+                    builder: (context, snapshot) {
+                      var loading = snapshot.connectionState == ConnectionState.waiting;
+                      return Container(
+                        height: loading ? 0.h : 130.h,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            AnimatedPositioned(
+                              duration: Duration(milliseconds: 500),
+                              top: loading ? 50 : 0,
+                              child: AnimatedOpacity(
+                                duration: Duration(milliseconds: 500),
+                                opacity: loading ? 0 : 1,
+                                child: Image.asset(context.locale.languageCode == "en" ? groceryGames : groceryGamesDutch),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                ),
+                10.ph,
+                FutureBuilder(
+                    future: Future.delayed(Duration(milliseconds: 1500)),
+                    builder: (context, snapshot) {
+                      var loading = snapshot.connectionState == ConnectionState.waiting;
+                      return Container(
+                        child: AnimatedOpacity(
+                          duration: Duration(milliseconds: 20),
+                          opacity: loading ? 0 : 1,
+                          child: Image.asset(context.locale.languageCode == "en" ? chats : chatsDutch, height: 150,),
+                        ),
+                      );
+                    }
+                ),
+                // Image.asset(chats),
+                21.ph,
+                FutureBuilder(
+                    future: Future.delayed(Duration(milliseconds: 2500)),
+                    builder: (context, snapshot) {
+                      var loading = snapshot.connectionState == ConnectionState.waiting;
+                      return Container(
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            AnimatedOpacity(
+                              duration: Duration(milliseconds: 500),
+                              opacity: loading ? 0 : 1,
+                              // child: Image.asset(context.locale.languageCode == "en" ? onboarding_bubble1 : onboarding_bubble1_dutch, width: 270.w,),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Welcome to BargainB".tr(),
+                                    style: TextStylesInter.textViewBold26,
+                                  ),
+                                  10.ph,
+                                  Text(
+                                    "We're done playing by their rules. We've built BargainB to be your champion against the grocery chains,"
+                                        " ensuring you always get the best deals, hassle-free."
+                                        .tr(),
+                                    style: TextStylesInter.textViewLight15,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  10.ph,
+                                  Text("Special Welcome Offer for Our Early Birds!".tr(),
+                                      style: TextStylesInter.textViewSemiBold14, textAlign: TextAlign.center),
+                                  10.ph,
+                                  Text(
+                                      "As one of our first users, we're thrilled to offer you a FREE one-month trial of BargainB. But hey, there's a twist."
+                                          .tr(),
+                                      style: TextStylesInter.textViewLight15,
+                                      textAlign: TextAlign.center),
+                                  10.ph,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                                    child: Text(
+                                        "Help us make BargainB awesome for you and us, as we use it too. Take a quick survey Your feedback is gold!"
+                                            .tr(),
+                                        style: TextStylesInter.textViewLight15,
+                                        textAlign: TextAlign.center),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                ),
+
+
+                10.ph,
+                FutureBuilder(
+                    future: Future.delayed(Duration(milliseconds: 3000)),
+                    builder: (context, snapshot) {
+                      var loading = snapshot.connectionState == ConnectionState.waiting;
+                      return Container(
+                        height: loading ? 200.h : 200.h,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            AnimatedPositioned(
+                              duration: Duration(milliseconds: 500),
+                              top: loading ? 50 : 0,
+                              child: AnimatedOpacity(
+                                duration: Duration(milliseconds: 500),
+                                opacity: loading ? 0 : 1,
+                                // child: Image.asset(context.locale.languageCode == "en" ? onboarding_bubble1 : onboarding_bubble1_dutch, width: 270.w,),
+                                child: Column(
+                                  children: [
+                                    GenericButton(
+                                        width: ScreenUtil().screenWidth,
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: brightOrange,
+                                        height: 60,
+                                        onPressed: () => AppNavigator.push(context: context, screen: SurveyScreen()),
+                                        child: Text(
+                                          "Yes, FREE one-month trial of BargainB".tr(),
+                                          style: TextStylesInter.textViewSemiBold16,
+                                        )),
+                                    10.ph,
+                                    GenericButton(
+                                        width: ScreenUtil().screenWidth,
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: Colors.white,
+                                        height: 60,
+                                        borderColor: Color(0xFFEBEBEB),
+                                        onPressed: () => AppNavigator.push(context: context, screen: OnBoardingScreen()),
+                                        child: Text(
+                                          "Nope, I don’t want a free trial",
+                                          style: TextStylesInter.textViewSemiBold16.copyWith(color: Colors.black),
+                                        )),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                ),
+              ],
+            ),
           ),
         ),
       ),

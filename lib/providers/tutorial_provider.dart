@@ -27,7 +27,7 @@ class TutorialProvider with ChangeNotifier{
 
   void activateWelcomeTutorial(){
     canShowWelcomeDialog = true;
-    notifyListeners();
+    // notifyListeners();
   }
 
   void deactivateWelcomeTutorial(){

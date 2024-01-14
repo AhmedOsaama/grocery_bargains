@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:bargainb/features/onboarding/presentation/views/widgets/first_survey.dart';
@@ -6,6 +7,8 @@ import 'package:bargainb/features/onboarding/presentation/views/widgets/second_s
 import 'package:bargainb/features/onboarding/presentation/views/widgets/third_survey.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../config/routes/app_navigator.dart';
 import '../../../../utils/app_colors.dart';
@@ -267,10 +270,56 @@ class _SurveyScreenState extends State<SurveyScreen> {
           duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
       pageNumber++;
     } else if (pageNumber >= _totalPages - 1) {
-      //TODO: call the Hubspot API to create a contact with the responses data
+      var contactData = {
+        "firstname": "Guest",
+        'phone': "Guest Phone",
+        'age': ageRange,
+        'city': city,
+        'grocery_time': groceryTime,
+
+        'grocery_method': groceryMethod,
+        'grocery_challenges':  groceryChallenges.toString(),
+        "discount_findings": discountFindings.toString(),
+
+        'grocery_attractions': groceryAttractions,
+        'grocery_interests': groceryInterests,
+        'grocery_concerns': groceryConcerns.toString(),
+
+        'premium_app_interest': premiumAppInterest,
+        'monthly_subscription_price': monthlySubscriptionPrice,
+        'month_pay_preference': monthPayPreference,
+        "hubspot_owner_id": "1252705237",
+      };
+      createHubspotContact(contactData);
       AppNavigator.pushReplacement(
           context: context,
           screen: FreeTrialScreen());
     }
   }
+
+  Future<void> createHubspotContact(Map userData) async {
+    print("creating hubspot contact");
+    var contactData = jsonEncode({"properties": userData});
+    try {
+      var response = await post(
+        Uri.parse('https://api.hubapi.com/crm/v3/objects/contacts'),
+        headers: {
+          'Authorization': 'Bearer pat-eu1-6afeefb9-6630-45c6-b31e-e292f251c251',
+          'Content-Type': 'application/json'
+        },
+        body: contactData,
+      );
+      if(response.statusCode == 201) {
+        var decodedResponse = jsonDecode(response.body);
+        print("DONE creating hubspot contact: ${decodedResponse}");
+        // var pref = await SharedPreferences.getInstance();
+        // pref.setString("hubspot_id", decodedResponse['id']);
+      }else{
+        log("ERROR CREATING HUBSPOT CONTACT: ${response.statusCode} ---> ${response.body}");
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
 }

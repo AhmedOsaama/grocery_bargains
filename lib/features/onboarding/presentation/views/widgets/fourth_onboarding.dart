@@ -107,50 +107,6 @@ class _FourthOnboardingState extends State<FourthOnboarding> {
                 );
               }
           ),
-          // FutureBuilder(
-          //   future: Future.delayed(Duration(milliseconds: 200),),
-          //   builder: (ctx, snapshot){
-          //   loading = snapshot.connectionState == ConnectionState.waiting;
-          //   return Column(
-          //     children: [
-          //       Container(
-          //         height: loading ? 100.h : 90.h,
-          //         child: Stack(
-          //           alignment: Alignment.centerRight,
-          //           children: [
-          //             AnimatedPositioned(
-          //               duration: Duration(milliseconds: 500),
-          //               top: loading ? 50 : 0,
-          //               child: AnimatedOpacity(
-          //                 duration: Duration(milliseconds: 500),
-          //                 opacity: loading ? 0 : 1,
-          //                 child: Image.asset(onboarding_bubble1, width: 270.w,),
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //       Container(
-          //         height: loading ? 300.h : 450.h,
-          //         child: Stack(
-          //           alignment: Alignment.centerRight,
-          //           children: [
-          //             AnimatedPositioned(
-          //               duration: Duration(milliseconds: 500),
-          //               top: loading ? 50 : 0,
-          //               child: AnimatedOpacity(
-          //                 duration: Duration(milliseconds: 500),
-          //                 opacity: loading ? 0 : 1,
-          //                 child: Image.asset(onboarding_bubble2, width: 330.w,),
-          //               ),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ],
-          //   );
-          //   }
-          // ),
         ],
       ),
     );
