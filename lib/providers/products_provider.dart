@@ -34,7 +34,7 @@ class ProductsProvider with ChangeNotifier {
     List<Product> products = [];
     var response = await NetworkServices.getLimitedProducts(startingIndex, 100);
     List productsList = jsonDecode(response.body);
-    for(var decodedProduct in productsList){
+    for(var decodedProduct in productsList) {
       var product = Product.fromJson(decodedProduct);
       if(product.availableNow == 1) products.add(product);
     }
@@ -148,63 +148,6 @@ class ProductsProvider with ChangeNotifier {
 
 
 
-  // Future<List<Product?>> searchProducts(String searchTerm) async {
-  //   var isRelevant = true;
-  //   if(searchTerm.contains("Relevance")){
-  //     searchTerm = searchTerm.split('-')[0];
-  //    isRelevant = true;
-  //   }else{
-  //     isRelevant = false;
-  //   }
-  //
-  //   try {
-  //     var response = await Future.wait([
-  //       NetworkServices.searchAlbertProducts(searchTerm, isRelevant),
-  //       NetworkServices.searchJumboProducts(searchTerm, isRelevant),
-  //       NetworkServices.searchHoogvlietProducts(searchTerm, isRelevant),
-  //       NetworkServices.searchDirkProducts(searchTerm, isRelevant),
-  //     ]);
-  //
-  //     List<Product> albertProducts = [];
-  //     List decodedAlbert = jsonDecode(response[0].body);
-  //     for (var decodedProduct in decodedAlbert) {
-  //       var product = Product.fromJson(decodedProduct);
-  //       albertProducts.add(product);
-  //     }
-  //
-  //     List<Product> jumboProducts = [];
-  //     List decodedJumbo = jsonDecode(response[1].body);
-  //     for (var decodedProduct in decodedJumbo) {
-  //       var product = Product.fromJson(decodedProduct);
-  //       jumboProducts.add(product);
-  //     }
-  //
-  //     List<Product> hoogvlietProducts = [];
-  //     List decodedHoogvliet = jsonDecode(response[2].body);
-  //     for (var decodedProduct in decodedHoogvliet) {
-  //       var product = Product.fromJson(decodedProduct);
-  //       hoogvlietProducts.add(product);
-  //     }
-  //
-  //     List<Product> dirkProducts = [];
-  //     List decodedDirk = jsonDecode(response[3].body);
-  //     for (var decodedProduct in decodedDirk) {
-  //       var product = Product.fromJson(decodedProduct);
-  //       dirkProducts.add(product);
-  //     }
-  //
-  //     var searchResult = [...albertProducts, ...jumboProducts, ...hoogvlietProducts, ...dirkProducts];
-  //     searchResult.shuffle();
-  //     try {
-  //       TrackingUtils().trackSearchPerformed("filter", FirebaseAuth.instance.currentUser!.uid, searchTerm);
-  //     }catch(e){}
-  //     return searchResult;
-  //   }catch(e){
-  //     print(e);
-  //     return [];
-  //   }
-  //
-  // }
 
 
   Future<void> goToProductPage(String storeName, BuildContext context, int productId) async {

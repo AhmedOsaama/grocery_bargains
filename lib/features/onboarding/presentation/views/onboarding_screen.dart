@@ -9,7 +9,9 @@ import 'package:bargainb/features/onboarding/presentation/views/widgets/fourth_o
 import 'package:bargainb/features/onboarding/presentation/views/widgets/second_onboarding.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/sixth_onboarding.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/third_onboarding.dart';
+import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/sounds_manager.dart';
+import 'package:bargainb/view/screens/register_screen.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -31,8 +33,8 @@ class OnBoardingScreen extends StatefulWidget {
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
   double pageNumber = 0;
-  int _totalPages = 6;
-  bool showFAB = true;
+  int _totalPages = 5;
+  bool showFAB = false;
   final PageController _pageController = PageController();
 
   @override
@@ -56,7 +58,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   },
                   physics: getPhysics(),
                   children: [
-                    FirstOnboarding(),
                     SecondOnboarding(
                       showFAB: () {
                         if (showFAB == false)
@@ -97,13 +98,13 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   Widget? buildFAB() {
-    if (pageNumber == 2) return null;
+    if (pageNumber == 1) return null;
     if (showFAB) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: GenericButton(
           onPressed: () {
-            if (pageNumber == 2)
+            if (pageNumber == 1)
               () {};
             else
               setState(() {
@@ -125,7 +126,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   ScrollPhysics getPhysics() {
-    if (pageNumber == 2 || pageNumber == 1) return NeverScrollableScrollPhysics();
+    if (pageNumber == 1 || pageNumber == 0) return NeverScrollableScrollPhysics();
     return BouncingScrollPhysics();
   }
 
@@ -135,40 +136,17 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
       pageNumber++;
     } else if (pageNumber >= _totalPages - 1) {
-      AppNavigator.pushReplacement(
-          context: context,
-          screen: OnboardingSubscriptionScreen(
-            isChangingPlan: false,
-          ));
+      if(PurchaseApi.isSubscribed){
+        AppNavigator.pushReplacement(
+            context: context,
+            screen: RegisterScreen(isLogin: false,));
+      }else {
+        AppNavigator.pushReplacement(
+            context: context,
+            screen: OnboardingSubscriptionScreen(
+              isChangingPlan: false,
+            ));
+      }
     }
-  }
-
-  @override
-  void initState() {
-    trackFirstTimeUser();
-    if (kReleaseMode) sendNewInstallMessage();
-    super.initState();
-  }
-
-  Future<void> sendNewInstallMessage() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    var url =
-        Uri.parse('https://connect.pabbly.com/workflow/sendwebhookdata/IjU3NjUwNTY5MDYzMTA0MzU1MjY4NTUzMTUxMzIi_pc');
-    await post(url,
-        headers: {
-          "Content-Type": "Application/json",
-        },
-        body: jsonEncode({
-          'user_message':
-              "This is to notify you of a new first time user that installed the app. \n Store: ${packageInfo.installerStore} Package Name: ${packageInfo.packageName}, version: ${packageInfo.version}, Build Number: ${packageInfo.buildNumber}",
-        })).catchError((e) {
-      print(e);
-    });
-  }
-
-  void trackFirstTimeUser() {
-    try {
-      TrackingUtils().trackFirstTimeUser(DateTime.now().toUtc().toString());
-    } catch (e) {}
   }
 }

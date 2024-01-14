@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:bargainb/features/onboarding/presentation/views/confirm_subscription_screen.dart';
+import 'package:bargainb/features/onboarding/presentation/views/customize_experience_screen.dart';
 import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
@@ -25,6 +27,7 @@ import '../../config/routes/app_navigator.dart';
 import '../../features/onboarding/presentation/views/onboarding_screen.dart';
 import '../../generated/locale_keys.g.dart';
 import '../../providers/google_sign_in_provider.dart';
+import '../../providers/tutorial_provider.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
@@ -567,18 +570,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> goToNextScreen(BuildContext context) async {
-     var pref = await SharedPreferences.getInstance();
-    var isFirstTime = pref.getBool("firstTime") ?? true;
-    if (isFirstTime) {
-      AppNavigator.pushReplacement(
-          context: context, screen: OnBoardingScreen());
-    } else {
       await PurchaseApi.init();
-      if(!PurchaseApi.isSubscribed){
+      if (!PurchaseApi.isSubscribed) {
         await AppNavigator.pushReplacement(context: context, screen: ConfirmSubscriptionScreen());
       }
       AppNavigator.pushReplacement(context: context, screen: MainScreen());
-    }
   }
 
   Future<void> saveUserData(UserCredential userCredential) async {

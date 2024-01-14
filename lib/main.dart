@@ -6,6 +6,7 @@ import 'package:bargainb/features/onboarding/presentation/manager/bot_response_c
 import 'package:bargainb/features/onboarding/presentation/views/customize_experience_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/policy_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/terms_of_service_screen.dart';
+import 'package:bargainb/features/onboarding/presentation/views/welcome_screen.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:bargainb/providers/insights_provider.dart';
 import 'package:bargainb/providers/suggestion_provider.dart';
@@ -165,7 +166,8 @@ class _MyAppState extends State<MyApp> {
                       }
                       return MainScreen();
                     }
-                      return widget.isFirstTime ? OnBoardingScreen() : MainScreen();
+                      // return widget.isFirstTime ? WelcomeScreen() : MainScreen();
+                    return WelcomeScreen();
                   });
             }),
         localizationsDelegates: context.localizationDelegates,

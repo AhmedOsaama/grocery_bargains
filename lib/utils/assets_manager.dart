@@ -50,5 +50,7 @@ const String premium3Dutch = "$imgPath/premium3_dutch.png";
 const String premium4Dutch = "$imgPath/premium4_dutch.png";
 const String premium5Dutch = "$imgPath/premium5_dutch.png";
 const String loadingIndicator = "$imgPath/loading_ind.gif";
+const String groceryGames = "$imgPath/grocery_games.png";
+const String chats = "$imgPath/chats.png";
 
 

@@ -11,6 +11,7 @@ class TutorialProvider with ChangeNotifier{
   bool canShowConfetti = false;
 
   void startTutorial(){
+    log("IS STARTING TUTORIAL");
     isTutorialRunning = true;
     notifyListeners();
   }
