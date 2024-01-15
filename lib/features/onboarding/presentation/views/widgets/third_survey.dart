@@ -7,10 +7,12 @@ import '../../../../../utils/app_colors.dart';
 import '../../../../../view/components/generic_field.dart';
 
 class ThirdSurvey extends StatefulWidget {
-  ThirdSurvey({Key? key, required this.questionsMap, required this.saveResponse}) : super(key: key);
+  ThirdSurvey({Key? key, required this.questionsMap, required this.saveGroceryConcerns, required this.saveGroceryInterests, required this.saveGroceryAttractions}) : super(key: key);
 
   final Map questionsMap;
-  final Function saveResponse;
+  final Function saveGroceryConcerns;
+  final Function saveGroceryInterests;
+  final Function saveGroceryAttractions;
 
   @override
   State<ThirdSurvey> createState() => _ThirdSurveyState();
@@ -20,6 +22,73 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
   var groceryAttractions = "";
   var groceryInterests = "";
   var groceryConcerns = [];
+  var _groceryAttractionsController = TextEditingController();
+  var _groceryInterestsController = TextEditingController();
+  var _groceryConcernsController = TextEditingController();
+
+  SizedBox? buildGroceryAttractionsSecondaryWidget(String answer) {
+    return answer == "Other" ? SizedBox(
+      width: 150,
+      child: GenericField(
+        onSubmitted: (value){
+          if(value.isNotEmpty) {
+            widget.saveGroceryAttractions(value);
+          }
+        },
+        enabled: groceryAttractions == "Other",
+        contentPadding: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
+        colorStyle: purple70,
+        boxShadow: BoxShadow(
+          color: Color(0x0F000000),
+          blurRadius: 14,
+          offset: Offset(0, 2),
+          spreadRadius: 1,
+        ),
+        // colorStyle: Color.fromRGBO(237, 237, 237, 1),
+      ),) : null;
+  }
+  SizedBox? buildGroceryInterestsSecondaryWidget(String answer) {
+    return answer == "Other" ? SizedBox(
+      width: 150,
+      child: GenericField(
+        onSubmitted: (value){
+          if(value.isNotEmpty) {
+            widget.saveGroceryInterests(value);
+          }
+        },
+        contentPadding: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
+        colorStyle: purple70,
+        boxShadow: BoxShadow(
+          color: Color(0x0F000000),
+          blurRadius: 14,
+          offset: Offset(0, 2),
+          spreadRadius: 1,
+        ),
+        // colorStyle: Color.fromRGBO(237, 237, 237, 1),
+      ),) : null;
+  }
+  SizedBox? buildGroceryConcernsSecondaryWidget(MapEntry answer) {
+    return answer.key == "Other" ? SizedBox(
+      width: 150,
+      child: GenericField(
+        onSubmitted: (value){
+          if(value.isNotEmpty && !groceryConcerns.contains(value)) {
+            groceryConcerns.add(value);                               //adds value with "other" but "other" will be removed later
+            widget.saveGroceryConcerns(groceryConcerns);
+          }
+        },
+        contentPadding: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
+        colorStyle: purple70,
+        boxShadow: BoxShadow(
+          color: Color(0x0F000000),
+          blurRadius: 14,
+          offset: Offset(0, 2),
+          spreadRadius: 1,
+        ),
+        // colorStyle: Color.fromRGBO(237, 237, 237, 1),
+      ),) : null;
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -60,12 +129,14 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
                       value: answer,
                       groupValue: groceryAttractions,
                       activeColor: purple70,
+                      secondary: buildGroceryAttractionsSecondaryWidget(answer),
                       dense: true,
                       onChanged: (value) {
                         setState(() {
                           groceryAttractions = value!;
                         });
-                        widget.saveResponse(groceryAttractions, groceryInterests, groceryConcerns);
+                        if(value != "Other")
+                          widget.saveGroceryAttractions(value);
                       }),
                 )
                 .toList(),
@@ -88,11 +159,13 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
                       activeColor: purple70,
                       groupValue: groceryInterests,
                       dense: true,
+                      secondary: buildGroceryInterestsSecondaryWidget(answer),
                       onChanged: (value) {
                         setState(() {
                           groceryInterests = value;
                         });
-                        widget.saveResponse(groceryAttractions, groceryInterests, groceryConcerns);
+                        if(value != "Other")
+                        widget.saveGroceryInterests(value);
                       }),
                 )
                 .toList(),
@@ -115,6 +188,7 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
                       value: answer.value,
                       activeColor: purple70,
                       dense: true,
+                      secondary: buildGroceryConcernsSecondaryWidget(answer),
                       controlAffinity: ListTileControlAffinity.leading,
                       onChanged: (value) {
                         if (value!) {
@@ -125,7 +199,7 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
                         setState(() {
                           widget.questionsMap['q3_answers'][answer.key] = value;
                         });
-                        widget.saveResponse(groceryAttractions, groceryInterests, groceryConcerns);
+                       widget.saveGroceryConcerns(groceryConcerns);
                       }),
                 )
                 .toList(),
@@ -134,4 +208,5 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
       ),
     );
   }
+
 }

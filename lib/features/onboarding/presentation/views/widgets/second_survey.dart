@@ -21,6 +21,8 @@ class _SecondSurveyState extends State<SecondSurvey> {
   var groceryChallenges = [];
   var discountFindings = [];
 
+  var _groceryChallengesController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -53,18 +55,21 @@ class _SecondSurveyState extends State<SecondSurvey> {
             children: (widget.questionsMap['q1_answers'] as List)
                 .map(
                   (answer) => RadioListTile(
-                  title: Text(answer.toString().tr(), style: TextStylesInter.textViewRegular14,),
-                  value: answer,
-                  groupValue: groceryMethod,
-                  activeColor: purple70,
-                  dense: true,
-                  onChanged: (value) {
-                    setState(() {
-                      groceryMethod = value!;
-                    });
-                    widget.saveResponse(groceryMethod, groceryChallenges, discountFindings);
-                  }),
-            )
+                      title: Text(
+                        answer.toString().tr(),
+                        style: TextStylesInter.textViewRegular14,
+                      ),
+                      value: answer,
+                      groupValue: groceryMethod,
+                      activeColor: purple70,
+                      dense: true,
+                      onChanged: (value) {
+                        setState(() {
+                          groceryMethod = value!;
+                        });
+                        widget.saveResponse(groceryMethod, groceryChallenges, discountFindings);
+                      }),
+                )
                 .toList(),
           ),
           20.ph,
@@ -74,27 +79,35 @@ class _SecondSurveyState extends State<SecondSurvey> {
           ),
           5.ph,
           Column(
-            children: (widget.questionsMap['q2_answers'] as Map).entries
-                .map(
-                  (answer) => CheckboxListTile(
-                  title: Text(answer.key.toString().tr(), style: TextStylesInter.textViewRegular14,),
-                  value: answer.value,
-                  activeColor: purple70,
-                      controlAffinity: ListTileControlAffinity.leading,
-                      dense: true,
-                  onChanged: (value) {
-                    if(value!) {
-                      groceryChallenges.add(answer.key);
-                    }else{
-                      groceryChallenges.remove(answer.key);
-                    }
-                    setState(() {
-                      widget.questionsMap['q2_answers'][answer.key] = value;
+            children: (widget.questionsMap['q2_answers'] as Map).entries.map(
+              (answer) {
+                return CheckboxListTile(
+                    title: Text(
+                      answer.key.toString().tr(),
+                      style: TextStylesInter.textViewRegular14,
+                    ),
+                    value: answer.value,
+                    activeColor: purple70,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    dense: true,
+                    secondary: buildSecondaryWidget(answer),
+                    onChanged: (value) {
+                      if (value!) {
+                        groceryChallenges.add(answer.key);
+                      } else {
+                        groceryChallenges.remove(answer.key);
+                      }
+                      setState(() {
+                        widget.questionsMap['q2_answers'][answer.key] = value;
+                      });
+                      if (groceryChallenges.contains("Other") && _groceryChallengesController.text.isNotEmpty) {
+                        widget.saveResponse(groceryMethod, groceryChallenges, discountFindings);
+                      } else if (!groceryChallenges.contains("Other") && _groceryChallengesController.text.isEmpty) {
+                        widget.saveResponse(groceryMethod, groceryChallenges, discountFindings);
+                      }
                     });
-                    widget.saveResponse(groceryMethod, groceryChallenges, discountFindings);
-                  }),
-            )
-                .toList(),
+              },
+            ).toList(),
           ),
           20.ph,
           Text(
@@ -103,29 +116,61 @@ class _SecondSurveyState extends State<SecondSurvey> {
           ),
           11.ph,
           Column(
-            children: (widget.questionsMap['q3_answers'] as Map).entries
+            children: (widget.questionsMap['q3_answers'] as Map)
+                .entries
                 .map(
                   (answer) => CheckboxListTile(
-                  title: Text(answer.key.toString().tr(), style: TextStylesInter.textViewRegular14,),
-                  value: answer.value,
-                  activeColor: purple70,
-                  dense: true,
-                  controlAffinity: ListTileControlAffinity.leading,
-                  onChanged: (value) {
-                    if(value!) {
-                      discountFindings.add(answer.key);
-                    }else{
-                      discountFindings.remove(answer.key);
-                    }                    setState(() {
-                      widget.questionsMap['q3_answers'][answer.key] = value;
-                    });
-                    widget.saveResponse(groceryMethod, groceryChallenges, discountFindings);
-                  }),
-            )
+                      title: Text(
+                        answer.key.toString().tr(),
+                        style: TextStylesInter.textViewRegular14,
+                      ),
+                      value: answer.value,
+                      activeColor: purple70,
+                      dense: true,
+                      controlAffinity: ListTileControlAffinity.leading,
+                      onChanged: (value) {
+                        if (value!) {
+                          discountFindings.add(answer.key);
+                        } else {
+                          discountFindings.remove(answer.key);
+                        }
+                        setState(() {
+                          widget.questionsMap['q3_answers'][answer.key] = value;
+                        });
+                        widget.saveResponse(groceryMethod, groceryChallenges, discountFindings);
+                      }),
+                )
                 .toList(),
           ),
         ],
       ),
     );
+  }
+
+  SizedBox? buildSecondaryWidget(MapEntry<dynamic, dynamic> answer) {
+    return answer.key == "Other"
+        ? SizedBox(
+            width: 150,
+            child: GenericField(
+              controller: _groceryChallengesController,
+              onSubmitted: (value) {
+                if (value.isNotEmpty && !groceryChallenges.contains(value)) {
+                  groceryChallenges.add(value);
+                  widget.saveResponse(groceryMethod, groceryChallenges, discountFindings);
+                }
+              },
+              enabled: groceryChallenges.contains("Other"),
+              contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+              colorStyle: purple70,
+              boxShadow: BoxShadow(
+                color: Color(0x0F000000),
+                blurRadius: 14,
+                offset: Offset(0, 2),
+                spreadRadius: 1,
+              ),
+              // colorStyle: Color.fromRGBO(237, 237, 237, 1),
+            ),
+          )
+        : null;
   }
 }

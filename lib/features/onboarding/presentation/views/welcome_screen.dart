@@ -45,7 +45,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           children: [
                             AnimatedPositioned(
                               duration: Duration(milliseconds: 500),
-                              top: loading ? 50 : 0,
+                              bottom: loading ? 50 : 0,
                               child: AnimatedOpacity(
                                 duration: Duration(milliseconds: 500),
                                 opacity: loading ? 0 : 1,
@@ -64,7 +64,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       var loading = snapshot.connectionState == ConnectionState.waiting;
                       return Container(
                         child: AnimatedOpacity(
-                          duration: Duration(milliseconds: 20),
+                          duration: Duration(milliseconds: 1000),
                           opacity: loading ? 0 : 1,
                           child: Image.asset(context.locale.languageCode == "en" ? chats : chatsDutch, height: 150,),
                         ),
@@ -77,51 +77,49 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     future: Future.delayed(Duration(milliseconds: 2500)),
                     builder: (context, snapshot) {
                       var loading = snapshot.connectionState == ConnectionState.waiting;
-                      return Container(
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            AnimatedOpacity(
-                              duration: Duration(milliseconds: 500),
-                              opacity: loading ? 0 : 1,
-                              // child: Image.asset(context.locale.languageCode == "en" ? onboarding_bubble1 : onboarding_bubble1_dutch, width: 270.w,),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    "Welcome to BargainB".tr(),
-                                    style: TextStylesInter.textViewBold26,
-                                  ),
-                                  10.ph,
-                                  Text(
-                                    "We're done playing by their rules. We've built BargainB to be your champion against the grocery chains,"
-                                        " ensuring you always get the best deals, hassle-free."
+                      return Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          AnimatedOpacity(
+                            duration: Duration(milliseconds: 500),
+                            opacity: loading ? 0 : 1,
+                            // child: Image.asset(context.locale.languageCode == "en" ? onboarding_bubble1 : onboarding_bubble1_dutch, width: 270.w,),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Welcome to BargainB".tr(),
+                                  style: TextStylesInter.textViewBold26,
+                                ),
+                                10.ph,
+                                Text(
+                                  "We're done playing by their rules. We've built BargainB to be your champion against the grocery chains,"
+                                      " ensuring you always get the best deals, hassle-free."
+                                      .tr(),
+                                  style: TextStylesInter.textViewLight15,
+                                  textAlign: TextAlign.center,
+                                ),
+                                10.ph,
+                                Text("Special Welcome Offer for Our Early Birds!".tr(),
+                                    style: TextStylesInter.textViewSemiBold14, textAlign: TextAlign.center),
+                                10.ph,
+                                Text(
+                                    "As one of our first users, we're thrilled to offer you a FREE one-month trial of BargainB. But hey, there's a twist."
                                         .tr(),
                                     style: TextStylesInter.textViewLight15,
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  10.ph,
-                                  Text("Special Welcome Offer for Our Early Birds!".tr(),
-                                      style: TextStylesInter.textViewSemiBold14, textAlign: TextAlign.center),
-                                  10.ph,
-                                  Text(
-                                      "As one of our first users, we're thrilled to offer you a FREE one-month trial of BargainB. But hey, there's a twist."
+                                    textAlign: TextAlign.center),
+                                10.ph,
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 30),
+                                  child: Text(
+                                      "Help us make BargainB awesome for you and us, as we use it too. Take a quick survey Your feedback is gold!"
                                           .tr(),
                                       style: TextStylesInter.textViewLight15,
                                       textAlign: TextAlign.center),
-                                  10.ph,
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                                    child: Text(
-                                        "Help us make BargainB awesome for you and us, as we use it too. Take a quick survey Your feedback is gold!"
-                                            .tr(),
-                                        style: TextStylesInter.textViewLight15,
-                                        textAlign: TextAlign.center),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       );
                     }
                 ),
@@ -138,10 +136,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           alignment: Alignment.center,
                           children: [
                             AnimatedPositioned(
-                              duration: Duration(milliseconds: 500),
+                              duration: Duration(milliseconds: 1000),
                               top: loading ? 50 : 0,
                               child: AnimatedOpacity(
-                                duration: Duration(milliseconds: 500),
+                                duration: Duration(milliseconds: 1000),
                                 opacity: loading ? 0 : 1,
                                 // child: Image.asset(context.locale.languageCode == "en" ? onboarding_bubble1 : onboarding_bubble1_dutch, width: 270.w,),
                                 child: Column(

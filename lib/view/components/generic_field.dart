@@ -30,6 +30,7 @@ class GenericField extends StatefulWidget {
   final BoxShadow? boxShadow;
   final BoxConstraints? suffixConstraints;
   final EdgeInsets? contentPadding;
+  final bool? enabled;
 
   GenericField({
     super.key,
@@ -55,6 +56,7 @@ class GenericField extends StatefulWidget {
     this.hintStyle,
     this.onTap,
     this.boxShadow,
+    this.enabled,
     this.suffixConstraints, this.fillColor, this.contentPadding,
   });
 
@@ -85,6 +87,7 @@ class _GenericFieldState extends State<GenericField> {
         onSaved: widget.onSaved,
         readOnly: widget.readOnly,
         controller: widget.controller,
+        enabled: widget.enabled,
         maxLines: widget.maxLines,
         keyboardType: widget.keyboardType,
         autocorrect: true,

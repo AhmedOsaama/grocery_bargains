@@ -66,7 +66,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
         "Finding deals": false,
         "Staying within budget": false,
         "Overwhelming choices": false,
-        "Other_______________": false
+        "Other": false
       },
       "q3": "How do you typically find deals or discounts on groceries? (Select all that apply)",
       "q3_answers": {
@@ -87,7 +87,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
         "Recipe suggestions",
         "Collaborative list sharing",
         "Budget tracking",
-        "Other_______________",
+        "Other",
       ],
       "q2": "What is most important to you in a grocery shopping app?",
       "q2_answers": [
@@ -95,7 +95,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
         "Variety of products",
         "Personalization",
         "Savings and deals",
-        "Other_______________",
+        "Other",
       ],
       "q3": "What concerns would you have using a new grocery shopping app? (Select all that apply)",
       "q3_answers": {
@@ -103,7 +103,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
         "Technical issues": false,
         "Effectiveness of features": false,
         "Cost": false,
-        "Other_______________": false
+        "Other": false
       },
     },
     {
@@ -172,7 +172,11 @@ class _SurveyScreenState extends State<SurveyScreen> {
                   children: [
                     FirstSurvey(questionsMap: questionsList[0], saveResponse: saveFirstScreenResponses,),
                     SecondSurvey(questionsMap: questionsList[1], saveResponse: saveSecondScreenResponses,),
-                    ThirdSurvey(questionsMap: questionsList[2], saveResponse: saveThirdScreenResponses,),
+                    ThirdSurvey(questionsMap: questionsList[2],
+                      saveGroceryAttractions: saveGroceryAttractions,
+                      saveGroceryInterests: saveGroceryInterests,
+                      saveGroceryConcerns: saveGroceryConcerns,
+                    ),
                     FourthSurvey(questionsMap: questionsList[3], saveResponse: saveFourthScreenResponses,),
                   ],
                 ),
@@ -206,6 +210,9 @@ class _SurveyScreenState extends State<SurveyScreen> {
   }
 
   void saveSecondScreenResponses(String groceryMethod, List groceryChallenges, List discountFindings){
+    print(groceryMethod);
+    print(groceryChallenges);
+    print(discountFindings);
     setState(() {
       this.groceryMethod = groceryMethod;
       this.groceryChallenges = groceryChallenges;
@@ -213,13 +220,36 @@ class _SurveyScreenState extends State<SurveyScreen> {
     });
   }
 
-  void saveThirdScreenResponses(String groceryAttractions, String groceryInterests, List groceryConcerns){
+  void saveGroceryAttractions(String groceryAttractions){
+    print(groceryAttractions);
     setState(() {
       this.groceryAttractions = groceryAttractions;
+    });
+}
+
+  void saveGroceryInterests(String groceryInterests){
+    print(groceryInterests);
+    setState(() {
       this.groceryInterests = groceryInterests;
+    });
+}
+  void saveGroceryConcerns(List groceryConcerns){
+    print(groceryConcerns);
+    setState(() {
       this.groceryConcerns = groceryConcerns;
     });
-  }
+}
+
+  // void saveThirdScreenResponses(String groceryAttractions, String groceryInterests, List groceryConcerns){
+  //   print(groceryAttractions);
+  //   print(groceryInterests);
+  //   print(groceryConcerns);
+  //   setState(() {
+  //     this.groceryAttractions = groceryAttractions;
+  //     this.groceryInterests = groceryInterests;
+  //     this.groceryConcerns = groceryConcerns;
+  //   });
+  // }
 
   void saveFourthScreenResponses(String premiumAppInterest, String monthlySubscriptionPrice, String monthPayPreference){
     setState(() {
@@ -246,9 +276,12 @@ class _SurveyScreenState extends State<SurveyScreen> {
         padding: const EdgeInsets.only(bottom: 10),
         child: GenericButton(
           onPressed: () {
-              setState(() {
+            groceryChallenges.remove("Other");
+            groceryConcerns.remove("Other");
+            setState(() {
                 goToNextPage();
               });
+            FocusScope.of(context).unfocus();
           },
           width: 60,
           height: 60,
