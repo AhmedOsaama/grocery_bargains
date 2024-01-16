@@ -2,15 +2,17 @@ import 'package:bargainb/features/profile/presentation/views/profile_screen.dart
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../utils/app_colors.dart';
 import '../../../../../view/components/generic_field.dart';
 
 class SecondSurvey extends StatefulWidget {
-  SecondSurvey({Key? key, required this.questionsMap, required this.saveResponse}) : super(key: key);
+  SecondSurvey({Key? key, required this.questionsMap, required this.saveResponse, required this.saveGroceryChallengesOther}) : super(key: key);
 
   final Map questionsMap;
   final Function saveResponse;
+  final Function saveGroceryChallengesOther;
 
   @override
   State<SecondSurvey> createState() => _SecondSurveyState();
@@ -100,11 +102,11 @@ class _SecondSurveyState extends State<SecondSurvey> {
                       setState(() {
                         widget.questionsMap['q2_answers'][answer.key] = value;
                       });
-                      if (groceryChallenges.contains("Other") && _groceryChallengesController.text.isNotEmpty) {
-                        widget.saveResponse(groceryMethod, groceryChallenges, discountFindings);
-                      } else if (!groceryChallenges.contains("Other") && _groceryChallengesController.text.isEmpty) {
-                        widget.saveResponse(groceryMethod, groceryChallenges, discountFindings);
+                      if(!groceryChallenges.contains("Other")){
+                        _groceryChallengesController.clear();
+                        widget.saveGroceryChallengesOther("");
                       }
+                        widget.saveResponse(groceryMethod, groceryChallenges, discountFindings);
                     });
               },
             ).toList(),
@@ -150,15 +152,17 @@ class _SecondSurveyState extends State<SecondSurvey> {
   SizedBox? buildSecondaryWidget(MapEntry<dynamic, dynamic> answer) {
     return answer.key == "Other"
         ? SizedBox(
-            width: 150,
+            width: 180.w,
             child: GenericField(
               controller: _groceryChallengesController,
-              onSubmitted: (value) {
-                if (value.isNotEmpty && !groceryChallenges.contains(value)) {
-                  groceryChallenges.add(value);
-                  widget.saveResponse(groceryMethod, groceryChallenges, discountFindings);
-                }
+              onChanged: (value) {
+                widget.saveGroceryChallengesOther(value);
               },
+              validation: (value){
+                if(value!.isEmpty) return "Field must not be empty";
+                return null;
+              },
+              autoValidateMode: AutovalidateMode.always,
               enabled: groceryChallenges.contains("Other"),
               contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
               colorStyle: purple70,

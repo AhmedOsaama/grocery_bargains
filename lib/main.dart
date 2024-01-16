@@ -167,8 +167,8 @@ class _MyAppState extends State<MyApp> {
                       }
                       return MainScreen();
                     }
-                      return widget.isFirstTime ? WelcomeScreen() : MainScreen();
-                    // return WelcomeScreen();
+                      // return widget.isFirstTime ? WelcomeScreen() : MainScreen();
+                    return WelcomeScreen();
                   });
             }),
         localizationsDelegates: context.localizationDelegates,

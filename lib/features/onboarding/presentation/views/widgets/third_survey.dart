@@ -2,17 +2,19 @@ import 'package:bargainb/features/profile/presentation/views/profile_screen.dart
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../utils/app_colors.dart';
 import '../../../../../view/components/generic_field.dart';
 
 class ThirdSurvey extends StatefulWidget {
-  ThirdSurvey({Key? key, required this.questionsMap, required this.saveGroceryConcerns, required this.saveGroceryInterests, required this.saveGroceryAttractions}) : super(key: key);
+  ThirdSurvey({Key? key, required this.questionsMap, required this.saveGroceryConcerns, required this.saveGroceryInterests, required this.saveGroceryAttractions, required this.saveGroceryConcernsOther}) : super(key: key);
 
   final Map questionsMap;
   final Function saveGroceryConcerns;
   final Function saveGroceryInterests;
   final Function saveGroceryAttractions;
+  final Function saveGroceryConcernsOther;
 
   @override
   State<ThirdSurvey> createState() => _ThirdSurveyState();
@@ -22,20 +24,24 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
   var groceryAttractions = "";
   var groceryInterests = "";
   var groceryConcerns = [];
+
   var _groceryAttractionsController = TextEditingController();
   var _groceryInterestsController = TextEditingController();
   var _groceryConcernsController = TextEditingController();
 
   SizedBox? buildGroceryAttractionsSecondaryWidget(String answer) {
     return answer == "Other" ? SizedBox(
-      width: 150,
+      width: 180.w,
       child: GenericField(
-        onSubmitted: (value){
-          if(value.isNotEmpty) {
+        controller: _groceryAttractionsController,
+        onChanged: (value) {
             widget.saveGroceryAttractions(value);
-          }
         },
         enabled: groceryAttractions == "Other",
+        validation: (value){
+          if(value!.isEmpty) return "Field must not be empty";
+        },
+        autoValidateMode: AutovalidateMode.always,
         contentPadding: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
         colorStyle: purple70,
         boxShadow: BoxShadow(
@@ -44,18 +50,21 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
           offset: Offset(0, 2),
           spreadRadius: 1,
         ),
-        // colorStyle: Color.fromRGBO(237, 237, 237, 1),
       ),) : null;
   }
   SizedBox? buildGroceryInterestsSecondaryWidget(String answer) {
     return answer == "Other" ? SizedBox(
-      width: 150,
+      width: 180.w,
       child: GenericField(
-        onSubmitted: (value){
-          if(value.isNotEmpty) {
+        controller: _groceryInterestsController,
+        onChanged: (value) {
             widget.saveGroceryInterests(value);
-          }
         },
+        validation: (value){
+          if(value!.isEmpty) return "Field must not be empty";
+        },
+        autoValidateMode: AutovalidateMode.always,
+        enabled: groceryInterests == "Other",
         contentPadding: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
         colorStyle: purple70,
         boxShadow: BoxShadow(
@@ -69,15 +78,18 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
   }
   SizedBox? buildGroceryConcernsSecondaryWidget(MapEntry answer) {
     return answer.key == "Other" ? SizedBox(
-      width: 150,
+      width: 180.w,
       child: GenericField(
-        onSubmitted: (value){
-          if(value.isNotEmpty && !groceryConcerns.contains(value)) {
-            groceryConcerns.add(value);                               //adds value with "other" but "other" will be removed later
-            widget.saveGroceryConcerns(groceryConcerns);
-          }
+        controller: _groceryConcernsController,
+        validation: (value){
+          if(value!.isEmpty) return "Field must not be empty";
         },
+        onChanged: (value) {
+          widget.saveGroceryConcernsOther(value);
+        },
+        autoValidateMode: AutovalidateMode.always,
         contentPadding: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
+        enabled: groceryConcerns.contains("Other"),
         colorStyle: purple70,
         boxShadow: BoxShadow(
           color: Color(0x0F000000),
@@ -134,8 +146,9 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
                       onChanged: (value) {
                         setState(() {
                           groceryAttractions = value!;
+                          _groceryAttractionsController.clear();
                         });
-                        if(value != "Other")
+                        // if(value != "Other")
                           widget.saveGroceryAttractions(value);
                       }),
                 )
@@ -163,8 +176,9 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
                       onChanged: (value) {
                         setState(() {
                           groceryInterests = value;
+                          _groceryInterestsController.clear();
                         });
-                        if(value != "Other")
+                        // if(value != "Other")
                         widget.saveGroceryInterests(value);
                       }),
                 )
@@ -199,6 +213,10 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
                         setState(() {
                           widget.questionsMap['q3_answers'][answer.key] = value;
                         });
+                        if(!groceryConcerns.contains("Other")){
+                          _groceryConcernsController.clear();
+                          widget.saveGroceryConcernsOther("");
+                        }
                        widget.saveGroceryConcerns(groceryConcerns);
                       }),
                 )

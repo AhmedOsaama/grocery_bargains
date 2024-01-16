@@ -31,6 +31,7 @@ class GenericField extends StatefulWidget {
   final BoxConstraints? suffixConstraints;
   final EdgeInsets? contentPadding;
   final bool? enabled;
+  final AutovalidateMode? autoValidateMode;
 
   GenericField({
     super.key,
@@ -57,6 +58,7 @@ class GenericField extends StatefulWidget {
     this.onTap,
     this.boxShadow,
     this.enabled,
+    this.autoValidateMode,
     this.suffixConstraints, this.fillColor, this.contentPadding,
   });
 
@@ -90,9 +92,11 @@ class _GenericFieldState extends State<GenericField> {
         enabled: widget.enabled,
         maxLines: widget.maxLines,
         keyboardType: widget.keyboardType,
+        autovalidateMode: widget.autoValidateMode,
         autocorrect: true,
         validator: widget.validation,
         obscureText: widget.obscureText,
+        onTapOutside: (_) => FocusManager.instance.primaryFocus!.unfocus(),
         style: const TextStyle(
           color: black,
           fontSize: 16,

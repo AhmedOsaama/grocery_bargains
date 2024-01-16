@@ -138,15 +138,18 @@ class _SurveyScreenState extends State<SurveyScreen> {
 
   var groceryMethod = "";
   var groceryChallenges = [];
+  var groceryChallengesOther = "";        //other option value
   var discountFindings = [];
 
   var groceryAttractions = "";
   var groceryInterests = "";
   var groceryConcerns = [];
+  var groceryConcernsOther = "";
 
   var premiumAppInterest = "";
   var monthlySubscriptionPrice = "";
   var monthPayPreference = "";
+
 
 
   @override
@@ -171,11 +174,15 @@ class _SurveyScreenState extends State<SurveyScreen> {
                   physics: NeverScrollableScrollPhysics(),
                   children: [
                     FirstSurvey(questionsMap: questionsList[0], saveResponse: saveFirstScreenResponses,),
-                    SecondSurvey(questionsMap: questionsList[1], saveResponse: saveSecondScreenResponses,),
+                    SecondSurvey(questionsMap: questionsList[1],
+                      saveResponse: saveSecondScreenResponses,
+                      saveGroceryChallengesOther: saveGroceryChallengesOther,
+                    ),
                     ThirdSurvey(questionsMap: questionsList[2],
                       saveGroceryAttractions: saveGroceryAttractions,
                       saveGroceryInterests: saveGroceryInterests,
                       saveGroceryConcerns: saveGroceryConcerns,
+                      saveGroceryConcernsOther: saveGroceryConcernsOther,
                     ),
                     FourthSurvey(questionsMap: questionsList[3], saveResponse: saveFourthScreenResponses,),
                   ],
@@ -220,6 +227,20 @@ class _SurveyScreenState extends State<SurveyScreen> {
     });
   }
 
+  void saveGroceryChallengesOther(String groceryChallengesOther){
+    print(groceryChallengesOther);
+    setState(() {
+      this.groceryChallengesOther = groceryChallengesOther;
+    });
+  }
+
+  void saveGroceryConcernsOther(String groceryConcernsOther){
+    print(groceryConcernsOther);
+    setState(() {
+      this.groceryConcernsOther = groceryConcernsOther;
+    });
+  }
+
   void saveGroceryAttractions(String groceryAttractions){
     print(groceryAttractions);
     setState(() {
@@ -240,16 +261,6 @@ class _SurveyScreenState extends State<SurveyScreen> {
     });
 }
 
-  // void saveThirdScreenResponses(String groceryAttractions, String groceryInterests, List groceryConcerns){
-  //   print(groceryAttractions);
-  //   print(groceryInterests);
-  //   print(groceryConcerns);
-  //   setState(() {
-  //     this.groceryAttractions = groceryAttractions;
-  //     this.groceryInterests = groceryInterests;
-  //     this.groceryConcerns = groceryConcerns;
-  //   });
-  // }
 
   void saveFourthScreenResponses(String premiumAppInterest, String monthlySubscriptionPrice, String monthPayPreference){
     setState(() {
@@ -260,24 +271,13 @@ class _SurveyScreenState extends State<SurveyScreen> {
   }
 
   Widget? buildFAB() {
-    if(pageNumber == 0 && ageRange.isNotEmpty && city.isNotEmpty && groceryTime.isNotEmpty){
-      showFAB = true;
-    }else if(pageNumber == 1 && groceryMethod.isNotEmpty && groceryChallenges.isNotEmpty && discountFindings.isNotEmpty){
-      showFAB = true;
-    }else if(pageNumber == 2 && groceryAttractions.isNotEmpty && groceryInterests.isNotEmpty && groceryConcerns.isNotEmpty){
-    showFAB = true;
-    }else if(pageNumber == 3 && premiumAppInterest.isNotEmpty && monthlySubscriptionPrice.isNotEmpty && monthPayPreference.isNotEmpty){
-      showFAB = true;
-    }else{
-      showFAB = false;
-    }
+    validateForms();
     if (showFAB) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 10),
         child: GenericButton(
           onPressed: () {
-            groceryChallenges.remove("Other");
-            groceryConcerns.remove("Other");
+            finalizeForm();
             setState(() {
                 goToNextPage();
               });
@@ -295,6 +295,42 @@ class _SurveyScreenState extends State<SurveyScreen> {
       );
     }
     return null;
+  }
+
+  void finalizeForm() {
+     if(groceryChallenges.contains("Other")){
+     groceryChallenges.remove("Other");
+     groceryChallenges.add(groceryChallengesOther);
+     }
+     if(groceryConcerns.contains("Other")){
+    groceryConcerns.remove("Other");
+    groceryConcerns.add(groceryConcernsOther);
+     }
+  }
+
+  void validateForms() {
+      if(pageNumber == 0 && ageRange.isNotEmpty && city.isNotEmpty && groceryTime.isNotEmpty){
+      showFAB = true;
+    }else if(pageNumber == 1 && groceryMethod.isNotEmpty && groceryChallenges.isNotEmpty && discountFindings.isNotEmpty){
+        print(groceryChallengesOther);
+        if(groceryChallenges.contains("Other") && groceryChallengesOther.isEmpty){
+      showFAB = false;
+        }else{
+          showFAB = true;
+        }
+    }else if(pageNumber == 2 && groceryAttractions.isNotEmpty && groceryInterests.isNotEmpty && groceryConcerns.isNotEmpty){
+        if(groceryAttractions == "Other" || groceryInterests == "Other"){
+          showFAB = false;
+        }else if(groceryConcerns.contains("Other") && groceryConcernsOther.isEmpty){
+          showFAB = false;
+        }else{
+          showFAB = true;
+        }
+    }else if(pageNumber == 3 && premiumAppInterest.isNotEmpty && monthlySubscriptionPrice.isNotEmpty && monthPayPreference.isNotEmpty){
+      showFAB = true;
+    }else{
+      showFAB = false;
+    }
   }
 
   void goToNextPage() {
