@@ -6,6 +6,7 @@ import 'package:bargainb/features/onboarding/presentation/views/widgets/fourth_s
 import 'package:bargainb/features/onboarding/presentation/views/widgets/second_survey.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/third_survey.dart';
 import 'package:dots_indicator/dots_indicator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -359,7 +360,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
         'month_pay_preference': monthPayPreference,
         "hubspot_owner_id": "1252705237",
       };
-      createHubspotContact(contactData);
+      if (kReleaseMode) createHubspotContact(contactData);
       AppNavigator.pushReplacement(
           context: context,
           screen: FreeTrialScreen());

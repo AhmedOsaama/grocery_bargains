@@ -34,82 +34,83 @@ class _ThirdOnboardingState extends State<ThirdOnboarding> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          'Your Data. Your Choice'.tr(),
-          style: TextStylesInter.textViewBold26,
-        ),
-        15.ph,
-        Text(
-          'How We Collect and Use Your Data'.tr(),
-          style: TextStyles.textViewSemiBold16,
-        ),
-        Image.asset(onboarding4_1),
-        Text.rich(
-          TextSpan(
-            children: [
-              TextSpan(
-                  text:
-                  'At BargainB, we value your privacy and are committed to protecting your personal information. We collect data about how and when you use our app to provide you with the best possible experience and personalize the content, products, and recipes you see. Read our'.tr(),
-                  style: TextStylesInter.textViewLight12),
-              TextSpan(
-                  text: ' policy'.tr(),
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () async {
-                    TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), "Policy Page",);
-                     AppNavigator.push(context: context, screen: PolicyScreen());
-                    },
-                  style: TextStylesInter.textViewSemiBold12.copyWith(decoration: TextDecoration.underline)),
-              TextSpan(
-                text: ' for more '.tr(),
-                style: TextStylesInter.textViewLight12,
-              ),
-            ],
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Text(
+            'Your Data. Your Choice'.tr(),
+            style: TextStylesInter.textViewBold26,
           ),
-          textAlign: TextAlign.center,
-        ),
-        15.ph,
-        Text(
-          'We use your data to personalise your Assistant, recommend products, send you alerts about deals, and track your savings. We also use your data to improve our app and services.'
-              .tr(),
-          style: TextStylesInter.textViewLight12,
-          textAlign: TextAlign.center,
-        ),
-        15.ph,
-        Image.asset(onboarding4_2),
-        10.ph,
-        GenericButton(
-          borderRadius: BorderRadius.circular(6),
-          padding: EdgeInsets.symmetric(vertical: 20),
-          color: brightOrange,
-          width: double.infinity,
-          onPressed: () {
-            TrackingUtils().trackButtonClick("Guest", "Personalize Assistant", DateTime.now().toUtc().toString(), "Third onboarding screen");
-            personalizeAI();
-          },
-          child: Text(
-            'Yes, Personalise My Assistant'.tr(),
-            style: TextStyles.textViewSemiBold16.copyWith(color: white),
+          15.ph,
+          Text(
+            'How We Collect and Use Your Data'.tr(),
+            style: TextStyles.textViewSemiBold16,
           ),
-        ),
-        15.ph,
-        GenericButton(
-          borderRadius: BorderRadius.circular(6),
-          padding: EdgeInsets.symmetric(vertical: 20),
-          borderColor: Color(0xFFEBEBEB),
-          color: Colors.white,
-          width: double.infinity,
-          onPressed: () async {
-            TrackingUtils().trackButtonClick("Guest", "Not now, exit app", DateTime.now().toUtc().toString(), "Third onboarding screen");
-            exit(1);
-          },
-          child: Text(
-            'Not now, leave App'.tr(),
-            style: TextStyles.textViewSemiBold16.copyWith(color: black),
+          Image.asset(onboarding4_1),
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                    text:
+                    'At BargainB, we prioritize your privacy & the protection of your personal information. To enhance your experience & tailor the content, products, & recipes to your preferences, we collect data about your app usage. Read our '.tr(),
+                    style: TextStylesInter.textViewLight13),
+                TextSpan(
+                    text: ' policy'.tr(),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                      TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), "Policy Page",);
+                       AppNavigator.push(context: context, screen: PolicyScreen());
+                      },
+                    style: TextStylesInter.textViewSemiBold12.copyWith(decoration: TextDecoration.underline)),
+                TextSpan(
+                  text: ' for more '.tr(),
+                  style: TextStylesInter.textViewLight13,
+                ),
+              ],
+            ),
+            textAlign: TextAlign.center,
           ),
-        ),
-      ],
+          15.ph,
+          Text(
+                "In addition to using your data to personalize your assistant, recommend products, send deal alerts, & track savings, we also collect & use your Contact List information. This helps us to improve our app's functionality & services. We may use this information to facilitate social connections, enable you to share deals with your contacts, & offer more personalized recommendations. Your contact data is handled with the utmost care & confidentiality. You have control over this data collection & can manage your preferences in the app settings.".tr(),
+            style: TextStylesInter.textViewLight13,
+            textAlign: TextAlign.center,
+          ),
+          15.ph,
+          Image.asset(onboarding4_2),
+          10.ph,
+          GenericButton(
+            borderRadius: BorderRadius.circular(6),
+            padding: EdgeInsets.symmetric(vertical: 20),
+            color: brightOrange,
+            width: double.infinity,
+            onPressed: () {
+              TrackingUtils().trackButtonClick("Guest", "Personalize Assistant", DateTime.now().toUtc().toString(), "Third onboarding screen");
+              personalizeAI();
+            },
+            child: Text(
+              'Yes, Personalise My Assistant'.tr(),
+              style: TextStyles.textViewSemiBold16.copyWith(color: white),
+            ),
+          ),
+          15.ph,
+          GenericButton(
+            borderRadius: BorderRadius.circular(6),
+            padding: EdgeInsets.symmetric(vertical: 20),
+            borderColor: Color(0xFFEBEBEB),
+            color: Colors.white,
+            width: double.infinity,
+            onPressed: () async {
+              TrackingUtils().trackButtonClick("Guest", "Not now, exit app", DateTime.now().toUtc().toString(), "Third onboarding screen");
+              exit(1);
+            },
+            child: Text(
+              'Not now, leave App'.tr(),
+              style: TextStyles.textViewSemiBold16.copyWith(color: black),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
