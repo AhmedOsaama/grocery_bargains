@@ -148,11 +148,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   void addComparisonItem(
       String storeName, ChatlistsProvider chatlistsProvider, Product product, ProductsProvider productsProvider) {
     comparisonItems.add(GestureDetector(
-      onTap: widget.storeName == storeName
+      onTap: widget.productId == product.id
           ? () => addProductToList(chatlistsProvider)
           : () => goToStoreProductPage(context, storeName, product),
       child: PriceComparisonItem(
-          isSameStore: widget.storeName == storeName,
+          isSameStore:  widget.productId == product.id,
           price: product.price ?? "N/A",
           size: product.unit,
           storeImagePath: productsProvider.getStoreLogoPath(storeName)),

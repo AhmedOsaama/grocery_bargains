@@ -17,7 +17,56 @@ class FirstSurvey extends StatefulWidget {
 }
 
 class _FirstSurveyState extends State<FirstSurvey> {
-  var _cityController = TextEditingController();
+  var city = "Choose City";
+  List<String> countries = [
+    'Choose City',
+    'Russia',
+    'Germany',
+    'United Kingdom',
+    'France',
+    'Italy',
+    'Spain',
+    'Ukraine',
+    'Poland',
+    'Romania',
+    'Netherlands',
+    'Belgium',
+    'Czechia',
+    'Greece',
+    'Portugal',
+    'Sweden',
+    'Hungary',
+    'Belarus',
+    'Austria',
+    'Serbia',
+    'Switzerland',
+    'Bulgaria',
+    'Denmark',
+    'Finland',
+    'Slovakia',
+    'Norway',
+    'Ireland',
+    'Croatia',
+    'Moldova',
+    'Bosnia and Herzegovina',
+    'Albania',
+    'Lithuania',
+    'North Macedonia',
+    'Slovenia',
+    'Latvia',
+    'Kosovo',
+    'Estonia',
+    'Montenegro',
+    'Luxembourg',
+    'Malta',
+    'Iceland',
+    'Andorra',
+    'Monaco',
+    'Liechtenstein',
+    'San Marino',
+    'Holy See',
+  ];
+
 
   var age = "";
   var groceryTime = "";
@@ -63,7 +112,7 @@ class _FirstSurveyState extends State<FirstSurvey> {
                         setState(() {
                           age = value!;
                         });
-                        widget.saveResponse(age, _cityController.text.trim(), groceryTime);
+                        widget.saveResponse(age, city, groceryTime);
 
                       }),
                 )
@@ -75,22 +124,44 @@ class _FirstSurveyState extends State<FirstSurvey> {
             style: TextStylesInter.textViewRegular14,
           ),
           5.ph,
-          GenericField(
-            controller: _cityController,
-            onSaved: (value) {},
-            onChanged: (_) {
-              widget.saveResponse(age, _cityController.text.trim(), groceryTime);
-            },
-            contentPadding: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
-            colorStyle: purple70,
-            boxShadow: BoxShadow(
-              color: Color(0x0F000000),
-              blurRadius: 14,
-              offset: Offset(0, 2),
-              spreadRadius: 1,
+          Container(
+            // width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0x0F000000),
+                  blurRadius: 14,
+                  offset: Offset(0, 2),
+                  spreadRadius: 1,
+                ),
+              ],
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: Color(0xFF7192F2)),
             ),
-            // colorStyle: Color.fromRGBO(237, 237, 237, 1),
+            child: DropdownButton<String>(
+              value: city,
+              items: countries
+                  .map((store) => DropdownMenuItem<String>(
+                  value: store,
+                  child: Text(
+                    store,
+                    style: TextStylesInter.textViewRegular14,
+                  )))
+                  .toList(),
+              onChanged: (value) {
+                setState(() {
+                  city = value!;
+                });
+                widget.saveResponse(age, city, groceryTime);
+              },
+              icon: Icon(Icons.keyboard_arrow_down_rounded),
+              underline: Container(),
+              // isDense: true,
+            ),
           ),
+
           20.ph,
           Text(
             widget.questionsMap['q3'].toString().tr(),
@@ -110,7 +181,7 @@ class _FirstSurveyState extends State<FirstSurvey> {
                     setState(() {
                       groceryTime = value!;
                     });
-                    widget.saveResponse(age, _cityController.text.trim(), groceryTime);
+                    widget.saveResponse(age, city, groceryTime);
                   }),
             )
                 .toList(),

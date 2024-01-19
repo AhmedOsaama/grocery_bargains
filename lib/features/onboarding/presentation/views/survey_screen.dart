@@ -236,6 +236,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
   }
 
   void saveGroceryConcernsOther(String groceryConcernsOther){
+    groceryConcernsOther = groceryConcernsOther.replaceAll(" ", '');
     print(groceryConcernsOther);
     setState(() {
       this.groceryConcernsOther = groceryConcernsOther;
@@ -243,6 +244,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
   }
 
   void saveGroceryAttractions(String groceryAttractions){
+    groceryAttractions = groceryAttractions.replaceAll(" ", '');
     print(groceryAttractions);
     setState(() {
       this.groceryAttractions = groceryAttractions;
@@ -250,6 +252,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
 }
 
   void saveGroceryInterests(String groceryInterests){
+    groceryInterests = groceryInterests.replaceAll(" ", '');
     print(groceryInterests);
     setState(() {
       this.groceryInterests = groceryInterests;
@@ -310,16 +313,18 @@ class _SurveyScreenState extends State<SurveyScreen> {
   }
 
   void validateForms() {
-      if(pageNumber == 0 && ageRange.isNotEmpty && city.isNotEmpty && groceryTime.isNotEmpty){
+      if(pageNumber == 0 && ageRange.isNotEmpty && city.isNotEmpty && city != "Choose City" && groceryTime.isNotEmpty){
       showFAB = true;
     }else if(pageNumber == 1 && groceryMethod.isNotEmpty && groceryChallenges.isNotEmpty && discountFindings.isNotEmpty){
-        print(groceryChallengesOther);
+        groceryChallengesOther = groceryChallengesOther.replaceAll(" ", '');
+        print(groceryChallengesOther.isEmpty);
         if(groceryChallenges.contains("Other") && groceryChallengesOther.isEmpty){
       showFAB = false;
         }else{
           showFAB = true;
         }
     }else if(pageNumber == 2 && groceryAttractions.isNotEmpty && groceryInterests.isNotEmpty && groceryConcerns.isNotEmpty){
+
         if(groceryAttractions == "Other" || groceryInterests == "Other"){
           showFAB = false;
         }else if(groceryConcerns.contains("Other") && groceryConcernsOther.isEmpty){
@@ -361,6 +366,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
         "hubspot_owner_id": "1252705237",
       };
       if (kReleaseMode) createHubspotContact(contactData);
+      if(kDebugMode) log(contactData.toString());
       AppNavigator.pushReplacement(
           context: context,
           screen: FreeTrialScreen());
