@@ -159,7 +159,8 @@ class _SecondSurveyState extends State<SecondSurvey> {
                 widget.saveGroceryChallengesOther(value);
               },
               validation: (value){
-                if(value!.isEmpty) return "Field must not be empty";
+                value = value!.replaceAll(" ", '');
+                if(value.isEmpty) return "Field must not be empty";
                 return null;
               },
               autoValidateMode: AutovalidateMode.always,
