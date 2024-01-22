@@ -35,6 +35,22 @@ class TrackingUtils {
   static const subscriptionPlanKey = 'Subscription plan';
   static const subscriptionPriceKey = 'Subscription price';
 
+  static const surveyAgeRangeKey = "Survey Age Range";
+  static const surveyGenderKey = "Survey Gender";
+  static const surveyGroceryTimeKey = "Survey Grocery Time";
+
+  static const surveyGroceryMethodKey = "Survey Grocery Method";
+  static const surveyGroceryChallengesKey = "Survey Grocery Challenge";
+  static const surveyDiscountFindingsKey = "Survey Discount Findings";
+
+  static const surveyGroceryAttractionsKey = "Survey Grocery Attractions";
+  static const surveyGroceryInterestsKey = "Survey Grocery Interests";
+  static const surveyGroceryConcernsKey = "Survey Grocery Concerns";
+
+  static const surveyPremiumAppInterestKey = "Survey Premium App Interest";
+  static const surveyMonthlySubscriptionPriceKey = "Survey Monthly subscription Price";
+  static const surveyMonthPayPreferenceKey = "Survey Month Pay Preference";
+
   static const buttonClickEvent = 'ButtonClick';
   static const pageViewEvent = 'PageView';
   static const popPageViewEvent = 'PopPageView';
@@ -56,6 +72,7 @@ class TrackingUtils {
   static const chooseFavouriteStoreEvent = 'chooseFavouriteStore';
   static const subscriptionEvent = 'subscription_Successful';
   static const firstTimeEvent = 'firstTime_User';
+  static const surveyEvent = 'SurveySubmitted';
 
 
 
@@ -368,6 +385,53 @@ class TrackingUtils {
         ..addCustomData(pageNameKey, pageName)
         ..addCustomData(subscriptionPlanKey, plan)
         ..addCustomData(subscriptionPriceKey, price)
+    );
+  }
+
+  void trackSurveySubmitted(
+      String timestamp,
+      String pageName,
+      String ageRange,
+      String gender,
+      String groceryTime,
+      String groceryMethod,
+      String groceryChallenges,
+      String discountFindings,
+      String groceryAttractions,
+      String groceryInterests,
+      String groceryConcerns,
+      String premiumAppInterest,
+      String monthlySubscriptionPrice,
+      String monthPayPreference,
+      ){
+    mixpanel.track(surveyEvent, properties: {
+      surveyAgeRangeKey : ageRange,
+      surveyGenderKey : gender,
+      surveyGroceryTimeKey : groceryTime,
+      surveyGroceryMethodKey : groceryMethod,
+      surveyGroceryChallengesKey : groceryChallenges,
+      surveyDiscountFindingsKey : discountFindings,
+      surveyGroceryAttractionsKey : groceryAttractions,
+      surveyGroceryInterestsKey : groceryInterests,
+      surveyGroceryConcernsKey : groceryConcerns,
+      surveyPremiumAppInterestKey : premiumAppInterest,
+      surveyMonthlySubscriptionPriceKey : monthlySubscriptionPrice,
+      surveyMonthPayPreferenceKey : monthPayPreference,
+    });
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(surveyEvent)
+        ..addCustomData(timeStampKey, timestamp)
+        ..addCustomData(pageNameKey, pageName)
+        ..addCustomData(surveyAgeRangeKey, ageRange)
+        ..addCustomData(surveyGenderKey, gender)
+        ..addCustomData(surveyGroceryTimeKey, groceryTime)
+        ..addCustomData(surveyGroceryMethodKey, groceryMethod)
+        ..addCustomData(surveyGroceryChallengesKey, groceryChallenges)
+        ..addCustomData(surveyDiscountFindingsKey, discountFindings)
+        ..addCustomData(surveyGroceryInterestsKey, groceryInterests)
+        ..addCustomData(surveyGroceryConcernsKey, groceryConcerns)
+        ..addCustomData(surveyPremiumAppInterestKey, premiumAppInterest)
+        ..addCustomData(surveyMonthlySubscriptionPriceKey, monthlySubscriptionPrice)
+        ..addCustomData(surveyMonthPayPreferenceKey, monthPayPreference)
     );
   }
 }

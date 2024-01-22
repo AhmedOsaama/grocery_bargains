@@ -5,6 +5,7 @@ import 'package:bargainb/features/onboarding/presentation/views/widgets/first_su
 import 'package:bargainb/features/onboarding/presentation/views/widgets/fourth_survey.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/second_survey.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/third_survey.dart';
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -43,10 +44,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
         "56+",
       ],
       "q2": "Please select your gender: ",
-      "q2_answers": [
-        "Male",
-        "Female"
-      ],
+      "q2_answers": ["Male", "Female"],
       "q3": "How often do you do grocery shopping?",
       "q3_answers": [
         "Weekly",
@@ -119,7 +117,8 @@ class _SurveyScreenState extends State<SurveyScreen> {
         "No",
         "Maybe",
       ],
-      "q2": "What is a reasonable monthly subscription price range for a grocery shopping app that helps you save money?",
+      "q2":
+          "What is a reasonable monthly subscription price range for a grocery shopping app that helps you save money?",
       "q2_answers": [
         "Under €2",
         "€2-€4",
@@ -142,7 +141,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
 
   var groceryMethod = "";
   var groceryChallenges = [];
-  var groceryChallengesOther = "";        //other option value
+  var groceryChallengesOther = ""; //other option value
   var discountFindings = [];
 
   var groceryAttractions = "";
@@ -153,8 +152,6 @@ class _SurveyScreenState extends State<SurveyScreen> {
   var premiumAppInterest = "";
   var monthlySubscriptionPrice = "";
   var monthPayPreference = "";
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -177,18 +174,26 @@ class _SurveyScreenState extends State<SurveyScreen> {
                   },
                   physics: NeverScrollableScrollPhysics(),
                   children: [
-                    FirstSurvey(questionsMap: questionsList[0], saveResponse: saveFirstScreenResponses,),
-                    SecondSurvey(questionsMap: questionsList[1],
+                    FirstSurvey(
+                      questionsMap: questionsList[0],
+                      saveResponse: saveFirstScreenResponses,
+                    ),
+                    SecondSurvey(
+                      questionsMap: questionsList[1],
                       saveResponse: saveSecondScreenResponses,
                       saveGroceryChallengesOther: saveGroceryChallengesOther,
                     ),
-                    ThirdSurvey(questionsMap: questionsList[2],
+                    ThirdSurvey(
+                      questionsMap: questionsList[2],
                       saveGroceryAttractions: saveGroceryAttractions,
                       saveGroceryInterests: saveGroceryInterests,
                       saveGroceryConcerns: saveGroceryConcerns,
                       saveGroceryConcernsOther: saveGroceryConcernsOther,
                     ),
-                    FourthSurvey(questionsMap: questionsList[3], saveResponse: saveFourthScreenResponses,),
+                    FourthSurvey(
+                      questionsMap: questionsList[3],
+                      saveResponse: saveFourthScreenResponses,
+                    ),
                   ],
                 ),
               ),
@@ -209,10 +214,9 @@ class _SurveyScreenState extends State<SurveyScreen> {
         ),
       ),
     );
-
   }
 
-  void saveFirstScreenResponses(String ageRange, String gender, String groceryTime){
+  void saveFirstScreenResponses(String ageRange, String gender, String groceryTime) {
     setState(() {
       this.ageRange = ageRange;
       this.gender = gender;
@@ -220,7 +224,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
     });
   }
 
-  void saveSecondScreenResponses(String groceryMethod, List groceryChallenges, List discountFindings){
+  void saveSecondScreenResponses(String groceryMethod, List groceryChallenges, List discountFindings) {
     setState(() {
       this.groceryMethod = groceryMethod;
       this.groceryChallenges = groceryChallenges;
@@ -228,40 +232,41 @@ class _SurveyScreenState extends State<SurveyScreen> {
     });
   }
 
-  void saveGroceryChallengesOther(String groceryChallengesOther){
+  void saveGroceryChallengesOther(String groceryChallengesOther) {
     setState(() {
       this.groceryChallengesOther = groceryChallengesOther;
     });
   }
 
-  void saveGroceryConcernsOther(String groceryConcernsOther){
+  void saveGroceryConcernsOther(String groceryConcernsOther) {
     groceryConcernsOther = groceryConcernsOther.replaceAll(" ", '');
     setState(() {
       this.groceryConcernsOther = groceryConcernsOther;
     });
   }
 
-  void saveGroceryAttractions(String groceryAttractions){
+  void saveGroceryAttractions(String groceryAttractions) {
     groceryAttractions = groceryAttractions.replaceAll(" ", '');
     setState(() {
       this.groceryAttractions = groceryAttractions;
     });
-}
+  }
 
-  void saveGroceryInterests(String groceryInterests){
+  void saveGroceryInterests(String groceryInterests) {
     groceryInterests = groceryInterests.replaceAll(" ", '');
     setState(() {
       this.groceryInterests = groceryInterests;
     });
-}
-  void saveGroceryConcerns(List groceryConcerns){
+  }
+
+  void saveGroceryConcerns(List groceryConcerns) {
     setState(() {
       this.groceryConcerns = groceryConcerns;
     });
-}
+  }
 
-
-  void saveFourthScreenResponses(String premiumAppInterest, String monthlySubscriptionPrice, String monthPayPreference){
+  void saveFourthScreenResponses(
+      String premiumAppInterest, String monthlySubscriptionPrice, String monthPayPreference) {
     setState(() {
       this.premiumAppInterest = premiumAppInterest;
       this.monthlySubscriptionPrice = monthlySubscriptionPrice;
@@ -278,8 +283,8 @@ class _SurveyScreenState extends State<SurveyScreen> {
           onPressed: () {
             finalizeForm();
             setState(() {
-                goToNextPage();
-              });
+              goToNextPage();
+            });
             FocusScope.of(context).unfocus();
           },
           width: 60,
@@ -297,38 +302,46 @@ class _SurveyScreenState extends State<SurveyScreen> {
   }
 
   void finalizeForm() {
-     if(groceryChallenges.contains("Other")){
-     groceryChallenges.remove("Other");
-     groceryChallenges.add(groceryChallengesOther);
-     }
-     if(groceryConcerns.contains("Other")){
-    groceryConcerns.remove("Other");
-    groceryConcerns.add(groceryConcernsOther);
-     }
+    if (groceryChallenges.contains("Other")) {
+      groceryChallenges.remove("Other");
+      groceryChallenges.add(groceryChallengesOther);
+    }
+    if (groceryConcerns.contains("Other")) {
+      groceryConcerns.remove("Other");
+      groceryConcerns.add(groceryConcernsOther);
+    }
   }
 
   void validateForms() {
-      if(pageNumber == 0 && ageRange.isNotEmpty && gender.isNotEmpty && groceryTime.isNotEmpty){
+    if (pageNumber == 0 && ageRange.isNotEmpty && gender.isNotEmpty && groceryTime.isNotEmpty) {
       showFAB = true;
-    }else if(pageNumber == 1 && groceryMethod.isNotEmpty && groceryChallenges.isNotEmpty && discountFindings.isNotEmpty){
-        groceryChallengesOther = groceryChallengesOther.replaceAll(" ", '');
-        if(groceryChallenges.contains("Other") && groceryChallengesOther.isEmpty){
-      showFAB = false;
-        }else{
-          showFAB = true;
-        }
-    }else if(pageNumber == 2 && groceryAttractions.isNotEmpty && groceryInterests.isNotEmpty && groceryConcerns.isNotEmpty){
-
-        if(groceryAttractions == "Other" || groceryInterests == "Other"){
-          showFAB = false;
-        }else if(groceryConcerns.contains("Other") && groceryConcernsOther.isEmpty){
-          showFAB = false;
-        }else{
-          showFAB = true;
-        }
-    }else if(pageNumber == 3 && premiumAppInterest.isNotEmpty && monthlySubscriptionPrice.isNotEmpty && monthPayPreference.isNotEmpty){
+    } else if (pageNumber == 1 &&
+        groceryMethod.isNotEmpty &&
+        groceryChallenges.isNotEmpty &&
+        discountFindings.isNotEmpty) {
+      groceryChallengesOther = groceryChallengesOther.replaceAll(" ", '');
+      if (groceryChallenges.contains("Other") && groceryChallengesOther.isEmpty) {
+        showFAB = false;
+      } else {
+        showFAB = true;
+      }
+    } else if (pageNumber == 2 &&
+        groceryAttractions.isNotEmpty &&
+        groceryInterests.isNotEmpty &&
+        groceryConcerns.isNotEmpty) {
+      if (groceryAttractions == "Other" || groceryInterests == "Other") {
+        showFAB = false;
+      } else if (groceryConcerns.contains("Other") && groceryConcernsOther.isEmpty) {
+        showFAB = false;
+      } else {
+        showFAB = true;
+      }
+    } else if (pageNumber == 3 &&
+        premiumAppInterest.isNotEmpty &&
+        monthlySubscriptionPrice.isNotEmpty &&
+        monthPayPreference.isNotEmpty) {
       showFAB = true;
-    }else{
+    } else {
       showFAB = false;
     }
   }
@@ -345,26 +358,40 @@ class _SurveyScreenState extends State<SurveyScreen> {
         'age': ageRange,
         'gender': gender,
         'grocery_time': groceryTime,
-
         'grocery_method': groceryMethod,
-        'grocery_challenges':  groceryChallenges.toString(),
+        'grocery_challenges': groceryChallenges.toString(),
         "discount_findings": discountFindings.toString(),
-
         'grocery_attractions': groceryAttractions,
         'grocery_interests': groceryInterests,
         'grocery_concerns': groceryConcerns.toString(),
-
         'premium_app_interest': premiumAppInterest,
         'monthly_subscription_price': monthlySubscriptionPrice,
         'month_pay_preference': monthPayPreference,
         "hubspot_owner_id": "1252705237",
       };
       if (kReleaseMode) createHubspotContact(contactData);
-      if(kDebugMode) log(contactData.toString());
-      AppNavigator.pushReplacement(
-          context: context,
-          screen: FreeTrialScreen());
+      if (kDebugMode) log(contactData.toString());
+      trackSurveySubmitted();
+      AppNavigator.pushReplacement(context: context, screen: FreeTrialScreen());
     }
+  }
+
+  void trackSurveySubmitted() {
+    TrackingUtils().trackSurveySubmitted(
+        DateTime.now().toUtc().toString(),
+        "Survey Screen",
+        ageRange,
+        gender,
+        groceryTime,
+        groceryMethod,
+        groceryChallenges.toString(),
+        discountFindings.toString(),
+        groceryAttractions,
+        groceryInterests,
+        groceryConcerns.toString(),
+        premiumAppInterest,
+        monthlySubscriptionPrice,
+        monthPayPreference);
   }
 
   Future<void> createHubspotContact(Map userData) async {
@@ -379,17 +406,16 @@ class _SurveyScreenState extends State<SurveyScreen> {
         },
         body: contactData,
       );
-      if(response.statusCode == 201) {
+      if (response.statusCode == 201) {
         var decodedResponse = jsonDecode(response.body);
         print("DONE creating hubspot contact: ${decodedResponse}");
         // var pref = await SharedPreferences.getInstance();
         // pref.setString("hubspot_id", decodedResponse['id']);
-      }else{
+      } else {
         log("ERROR CREATING HUBSPOT CONTACT: ${response.statusCode} ---> ${response.body}");
       }
     } catch (e) {
       print(e);
     }
   }
-
 }
