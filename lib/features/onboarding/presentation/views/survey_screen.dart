@@ -42,8 +42,11 @@ class _SurveyScreenState extends State<SurveyScreen> {
         "46-55",
         "56+",
       ],
-      "q2": "What city do you reside in?",
-      "q2_answers": "",
+      "q2": "Please select your gender: ",
+      "q2_answers": [
+        "Male",
+        "Female"
+      ],
       "q3": "How often do you do grocery shopping?",
       "q3_answers": [
         "Weekly",
@@ -134,7 +137,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
   ];
 
   var ageRange = "";
-  var city = "";
+  var gender = "";
   var groceryTime = "";
 
   var groceryMethod = "";
@@ -209,18 +212,15 @@ class _SurveyScreenState extends State<SurveyScreen> {
 
   }
 
-  void saveFirstScreenResponses(String ageRange, String city, String groceryTime){
+  void saveFirstScreenResponses(String ageRange, String gender, String groceryTime){
     setState(() {
       this.ageRange = ageRange;
-      this.city = city;
+      this.gender = gender;
       this.groceryTime = groceryTime;
     });
   }
 
   void saveSecondScreenResponses(String groceryMethod, List groceryChallenges, List discountFindings){
-    print(groceryMethod);
-    print(groceryChallenges);
-    print(discountFindings);
     setState(() {
       this.groceryMethod = groceryMethod;
       this.groceryChallenges = groceryChallenges;
@@ -229,7 +229,6 @@ class _SurveyScreenState extends State<SurveyScreen> {
   }
 
   void saveGroceryChallengesOther(String groceryChallengesOther){
-    print(groceryChallengesOther);
     setState(() {
       this.groceryChallengesOther = groceryChallengesOther;
     });
@@ -237,7 +236,6 @@ class _SurveyScreenState extends State<SurveyScreen> {
 
   void saveGroceryConcernsOther(String groceryConcernsOther){
     groceryConcernsOther = groceryConcernsOther.replaceAll(" ", '');
-    print(groceryConcernsOther);
     setState(() {
       this.groceryConcernsOther = groceryConcernsOther;
     });
@@ -245,7 +243,6 @@ class _SurveyScreenState extends State<SurveyScreen> {
 
   void saveGroceryAttractions(String groceryAttractions){
     groceryAttractions = groceryAttractions.replaceAll(" ", '');
-    print(groceryAttractions);
     setState(() {
       this.groceryAttractions = groceryAttractions;
     });
@@ -253,13 +250,11 @@ class _SurveyScreenState extends State<SurveyScreen> {
 
   void saveGroceryInterests(String groceryInterests){
     groceryInterests = groceryInterests.replaceAll(" ", '');
-    print(groceryInterests);
     setState(() {
       this.groceryInterests = groceryInterests;
     });
 }
   void saveGroceryConcerns(List groceryConcerns){
-    print(groceryConcerns);
     setState(() {
       this.groceryConcerns = groceryConcerns;
     });
@@ -313,11 +308,10 @@ class _SurveyScreenState extends State<SurveyScreen> {
   }
 
   void validateForms() {
-      if(pageNumber == 0 && ageRange.isNotEmpty && city.isNotEmpty && city != "Choose City" && groceryTime.isNotEmpty){
+      if(pageNumber == 0 && ageRange.isNotEmpty && gender.isNotEmpty && groceryTime.isNotEmpty){
       showFAB = true;
     }else if(pageNumber == 1 && groceryMethod.isNotEmpty && groceryChallenges.isNotEmpty && discountFindings.isNotEmpty){
         groceryChallengesOther = groceryChallengesOther.replaceAll(" ", '');
-        print(groceryChallengesOther.isEmpty);
         if(groceryChallenges.contains("Other") && groceryChallengesOther.isEmpty){
       showFAB = false;
         }else{
@@ -349,7 +343,7 @@ class _SurveyScreenState extends State<SurveyScreen> {
         "firstname": "Guest",
         'phone': "Guest Phone",
         'age': ageRange,
-        'city': city,
+        'gender': gender,
         'grocery_time': groceryTime,
 
         'grocery_method': groceryMethod,

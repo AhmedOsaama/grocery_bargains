@@ -17,57 +17,7 @@ class FirstSurvey extends StatefulWidget {
 }
 
 class _FirstSurveyState extends State<FirstSurvey> {
-  var city = "Choose City";
-  List<String> countries = [
-    'Choose City',
-    'Russia',
-    'Germany',
-    'United Kingdom',
-    'France',
-    'Italy',
-    'Spain',
-    'Ukraine',
-    'Poland',
-    'Romania',
-    'Netherlands',
-    'Belgium',
-    'Czechia',
-    'Greece',
-    'Portugal',
-    'Sweden',
-    'Hungary',
-    'Belarus',
-    'Austria',
-    'Serbia',
-    'Switzerland',
-    'Bulgaria',
-    'Denmark',
-    'Finland',
-    'Slovakia',
-    'Norway',
-    'Ireland',
-    'Croatia',
-    'Moldova',
-    'Bosnia and Herzegovina',
-    'Albania',
-    'Lithuania',
-    'North Macedonia',
-    'Slovenia',
-    'Latvia',
-    'Kosovo',
-    'Estonia',
-    'Montenegro',
-    'Luxembourg',
-    'Malta',
-    'Iceland',
-    'Andorra',
-    'Monaco',
-    'Liechtenstein',
-    'San Marino',
-    'Holy See',
-  ];
-
-
+  var gender = "Choose Gender";
   var age = "";
   var groceryTime = "";
 
@@ -112,7 +62,7 @@ class _FirstSurveyState extends State<FirstSurvey> {
                         setState(() {
                           age = value!;
                         });
-                        widget.saveResponse(age, city, groceryTime);
+                        widget.saveResponse(age, gender, groceryTime);
 
                       }),
                 )
@@ -124,42 +74,23 @@ class _FirstSurveyState extends State<FirstSurvey> {
             style: TextStylesInter.textViewRegular14,
           ),
           5.ph,
-          Container(
-            // width: double.infinity,
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0x0F000000),
-                  blurRadius: 14,
-                  offset: Offset(0, 2),
-                  spreadRadius: 1,
-                ),
-              ],
-              borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: Color(0xFF7192F2)),
-            ),
-            child: DropdownButton<String>(
-              value: city,
-              items: countries
-                  .map((store) => DropdownMenuItem<String>(
-                  value: store,
-                  child: Text(
-                    store,
-                    style: TextStylesInter.textViewRegular14,
-                  )))
-                  .toList(),
-              onChanged: (value) {
-                setState(() {
-                  city = value!;
-                });
-                widget.saveResponse(age, city, groceryTime);
-              },
-              icon: Icon(Icons.keyboard_arrow_down_rounded),
-              underline: Container(),
-              // isDense: true,
-            ),
+          Column(
+            children: (widget.questionsMap['q2_answers'] as List)
+                .map(
+                  (answer) => RadioListTile(
+                  title: Text(answer.toString().tr(), style: TextStylesInter.textViewRegular14,),
+                  value: answer,
+                  groupValue: gender,
+                  activeColor: purple70,
+                  dense: true,
+                  onChanged: (value) {
+                    setState(() {
+                      gender = value!;
+                    });
+                    widget.saveResponse(age, gender, groceryTime);
+                  }),
+            )
+                .toList(),
           ),
 
           20.ph,
@@ -181,7 +112,7 @@ class _FirstSurveyState extends State<FirstSurvey> {
                     setState(() {
                       groceryTime = value!;
                     });
-                    widget.saveResponse(age, city, groceryTime);
+                    widget.saveResponse(age, gender, groceryTime);
                   }),
             )
                 .toList(),
