@@ -102,20 +102,17 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 Text("Special Welcome Offer for Our Early Birds!".tr(),
                                     style: TextStylesInter.textViewSemiBold14, textAlign: TextAlign.center),
                                 10.ph,
-                                Text(
-                                    "As one of our first users, we're thrilled to offer you a FREE one-month trial of BargainB. But hey, there's a twist."
-                                        .tr(),
-                                    style: TextStylesInter.textViewLight15,
-                                    textAlign: TextAlign.center),
-                                10.ph,
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                                  child: Text(
-                                      "Help us make BargainB awesome for you and us, as we use it too. Take a quick survey Your feedback is gold!"
-                                          .tr(),
-                                      style: TextStylesInter.textViewLight15,
-                                      textAlign: TextAlign.center),
+                                Text("As one of our first users, enjoy a FREE one-month trial of BargainB. Help us make BargainB awesome for you and us by taking a quick survey. Your feedback is gold!".tr(),
+                                  style: TextStylesInter.textViewLight13,
+                                textAlign: TextAlign.center,
                                 ),
+                                5.ph,
+                                Text("Start with a FREE one-month trial at BargainB. Here's what you need to know:".tr(), style: TextStylesInter.textViewLight13,),
+                                5.ph,
+                                Text("""Trial Duration: Enjoy full access for 1 month!
+Post-Trial Subscription: Continue saving with our 2.99/month subscription.
+No Surprises: Receive a reminder before your trial ends.
+Easy Cancellation: Cancel anytime before the trial ends at no cost.""".tr(), style: TextStylesInter.textViewLight12,)
                               ],
                             ),
                           ),
@@ -123,8 +120,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       );
                     }
                 ),
-
-
                 10.ph,
                 FutureBuilder(
                     future: Future.delayed(Duration(milliseconds: 3000)),
@@ -145,25 +140,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 child: Column(
                                   children: [
                                     GenericButton(
-                                        width: ScreenUtil().screenWidth,
+                                        width: MediaQuery.of(context).size.width * 0.9,
                                         borderRadius: BorderRadius.circular(10),
                                         color: brightOrange,
                                         height: 60,
                                         onPressed: () => AppNavigator.push(context: context, screen: SurveyScreen()),
                                         child: Text(
-                                          "Yes, FREE one-month trial of BargainB".tr(),
+                                          "Yes, FREE one-month trial of BargainB ".tr(),
                                           style: TextStylesInter.textViewSemiBold16,
                                         )),
                                     10.ph,
                                     GenericButton(
-                                        width: ScreenUtil().screenWidth,
+                                        width: MediaQuery.of(context).size.width * 0.9,
                                         borderRadius: BorderRadius.circular(10),
                                         color: Colors.white,
                                         height: 60,
                                         borderColor: Color(0xFFEBEBEB),
                                         onPressed: () => AppNavigator.push(context: context, screen: OnBoardingScreen()),
                                         child: Text(
-                                          "Nope, I don’t want a free trial",
+                                          "Nope, I don’t want a free trial".tr(),
                                           style: TextStylesInter.textViewSemiBold16.copyWith(color: Colors.black),
                                         )),
                                   ],
