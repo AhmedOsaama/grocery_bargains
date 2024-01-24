@@ -31,7 +31,7 @@ class FreeTrialScreen extends StatelessWidget {
             child: Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 110),
+                  padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Text(
                     "Your Free Trial Awaits!".tr(),
                     textAlign: TextAlign.center,

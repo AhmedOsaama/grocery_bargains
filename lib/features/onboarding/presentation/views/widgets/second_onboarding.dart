@@ -47,11 +47,19 @@ class _SecondOnboardingState extends State<SecondOnboarding> {
   @override
   void initState() {
     widget.disableFAB();
-    botFuture = BotService(Dio()).post(message: '@BB show me the top deals from $_selectedStore');
     userMessageFuture = Future.delayed(Duration(milliseconds: 500));
     TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), "Second onboarding screen");
     super.initState();
   }
+
+  @override
+  void didChangeDependencies() {
+    print(context.locale.languageCode);
+    // botFuture = BotService(Dio()).post(message: context.locale.languageCode == "en" ? '@BB show me the top deals from $_selectedStore'
+    // : "@BB laat me de beste deals van $_selectedStore zien");
+    super.didChangeDependencies();
+  }
+
 
   Future<void> playSound() async {
     await player.play(AssetSource(messageSound));
@@ -60,6 +68,8 @@ class _SecondOnboardingState extends State<SecondOnboarding> {
 
   @override
   Widget build(BuildContext context) {
+    var botMessage = context.locale.languageCode == "en" ? '@BB show me the top deals from $_selectedStore'
+    : "@BB laat me de beste deals van $_selectedStore zien";
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: Column(
@@ -95,7 +105,7 @@ class _SecondOnboardingState extends State<SecondOnboarding> {
                 onTap: () async {
                   setState(() {
                     _selectedStore = entry.key;
-                  botFuture = BotService(Dio()).post(message: '@BB show me the top deals from $_selectedStore');
+                  botFuture = BotService(Dio()).post(message: botMessage);
                   });
                   Provider.of<UserProvider>(context, listen: false).setOnboardingStore(_selectedStore);
                   botFuture.whenComplete(() => playSound());
@@ -143,7 +153,7 @@ class _SecondOnboardingState extends State<SecondOnboarding> {
                         child: AnimatedOpacity(
                           duration: Duration(milliseconds: 500),
                           opacity: loading ? 0 : 1,
-                          child: SimpleMessageBubble(message: '@BB show me the top deals from $_selectedStore', isBot: false,),
+                          child: SimpleMessageBubble(message: botMessage, isBot: false,),
                         ),
                       ),
                     ],

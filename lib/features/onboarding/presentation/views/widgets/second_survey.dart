@@ -160,7 +160,7 @@ class _SecondSurveyState extends State<SecondSurvey> {
               },
               validation: (value){
                 value = value!.replaceAll(" ", '');
-                if(value.isEmpty) return "Field must not be empty";
+                if(value.isEmpty) return "Field must not be empty".tr();
                 return null;
               },
               autoValidateMode: AutovalidateMode.always,

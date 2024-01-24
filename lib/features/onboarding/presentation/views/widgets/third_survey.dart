@@ -40,7 +40,7 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
         enabled: groceryAttractions == "Other",
         validation: (value){
           value = value!.replaceAll(" ", '');
-          if(value!.isEmpty) return "Field must not be empty";
+          if(value!.isEmpty) return "Field must not be empty".tr();
         },
         autoValidateMode: AutovalidateMode.always,
         contentPadding: EdgeInsets.symmetric(vertical: 5,horizontal: 15),
@@ -63,7 +63,7 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
         },
         validation: (value){
           value = value!.replaceAll(" ", '');
-          if(value!.isEmpty) return "Field must not be empty";
+          if(value!.isEmpty) return "Field must not be empty".tr();
         },
         autoValidateMode: AutovalidateMode.always,
         enabled: groceryInterests == "Other",
@@ -85,7 +85,7 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
         controller: _groceryConcernsController,
         validation: (value){
           value = value!.replaceAll(" ", '');
-          if(value!.isEmpty) return "Field must not be empty";
+          if(value!.isEmpty) return "Field must not be empty".tr();
         },
         onChanged: (value) {
           widget.saveGroceryConcernsOther(value);

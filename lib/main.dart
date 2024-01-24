@@ -169,7 +169,7 @@ class _MyAppState extends State<MyApp> {
                       return MainScreen();
                     }
                       return widget.isFirstTime ? WelcomeScreen() : MainScreen();
-                    // return FreeTrialScreen();
+                    // // return FreeTrialScreen();
                     // return WelcomeScreen();
                   });
             }),
