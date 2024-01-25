@@ -62,6 +62,7 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
           child: SingleChildScrollView(
             child: Column(
               children: [
+                20.ph,
                 Text(
                   'Upgrade to BargainB Premium'.tr(),
                   style: TextStylesInter.textViewBold26,
@@ -74,11 +75,12 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
                   textAlign: TextAlign.center,
                 ),
                 15.ph,
-                Container(
-                  height: 250.h,
-                  child: ListView(
-                    physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
+                Padding(
+                  // height: 250.h,
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Column(
+                    // physics: const BouncingScrollPhysics(),
+                    //   padding: const EdgeInsets.symmetric(horizontal: 15),
                       children: premiumFeatures
                           .map((featureText) => Padding(
                                 padding: const EdgeInsets.symmetric(vertical: 7),
@@ -95,6 +97,7 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
                               ))
                           .toList()),
                 ),
+                15.ph,
                 Text(
                   "Seize the opportunity to save big – these deals won't last long".tr(),
                   style: TextStylesInter.textViewLight15,
@@ -169,9 +172,11 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
                       "SUBSCRIBE NOW!".tr(),
                       style: TextStylesInter.textViewSemiBold16,
                     )),
-                15.ph,
+                10.ph,
                 Text(
-                  'Subscription renew automatically. You can cancel in the store settings.'.tr(),
+                  """Subscription renew automatically. 
+Cancel Anytime: You have the freedom to cancel your subscription at any time before the next billing cycle to avoid future charges.
+How to Cancel: To cancel, simply go to your Google Play account settings, navigate to 'Subscriptions,' select BargainB, and tap 'Cancel Subscription.'""".tr(),
                   style: TextStylesInter.textViewLight12,
                   textAlign: TextAlign.center,
                 ),
@@ -179,15 +184,21 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
                 GenericButton(
                     width: double.infinity,
                     borderRadius: BorderRadius.circular(10),
-                    color: Color(0xFFEBEBEB),
+                    // color: Color(0xFFEBEBEB),
                     height: 60,
+                    color: Colors.transparent,
+                    gradient: LinearGradient(
+                      begin: Alignment(-0.82, 0.57),
+                      end: Alignment(0.82, -0.57),
+                      colors: [Color(0xFFED346D), Color(0xFFFC4980)],
+                    ),
                     onPressed: () {
                       finishOnboarding(context, isSkipping: true);
                     },
                     child: Text(
                       "Use it for free, No Assistant, No Sharing".tr(),
-                      style: TextStylesInter.textViewSemiBold16.copyWith(
-                        color: Color(0xFF7C7C7C),
+                      style: TextStylesInter.textViewBold16.copyWith(
+                        color: Colors.white,
                       ),
                       textAlign: TextAlign.center,
                     ))

@@ -5,6 +5,7 @@ import 'package:bargainb/features/onboarding/data/repos/onboarding_repo.dart';
 import 'package:bargainb/features/onboarding/presentation/manager/bot_response_cubit.dart';
 import 'package:bargainb/features/onboarding/presentation/views/customize_experience_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/free_trial_screen.dart';
+import 'package:bargainb/features/onboarding/presentation/views/onboarding_subscription_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/policy_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/terms_of_service_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/welcome_screen.dart';
@@ -169,7 +170,7 @@ class _MyAppState extends State<MyApp> {
                       return MainScreen();
                     }
                       return widget.isFirstTime ? WelcomeScreen() : MainScreen();
-                    // // return FreeTrialScreen();
+                    // return OnboardingSubscriptionScreen(isChangingPlan: false);
                     // return WelcomeScreen();
                   });
             }),

@@ -4,29 +4,6 @@ class NetworkServices {
 
   //"all" requests
 
-  static Future<http.Response> getAllAlbertProducts() async {
-    final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/get_all_albert_products');
-    var response = await http.get(
-        url, headers: {'Content-Type': 'application/json'});
-    return response;
-  }
-
-  static Future<http.Response> getAllJumboProducts() async {
-    final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/get_all_jumbo_products');
-    var response =
-        await http.get(url, headers: {'Content-Type': 'application/json'});
-    return response;
-  }
-  static Future<http.Response> getAllHoogvlietProducts() async {
-    final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/get_all_hoogvliet_products');
-    var response =
-        await http.get(url, headers: {'Content-Type': 'application/json'});
-    return response;
-  }
-
   static Future<http.Response> getAllCategories() async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/get_all_categories');
@@ -76,49 +53,6 @@ class NetworkServices {
   static Future<http.Response> getLimitedAlbertProductsBySubCategory(String subCategory, int pageNumber) async {
     final url = Uri.parse(
         'https://europe-west1-discountly.cloudfunctions.net/getLimitedAlbertSubCategoryProducts_new?startingIndex=$pageNumber&numberPerPage=100&subCategory=$subCategory');
-    var response = await http.get(
-        url, headers: {'Content-Type': 'application/json',});
-    return response;
-  }
-
-
-  //searches
-
-  static Future<http.Response> searchAlbertProducts(String searchTerm,  bool isRelevant) async {
-    var relevant = isRelevant ? 1 : 0;
-    // var relevant = 1;
-    final url = Uri.parse(
-        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new/?tableName=albert&searchIndex=$searchTerm&relevant=$relevant&limit=150');
-    var response = await http.get(
-        url, headers: {'Content-Type': 'application/json',});
-    return response;
-  }
-
-  static Future<http.Response> searchJumboProducts(String searchTerm, bool isRelevant) async {
-    var relevant = isRelevant ? 1 : 0;
-    // var relevant = 1;
-    final url = Uri.parse(
-        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new/?tableName=jumbo&searchIndex=$searchTerm&relevant=$relevant&limit=150');
-    var response = await http.get(
-        url, headers: {'Content-Type': 'application/json',});
-    return response;
-  }
-
-  static Future<http.Response> searchHoogvlietProducts(String searchTerm,  bool isRelevant) async {
-    var relevant = isRelevant ? 1 : 0;
-    // var relevant = 1;
-    final url = Uri.parse(
-        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new/?tableName=hoogvliet&searchIndex=$searchTerm&relevant=$relevant&limit=150');
-    var response = await http.get(
-        url, headers: {'Content-Type': 'application/json',});
-    return response;
-  }
-
-  static Future<http.Response> searchDirkProducts(String searchTerm, bool isRelevant) async {
-    var relevant = isRelevant ? 1 : 0;
-    // var relevant = 1;
-    final url = Uri.parse(
-        'https://us-central1-discountly.cloudfunctions.net/test_get_all_products_new/?tableName=dirk&searchIndex=$searchTerm&relevant=$relevant&limit=150');
     var response = await http.get(
         url, headers: {'Content-Type': 'application/json',});
     return response;

@@ -12,6 +12,7 @@ class GenericButton extends StatelessWidget {
   final double elevationButton;
   final EdgeInsets? padding;
   final List<BoxShadow>? shadow;
+  final Gradient? gradient;
 
   final VoidCallback? onPressed;
   final Widget child;
@@ -29,7 +30,7 @@ class GenericButton extends StatelessWidget {
     this.elevationButton = 0.0,
     this.shadow,
     this.disabledBackgroundColor,
-    this.padding, this.shape,
+    this.padding, this.shape, this.gradient,
   }) : super(key: key);
 
   @override
@@ -38,7 +39,10 @@ class GenericButton extends StatelessWidget {
     return Container(
       width: width,
       height: height,
-      decoration: BoxDecoration(borderRadius: borderRadius, boxShadow: shadow),
+      decoration: BoxDecoration(
+        borderRadius: borderRadius,
+        gradient: gradient,
+        boxShadow: shadow,),
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
