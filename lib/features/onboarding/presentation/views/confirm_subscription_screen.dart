@@ -228,10 +228,12 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                 14.ph,
                 10.ph,
                 Text(
-                  'Subscription renew automatically. You can cancel in the store settings.'.tr(),
-                  style: TextStylesInter.textViewRegular12.copyWith(color: Color(0xFF48484A)),
+                  """Subscription renew automatically. 
+Cancel Anytime: You have the freedom to cancel your subscription at any time before the next billing cycle to avoid future charges.
+How to Cancel: To cancel, simply go to your Google Play account settings, navigate to 'Subscriptions,' select BargainB, and tap 'Cancel Subscription.'""".tr(),
+                  style: TextStylesInter.textViewLight12,
                   textAlign: TextAlign.center,
-                )
+                ),
               ],
             ),
           ),

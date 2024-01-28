@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bargainb/features/chatlists/presentation/views/chatlists_screen.dart';
 import 'package:bargainb/features/onboarding/data/repos/onboarding_repo.dart';
 import 'package:bargainb/features/onboarding/presentation/manager/bot_response_cubit.dart';
+import 'package:bargainb/features/onboarding/presentation/views/confirm_subscription_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/customize_experience_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/free_trial_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/onboarding_subscription_screen.dart';
@@ -170,7 +171,6 @@ class _MyAppState extends State<MyApp> {
                       return MainScreen();
                     }
                       return widget.isFirstTime ? WelcomeScreen() : MainScreen();
-                    // return OnboardingSubscriptionScreen(isChangingPlan: false);
                     // return WelcomeScreen();
                   });
             }),

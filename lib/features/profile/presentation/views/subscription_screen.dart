@@ -66,11 +66,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 textAlign: TextAlign.center,
               ),
               15.ph,
-              Container(
-                height: 280.h,
-                child: ListView(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
                     children: premiumFeatures
                         .map((featureText) => Padding(
                       padding: const EdgeInsets.symmetric(vertical: 7),
@@ -182,7 +180,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               ],
               15.ph,
               Text(
-                'Subscription renew automatically. You can cancel in the store settings.'.tr(),
+                """Subscription renew automatically. 
+Cancel Anytime: You have the freedom to cancel your subscription at any time before the next billing cycle to avoid future charges.
+How to Cancel: To cancel, simply go to your Google Play account settings, navigate to 'Subscriptions,' select BargainB, and tap 'Cancel Subscription.'""".tr(),
                 style: TextStylesInter.textViewLight12,
                 textAlign: TextAlign.center,
               ),
