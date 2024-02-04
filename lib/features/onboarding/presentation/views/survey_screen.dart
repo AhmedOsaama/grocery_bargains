@@ -346,17 +346,31 @@ class _SurveyScreenState extends State<SurveyScreen> {
     }
   }
 
-  void goToNextPage() {
+  Future<void> goToNextPage() async {
     if (pageNumber < _totalPages - 1) {
       _pageController.animateToPage(pageNumber.toInt() + 1,
           duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
       pageNumber++;
     } else if (pageNumber >= _totalPages - 1) {
+      var country = "N/A";
+      var city = "N/A";
+      try {
+        var response = await get(Uri.parse("http://ip-api.com/json"));
+        if (response.statusCode == 200) {
+          var responseMap = jsonDecode(response.body);
+          country = responseMap['country'];
+          city = responseMap['city'];
+        }
+      }catch(e){
+        log(e.toString());
+      }
       var contactData = {
         "firstname": "Guest",
         'phone': "Guest Phone",
         'age': ageRange,
         'gender': gender,
+        'country': country,
+        'city': city,
         'grocery_time': groceryTime,
         'grocery_method': groceryMethod,
         'grocery_challenges': groceryChallenges.toString(),
