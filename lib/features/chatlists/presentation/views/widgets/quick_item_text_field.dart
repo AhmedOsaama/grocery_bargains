@@ -66,7 +66,7 @@ class QuickItemTextField extends StatelessWidget {
         },
         child: Text(
           LocaleKeys.add.tr(),
-          style: TextStylesDMSans.textViewBold12.copyWith(color: mainPurple),
+          style: TextStylesInter.textViewBold12.copyWith(color: mainPurple),
         ),
       ),
     );

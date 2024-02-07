@@ -125,7 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return [
       Text(
         "Name".tr(),
-        style: TextStylesDMSans.textViewMedium13.copyWith(color: Colors.grey),
+        style: TextStylesInter.textViewMedium13.copyWith(color: Colors.grey),
       ),
       TextFormField(
         onChanged: (value) {
@@ -139,7 +139,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       20.ph,
       Text(
         LocaleKeys.phone.tr(),
-        style: TextStylesDMSans.textViewMedium13.copyWith(color: Colors.grey),
+        style: TextStylesInter.textViewMedium13.copyWith(color: Colors.grey),
       ),
       TextFormField(
         onChanged: (value) {
@@ -155,7 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       20.ph,
       Text(
         "YourStatus".tr(),
-        style: TextStylesDMSans.textViewMedium13.copyWith(color: Colors.grey),
+        style: TextStylesInter.textViewMedium13.copyWith(color: Colors.grey),
       ),
       TextFormField(
         onChanged: (value) {

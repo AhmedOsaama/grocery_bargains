@@ -161,7 +161,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                                     if (widget.listUsers.indexOf(userInfo) == 0)
                                       Text(
                                         "Owner",
-                                        style: TextStylesDMSans.textViewBold12.copyWith(color: mainPurple),
+                                        style: TextStylesInter.textViewBold12.copyWith(color: mainPurple),
                                       ) //The owner is always the 1st one on the list
                                   ],
                                 ),

@@ -128,7 +128,7 @@ class _GenericFieldState extends State<GenericField> {
           suffixIconConstraints: widget.suffixConstraints,
           labelStyle: const TextStyle(fontSize: 16, color: Color(0xff343434)),
           hintStyle: widget.hintStyle ??
-              TextStylesDMSans.textViewRegular12
+              TextStylesInter.textViewRegular12
                   .copyWith(color: Color.fromRGBO(13, 1, 64, 0.6)),
           border: OutlineInputBorder(
               borderSide: BorderSide(

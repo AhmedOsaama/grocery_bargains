@@ -2,13 +2,13 @@ import 'dart:developer';
 
 import 'package:algolia/algolia.dart';
 import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
+import 'package:bargainb/utils/algolia_utils.dart';
 
 class AlgoliaTrackingUtils{
-  static Algolia algolia = Algolia.init(applicationId: 'DG62X9U03X', apiKey: 'e862c47c6741eef540abe9fb5f68eef6');
-  static const algoliaIndexName = 'dev_PRODUCTS';
+  static Algolia algolia = Algolia.init(applicationId: 'DG62X9U03X', apiKey: AlgoliaApp.searchOnlyKey);
+  static const algoliaIndexName = AlgoliaApp.hitsIndex;
 
   static void trackAlgoliaClickEvent(String userId, List<String> objectIDs, String queryId, List<int> positions, String eventName) {
-    log("ALOGLIA CLICK");
     try {
       AlgoliaEvent event = AlgoliaEvent(
           eventType: AlgoliaEventType.click,
@@ -28,7 +28,6 @@ class AlgoliaTrackingUtils{
   }
 
  static void trackAlgoliaConversionEvent(String userId, String? productId, String eventName) {
-   log("ALOGLIA conversion");
    try {
       AlgoliaEvent event = AlgoliaEvent(
           eventType: AlgoliaEventType.click,

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/models/product_category.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,7 +11,6 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../config/routes/app_navigator.dart';
-import '../models/bestValue_item.dart';
 import '../models/product.dart';
 import '../utils/assets_manager.dart';
 import '../utils/icons_manager.dart';
@@ -23,7 +21,6 @@ class ProductsProvider with ChangeNotifier {
   List<Product> deals = [];
 
   List<Product> products = [];
-  List<BestValueItem> bestValueBargains = [];
 
   List<ProductCategory> categories = [];
 

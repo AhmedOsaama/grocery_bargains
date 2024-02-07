@@ -1,15 +1,11 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class HeaderUtils {
   static defaultHeader(BuildContext context) {
-    // var currentLocal = Localizations.localeOf(context).languageCode;
-
     return {
       "Accept": "application/json",
       "Accept-Language": "application/json",
-      // "Data-Type": 'json',
-      // "Api-Lang": currentLocal == "ar" ? "ar" : "en",
-      // "Timezone": DateTime.now().timeZoneName,
       "Content-Type": "application/json"
     };
   }

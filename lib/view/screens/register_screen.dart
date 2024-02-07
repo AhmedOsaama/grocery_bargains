@@ -205,7 +205,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 if (!isLogin) ...[
                   Text(
                     LocaleKeys.fullName.tr(),
-                    style: TextStylesDMSans.textViewBold12
+                    style: TextStylesInter.textViewBold12
                         .copyWith(color: gunmetal),
                   ),
                   SizedBox(
@@ -225,7 +225,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 if (!isLogin) ...[
                   Text(
                     LocaleKeys.email.tr(),
-                    style: TextStylesDMSans.textViewBold12
+                    style: TextStylesInter.textViewBold12
                         .copyWith(color: gunmetal),
                   ),
                   SizedBox(
@@ -245,7 +245,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Text(
                   LocaleKeys.phone.tr(),
                   style:
-                      TextStylesDMSans.textViewBold12.copyWith(color: gunmetal),
+                      TextStylesInter.textViewBold12.copyWith(color: gunmetal),
                 ),
                 SizedBox(
                   height: 10.h,
@@ -314,7 +314,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         Text(
                           LocaleKeys.rememberMe.tr(),
-                          style: TextStylesDMSans.textViewRegular12.copyWith(
+                          style: TextStylesInter.textViewRegular12.copyWith(
                               color: Color.fromRGBO(170, 166, 185, 1)),
                         ),
                       ],
@@ -406,7 +406,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           text: isLogin
                               ? LocaleKeys.youDontHaveAnAccount.tr()
                               : LocaleKeys.alreadyHaveAnAccount.tr(),
-                          style: TextStylesDMSans.textViewRegular12.copyWith(
+                          style: TextStylesInter.textViewRegular12.copyWith(
                             color: Color.fromRGBO(82, 75, 107, 1),
                           ),
                           children: [

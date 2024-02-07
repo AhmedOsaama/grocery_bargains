@@ -1,5 +1,4 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
-import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/tracking_utils.dart';

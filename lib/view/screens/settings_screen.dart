@@ -167,7 +167,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               borderColor: Color.fromRGBO(137, 137, 137, 1),
               child: Text(
                 LocaleKeys.signout.tr().toUpperCase(),
-                style: TextStylesDMSans.textViewBold14.copyWith(color: black2),
+                style: TextStylesInter.textViewBold14.copyWith(color: black2),
               ),
               color: Colors.white,
             ),
@@ -190,7 +190,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               borderColor: Color.fromRGBO(137, 137, 137, 1),
               child: Text(
                 LocaleKeys.deleteMyAccount.tr(),
-                style: TextStylesDMSans.textViewBold14.copyWith(color: black2),
+                style: TextStylesInter.textViewBold14.copyWith(color: black2),
               ),
               color: Colors.white,
             ),

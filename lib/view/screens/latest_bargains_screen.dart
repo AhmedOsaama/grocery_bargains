@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:bargainb/generated/locale_keys.g.dart';
-import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/tracking_utils.dart';

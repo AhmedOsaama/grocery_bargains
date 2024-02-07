@@ -52,7 +52,7 @@ class _SupportScreenState extends State<SupportScreen> {
                 70.ph,
                 Text(
                   LocaleKeys.yourName.tr(),
-                  style: TextStylesDMSans.textViewBold12.copyWith(color: black1),
+                  style: TextStylesInter.textViewBold12.copyWith(color: black1),
                 ),
                 10.ph,
                 GenericField(
@@ -67,7 +67,7 @@ class _SupportScreenState extends State<SupportScreen> {
                 20.ph,
                 Text(
                   LocaleKeys.email.tr(),
-                  style: TextStylesDMSans.textViewBold12.copyWith(color: black1),
+                  style: TextStylesInter.textViewBold12.copyWith(color: black1),
                 ),
                 10.ph,
                 GenericField(
@@ -81,7 +81,7 @@ class _SupportScreenState extends State<SupportScreen> {
                 20.ph,
                 Text(
                   LocaleKeys.yourMessage.tr(),
-                  style: TextStylesDMSans.textViewBold12.copyWith(color: black1),
+                  style: TextStylesInter.textViewBold12.copyWith(color: black1),
                 ),
                 10.ph,
                 GenericField(
@@ -110,7 +110,7 @@ class _SupportScreenState extends State<SupportScreen> {
                   child: Text(
                     LocaleKeys.submit.tr(),
                     style:
-                        TextStylesDMSans.textViewSemiBold16.copyWith(color: Colors.white),
+                        TextStylesInter.textViewSemiBold16.copyWith(color: Colors.white),
                   ),
                 ),
                 20.ph

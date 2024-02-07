@@ -48,7 +48,6 @@ dependencies:
   firebase_dynamic_links: ^5.0.10
   share_plus: ^6.0.0
   easy_localization: ^3.0.1
-#  whatsapp_share2: ^2.0.2
   flutter_automation: ^2.0.0
   google_sign_in: ^5.4.3
   provider: ^6.0.5
@@ -56,7 +55,6 @@ dependencies:
   dots_indicator: ^2.1.0
   http: ^0.13.5
   dotted_border: ^2.0.0+3
-#  gdpr_dialog: ^2.1.1
   sentry_flutter: ^6.22.0
   firebase_messaging: ^14.3.0
   flutter_branch_sdk: ^6.6.0
@@ -77,7 +75,6 @@ dependencies:
   phone_form_field: ^7.0.5
   translator: ^0.1.7
   algolia_helper_flutter: ^0.3.3
-  algolia: ^1.1.2
   purchases_flutter: ^5.6.5
   syncfusion_flutter_charts: ^21.2.4
   table_calendar: ^3.0.8

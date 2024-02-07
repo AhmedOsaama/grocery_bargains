@@ -16,7 +16,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
 import '../../config/routes/app_navigator.dart';
-import '../../models/comparison_product.dart';
 import '../../models/list_item.dart';
 import '../../models/product.dart';
 import '../../providers/chatlists_provider.dart';

@@ -3,7 +3,6 @@
 class Validator {
   static String? defaultValidator(String? value) {
     if (value != null && value.trim().isEmpty) {
-      // return tr("error_field_required");
       return "Message cannot be empty";
     }
     return null;
@@ -30,22 +29,6 @@ class Validator {
     return null;
   }
 
-  // static String? phone(String? value) {
-  //   if (value != null) {
-  //     value = value.trim();
-  //     if (value.isEmpty) {
-  //       return tr("error_field_required");
-  //       // } else if (!value.startsWith('+')) {
-  //       //   return tr("enter_phone_code");
-  //       // }
-  //     } else if (!value.startsWith('0')) {
-  //       return tr("Invalid phone number");
-  //     } else if (value.length != 11) {
-  //       return tr("Phone number must be 11 digits");
-  //     }
-  //   }
-  //   return null;
-  // }
 
   static String? defaultEmptyValidator(String? value) {
     return null;

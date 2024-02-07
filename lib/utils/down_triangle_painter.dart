@@ -25,7 +25,6 @@ class DownTrianglePainter extends CustomPainter {
       ..moveTo(x - 1, y - 1)
       ..lineTo(x + 15, y - 20)
       ..lineTo(x - 15, y - 20);
-    //..lineTo(0, y);
   }
 
   @override

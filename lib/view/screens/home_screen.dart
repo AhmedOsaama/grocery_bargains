@@ -3,8 +3,6 @@ import 'dart:developer';
 import 'dart:math';
 
 import 'package:bargainb/features/onboarding/presentation/views/widgets/onboarding_stepper.dart';
-import 'package:bargainb/models/bestValue_item.dart';
-import 'package:bargainb/models/comparison_product.dart';
 import 'package:bargainb/providers/tutorial_provider.dart';
 import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/utils/down_triangle_painter.dart';
@@ -20,7 +18,6 @@ import 'package:bargainb/view/screens/chatlist_view_screen.dart';
 import 'package:bargainb/features/chatlists/presentation/views/chatlists_screen.dart';
 import 'package:bargainb/view/screens/latest_bargains_screen.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
-import 'package:bargainb/view/widgets/store_list_widget.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:confetti/confetti.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -46,7 +43,6 @@ import 'package:translator/translator.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../models/product.dart';
-import '../../services/dynamic_link_service.dart';
 import '../../utils/assets_manager.dart';
 import '../../utils/icons_manager.dart';
 import '../../utils/tracking_utils.dart';
@@ -69,7 +65,6 @@ class _HomeScreenState extends State<HomeScreen> {
   List allProducts = [];
   var isLoading = false;
   TextStyle textButtonStyle = TextStylesInter.textViewRegular16.copyWith(color: mainPurple);
-  List<BestValueItem> bestValueBargains = [];
   bool dialogOpened = false;
   var isFetching = false;
   late Future getProductsFuture;
@@ -354,7 +349,7 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Text(
           "allCategories".tr(),
-          style: TextStylesDMSans.textViewBold16.copyWith(color: prussian),
+          style: TextStylesInter.textViewBold16.copyWith(color: prussian),
         ),
         TextButton(
             onPressed: () {
@@ -512,7 +507,7 @@ class _HomeScreenState extends State<HomeScreen> {
           width: 200.w,
           child: Text(
             "Today's Latest Discounts".tr(),
-            style: TextStylesDMSans.textViewBold16.copyWith(color: prussian),
+            style: TextStylesInter.textViewBold16.copyWith(color: prussian),
           ),
         ),
         TextButton(
