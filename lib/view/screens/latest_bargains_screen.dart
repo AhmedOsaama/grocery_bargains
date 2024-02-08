@@ -14,7 +14,7 @@ import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../models/product.dart';
+import '../../features/home/data/models/product.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
 import '../components/search_appBar.dart';

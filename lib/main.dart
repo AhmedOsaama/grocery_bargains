@@ -1,4 +1,3 @@
-
 import 'package:bargainb/providers/insights_provider.dart';
 import 'package:bargainb/providers/suggestion_provider.dart';
 import 'package:bargainb/providers/tutorial_provider.dart';
@@ -20,10 +19,8 @@ import 'firebase_options.dart';
 import 'providers/chatlists_provider.dart';
 import 'providers/google_sign_in_provider.dart';
 import 'providers/products_provider.dart';
-
 //To apply keys for the various languages used.
 // flutter pub run easy_localization:generate -S ./assets/translations -f keys -o locale_keys.g.dart
-
 @pragma('vm:entry-point')
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,9 +34,7 @@ Future<void> main() async {
     ).then((value) => FirebaseAppCheck.instance.activate()),
     PurchaseApi.init(),
   ]);
-
   var notificationMessage = await FirebaseMessaging.instance.getInitialMessage();
-
   var pref = await SharedPreferences.getInstance();
   var isFirstTime = pref.getBool("firstTime") ?? true;
 

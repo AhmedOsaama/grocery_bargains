@@ -23,7 +23,7 @@ import 'package:bargainb/view/screens/product_detail_screen.dart';
 import 'package:translator/translator.dart';
 
 import '../../config/routes/app_navigator.dart';
-import '../../models/product.dart';
+import '../../features/home/data/models/product.dart';
 import '../../utils/tracking_utils.dart';
 import '../widgets/discountItem.dart';
 

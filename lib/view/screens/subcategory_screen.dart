@@ -18,7 +18,7 @@ import 'package:bargainb/features/profile/presentation/views/profile_screen.dart
 import 'package:bargainb/view/screens/product_detail_screen.dart';
 
 import '../../config/routes/app_navigator.dart';
-import '../../models/product.dart';
+import '../../features/home/data/models/product.dart';
 import '../../utils/tracking_utils.dart';
 import '../components/button.dart';
 import '../components/search_appBar.dart';

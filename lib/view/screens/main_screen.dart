@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:algolia/algolia.dart';
+import 'package:bargainb/features/home/presentation/views/home_view.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/providers/tutorial_provider.dart';
 import 'package:bargainb/services/purchase_service.dart';
@@ -278,7 +279,7 @@ class _MainScreenState extends State<MainScreen> {
 
   List<Widget> _buildScreens() {
     return [
-      HomeScreen(),
+      HomeView(),
       ChatlistsScreen(),
       ProfileScreen(),
     ];

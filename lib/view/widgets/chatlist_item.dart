@@ -16,7 +16,6 @@ import '../../utils/app_colors.dart';
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
 import '../../utils/tracking_utils.dart';
-import '../screens/search_screen.dart';
 
 class ChatlistItem extends StatefulWidget {
   final QueryDocumentSnapshot<Map<String, dynamic>> item;

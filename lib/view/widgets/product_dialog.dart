@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../config/routes/app_navigator.dart';
-import '../../models/product.dart';
+import '../../features/home/data/models/product.dart';
 import '../../providers/chatlists_provider.dart';
 import '../../providers/products_provider.dart';
 import '../../utils/app_colors.dart';

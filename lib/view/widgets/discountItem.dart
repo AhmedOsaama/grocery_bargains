@@ -17,7 +17,7 @@ import 'package:provider/provider.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../models/list_item.dart';
-import '../../models/product.dart';
+import '../../features/home/data/models/product.dart';
 import '../../providers/chatlists_provider.dart';
 import '../../utils/style_utils.dart';
 import '../../utils/tracking_utils.dart';

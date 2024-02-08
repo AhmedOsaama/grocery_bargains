@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/chatlist.dart';
-import 'package:bargainb/models/product.dart';
+import 'package:bargainb/features/home/data/models/product.dart';
 import 'package:bargainb/models/user_info.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/services/network_services.dart';

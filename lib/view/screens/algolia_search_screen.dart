@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 
 import '../../config/routes/app_navigator.dart';
 import '../../generated/locale_keys.g.dart';
-import '../../models/product.dart';
+import '../../features/home/data/models/product.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:bargainb/models/product_category.dart';
+import 'package:bargainb/features/home/data/models/product_category.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:bargainb/services/network_services.dart';
@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../config/routes/app_navigator.dart';
-import '../models/product.dart';
+import '../features/home/data/models/product.dart';
 import '../utils/assets_manager.dart';
 import '../utils/icons_manager.dart';
 import '../utils/tracking_utils.dart';

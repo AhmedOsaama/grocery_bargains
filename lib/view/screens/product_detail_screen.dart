@@ -22,8 +22,9 @@ import 'package:bargainb/view/widgets/price_comparison_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 
+import '../../features/home/presentation/views/widgets/skip_tutorial_button.dart';
 import '../../models/list_item.dart';
-import '../../models/product.dart';
+import '../../features/home/data/models/product.dart';
 import '../../providers/tutorial_provider.dart';
 import '../../utils/tooltips_keys.dart';
 import '../../utils/triangle_painter.dart';

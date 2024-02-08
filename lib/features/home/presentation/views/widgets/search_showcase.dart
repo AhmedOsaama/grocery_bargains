@@ -1,0 +1,119 @@
+import 'package:bargainb/providers/tutorial_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
+import 'package:provider/provider.dart';
+import 'package:showcaseview/showcaseview.dart';
+
+import '../../../../../providers/products_provider.dart';
+import '../../../../../utils/app_colors.dart';
+import '../../../../../utils/style_utils.dart';
+import '../../../../../utils/tooltips_keys.dart';
+import '../../../../../utils/tracking_utils.dart';
+import '../../../../../utils/triangle_painter.dart';
+import '../../../../../view/components/search_widget.dart';
+import '../../../../../view/screens/product_detail_screen.dart';
+import '../../../data/models/product.dart';
+import 'skip_tutorial_button.dart';
+
+class SearchShowcase extends StatelessWidget {
+  final BuildContext showcaseContext;
+  const SearchShowcase({Key? key, required this.showcaseContext}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var tutorialProvider = Provider.of<TutorialProvider>(context);
+    return Showcase.withWidget(
+        targetBorderRadius: BorderRadius.circular(10),
+        key: tutorialProvider.isTutorialRunning ? TooltipKeys.showCase2 : GlobalKey<State<StatefulWidget>>(),
+        container: Column(
+          children: [
+            SizedBox(
+              height: 11,
+              width: 13,
+              child: CustomPaint(
+                painter: TrianglePainter(
+                  strokeColor: purple70,
+                  strokeWidth: 1,
+                  paintingStyle: PaintingStyle.fill,
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(15),
+              width: 180.w,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.r),
+                color: purple70,
+              ),
+              child: Column(children: [
+                Text(
+                  "Use the search bar to locate products and uncover the best deals".tr(),
+                  style: TextStyles.textViewRegular16.copyWith(color: white),
+                ),
+                GestureDetector(
+                  onTap: () async {
+                    await goToProductPageTutorial(context, showcaseContext);
+                    ShowCaseWidget.of(showcaseContext).next();
+                  },
+                  child: Row(
+                    children: [
+                      SkipTutorialButton(tutorialProvider: tutorialProvider, context: showcaseContext),
+                      Spacer(),
+                      Text(
+                        "Next".tr(),
+                        style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                      ),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        color: white,
+                        size: 15.sp,
+                      )
+                    ],
+                  ),
+                )
+              ]),
+            ),
+          ],
+        ),
+        height: 50,
+        width: 50,
+        child: SearchWidget(isBackButton: false));
+  }
+
+  Future<void> goToProductPageTutorial(BuildContext context, BuildContext builder) async {
+    var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
+    ShowCaseWidget.of(builder).dismiss();
+    try {
+      Product product = Provider.of<ProductsProvider>(context, listen: false).products.first;
+      await pushNewScreen(context,
+          screen: ProductDetailScreen(
+            productId: product.id,
+            productBrand: product.brand,
+            storeName: productsProvider.getStoreName(product.storeId),
+            productName: product.name,
+            imageURL: product.image,
+            description: product.description,
+            oldPrice: product.oldPrice,
+            productCategory: product.category,
+            price1: double.tryParse(product.price) ?? 0.0,
+            size1: product.unit,
+            gtin: product.gtin,
+          ));
+      ShowCaseWidget.of(builder).next();
+      try {
+        TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open product page",
+            DateTime.now().toUtc().toString(), "Home screen");
+      } catch (e) {
+        print(e);
+        TrackingUtils()
+            .trackButtonClick("Guest", "Open product page", DateTime.now().toUtc().toString(), "Home screen");
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+}

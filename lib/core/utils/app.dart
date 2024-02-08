@@ -43,7 +43,6 @@ class _MyAppState extends State<MyApp> {
       getAllProductsFuture = Provider.of<ProductsProvider>(context, listen: false)
           .getAllProducts()
           .timeout(Duration(seconds: 3), onTimeout: () {});
-      Provider.of<ProductsProvider>(context, listen: false).getAllCategories();
       authStateChangesStream = FirebaseAuth.instance.authStateChanges();
       initMixpanel();
     } catch (exception) {

@@ -6,7 +6,7 @@ import 'package:bargainb/features/chatlists/presentation/views/widgets/chatlist_
 import 'package:bargainb/features/chatlists/presentation/views/widgets/first_time_empty_list_widget.dart';
 import 'package:bargainb/features/chatlists/presentation/views/widgets/quick_item_text_field.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/second_onboarding.dart';
-import 'package:bargainb/models/product_category.dart';
+import 'package:bargainb/features/home/data/models/product_category.dart';
 import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/down_triangle_painter.dart';
