@@ -33,7 +33,7 @@ class _HomeViewState extends State<HomeView> {
           floatingActionButton: HomeFloatingButton(showFAB: showFAB, scrollController: scrollController),
           floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
           bottomSheet: NavBarTutorial(builder: builder,),
-          body: HomeViewBody(scrollController: scrollController, showFAB: showFAB, updateFAB: updateHomeFloatingButton,),
+          body: HomeViewBody(scrollController: scrollController, showFAB: showFAB, updateFAB: updateHomeFloatingButton, showcaseContext: builder,),
         );
       })
     );

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -19,7 +21,7 @@ class TutorialDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tutorialProvider = Provider.of<TutorialProvider>(context);
+    // final tutorialProvider = Provider.of<TutorialProvider>(context);
     return Dialog(
       alignment: Alignment.center,
       shape: RoundedRectangleBorder(
@@ -87,7 +89,7 @@ class TutorialDialog extends StatelessWidget {
     try {
       ShowCaseWidget.of(builder).startShowCase([TooltipKeys.showCase1, TooltipKeys.showCase2]);
     } catch (e) {
-      print(e.toString());
+      log(e.toString());
     }
     Provider.of<TutorialProvider>(context, listen: false).startTutorial();
   }
