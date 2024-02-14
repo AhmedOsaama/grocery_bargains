@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 
 abstract class Failure {
@@ -28,6 +29,10 @@ class ServerFailure extends Failure {
         return ServerFailure('Unexpected error please try again later!');
       default: return ServerFailure('There was an error, please try again later');
     }
+  }
+
+  factory ServerFailure.fromFirebaseException(FirebaseException firebaseException) {
+   return ServerFailure("Error occurred while fetching documents with status code ${firebaseException.code}: ${firebaseException.message}");
   }
 
   factory ServerFailure.fromResponse(int statusCode, dynamic response) {

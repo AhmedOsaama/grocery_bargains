@@ -1,3 +1,4 @@
+import 'package:bargainb/core/utils/service_locators.dart';
 import 'package:bargainb/providers/insights_provider.dart';
 import 'package:bargainb/providers/suggestion_provider.dart';
 import 'package:bargainb/providers/tutorial_provider.dart';
@@ -24,6 +25,7 @@ import 'providers/products_provider.dart';
 @pragma('vm:entry-point')
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  setupServiceLocator();
   await Future.wait([
     EasyLocalization.ensureInitialized(),
     SystemChrome.setPreferredOrientations(

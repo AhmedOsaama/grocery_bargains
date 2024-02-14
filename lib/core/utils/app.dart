@@ -1,4 +1,7 @@
 
+import 'package:bargainb/core/utils/service_locators.dart';
+import 'package:bargainb/features/profile/data/repos/profile_repo_impl.dart';
+import 'package:bargainb/features/profile/presentation/manager/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -86,6 +89,7 @@ class _MyAppState extends State<MyApp> {
                       return SplashWithProgressIndicator();
                     }
                     if (snapshot.hasData) {
+                      Provider.of<AuthUserProvider>(context, listen: false).fetchUser();
                       if (widget.notificationMessage != null) {
                         return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
                       }
@@ -123,6 +127,7 @@ void initializeMyApp(RemoteMessage? notificationMessage, bool isFirstTime) {
             ChangeNotifierProvider<ChatlistsProvider>(create: (_) => ChatlistsProvider()),
             ChangeNotifierProvider<TutorialProvider>(create: (_) => TutorialProvider()),
             ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider()),
+            ChangeNotifierProvider<AuthUserProvider>(create: (_) => AuthUserProvider(getIt.get<ProfileRepoImpl>())),
             ChangeNotifierProvider<SuggestionRepository>(create: (_) => SuggestionRepository()),
           ],
           child: MyApp(notificationMessage: notificationMessage, isFirstTime: isFirstTime),

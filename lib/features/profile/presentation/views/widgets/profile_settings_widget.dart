@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bargainb/features/onboarding/presentation/views/confirm_subscription_screen.dart';
+import 'package:bargainb/features/profile/data/models/User.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:bargainb/features/profile/presentation/views/subscription_screen.dart';
 import 'package:bargainb/utils/assets_manager.dart';
@@ -25,9 +26,9 @@ import '../../../../../view/screens/support_screen.dart';
 import '../../../../../view/widgets/setting_row.dart';
 
 class ProfileSettingsWidget extends StatelessWidget {
-  final snapshot;
+  final String userStatus;
   final Function editProfile;
-  const ProfileSettingsWidget ({Key? key, this.snapshot, required this.editProfile}) : super(key: key);
+  const ProfileSettingsWidget ({Key? key, required this.userStatus, required this.editProfile}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -54,12 +55,12 @@ class ProfileSettingsWidget extends StatelessWidget {
           }),
         Divider(),
         SettingRow(
-          icon: Icon(
+          icon: const Icon(
             Icons.person,
             color: mainPurple,
           ),
           settingText: "Your Status",
-          value: snapshot.data!['status'],
+          value: userStatus,
           onTap: () {
             editProfile();
             TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "open status",

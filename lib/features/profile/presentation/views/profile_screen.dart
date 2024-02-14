@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/features/profile/data/models/User.dart';
 import 'package:bargainb/features/profile/presentation/views/widgets/profile_settings_widget.dart';
 import 'package:bargainb/features/profile/presentation/views/widgets/user_image_widget.dart';
 import 'package:bargainb/providers/google_sign_in_provider.dart';
@@ -24,12 +25,14 @@ import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../providers/tutorial_provider.dart';
 import '../../../../utils/assets_manager.dart';
 import '../../../../view/widgets/image_source_picker_dialog.dart';
+import '../manager/user_provider.dart';
 
 class ProfileScreen extends StatefulWidget {
   bool isEditing;
@@ -41,7 +44,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  Future<DocumentSnapshot<Map<String, dynamic>>>? getUserDataFuture;
   bool isEditing = false;
   bool isEdited = false;
   bool isPhoneEdited = false;
@@ -51,7 +53,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   void initState() {
-    updateUserDataFuture();
     TrackingUtils()
         .trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Profile Screen");
     isEditing = widget.isEditing;
@@ -65,7 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         children: [
           Container(
             height: 250.h,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 alignment: Alignment.topLeft,
                   image: AssetImage(ellipses)),
@@ -80,21 +81,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: FutureBuilder(
-                future: getUserDataFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                            (ScreenUtil().screenHeight / 3).round().toInt().ph,
-                            CircularProgressIndicator(),
-                          ],
-                    ));
+            child: Consumer<AuthUserProvider>(
+                builder: (context, provider, child) {
+                  if (provider.user == null) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children:[
+                          Text(provider.errorMessage!),
+                          buildNoProfileData(context),
+                        ]
+                      );
                   }
-                  if (snapshot.data!.data() == null) buildNoProfileData(context);
                   return SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -103,14 +100,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Center(child: Text(LocaleKeys.profile.tr(), style: TextStylesInter.textViewSemiBold18.copyWith(color: Colors.white),)),
                         80.ph,
                         UserImageWidget(
-                          userProfileSnapshot: snapshot,
-                          updateUserDataFuture: updateUserDataFuture,
+                          user: provider.user!,
                         ),
                         if(isEditing)
                           buildCancelSaveChangesRow(),
                         30.ph,
-                        if (!isEditing) ProfileSettingsWidget(snapshot: snapshot, editProfile: switchEditProfile),
-                        if (isEditing) ...buildProfileTextFields(snapshot)
+                        if (!isEditing) ProfileSettingsWidget(userStatus: provider.user!.status!, editProfile: switchEditProfile),
+                        if (isEditing) ...buildProfileTextFields(provider.user!)
                       ],
                     ),
                   );
@@ -121,7 +117,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  List<Widget> buildProfileTextFields(AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>> snapshot) {
+  Center buildLoadingIndicator() {
+     return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+            (ScreenUtil().screenHeight / 3).round().toInt().ph,
+            const CircularProgressIndicator(),
+          ],
+    ));
+  }
+
+  List<Widget> buildProfileTextFields(AuthUser user) {
     return [
       Text(
         "Name".tr(),
@@ -134,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             isEdited = true;
           });
         },
-        initialValue: snapshot.data!['username'],
+        initialValue: user.username,
       ),
       20.ph,
       Text(
@@ -149,8 +157,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             isEdited = true;
           });
         },
-        initialValue: snapshot.data!['phoneNumber'],
-        decoration: InputDecoration(hintText: "+31 (097) 999-9999"),
+        initialValue: user.phoneNumber,
+        decoration: const InputDecoration(hintText: "+31 (097) 999-9999"),
       ),
       20.ph,
       Text(
@@ -164,7 +172,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             isEdited = true;
           });
         },
-        initialValue: snapshot.data!['status'].toString().isEmpty ? status : snapshot.data!['status'],
+        initialValue: user.status.toString().isEmpty ? status : user.status,
       ),
       10.ph,
     ];
@@ -193,7 +201,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 });
               },
               child: Text(LocaleKeys.cancel.tr())),
-        Spacer(),
+        const Spacer(),
         if (isEditing)
           TextButton(
               onPressed: () async {
@@ -216,7 +224,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           onPressed: () async {
             await Clipboard.setData(ClipboardData(text: "${FirebaseAuth.instance.currentUser!.uid}"));
             ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text("UID Copied successfully, please send it to the developer")));
+                .showSnackBar(const SnackBar(content: Text("UID Copied successfully, please send it to the developer")));
             FirebaseAuth.instance.signOut();
             AppNavigator.pushReplacement(context: context, screen: RegisterScreen(isLogin: true));
             try {
@@ -231,27 +239,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void updateUserDataFuture() {
-    setState(() {
-      getUserDataFuture =
-          FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
-    });
-  }
 
   void shareProfileDeepLink() async {
     BranchUniversalObject buo = BranchUniversalObject(
         canonicalIdentifier: 'invite_to_profile',
-        //canonicalUrl: '',
         title: "Profile Page",
         imageUrl:
             'https://play-lh.googleusercontent.com/u6LMBvrIXH6r1LFQftqjSzebxflasn-nhcoZUlP6DjWHV6fmrwgNFyjJeFwFmckrySHF=w240-h480-rw',
         contentDescription: 'Hey, Check out this profile page',
-        // keywords: ['Plugin', 'Branch', 'Flutter'],
         publiclyIndex: true,
         locallyIndex: true,
         contentMetadata: BranchContentMetaData()..addCustomMetadata('page', '/profile-screen'));
     BranchLinkProperties lp = BranchLinkProperties(
-        //alias: 'flutterplugin', //define link url,
         channel: 'Profile',
         feature: 'sharing',
         stage: 'new share',
@@ -284,15 +283,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
         await verifyPhoneNumber(phone);
       }
       if (!isPhoneEdited) {
-        await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update(data);
-        updateUserDataFuture();
+        if(!mounted) return;
+        await Provider.of<AuthUserProvider>(context, listen: false).updateUser(data);
       }
     }
-    if (!isPhoneEdited || !isEditing)
+    if (!isPhoneEdited || !isEditing) {
       setState(() {
         isEditing = !isEditing;
         isEdited = !isEdited;
       });
+    }
   }
 
   Future<void> verifyPhoneNumber(String phone) async {
@@ -311,9 +311,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         codeSent: (String verificationId, int? resendToken) async {
           try {
             var otp = await showOtpDialog();
-
             String smsCode = otp;
-
             Map<String, Object?> data = {};
 
             data.addAll({'phoneNumber': phone});
@@ -323,12 +321,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             if (status.isNotEmpty) {
               data.addAll({'status': status});
             }
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(FirebaseAuth.instance.currentUser!.uid)
-                .update(data);
+            if(!mounted) return;
+            await Provider.of<AuthUserProvider>(context, listen: false).updateUser(data);
             setState(() {
-              updateUserDataFuture();
               isEditing = !isEditing;
               isEdited = !isEdited;
             });

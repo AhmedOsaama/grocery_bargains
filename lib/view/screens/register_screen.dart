@@ -62,7 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   var photoURL = "";
 
-  var resendToken = null;
+  var resendToken;
 
   Future<void> saveRememberMePref() async {
     var pref = await SharedPreferences.getInstance();
