@@ -72,7 +72,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     "Privacy".tr(),
                     style: TextStyles.textViewMedium16.copyWith(color: black2),
                   ),
-                  Icon(
+                  const Icon(
                     Icons.arrow_forward_ios,
                     color: mainPurple,
                   )
@@ -80,7 +80,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             23.ph,
-            Divider(),
+            const Divider(),
             23.ph,
             GestureDetector(
               behavior: HitTestBehavior.opaque,
@@ -96,7 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     "Preferences".tr(),
                     style: TextStyles.textViewMedium16.copyWith(color: black2),
                   ),
-                  Icon(
+                  const Icon(
                     Icons.arrow_forward_ios,
                     color: mainPurple,
                   )
@@ -104,7 +104,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             23.ph,
-            Divider(),
+            const Divider(),
             23.ph,
             GestureDetector(
               behavior: HitTestBehavior.opaque,
@@ -124,7 +124,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       future: getUserDataFuture,
                       builder: (context, snap) {
                         if (snap.connectionState == ConnectionState.waiting) {
-                          return Icon(
+                          return const Icon(
                             Icons.arrow_forward_ios,
                             color: mainPurple,
                           );
@@ -132,13 +132,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         return Row(
                           children: [
                             Text(
-                              snap.data!["language"] == "en"
+                             context.locale.languageCode == "en"
                                   ? "English"
                                   : "Dutch",
                               style: TextStyles.textViewMedium17
                                   .copyWith(color: Colors.grey),
                             ),
-                            Icon(
+                            const Icon(
                               Icons.arrow_forward_ios,
                               color: mainPurple,
                             ),
@@ -148,7 +148,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ],
               ),
             ),
-            Spacer(),
+            const Spacer(),
             GenericButton(
               onPressed: () {
                 showDialog(
@@ -164,7 +164,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               width: double.infinity,
               height: 60.h,
               borderRadius: BorderRadius.circular(6),
-              borderColor: Color.fromRGBO(137, 137, 137, 1),
+              borderColor: const Color.fromRGBO(137, 137, 137, 1),
               child: Text(
                 LocaleKeys.signout.tr().toUpperCase(),
                 style: TextStylesInter.textViewBold14.copyWith(color: black2),
@@ -187,7 +187,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               width: double.infinity,
               height: 60.h,
               borderRadius: BorderRadius.circular(6),
-              borderColor: Color.fromRGBO(137, 137, 137, 1),
+              borderColor: const Color.fromRGBO(137, 137, 137, 1),
               child: Text(
                 LocaleKeys.deleteMyAccount.tr(),
                 style: TextStylesInter.textViewBold14.copyWith(color: black2),

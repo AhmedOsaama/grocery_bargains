@@ -585,6 +585,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     //in case of email auth: only email is provided in usercredential
     //in case of social auth: email, username and photo are provided in usercredential
     try {
+      var language = context.locale.languageCode;
+      // log("startup language: $language");
       var deviceToken = await FirebaseMessaging.instance
           .getToken(); //could produce a problem if permission is not accepted especially on iOS
       var userData = {
@@ -595,7 +597,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'token': deviceToken,
         "message_tokens": 30,
         'timestamp': DateTime.now().toUtc().toString(),
-        'language': 'en',
+        'language': language,
         'status': "Hello! I'm using BargainB. Join the app",
         'privacy': {
           'connectContacts': true,
@@ -607,6 +609,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           'daily': false,
         },
       };
+      // log("USER ID: ");
+      // log(userCredential.user!.uid);
       TrackingUtils().mixpanel.identify(userCredential.user!.uid);
       TrackingUtils().mixpanel.getPeople()
         ..set("\$name", username)
@@ -617,7 +621,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ..set('phoneNumber', phoneNumber)
         ..set('token', deviceToken)
         ..set('timestamp', DateTime.now().toUtc().toString())
-        ..set('language', 'en')
+        ..set('language', language)
         ..set('status', "Hello! I'm using BargainB. Join the app")
         ..set('privacy', {
               'connectContacts': true,
