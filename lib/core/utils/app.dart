@@ -45,12 +45,12 @@ class _MyAppState extends State<MyApp> {
     try {
       getAllProductsFuture = Provider.of<ProductsProvider>(context, listen: false)
           .getAllProducts()
-          .timeout(Duration(seconds: 3), onTimeout: () {});
+          .timeout(const Duration(seconds: 3), onTimeout: () {});
       authStateChangesStream = FirebaseAuth.instance.authStateChanges();
       initMixpanel();
     } catch (exception) {
       transaction.throwable = exception;
-      transaction.status = SpanStatus.internalError();
+      transaction.status = const SpanStatus.internalError();
     } finally {
       transaction.finish();
     }
@@ -66,7 +66,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: Size(390, 844),
+      designSize: const Size(390, 844),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, _) => MaterialApp(
@@ -80,22 +80,22 @@ class _MyAppState extends State<MyApp> {
             future: getAllProductsFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return SplashWithProgressIndicator();
+                return const SplashWithProgressIndicator();
               }
               return StreamBuilder(
                   stream: authStateChangesStream,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return SplashWithProgressIndicator();
+                      return const SplashWithProgressIndicator();
                     }
                     if (snapshot.hasData) {
                       Provider.of<AuthUserProvider>(context, listen: false).fetchUser();
                       if (widget.notificationMessage != null) {
                         return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
                       }
-                      return MainScreen();
+                      return const MainScreen();
                     }
-                    return widget.isFirstTime ? WelcomeScreen() : MainScreen();
+                    return widget.isFirstTime ? const WelcomeScreen() : const MainScreen();
                     // return WelcomeScreen();
                   });
             }),

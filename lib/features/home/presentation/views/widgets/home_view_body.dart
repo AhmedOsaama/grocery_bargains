@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bargainb/features/home/presentation/views/widgets/categories_list.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/categories_row.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/latest_bargains_row.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/search_showcase.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/see_more_button.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -51,6 +53,14 @@ class _HomeViewBodyState extends State<HomeViewBody> {
           .trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Home Screen");
     }
     addScrollListener();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // log("Tracking app start language: ${context.locale.languageCode}");
+    TrackingUtils()
+        .trackAppStartLanguage(DateTime.now().toUtc().toString(), context.locale.languageCode);
+    super.didChangeDependencies();
   }
 
 

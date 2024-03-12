@@ -56,6 +56,7 @@ class TrackingUtils {
   static const popPageViewEvent = 'PopPageView';
   static const textLinkClickedEvent = 'TextLink Clicked';
   static const languageSelectedEvent = 'Language Selected';
+  static const appStartLanguageEvent = 'App Start Language';
   static const booleanToggleClicksEvent = 'Boolean Toggle Clicks';
   static const sideMenuItemClickedEvent = 'SideMenuItemClicked';
   static const checkboxItemClickedEvent = 'CheckboxItemClicked';
@@ -76,7 +77,7 @@ class TrackingUtils {
 
 
 
-  Mixpanel mixpanel = Mixpanel('752b3abf782a7347499ccb3ebb504194');
+  Mixpanel mixpanel = Mixpanel('3aa827fb2f1cdf5ff2393b84d9c40bac');
 
   void trackButtonClick(String userId, String buttonName, String timestamp, String pageName){
     mixpanel.track(buttonClickEvent, properties: {
@@ -142,6 +143,17 @@ class TrackingUtils {
     });
     FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(languageSelectedEvent)
       ..addCustomData(userIdKey, userId)
+      ..addCustomData(timeStampKey, timestamp)
+      ..addCustomData(languageSelectedKey, languageSelected)
+    );
+  }
+
+  void trackAppStartLanguage(String timestamp, String languageSelected){
+    mixpanel.track(appStartLanguageEvent, properties: {
+      timeStampKey: timestamp,
+      languageSelectedKey: languageSelected,
+    });
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(appStartLanguageEvent)
       ..addCustomData(timeStampKey, timestamp)
       ..addCustomData(languageSelectedKey, languageSelected)
     );
