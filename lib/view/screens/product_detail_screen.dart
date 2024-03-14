@@ -343,7 +343,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                                     screen: ChatListViewScreen(
                                                       listId: id,
                                                     ),
-                                                    withNavBar: true);
+                                                    withNavBar: false);
                                                 NavigatorController.jumpToTab(1);
                                                 ShowCaseWidget.of(ctx).next();
                                               }else{

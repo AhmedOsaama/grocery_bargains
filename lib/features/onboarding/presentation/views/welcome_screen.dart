@@ -35,7 +35,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             child: Column(
               children: [
                 FutureBuilder(
-                    future: Future.delayed(Duration(milliseconds: 500)),
+                    future: Future.delayed(const Duration(milliseconds: 500)),
                     builder: (context, snapshot) {
                       var loading = snapshot.connectionState == ConnectionState.waiting;
                       return Container(
@@ -44,44 +44,48 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           alignment: Alignment.center,
                           children: [
                             AnimatedPositioned(
-                              duration: Duration(milliseconds: 500),
+                              duration: const Duration(milliseconds: 500),
                               bottom: loading ? 50 : 0,
                               child: AnimatedOpacity(
-                                duration: Duration(milliseconds: 500),
+                                duration: const Duration(milliseconds: 500),
                                 opacity: loading ? 0 : 1,
-                                child: Image.asset(context.locale.languageCode == "en" ? groceryGames : groceryGamesDutch),
+                                child: Image.asset(
+                                  context.locale.languageCode == "en" ? groceryGames : groceryGamesDutch,
+                                  width: context.locale.languageCode == "nl" ? 320 : null,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       );
-                    }
-                ),
+                    }),
                 10.ph,
                 FutureBuilder(
-                    future: Future.delayed(Duration(milliseconds: 1500)),
+                    future: Future.delayed(const Duration(milliseconds: 1500)),
                     builder: (context, snapshot) {
                       var loading = snapshot.connectionState == ConnectionState.waiting;
                       return Container(
                         child: AnimatedOpacity(
-                          duration: Duration(milliseconds: 1000),
+                          duration: const Duration(milliseconds: 1000),
                           opacity: loading ? 0 : 1,
-                          child: Image.asset(context.locale.languageCode == "en" ? chats : chatsDutch, height: 150,),
+                          child: Image.asset(
+                            context.locale.languageCode == "en" ? chats : chatsDutch,
+                            height: 150,
+                          ),
                         ),
                       );
-                    }
-                ),
+                    }),
                 // Image.asset(chats),
                 21.ph,
                 FutureBuilder(
-                    future: Future.delayed(Duration(milliseconds: 2500)),
+                    future: Future.delayed(const Duration(milliseconds: 2500)),
                     builder: (context, snapshot) {
                       var loading = snapshot.connectionState == ConnectionState.waiting;
                       return Stack(
                         alignment: Alignment.center,
                         children: [
                           AnimatedOpacity(
-                            duration: Duration(milliseconds: 500),
+                            duration: const Duration(milliseconds: 500),
                             opacity: loading ? 0 : 1,
                             // child: Image.asset(context.locale.languageCode == "en" ? onboarding_bubble1 : onboarding_bubble1_dutch, width: 270.w,),
                             child: Column(
@@ -93,7 +97,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 10.ph,
                                 Text(
                                   "We're done playing by their rules. We've built BargainB to be your champion against the grocery chains,"
-                                      " ensuring you always get the best deals, hassle-free."
+                                          " ensuring you always get the best deals, hassle-free."
                                       .tr(),
                                   style: TextStylesInter.textViewLight15,
                                   textAlign: TextAlign.center,
@@ -102,27 +106,35 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 Text("Special Welcome Offer for Our Early Birds!".tr(),
                                     style: TextStylesInter.textViewSemiBold14, textAlign: TextAlign.center),
                                 10.ph,
-                                Text("As one of our first users, enjoy a FREE one-month trial of BargainB. Help us make BargainB awesome for you and us by taking a quick survey. Your feedback is gold!".tr(),
+                                Text(
+                                  "As one of our first users, enjoy a FREE one-month trial of BargainB. Help us make BargainB awesome for you and us by taking a quick survey. Your feedback is gold!"
+                                      .tr(),
                                   style: TextStylesInter.textViewLight13,
-                                textAlign: TextAlign.center,
+                                  textAlign: TextAlign.center,
                                 ),
                                 5.ph,
-                                Text("Start with a FREE one-month trial at BargainB. Here's what you need to know:".tr(), style: TextStylesInter.textViewLight13,),
+                                Text(
+                                  "Start with a FREE one-month trial at BargainB. Here's what you need to know:".tr(),
+                                  style: TextStylesInter.textViewLight13,
+                                ),
                                 5.ph,
-                                Text("""Trial Duration: Enjoy full access for 1 month!
+                                Text(
+                                  """Trial Duration: Enjoy full access for 1 month!
 Post-Trial Subscription: Continue saving with our 2.99/month subscription.
 No Surprises: Receive a reminder before your trial ends.
-Easy Cancellation: Cancel anytime before the trial ends at no cost.""".tr(), style: TextStylesInter.textViewLight12,)
+Easy Cancellation: Cancel anytime before the trial ends at no cost."""
+                                      .tr(),
+                                  style: TextStylesInter.textViewLight12,
+                                )
                               ],
                             ),
                           ),
                         ],
                       );
-                    }
-                ),
+                    }),
                 10.ph,
                 FutureBuilder(
-                    future: Future.delayed(Duration(milliseconds: 3000)),
+                    future: Future.delayed(const Duration(milliseconds: 3000)),
                     builder: (context, snapshot) {
                       var loading = snapshot.connectionState == ConnectionState.waiting;
                       return Container(
@@ -131,10 +143,10 @@ Easy Cancellation: Cancel anytime before the trial ends at no cost.""".tr(), sty
                           alignment: Alignment.center,
                           children: [
                             AnimatedPositioned(
-                              duration: Duration(milliseconds: 1000),
+                              duration: const Duration(milliseconds: 1000),
                               top: loading ? 50 : 0,
                               child: AnimatedOpacity(
-                                duration: Duration(milliseconds: 1000),
+                                duration: const Duration(milliseconds: 1000),
                                 opacity: loading ? 0 : 1,
                                 // child: Image.asset(context.locale.languageCode == "en" ? onboarding_bubble1 : onboarding_bubble1_dutch, width: 270.w,),
                                 child: Column(
@@ -144,7 +156,7 @@ Easy Cancellation: Cancel anytime before the trial ends at no cost.""".tr(), sty
                                         borderRadius: BorderRadius.circular(10),
                                         color: brightOrange,
                                         height: 60,
-                                        onPressed: () => AppNavigator.push(context: context, screen: SurveyScreen()),
+                                        onPressed: () => AppNavigator.push(context: context, screen: const SurveyScreen()),
                                         child: Text(
                                           "Yes, FREE one-month trial of BargainB ".tr(),
                                           style: TextStylesInter.textViewSemiBold16,
@@ -155,8 +167,9 @@ Easy Cancellation: Cancel anytime before the trial ends at no cost.""".tr(), sty
                                         borderRadius: BorderRadius.circular(10),
                                         color: Colors.white,
                                         height: 60,
-                                        borderColor: Color(0xFFEBEBEB),
-                                        onPressed: () => AppNavigator.push(context: context, screen: OnBoardingScreen()),
+                                        borderColor: const Color(0xFFEBEBEB),
+                                        onPressed: () =>
+                                            AppNavigator.push(context: context, screen: const OnBoardingScreen()),
                                         child: Text(
                                           "Nope, I don’t want a free trial".tr(),
                                           style: TextStylesInter.textViewSemiBold16.copyWith(color: Colors.black),
@@ -168,8 +181,7 @@ Easy Cancellation: Cancel anytime before the trial ends at no cost.""".tr(), sty
                           ],
                         ),
                       );
-                    }
-                ),
+                    }),
               ],
             ),
           ),

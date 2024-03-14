@@ -447,7 +447,15 @@
   "Please select your gender: ": "Selecteer alstublieft uw geslacht",
   "Male": "mannelijk",
   "Female": "vrouwelijk",
-  "Field must not be empty": "Veld mag niet leeg zijn"
+  "Field must not be empty": "Veld mag niet leeg zijn",
+  "Message cannot be empty": "Bericht mag niet leeg zijn",
+  "Invalid phone number": "Ongeldig telefoonnummer",
+  "Full name is required": "Volledige naam is vereist",
+  "The email is required": "De e-mail is vereist",
+  "Please enter a valid email address": "Gelieve een geldig e-mailadres in te geven",
+  "Password is required": "Een wachtwoord is verplicht",
+  "Confirm password is required": "Bevestig dat het wachtwoord vereist is",
+  "Passwords do not match": "Wachtwoorden komen niet overeen"
 
 
 

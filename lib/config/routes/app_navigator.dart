@@ -78,7 +78,7 @@ class AppNavigator {
   static showSignInDialog(BuildContext context) {
     showDialog(
         context: context,
-        builder: (ctx) => SigninDialog(
+        builder: (ctx) => const SigninDialog(
           body: 'You have to be signed in to use this feature.',
           buttonText: 'Sign in',
           title: 'Sign In',

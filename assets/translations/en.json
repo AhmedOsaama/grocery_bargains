@@ -465,7 +465,15 @@
   "Please select your gender: ": "Please select your gender:",
   "Male": "Male",
   "Female": "Female",
-  "Field must not be empty": "Field must not be empty"
+  "Field must not be empty": "Field must not be empty",
+  "Message cannot be empty": "Message cannot be empty",
+  "Invalid phone number": "Invalid phone number",
+  "Full name is required": "Full name is required",
+  "The email is required": "The email is required",
+  "Please enter a valid email address": "Please enter a valid email address",
+  "Password is required": "Password is required",
+  "Confirm password is required": "Confirm password is required",
+  "Passwords do not match": "Passwords do not match"
 
 
 

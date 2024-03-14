@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:algolia/algolia.dart';
 import 'package:bargainb/features/home/presentation/views/home_view.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/providers/tutorial_provider.dart';
@@ -11,11 +10,6 @@ import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/close_button.dart';
-import 'package:bargainb/view/components/dotted_container.dart';
-import 'package:bargainb/view/screens/insights_screen.dart';
-import 'package:bargainb/view/screens/product_detail_screen.dart';
-import 'package:bargainb/view/widgets/signin_dialog.dart';
-import 'package:bargainb/view/widgets/subscribe_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:confetti/confetti.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -31,10 +25,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 
 import 'package:provider/provider.dart';
-import 'package:bargainb/view/screens/home_screen.dart';
 import 'package:bargainb/features/chatlists/presentation/views/chatlists_screen.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../config/routes/app_navigator.dart';
@@ -176,7 +168,6 @@ class _MainScreenState extends State<MainScreen> {
               items: _navBarsItems(),
               screens: _buildScreens(),
               navBarStyle: NavBarStyle.simple,
-              stateManagement: true,
             ),
             if(tutorialProvider.canShowConfetti) ...[
               Container(
