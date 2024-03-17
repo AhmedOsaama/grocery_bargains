@@ -455,8 +455,8 @@
   "Please enter a valid email address": "Gelieve een geldig e-mailadres in te geven",
   "Password is required": "Een wachtwoord is verplicht",
   "Confirm password is required": "Bevestig dat het wachtwoord vereist is",
-  "Passwords do not match": "Wachtwoorden komen niet overeen"
-
+  "Passwords do not match": "Wachtwoorden komen niet overeen",
+  "DeleteChatlist": "Chatlijst verwijderen"
 
 
 }

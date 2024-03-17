@@ -103,6 +103,12 @@ class _MainScreenState extends State<MainScreen> {
         }
         if (listId != null) {                         //case when a user clicks on a deep link to a chatlist
           var currentUserId = FirebaseAuth.instance.currentUser?.uid;
+          if(!PurchaseApi.isSubscribed){
+            ScaffoldMessenger.of(context)
+                .showSnackBar(const SnackBar(content: Text("Sorry you need to be subscribed to use this feature")));
+            AppNavigator.goToChatlistTab(context);
+            return;
+          }
           FirebaseFirestore.instance.collection('/lists').doc(listId).get().then((listSnapshot) async {
             final List userIds = listSnapshot.data()!['userIds'];
             if (!userIds.contains(currentUserId)) {
@@ -116,9 +122,7 @@ class _MainScreenState extends State<MainScreen> {
               var chatList = Provider.of<ChatlistsProvider>(context, listen: false)
                   .chatlists
                   .firstWhere((chatList) => chatList.id == listId);
-              if(PurchaseApi.isSubscribed) {
                 AppNavigator.push(context: context, screen: ChatListViewScreen(listId: listId));
-              }
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text("User added successfully to list ${chatList.name}")));
             } else {

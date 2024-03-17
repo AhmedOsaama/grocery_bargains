@@ -473,7 +473,8 @@
   "Please enter a valid email address": "Please enter a valid email address",
   "Password is required": "Password is required",
   "Confirm password is required": "Confirm password is required",
-  "Passwords do not match": "Passwords do not match"
+  "Passwords do not match": "Passwords do not match",
+  "DeleteChatlist": "Delete Chatlist"
 
 
 
