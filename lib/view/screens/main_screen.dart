@@ -101,7 +101,7 @@ class _MainScreenState extends State<MainScreen> {
             });
           }
         }
-        if (listId != null) {
+        if (listId != null) {                         //case when a user clicks on a deep link to a chatlist
           var currentUserId = FirebaseAuth.instance.currentUser?.uid;
           FirebaseFirestore.instance.collection('/lists').doc(listId).get().then((listSnapshot) async {
             final List userIds = listSnapshot.data()!['userIds'];
@@ -110,14 +110,15 @@ class _MainScreenState extends State<MainScreen> {
               var userData = await FirebaseFirestore.instance.collection('users').doc(currentUserId).get();
               await FirebaseFirestore.instance.collection('/lists').doc(listId).update({
                 "userIds": userIds,
-                // "user_num": FieldValue.increment(1),
                 "new_participant_username": userData['username'],
               });
               await Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists();
               var chatList = Provider.of<ChatlistsProvider>(context, listen: false)
                   .chatlists
                   .firstWhere((chatList) => chatList.id == listId);
-              AppNavigator.push(context: context, screen: ChatListViewScreen(listId: listId));
+              if(PurchaseApi.isSubscribed) {
+                AppNavigator.push(context: context, screen: ChatListViewScreen(listId: listId));
+              }
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text("User added successfully to list ${chatList.name}")));
             } else {
@@ -131,12 +132,13 @@ class _MainScreenState extends State<MainScreen> {
       PlatformException platformException = error as PlatformException;
       print('InitSession error: ${platformException.code} - ${platformException.message}');
     });
-    if (FirebaseAuth.instance.currentUser != null)
+    if (FirebaseAuth.instance.currentUser != null) {        //case when clicking on a new chat notification
       Provider.of<ChatlistsProvider>(context, listen: false).getAllChatlists().then((value) {
         if (widget.notificationData != null) {
           AppNavigator.push(context: context, screen: ChatListViewScreen(listId: widget.notificationData!));
         }
       });
+    }
     try {
       TrackingUtils().trackAppOpen(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString());
       // Purchases.logIn(FirebaseAuth.instance.currentUser!.uid);
