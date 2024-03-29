@@ -74,6 +74,8 @@ class TrackingUtils {
   static const subscriptionEvent = 'subscription_Successful';
   static const firstTimeEvent = 'firstTime_User';
   static const surveyEvent = 'SurveySubmitted';
+  static const surveyStartedEvent = 'SurveyStarted';
+  static const surveySkippedEvent = 'SurveySkipped';
 
 
 
@@ -444,6 +446,32 @@ class TrackingUtils {
         ..addCustomData(surveyPremiumAppInterestKey, premiumAppInterest)
         ..addCustomData(surveyMonthlySubscriptionPriceKey, monthlySubscriptionPrice)
         ..addCustomData(surveyMonthPayPreferenceKey, monthPayPreference)
+    );
+  }
+
+  void trackSurveyStarted(String userId, String timestamp, String pageName){
+    mixpanel.track(surveyStartedEvent, properties: {
+      userIdKey : userId,
+      timeStampKey : timestamp,
+      pageNameKey : pageName,
+    });
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(surveyStartedEvent)
+      ..addCustomData(userIdKey, userId)
+      ..addCustomData(timeStampKey, timestamp)
+      ..addCustomData(pageNameKey, pageName)
+    );
+  }
+
+  void trackSurveySkipped(String userId, String timestamp, String pageName){
+    mixpanel.track(surveySkippedEvent, properties: {
+      userIdKey : userId,
+      timeStampKey : timestamp,
+      pageNameKey : pageName,
+    });
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(surveySkippedEvent)
+      ..addCustomData(userIdKey, userId)
+      ..addCustomData(timeStampKey, timestamp)
+      ..addCustomData(pageNameKey, pageName)
     );
   }
 }

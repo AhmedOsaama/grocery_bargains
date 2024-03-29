@@ -156,7 +156,10 @@ Easy Cancellation: Cancel anytime before the trial ends at no cost."""
                                         borderRadius: BorderRadius.circular(10),
                                         color: brightOrange,
                                         height: 60,
-                                        onPressed: () => AppNavigator.push(context: context, screen: const SurveyScreen()),
+                                        onPressed: () {
+                                          AppNavigator.push(context: context, screen: const SurveyScreen());
+                                          TrackingUtils().trackSurveyStarted("Guest", DateTime.now().toUtc().toString(), "Welcome Screen");
+                                        },
                                         child: Text(
                                           "Yes, FREE one-month trial of BargainB ".tr(),
                                           style: TextStylesInter.textViewSemiBold16,
@@ -168,8 +171,10 @@ Easy Cancellation: Cancel anytime before the trial ends at no cost."""
                                         color: Colors.white,
                                         height: 60,
                                         borderColor: const Color(0xFFEBEBEB),
-                                        onPressed: () =>
-                                            AppNavigator.push(context: context, screen: const OnBoardingScreen()),
+                                        onPressed: () {
+                                          AppNavigator.push(context: context, screen: const OnBoardingScreen());
+                                          TrackingUtils().trackSurveySkipped("Guest", DateTime.now().toUtc().toString(), "Welcome Screen");
+                                        },
                                         child: Text(
                                           "Nope, I don’t want a free trial".tr(),
                                           style: TextStylesInter.textViewSemiBold16.copyWith(color: Colors.black),
