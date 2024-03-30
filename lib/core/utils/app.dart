@@ -1,5 +1,7 @@
 
 import 'package:bargainb/core/utils/service_locators.dart';
+import 'package:bargainb/features/onboarding/presentation/views/confirm_subscription_screen.dart';
+import 'package:bargainb/features/onboarding/presentation/views/onboarding_subscription_screen.dart';
 import 'package:bargainb/features/profile/data/repos/profile_repo_impl.dart';
 import 'package:bargainb/features/profile/presentation/manager/user_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -96,7 +98,7 @@ class _MyAppState extends State<MyApp> {
                       return const MainScreen();
                     }
                     return widget.isFirstTime ? const WelcomeScreen() : const MainScreen();
-                    // return WelcomeScreen();
+                    // return ConfirmSubscriptionScreen();
                   });
             }),
         localizationsDelegates: context.localizationDelegates,

@@ -52,7 +52,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
     premium5,
   ];
 
-  late Future<List> offersFuture;
+  late Future<List<Offering>> offersFuture;
 
   @override
   void initState() {
@@ -127,13 +127,14 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                   ),
                 ),
                 // FutureBuilder<List<Offering>>(
-                FutureBuilder(
+                FutureBuilder<List<Offering>>(
                     future: offersFuture,
                     builder: (ctx, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting)
-                        return Center(
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
                           child: CircularProgressIndicator(),
                         );
+                      }
                       var offerings = snapshot.data ?? [];
                       final packages =
                           offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
@@ -141,7 +142,8 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                       var plan = userProvider.onboardingSubscriptionPlan;
                       var monthlyPrice = packages[0].storeProduct.priceString;
                       var yearlyPrice = packages[1].storeProduct.priceString;
-                      // var offer = packages[1].storeProduct.introductoryPrice;
+                      double yearlyOriginalPrice = packages[1].storeProduct.price;
+                      int yearlyDiscountPercentage = 0;
                       try {
                         if (Platform.isIOS) {
                           var introductoryPrice = packages[1].storeProduct.introductoryPrice;
@@ -149,9 +151,12 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                         }
                         if (Platform.isAndroid) {
                           var subscriptionOptions = packages[1].storeProduct.subscriptionOptions;
-                          log(subscriptionOptions.toString());
-                          if (subscriptionOptions!.first.introPhase != null)
+                          if (subscriptionOptions!.first.introPhase != null) {
                             yearlyPrice = subscriptionOptions.first.introPhase!.price.formatted;
+                            var currencyCode = subscriptionOptions.first.introPhase!.price.currencyCode;
+                            double yearlyPriceDiscounted = double.parse(yearlyPrice.replaceAll(currencyCode, ""));
+                            yearlyDiscountPercentage = 100 - ((yearlyPriceDiscounted / yearlyOriginalPrice) * 100).round();
+                          }
                         }
                       } catch (e) {
                         print("Something went wrong while fetching offers: $e");
@@ -171,7 +176,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                               },
                               price: yearlyPrice,
                               plan: plan,
-                              offerText: "You save 63%",
+                              offerText: yearlyDiscountPercentage == 0 ? null : "You save $yearlyDiscountPercentage%",
                             ),
                           if (plan == "Monthly")
                             PlanContainer(

@@ -45,7 +45,7 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
 
   var selectedPlan = "None";
   var selectedPlanPrice = "None";
-  late Future<List> offersFuture;
+  late Future<List<Offering>> offersFuture;
 
   @override
   void initState() {
@@ -104,7 +104,7 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
                   textAlign: TextAlign.center,
                 ),
                 15.ph,
-                FutureBuilder(
+                FutureBuilder<List<Offering>>(
                     future: offersFuture,
                     builder: (ctx, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting)
@@ -113,9 +113,11 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
                         );
                       var offerings = snapshot.data ?? [];
                       final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
-                      if(packages.isEmpty) return Center(child: Text("You have to have a google or apple account to see subscriptions"));
+                      if(packages.isEmpty) return const Center(child: Text("You have to have a google or apple account to see subscriptions"));
                       var monthlyPrice = packages[0].storeProduct.priceString;
                       var yearlyPrice = packages[1].storeProduct.priceString;
+                      double yearlyOriginalPrice = packages[1].storeProduct.price;
+                      int yearlyDiscountPercentage = 0;
                       try {
                         if (Platform.isIOS) {
                           var introductoryPrice = packages[1].storeProduct.introductoryPrice;
@@ -123,13 +125,16 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
                         }
                         if (Platform.isAndroid) {
                           var subscriptionOptions = packages[1].storeProduct.subscriptionOptions;
-                          if (subscriptionOptions!.first.introPhase != null)
+                          if (subscriptionOptions!.first.introPhase != null) {
                             yearlyPrice = subscriptionOptions.first.introPhase!.price.formatted;
+                            var currencyCode = subscriptionOptions.first.introPhase!.price.currencyCode;
+                            double yearlyPriceDiscounted = double.parse(yearlyPrice.replaceAll(currencyCode, ""));
+                        yearlyDiscountPercentage = 100 - ((yearlyPriceDiscounted / yearlyOriginalPrice) * 100).round();
+                          }
                         }
                       } catch (e) {
                         print("Something went wrong while fetching offers: $e");
                       }
-                      // log(offer.toString());
                       return Column(
                         children: [
                           PlanContainer(
@@ -142,7 +147,7 @@ class _OnboardingSubscriptionScreenState extends State<OnboardingSubscriptionScr
                             },
                             price: yearlyPrice,
                             plan: "Yearly",
-                            offerText: "You save 63%",
+                            offerText: yearlyDiscountPercentage == 0 ? null : "You save $yearlyDiscountPercentage%",
                           ),
                           PlanContainer(
                             selectedPlan: selectedPlan,
