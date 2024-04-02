@@ -98,7 +98,7 @@ class _MyAppState extends State<MyApp> {
                       return const MainScreen();
                     }
                     return widget.isFirstTime ? const WelcomeScreen() : const MainScreen();
-                    // return ConfirmSubscriptionScreen();
+                    // return WelcomeScreen();
                   });
             }),
         localizationsDelegates: context.localizationDelegates,
