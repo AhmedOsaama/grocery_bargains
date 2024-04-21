@@ -78,16 +78,16 @@ class _OtpDialogState extends State<OtpDialog> {
                 showCursor: true,
                 onCompleted: (pin) async {
                   this.pin = pin;
-                  print('PIN ENTERED: $pin');
+                  // print('PIN ENTERED: $pin');
                 }),
             30.ph,
             ElevatedButton(
                 onPressed: () async {
-                  print(pin);
+                  // print(pin);
                   await AppNavigator.pop(context: context, object: pin);
                 },
                 style: ElevatedButton.styleFrom(
-                    fixedSize: Size(130, 60),
+                    fixedSize: const Size(130, 60),
                     backgroundColor: yellow,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(6)),
@@ -102,7 +102,7 @@ class _OtpDialogState extends State<OtpDialog> {
               onTap: () async {
                 AppNavigator.pop(context: context);
                 await widget.resendOtp();
-                print("finish");
+                // print("finish");
               },
               child: Text.rich(
                 TextSpan(

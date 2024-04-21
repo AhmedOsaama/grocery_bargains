@@ -5,6 +5,7 @@ import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/features/profile/data/models/User.dart';
 import 'package:bargainb/features/profile/presentation/views/widgets/profile_settings_widget.dart';
 import 'package:bargainb/features/profile/presentation/views/widgets/user_image_widget.dart';
+import 'package:bargainb/features/registration/presentation/views/register_screen.dart';
 import 'package:bargainb/providers/google_sign_in_provider.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/screens/register_screen.dart';

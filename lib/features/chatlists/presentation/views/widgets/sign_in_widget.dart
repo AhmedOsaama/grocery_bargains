@@ -1,3 +1,4 @@
+import 'package:bargainb/features/registration/presentation/views/register_screen.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';

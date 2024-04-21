@@ -4,6 +4,7 @@ import 'package:bargainb/features/onboarding/presentation/views/confirm_subscrip
 import 'package:bargainb/features/onboarding/presentation/views/onboarding_subscription_screen.dart';
 import 'package:bargainb/features/profile/data/repos/profile_repo_impl.dart';
 import 'package:bargainb/features/profile/presentation/manager/user_provider.dart';
+import 'package:bargainb/features/registration/presentation/views/register_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -87,18 +88,18 @@ class _MyAppState extends State<MyApp> {
               return StreamBuilder(
                   stream: authStateChangesStream,
                   builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const SplashWithProgressIndicator();
-                    }
-                    if (snapshot.hasData) {
-                      Provider.of<AuthUserProvider>(context, listen: false).fetchUser();
-                      if (widget.notificationMessage != null) {
-                        return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
-                      }
-                      return const MainScreen();
-                    }
-                    return widget.isFirstTime ? const WelcomeScreen() : const MainScreen();
-                    // return WelcomeScreen();
+                    // if (snapshot.connectionState == ConnectionState.waiting) {
+                    //   return const SplashWithProgressIndicator();
+                    // }
+                    // if (snapshot.hasData) {
+                    //   Provider.of<AuthUserProvider>(context, listen: false).fetchUser();
+                    //   if (widget.notificationMessage != null) {
+                    //     return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
+                    //   }
+                    //   return const MainScreen();
+                    // }
+                    // return widget.isFirstTime ? const WelcomeScreen() : const MainScreen();
+                    return RegisterScreen(isLogin: true);
                   });
             }),
         localizationsDelegates: context.localizationDelegates,

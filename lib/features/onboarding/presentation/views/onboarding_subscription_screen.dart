@@ -5,6 +5,7 @@ import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/features/onboarding/presentation/views/confirm_subscription_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/onboarding_stepper.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
+import 'package:bargainb/features/registration/presentation/views/register_screen.dart';
 import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/icons_manager.dart';

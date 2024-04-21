@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bargainb/features/registration/presentation/views/register_screen.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';

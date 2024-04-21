@@ -9,6 +9,7 @@ import 'package:bargainb/features/onboarding/presentation/views/widgets/fourth_o
 import 'package:bargainb/features/onboarding/presentation/views/widgets/second_onboarding.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/sixth_onboarding.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/third_onboarding.dart';
+import 'package:bargainb/features/registration/presentation/views/register_screen.dart';
 import 'package:bargainb/services/purchase_service.dart';
 import 'package:bargainb/utils/sounds_manager.dart';
 import 'package:bargainb/view/screens/main_screen.dart';

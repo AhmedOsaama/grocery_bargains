@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:bargainb/features/registration/presentation/views/register_screen.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
