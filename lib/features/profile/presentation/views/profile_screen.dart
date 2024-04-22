@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/features/profile/data/models/User.dart';
+import 'package:bargainb/features/profile/data/repos/profile_repo_impl.dart';
 import 'package:bargainb/features/profile/presentation/views/widgets/profile_settings_widget.dart';
 import 'package:bargainb/features/profile/presentation/views/widgets/user_image_widget.dart';
 import 'package:bargainb/features/registration/presentation/views/register_screen.dart';
@@ -57,6 +58,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     TrackingUtils()
         .trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Profile Screen");
     isEditing = widget.isEditing;
+    Provider.of<AuthUserProvider>(context,listen: false).fetchUser();
     super.initState();
   }
 
@@ -88,7 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children:[
-                          Text(provider.errorMessage!),
+                          Text(provider.errorMessage ?? ""),
                           buildNoProfileData(context),
                         ]
                       );

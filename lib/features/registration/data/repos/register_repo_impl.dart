@@ -339,7 +339,7 @@ class RegisterRepoImpl implements RegisterRepo {
     if (userCredential == null) {
       throw "credential error";
     }
-    finalizePhoneLogin(
+    await finalizePhoneLogin(
       context,
       userCredential,
       result,
