@@ -17,13 +17,14 @@ class PurchaseApi{
 
   static Future init() async{
     var apiKey = Platform.isIOS ? 'appl_HUpmOoVSBSzFEjDWMemOoWSxdBq' : 'goog_TKFhZiVZKEYVhHGVqldnltUOYyJ';
-    await Purchases.setLogLevel(LogLevel.debug);
+    // await Purchases.setLogLevel(LogLevel.debug);
     // await Purchases.configure(PurchasesConfiguration(apiKey));
     try {
       await Purchases.configure(PurchasesConfiguration(apiKey)
         ..appUserID = FirebaseAuth.instance.currentUser!.uid);
+      print("USER ID: ${FirebaseAuth.instance.currentUser!.uid}");
     }catch(e){
-      print(e);
+      debugPrint("ISSUE WITH INIT PURCHASE API: $e");
       await Purchases.configure(PurchasesConfiguration(apiKey));
     }
     await checkSubscriptionStatus();
@@ -43,25 +44,27 @@ class PurchaseApi{
 
   static Future<void> checkSubscriptionStatus() async {
    var value = await Purchases.getCustomerInfo();
-   try {
-     if (value.entitlements.all['all_analysis_features']!.isActive) {
-       var productIdentifier = value.entitlements.all['all_analysis_features']!.productIdentifier;
-       var product = await getSubscriptionProduct(productIdentifier);
-       subscriptionPeriod = getSubscriptionPeriod(productIdentifier);
-       subscriptionPrice = getSubscriptionPriceString(product);
-       subscriptionPricePerMonth = getPricePerMonth(subscriptionPeriod, getSubscriptionPrice(product));
-       isSubscribed = true;
+   print("checkSubscriptionStatus: $value");
+   if(value.entitlements.all.containsKey('all_analysis_features')) {
+     try {
+       if (value.entitlements.all['all_analysis_features']!.isActive) {
+         var productIdentifier = value.entitlements.all['all_analysis_features']!.productIdentifier;
+         var product = await getSubscriptionProduct(productIdentifier);
+         subscriptionPeriod = getSubscriptionPeriod(productIdentifier);
+         subscriptionPrice = getSubscriptionPriceString(product);
+         subscriptionPricePerMonth = getPricePerMonth(subscriptionPeriod, getSubscriptionPrice(product));
+         isSubscribed = true;
+       }
+     } catch (e) {
+       log("ERROR IN SUBSCRIPTION: $e");
      }
-   }catch(e){
-     log("ERROR IN SUBSCRIPTION: $e");
-     print(e);
    }
   }
 
   static Future<StoreProduct> getSubscriptionProduct(String productIdentifier) async {
-    print("Product identifier: $productIdentifier");
+    // print("Product identifier: $productIdentifier");
     var products = await Purchases.getProducts([productIdentifier]);
-    print("Products: ${products}");
+    // print("Products: ${products}");
     var product = products.first;
     return product;
   }

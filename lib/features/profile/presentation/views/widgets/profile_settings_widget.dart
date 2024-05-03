@@ -98,6 +98,7 @@ class ProfileSettingsWidget extends StatelessWidget {
             icon: SvgPicture.asset(tutorial),
             settingText: "Tutorial".tr(),
             onTap: () {
+              Provider.of<TutorialProvider>(context, listen: false).setTutorialStatus(false);
               Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
               NavigatorController.jumpToTab(0);
               TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,

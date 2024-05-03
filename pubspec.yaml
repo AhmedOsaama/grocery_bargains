@@ -38,8 +38,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_screenutil: ^5.6.0
   sign_in_with_apple: ^4.3.0
-  intl: ^0.17.0
-  flutter_svg: ^1.1.6
+  intl: ^0.18.1
+  flutter_svg: ^2.0.9
   firebase_core: ^2.4.0
   cloud_firestore: ^4.2.0
   firebase_auth: ^4.2.1
@@ -55,7 +55,6 @@ dependencies:
   dots_indicator: ^2.1.0
   http: ^0.13.5
   dotted_border: ^2.0.0+3
-  sentry_flutter: ^6.22.0
   firebase_messaging: ^14.3.0
   flutter_branch_sdk: ^6.6.0
   flutter_contacts: ^1.1.6
@@ -88,6 +87,7 @@ dependencies:
   package_info_plus: ^3.1.2
   flutter_native_splash: ^2.2.19
   get_it: ^7.6.0
+  sentry_flutter: ^8.1.0
 
 
 

@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:bargainb/features/registration/data/repos/register_repo.dart';
 import 'package:bargainb/models/bargainb_user.dart';
+import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -123,7 +124,13 @@ class RegisterRepoImpl implements RegisterRepo {
     if (!PurchaseApi.isSubscribed) {
       await AppNavigator.pushReplacement(context: context, screen: ConfirmSubscriptionScreen());
     } else {
-      AppNavigator.pushReplacement(context: context, screen: CustomizeExperienceScreen());
+      //TODO: check if user has already went through the screen
+      var isHubspotContact = await Provider.of<UserProvider>(context,listen: false).getHubSpotStatus();
+      if(!isHubspotContact) {
+        AppNavigator.pushReplacement(context: context, screen: CustomizeExperienceScreen());
+      }else{
+        AppNavigator.pushReplacement(context: context, screen: const MainScreen());
+      }
     }
   }
 

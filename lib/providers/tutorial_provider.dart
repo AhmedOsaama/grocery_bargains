@@ -1,40 +1,58 @@
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 
 import '../utils/tooltips_keys.dart';
 
-class TutorialProvider with ChangeNotifier{
+class TutorialProvider with ChangeNotifier {
   bool isTutorialRunning = false;
   bool canShowWelcomeDialog = false;
   bool canShowConfetti = false;
+  String hasSeenTutorialPrefKey = "hasSeenTutorial";
 
-  void startTutorial(){
-    log("IS STARTING TUTORIAL");
+  void startTutorial() {
     isTutorialRunning = true;
     notifyListeners();
   }
 
-  void showTutorialConfetti(){
+  void showTutorialConfetti() {
     canShowConfetti = true;
     // notifyListeners();
   }
-  void hideTutorialConfetti(){
+
+  void hideTutorialConfetti() {
     canShowConfetti = false;
     notifyListeners();
   }
 
-  void activateWelcomeTutorial(){
-    canShowWelcomeDialog = true;
-    notifyListeners();
+  Future<void> activateWelcomeTutorial() async {
+    var pref = await SharedPreferences.getInstance();
+    var hasSeenTutorial = pref.getBool("hasSeenTutorial") ?? false;
+    if (!hasSeenTutorial) {
+      canShowWelcomeDialog = true;
+      notifyListeners();
+    }
   }
 
-  void stopTutorial(BuildContext context){
-    isTutorialRunning = false;
-    ShowCaseWidget.of(context).dismiss();
-    showTutorialConfetti();
-    notifyListeners();
+  Future<void> stopTutorial(BuildContext context) async {
+      isTutorialRunning = false;
+      ShowCaseWidget.of(context).dismiss();
+      showTutorialConfetti();
+      notifyListeners();
+      setTutorialStatus(true);
   }
 
+  ///checks whether tutorial was shown to user or not
+  Future<bool> getTutorialStatus() async {
+    var pref = await SharedPreferences.getInstance();
+    var hasSeenTutorial = pref.getBool("hasSeenTutorial") ?? false;
+    return hasSeenTutorial;
+  }
+
+  Future<void> setTutorialStatus(bool value) async {
+    var pref = await SharedPreferences.getInstance();
+    pref.setBool(hasSeenTutorialPrefKey, value);
+  }
 }

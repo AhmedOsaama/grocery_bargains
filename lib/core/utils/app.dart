@@ -69,6 +69,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    // print("USER ID: ${FirebaseAuth.instance.currentUser!.email}");
+    // Provider.of<UserProvider>(context,listen: false).signOut(context);
     return ScreenUtilInit(
       designSize: const Size(390, 844),
       minTextAdapt: true,
@@ -77,6 +79,7 @@ class _MyAppState extends State<MyApp> {
         title: 'BargainB',
         theme: ThemeData(
           canvasColor: Colors.white,
+          useMaterial3: false
         ),
         navigatorObservers: [SentryNavigatorObserver()],
         debugShowCheckedModeBanner: false,

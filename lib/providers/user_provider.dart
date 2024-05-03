@@ -1,5 +1,10 @@
+import 'package:bargainb/core/utils/firestore_utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'google_sign_in_provider.dart';
 
 class UserProvider with ChangeNotifier{
   bool isFirstTime = false;
@@ -53,6 +58,35 @@ class UserProvider with ChangeNotifier{
     prefs.setBool("firstTime", true);
     isFirstTime = true;
     notifyListeners();
+  }
+
+  ///Checks whether a logged in user is a hubspot contact
+  Future<bool> getHubSpotStatus() async {
+    var currentUser = FirebaseAuth.instance.currentUser;
+    if(currentUser != null) {
+     var docRef = await FirestoreUtils.firestoreUserCollection.doc(currentUser.uid).get();
+     bool hubspotStatus = docRef.get('isHubspotContact');
+     return hubspotStatus;
+    }
+    return false;
+  }
+
+  Future<void> signOut(BuildContext context) async {
+    var pref = await SharedPreferences.getInstance();
+    pref.setBool("rememberMe", false);
+    var isGoogleSignedIn =
+        await Provider.of<GoogleSignInProvider>(context,
+        listen: false)
+        .googleSignIn
+        .isSignedIn();
+    if (isGoogleSignedIn) {
+      await Provider.of<GoogleSignInProvider>(context,
+          listen: false)
+          .logout();
+    } else {
+      FirebaseAuth.instance.signOut();
+    }
+    print("SIGNED OUT...................");
   }
 
   void setUserData(String id, String name, String email, String phoneNumber, String deviceToken, String photoURL){
