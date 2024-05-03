@@ -99,7 +99,9 @@ class _MyAppState extends State<MyApp> {
                       }
                       return const MainScreen();
                     }
-                    return widget.isFirstTime ? const WelcomeScreen() : const MainScreen();
+                    return widget.isFirstTime ?
+                    const WelcomeScreen()
+                        : const MainScreen();
                     // return RegisterScreen(isLogin: false);
                   });
             }),
