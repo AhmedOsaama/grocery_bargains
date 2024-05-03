@@ -6,6 +6,7 @@ import 'package:bargainb/features/onboarding/presentation/views/onboarding_subsc
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/button.dart';
+import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/support_screen.dart';
 import 'package:bargainb/view/widgets/feature_widget.dart';
 import 'package:bargainb/view/widgets/subscription_paywall.dart';
@@ -197,8 +198,10 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                               var hasPurchased =
                                   await initiateSubscription(context, userProvider.onboardingSubscriptionPlan);
                               if (hasPurchased) {
+                                // print("Has purchased");
                                 trackSubscription(userProvider);
-                                AppNavigator.pushReplacement(context: context, screen: CustomizeExperienceScreen());
+                                await AppNavigator.pushReplacement(context: context, screen: CustomizeExperienceScreen());
+                                // AppNavigator.pushReplacement(context: context, screen: MainScreen());
                               }
                             },
                             child: Text(
@@ -216,7 +219,7 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                             padding: EdgeInsets.symmetric(vertical: 20),
                             color: Color(0xFFEBEBEB),
                             onPressed: () async {
-                              AppNavigator.push(
+                              AppNavigator.pushReplacement(
                                   context: context,
                                   screen: OnboardingSubscriptionScreen(
                                     isChangingPlan: true,

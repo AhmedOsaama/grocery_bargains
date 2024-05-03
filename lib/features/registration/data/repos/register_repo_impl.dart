@@ -161,12 +161,10 @@ class RegisterRepoImpl implements RegisterRepo {
     final _auth = FirebaseAuth.instance;
     late UserCredential userCredential;
     final completer = Completer<UserCredential>();
-    print("AUTHENTICATING: $phoneNumber");
 
     await _auth.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         verificationCompleted: (phoneCredential) async {
-          print("verification completed");
           userCredential = await _auth.signInWithCredential(phoneCredential);
           completer.complete(userCredential);
         },
