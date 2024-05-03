@@ -124,7 +124,6 @@ class RegisterRepoImpl implements RegisterRepo {
     if (!PurchaseApi.isSubscribed) {
       await AppNavigator.pushReplacement(context: context, screen: ConfirmSubscriptionScreen());
     } else {
-      //TODO: check if user has already went through the screen
       var isHubspotContact = await Provider.of<UserProvider>(context,listen: false).getHubSpotStatus();
       if(!isHubspotContact) {
         AppNavigator.pushReplacement(context: context, screen: CustomizeExperienceScreen());
