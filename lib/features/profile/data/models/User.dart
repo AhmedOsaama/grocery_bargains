@@ -11,7 +11,7 @@ class AuthUser {
       String? phoneNumber, 
       String? token, 
       num? messageTokens, 
-      Timestamp? timestamp,
+      // String? timestamp,
       String? language, 
       String? status, 
       Privacy? privacy, 
@@ -22,7 +22,7 @@ class AuthUser {
     _phoneNumber = phoneNumber;
     _token = token;
     _messageTokens = messageTokens;
-    _timestamp = timestamp;
+    // _timestamp = timestamp;
     _language = language;
     _status = status;
     _privacy = privacy;
@@ -36,7 +36,7 @@ class AuthUser {
     _phoneNumber = json['phoneNumber'];
     _token = json['token'];
     _messageTokens = json['message_tokens'];
-    _timestamp = json['timestamp'];
+    // _timestamp = json['timestamp'];
     _language = json['language'];
     _status = json['status'];
     _privacy = json['privacy'] != null ? Privacy.fromJson(json['privacy']) : null;
@@ -48,7 +48,7 @@ class AuthUser {
   String? _phoneNumber;
   String? _token;
   num? _messageTokens;
-  Timestamp? _timestamp;
+  // String? _timestamp;
   String? _language;
   String? _status;
   Privacy? _privacy;
@@ -59,7 +59,7 @@ AuthUser copyWith({  String? email,
   String? phoneNumber,
   String? token,
   num? messageTokens,
-  Timestamp? timestamp,
+  // String? timestamp,
   String? language,
   String? status,
   Privacy? privacy,
@@ -70,7 +70,7 @@ AuthUser copyWith({  String? email,
   phoneNumber: phoneNumber ?? _phoneNumber,
   token: token ?? _token,
   messageTokens: messageTokens ?? _messageTokens,
-  timestamp: timestamp ?? _timestamp,
+  // timestamp: timestamp ?? _timestamp,
   language: language ?? _language,
   status: status ?? _status,
   privacy: privacy ?? _privacy,
@@ -82,7 +82,7 @@ AuthUser copyWith({  String? email,
   String? get phoneNumber => _phoneNumber;
   String? get token => _token;
   num? get messageTokens => _messageTokens;
-  Timestamp? get timestamp => _timestamp;
+  // String? get timestamp => _timestamp;
   String? get language => _language;
   String? get status => _status;
   Privacy? get privacy => _privacy;
@@ -96,7 +96,7 @@ AuthUser copyWith({  String? email,
     map['phoneNumber'] = _phoneNumber;
     map['token'] = _token;
     map['message_tokens'] = _messageTokens;
-    map['timestamp'] = _timestamp;
+    // map['timestamp'] = _timestamp;
     map['language'] = _language;
     map['status'] = _status;
     if (_privacy != null) {

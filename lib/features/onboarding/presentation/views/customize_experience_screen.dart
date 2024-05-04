@@ -11,6 +11,7 @@ import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
@@ -212,7 +213,7 @@ class _CustomizeExperienceScreenState extends State<CustomizeExperienceScreen> {
                 'biggest_frustration': _biggestFrustrationsController.text.trim(),
                 "hubspot_owner_id": "1252705237",
               };
-              createHubspotContact(contactData);
+              if(kReleaseMode) createHubspotContact(contactData);
               // AppNavigator.pushReplacement(context: context, screen: MainScreen());
               AppNavigator.pop(context: context);
               Provider.of<UserProvider>(context, listen: false).turnOffFirstTime();

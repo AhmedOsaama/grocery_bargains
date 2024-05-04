@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bargainb/core/utils/firestore_utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -62,11 +64,15 @@ class UserProvider with ChangeNotifier{
 
   ///Checks whether a logged in user is a hubspot contact
   Future<bool> getHubSpotStatus() async {
-    var currentUser = FirebaseAuth.instance.currentUser;
-    if(currentUser != null) {
-     var docRef = await FirestoreUtils.firestoreUserCollection.doc(currentUser.uid).get();
-     bool hubspotStatus = docRef.get('isHubspotContact');
-     return hubspotStatus;
+    try {
+      var currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser != null) {
+        var docRef = await FirestoreUtils.firestoreUserCollection.doc(currentUser.uid).get();
+        bool hubspotStatus = docRef.get('isHubspotContact');
+        return hubspotStatus;
+      }
+    }catch(e){
+      log("Couldn't get hubspot status: $e");
     }
     return false;
   }

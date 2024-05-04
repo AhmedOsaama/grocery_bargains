@@ -85,11 +85,11 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                           ),
                           GenericButton(
                               onPressed: () => AppNavigator.pop(context: context),
-                              shape: CircleBorder(),
+                              shape: const CircleBorder(),
                               padding: EdgeInsets.zero,
                               width: 36,
                               color: purple70,
-                              child: Icon(
+                              child: const Icon(
                                 Icons.close,
                                 color: white,
                               ))
@@ -157,7 +157,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                                       userInfo.name,
                                       style: TextStylesInter.textViewRegular16.copyWith(color: black2),
                                     ),
-                                    Spacer(),
+                                    const Spacer(),
                                     if (widget.listUsers.indexOf(userInfo) == 0)
                                       Text(
                                         "Owner",
@@ -188,7 +188,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                           shrinkWrap: true,
                           children: widget.contactsList.map((userInfo) {
                             return Padding(
-                              padding: EdgeInsets.only(top: 10),
+                              padding: const EdgeInsets.only(top: 10),
                               child: GestureDetector(
                                 onTap: () async {
                                   List<ChatList> lists = [];
@@ -240,7 +240,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                                       userInfo.name,
                                       style: TextStylesInter.textViewRegular14.copyWith(color: black2),
                                     ),
-                                    Spacer(),
+                                    const Spacer(),
                                     InkWell(
                                       onTap: () async {
                                         await widget.addContactToChatlist(userInfo, context);
@@ -251,7 +251,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                                                   shape: RoundedRectangleBorder(
                                                       borderRadius: BorderRadius.circular(10)),
                                                   child: Padding(
-                                                    padding: EdgeInsets.all(15),
+                                                    padding: const EdgeInsets.all(15),
                                                     child: Column(
                                                       mainAxisSize: MainAxisSize.min,
                                                       children: [
@@ -264,7 +264,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                                                         15.ph,
                                                         Text(LocaleKeys.greatNews.tr(),
                                                             style: TextStylesInter.textViewRegular16
-                                                                .copyWith(color: Color.fromRGBO(72, 72, 74, 1)),
+                                                                .copyWith(color: const Color.fromRGBO(72, 72, 74, 1)),
                                                             textAlign: TextAlign.center),
                                                       ],
                                                     ),
@@ -277,7 +277,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                                           style: TextStylesInter.textViewSemiBold14.copyWith(color: mainPurple),
                                         ),
                                         10.pw,
-                                        CircleAvatar(
+                                        const CircleAvatar(
                                           child: Icon(
                                             Icons.person_add_alt,
                                             color: white,
@@ -302,7 +302,7 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                               style: TextStylesInter.textViewRegular15.copyWith(color: black),
                             ),
                           ),
-                          Spacer(),
+                          const Spacer(),
                           GenericButton(
                               onPressed: () {
                                 AppNavigator.pop(context: context, object: "Phone Added");
@@ -312,11 +312,11 @@ class _InviteMembersDialogState extends State<InviteMembersDialog> {
                                     FirebaseAuth.instance.currentUser!.uid, "add phone number",
                                     DateTime.now().toUtc().toString(), "Chatlist screen(invite popup)");
                               },
-                              shape: CircleBorder(),
+                              shape: const CircleBorder(),
                               padding: EdgeInsets.zero,
                               width: 36,
                               color: purple70,
-                              child: Icon(
+                              child: const Icon(
                                 Icons.add,
                                 color: white,
                               ))

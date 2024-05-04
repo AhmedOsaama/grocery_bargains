@@ -351,13 +351,15 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
       isContactsPermissionGranted = isPermissionGranted;
       if (isPermissionGranted) {
         List<Contact> contacts = await FlutterContacts.getContacts(withProperties: true);
-        print("Contacts size: " + contacts.length.toString());
+      log("Contacts size: ${contacts.length}");
+        // print("Contacts size: ${contacts.length}");
 
         var users = await FirebaseFirestore.instance //getting all users that signed in with phone
             .collection('users')
             .where('phoneNumber', isNotEqualTo: '')
             .get();
         var regionCode = await PhoneNumberUtil().carrierRegionCode();
+        log(regionCode.toString());
         if (users.docs.isNotEmpty) {
           for (var user in users.docs) {
             try {

@@ -44,7 +44,6 @@ class PurchaseApi{
 
   static Future<void> checkSubscriptionStatus() async {
    var value = await Purchases.getCustomerInfo();
-   print("checkSubscriptionStatus: $value");
    if(value.entitlements.all.containsKey('all_analysis_features')) {
      try {
        if (value.entitlements.all['all_analysis_features']!.isActive) {
