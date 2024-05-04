@@ -26,14 +26,14 @@ import 'providers/products_provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupServiceLocator();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  ).then((value) => FirebaseAppCheck.instance.activate());
   await Future.wait([
     EasyLocalization.ensureInitialized(),
     SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp],
     ),
-    Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    ).then((value) => FirebaseAppCheck.instance.activate()),
     PurchaseApi.init(),
   ]);
   var notificationMessage = await FirebaseMessaging.instance.getInitialMessage();

@@ -199,8 +199,8 @@ class ChatlistsProvider with ChangeNotifier {
         "Chatlist Side Menu", "Remove", "Chatlist Screen");
   }
 
-  Future<void> deleteItemFromChatlist(
-      String listId, String itemDocId, String itemPrice, String itemOldPrice, String itemQuantity, String itemId) async {
+  Future<void> deleteItemFromChatlist(String listId, String itemDocId, String itemPrice, String itemOldPrice,
+      String itemQuantity, String itemId) async {
     try {
       var chatlist = chatlists.firstWhere((chatlist) => chatlist.id == listId);
       var item = await FirebaseFirestore.instance.collection('/lists/${listId}/items').doc(itemDocId).get();
@@ -243,26 +243,24 @@ class ChatlistsProvider with ChangeNotifier {
 
   Future<void> addProductToList(BuildContext context, ListItem listItem) async {
     //adds a product from home or product page to chatlist
-      if (chatlists.length > 1) showChooseListDialog(context: context, listItem: listItem);
-      if (chatlists.length == 1) {
-        await addItemToList(listItem, chatlists[0].id);
-        trackProductAction(listItem);
-        showChatlistSnackBar(context,
-            Text(LocaleKeys.addedTo.tr() + " ${chatlists[0].name}"),
-            LocaleKeys.view.tr(),
-            chatlists[0].id,
-            false);
-      }
-      if (chatlists.isEmpty) {
-        showChatlistSnackBar(context, Text(LocaleKeys.pleaseCreateAList.tr()), LocaleKeys.create.tr(), "", true);
-      }
+    if (chatlists.length > 1) showChooseListDialog(context: context, listItem: listItem);
+    if (chatlists.length == 1) {
+      await addItemToList(listItem, chatlists[0].id);
+      trackProductAction(listItem);
+      showChatlistSnackBar(context, Text(LocaleKeys.addedTo.tr() + " ${chatlists[0].name}"), LocaleKeys.view.tr(),
+          chatlists[0].id, false);
+    }
+    if (chatlists.isEmpty) {
+      showChatlistSnackBar(context, Text(LocaleKeys.pleaseCreateAList.tr()), LocaleKeys.create.tr(), "", true);
+    }
     TrackingUtils().trackButtonClick(
         FirebaseAuth.instance.currentUser!.uid, "add product", DateTime.now().toUtc().toString(), "Product screen");
   }
 
   void trackProductAction(ListItem listItem) {
-     TrackingUtils().trackProductAction(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
-        listItem.oldPrice != null, chatlists[0].id, chatlists[0].name, listItem.quantity.toString(), 'Add', productId: listItem.id.toString());
+    TrackingUtils().trackProductAction(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
+        listItem.oldPrice != null, chatlists[0].id, chatlists[0].name, listItem.quantity.toString(), 'Add',
+        productId: listItem.id.toString());
   }
 
   Future<void> updateItemQuantity(String chatlistId, String itemId, int newQuantity) async {
@@ -374,36 +372,30 @@ class ChatlistsProvider with ChangeNotifier {
     final userData =
         await FirebaseFirestore.instance.collection('/users').doc(FirebaseAuth.instance.currentUser!.uid).get();
     var itemQuery = FirebaseFirestore.instance.collection('/lists/$docId/items').where("item_id", isEqualTo: item.id);
-    var messageQuery = FirebaseFirestore.instance.collection('/lists/$docId/messages').where("item_id", isEqualTo: item.id);
+    var messageQuery =
+        FirebaseFirestore.instance.collection('/lists/$docId/messages').where("item_id", isEqualTo: item.id);
     var snapshots = await Future.wait([itemQuery.get(), messageQuery.get()]);
-    var itemDocsSnapshot = snapshots[0];
+    // var itemDocsSnapshot = snapshots[0];
     var messageDocsSnapshot = snapshots[1];
-
-    if(itemDocsSnapshot.docs.isNotEmpty) {
-      var doc = itemDocsSnapshot.docs.firstWhere((doc) => doc.get('item_id') == item.id);
-      doc.reference.update({
-        "item_quantity": FieldValue.increment(1),
-      });
-    }else {
-      await FirebaseFirestore.instance.collection('/lists/$docId/items').add({
-        'item_id': item.id,
-        "item_name": item.name,
-        "item_brand": item.brand,
-        "item_size": item.size,
-        "item_price": item.price,
-        "item_image": item.imageURL,
-        'store_name': item.storeName,
-        'item_quantity': item.quantity,
-        'item_oldPrice': item.oldPrice,
-        'item_category': item.category,
-        "item_isChecked": false,
-        "text": item.text,
-        "owner": userData['username'],
-        "time": Timestamp.fromDate(DateTime.now().toUtc()),
-      }).catchError((e) {
-        done = false;
-      });
-    }
+    try {
+        await FirebaseFirestore.instance.collection('/lists/$docId/items').add({
+          'item_id': item.id,
+          "item_name": item.name,
+          "item_brand": item.brand,
+          "item_size": item.size,
+          "item_price": item.price,
+          "item_image": item.imageURL,
+          'store_name': item.storeName,
+          'item_quantity': item.quantity,
+          'item_oldPrice': item.oldPrice,
+          'item_category': item.category,
+          "item_isChecked": false,
+          "text": item.text,
+          "owner": userData['username'],
+          "time": Timestamp.fromDate(DateTime.now().toUtc()),
+        }).catchError((e) {
+          done = false;
+        });
       if (item.text.isEmpty) {
         if (messageDocsSnapshot.docs.isNotEmpty) {
           var doc = messageDocsSnapshot.docs.firstWhere((doc) => doc.get('item_id') == item.id);
@@ -432,80 +424,83 @@ class ChatlistsProvider with ChangeNotifier {
             print(e);
           });
         }
+      }
+      FirebaseFirestore.instance.collection('/lists').doc(docId).update({
+        "last_message": "Added ${item.name}",
+        "last_message_date": Timestamp.fromDate(DateTime.now().toUtc()),
+        "last_message_userId": FirebaseAuth.instance.currentUser?.uid,
+        "last_message_userName": userData['username'],
+      });
+      updateChatList(docId, '', userData);
+    }catch(e){
+      print(e);
     }
-    FirebaseFirestore.instance.collection('/lists').doc(docId).update({
-      "last_message": "Added ${item.name}",
-      "last_message_date": Timestamp.fromDate(DateTime.now().toUtc()),
-      "last_message_userId": FirebaseAuth.instance.currentUser?.uid,
-      "last_message_userName": userData['username'],
-    });
-    updateChatList(docId, '', userData);
     return done;
   }
 
-  Future<void> addMessageToList({
-    required DocumentReference messageDocPath,
-    required String message,
-    required String userName,
-    required String userId,
-    required ListItem item,
-  }) async {
-    await FirebaseFirestore.instance.collection('${messageDocPath.parent.parent?.path}/items').add({
-      'item_id': item.id,
-      "item_name": item.name,
-      "item_brand": item.brand,
-      "item_size": item.size,
-      "item_price": item.price,
-      "item_image": item.imageURL,
-      'store_name': item.storeName,
-      'item_quantity': item.quantity,
-      'item_oldPrice': item.oldPrice,
-      "item_isChecked": false,
-      "text": item.text,
-      "owner": userName,
-      "time": Timestamp.fromDate(DateTime.now().toUtc()),
-    });
-    await updateListInfo(
-        itemName: "",
-        itemPrice: "",
-        messageDocPath: messageDocPath,
-        userName: userName,
-        userId: userId,
-        message: message);
-    markItemAsAdded(messageDocPath);
-  }
+  // Future<void> addMessageToList({
+  //   required DocumentReference messageDocPath,
+  //   required String message,
+  //   required String userName,
+  //   required String userId,
+  //   required ListItem item,
+  // }) async {
+  //   await FirebaseFirestore.instance.collection('${messageDocPath.parent.parent?.path}/items').add({
+  //     'item_id': item.id,
+  //     "item_name": item.name,
+  //     "item_brand": item.brand,
+  //     "item_size": item.size,
+  //     "item_price": item.price,
+  //     "item_image": item.imageURL,
+  //     'store_name': item.storeName,
+  //     'item_quantity': item.quantity,
+  //     'item_oldPrice': item.oldPrice,
+  //     "item_isChecked": false,
+  //     "text": item.text,
+  //     "owner": userName,
+  //     "time": Timestamp.fromDate(DateTime.now().toUtc()),
+  //   });
+  //   await updateListInfo(
+  //       itemName: "",
+  //       itemPrice: "",
+  //       messageDocPath: messageDocPath,
+  //       userName: userName,
+  //       userId: userId,
+  //       message: message);
+  //   markItemAsAdded(messageDocPath);
+  // }
 
-  Future<void> addItemMessageToList({
-    required String itemName,
-    required String itemSize,
-    required String itemPrice,
-    required String storeName,
-    required String itemImage,
-    required DocumentReference messageDocPath,
-    required String userName,
-    required String userId,
-  }) async {
-    await FirebaseFirestore.instance.collection('${messageDocPath.parent.parent?.path}/items').add({
-      "item_name": itemName,
-      "item_size": itemSize,
-      "item_price": itemPrice,
-      "item_image": itemImage,
-      "store_name": storeName,
-      "item_isChecked": false,
-      "text": "",
-      "chat_reference": messageDocPath.path,
-      "owner": userName,
-      "time": Timestamp.fromDate(DateTime.now().toUtc()),
-    });
-    await updateListInfo(
-        itemName: itemName,
-        itemPrice: itemPrice,
-        messageDocPath: messageDocPath,
-        userName: userName,
-        userId: userId,
-        message: "");
-    markItemAsAdded(messageDocPath);
-  }
+  // Future<void> addItemMessageToList({
+  //   required String itemName,
+  //   required String itemSize,
+  //   required String itemPrice,
+  //   required String storeName,
+  //   required String itemImage,
+  //   required DocumentReference messageDocPath,
+  //   required String userName,
+  //   required String userId,
+  // }) async {
+  //   await FirebaseFirestore.instance.collection('${messageDocPath.parent.parent?.path}/items').add({
+  //     "item_name": itemName,
+  //     "item_size": itemSize,
+  //     "item_price": itemPrice,
+  //     "item_image": itemImage,
+  //     "store_name": storeName,
+  //     "item_isChecked": false,
+  //     "text": "",
+  //     "chat_reference": messageDocPath.path,
+  //     "owner": userName,
+  //     "time": Timestamp.fromDate(DateTime.now().toUtc()),
+  //   });
+  //   await updateListInfo(
+  //       itemName: itemName,
+  //       itemPrice: itemPrice,
+  //       messageDocPath: messageDocPath,
+  //       userName: userName,
+  //       userId: userId,
+  //       message: "");
+  //   markItemAsAdded(messageDocPath);
+  // }
 
   Future<void> updateListInfo(
       {required String itemName,
