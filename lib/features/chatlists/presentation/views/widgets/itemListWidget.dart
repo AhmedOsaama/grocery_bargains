@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bargainb/features/chatlists/presentation/views/widgets/quick_item_text_field.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/utils/empty_padding.dart';
@@ -103,7 +105,7 @@ class ItemListWidget extends StatelessWidget {
                 }).toList(),
               ),
             ],
-            Divider(
+            const Divider(
               color: Colors.black,
             ),
             Text(LocaleKeys.quickAdd.tr(), style: TextStylesInter.textViewMedium14,),

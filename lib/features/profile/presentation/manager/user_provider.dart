@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bargainb/features/profile/data/repos/profile_repo.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +29,8 @@ class AuthUserProvider with ChangeNotifier {
       errorMessage = failure.errorMessage;
       notifyListeners();
     }, (hasUpdated) {
-      notifyListeners();
+      fetchUser();
+      // notifyListeners();
     });
   }
 }

@@ -55,7 +55,8 @@ class ChatView extends StatefulWidget {
       required this.listId,
       required this.showInviteMembersDialog,
       this.isExpandingChatlist,
-      required this.chatlistName, required this.showcaseContext})
+      required this.chatlistName,
+      required this.showcaseContext})
       : super(key: key);
 
   @override
@@ -96,7 +97,7 @@ class _ChatViewState extends State<ChatView> {
 
   @override
   void initState() {
-    Provider.of<UserProvider>(context,listen: false).getOnboardingStore();
+    Provider.of<UserProvider>(context, listen: false).getOnboardingStore();
     final fbm = FirebaseMessaging.instance;
     fbm.requestPermission();
     fbm.subscribeToTopic(widget.listId);
@@ -105,7 +106,9 @@ class _ChatViewState extends State<ChatView> {
         .orderBy('createdAt', descending: true)
         .snapshots();
     chatlistItemsStream =
-        FirebaseFirestore.instance.collection("/lists/${widget.listId}/items").orderBy('time').snapshots();
+        FirebaseFirestore.instance.collection("/lists/${widget.listId}/items")
+            .orderBy('time')
+    .snapshots();
 
     super.initState();
   }
@@ -113,35 +116,34 @@ class _ChatViewState extends State<ChatView> {
   @override
   Widget build(BuildContext context) {
     var tutorialProvider = Provider.of<TutorialProvider>(context);
-        return StreamBuilder<QuerySnapshot>(
-            stream: chatlistItemsStream,
-            builder: (context, snapshot) {
-              final items = snapshot.data?.docs ?? [];
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Container();
-              }
-              return Column(
-                children: [
-                  Expanded(
-                    child: PageView(
-                      controller: pageController,
-                      onPageChanged: (page) {
-                        setState(() {
-                          pageNumber = page;
-                        });
-                      },
-                      children: [
-                        buildChatView(items, widget.showcaseContext),
-                        buildListView(items, context),
-                      ],
-                    ),
-                  ),
-                  // 20.ph,
-                ],
-              );
-            });
+    return StreamBuilder<QuerySnapshot>(
+        stream: chatlistItemsStream,
+        builder: (context, snapshot) {
+          final items = snapshot.data?.docs ?? [];
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container();
+          }
+          return Column(
+            children: [
+              Expanded(
+                child: PageView(
+                  controller: pageController,
+                  onPageChanged: (page) {
+                    setState(() {
+                      pageNumber = page;
+                    });
+                  },
+                  children: [
+                    buildChatView(items, widget.showcaseContext),
+                    buildListView(items, context),
+                  ],
+                ),
+              ),
+              // 20.ph,
+            ],
+          );
+        });
   }
-
 
   Consumer<ChatlistsProvider> buildListView(List<QueryDocumentSnapshot<Object?>> items, BuildContext context) {
     return Consumer<ChatlistsProvider>(
@@ -159,7 +161,7 @@ class _ChatViewState extends State<ChatView> {
                     pageNumber: pageNumber,
                   ),
                   Builder(builder: (ctx) {
-                    return buildItemList(context, items);      //default case: items are not empty
+                    return buildItemList(context, items); //default case: items are not empty
                   }),
                 ],
               ),
@@ -171,13 +173,20 @@ class _ChatViewState extends State<ChatView> {
   }
 
   FirstTimeEmptyListWidget buildFirstTimeEmptyListWidget() {
-  return FirstTimeEmptyListWidget(quickItemController: quickItemController, listId: widget.listId);
+    return FirstTimeEmptyListWidget(quickItemController: quickItemController, listId: widget.listId);
   }
 
   ItemListWidget buildItemList(BuildContext context, List<QueryDocumentSnapshot> items) {
     clearAllStoreLists();
     populateStoreLists(items);
-    return ItemListWidget(quicklyAddedItems: quicklyAddedItems, quickItemController: quickItemController, widget: widget, albertItems: albertItems, jumboItems: jumboItems, hoogvlietItems: hoogvlietItems, dirkItems: dirkItems);
+    return ItemListWidget(
+        quicklyAddedItems: quicklyAddedItems,
+        quickItemController: quickItemController,
+        widget: widget,
+        albertItems: albertItems,
+        jumboItems: jumboItems,
+        hoogvlietItems: hoogvlietItems,
+        dirkItems: dirkItems);
   }
 
   void populateStoreLists(List<QueryDocumentSnapshot<Object?>> items) {
@@ -208,7 +217,8 @@ class _ChatViewState extends State<ChatView> {
     quicklyAddedItems.clear();
   }
 
-  StreamBuilder<QuerySnapshot<Object?>> buildChatView(List<QueryDocumentSnapshot<Object?>> items, BuildContext showcaseContext) {
+  StreamBuilder<QuerySnapshot<Object?>> buildChatView(
+      List<QueryDocumentSnapshot<Object?>> items, BuildContext showcaseContext) {
     var tutorialProvider = Provider.of<TutorialProvider>(context);
     var userProvider = Provider.of<UserProvider>(context);
     return StreamBuilder<QuerySnapshot>(
@@ -265,42 +275,49 @@ class _ChatViewState extends State<ChatView> {
                                 ),
                               )),
                     ),
-              if(isBotLoading)
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Image.asset(bee1, width: 30, height: 30,),
-                  Container(
-                    // width: message.length > 30 ? MediaQuery.of(context).size.width * 0.6 : null,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                    margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                          topRight: const Radius.circular(18),
-                          topLeft: const Radius.circular(18),
-                          bottomLeft: Radius.circular(0) ,
-                          bottomRight: Radius.circular(18),
-                        ),
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color(0x263463ED),
-                            blurRadius: 28,
-                            offset: Offset(0, 10),
-                            spreadRadius: 0,
-                          )
-                        ]
+              if (isBotLoading)
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Image.asset(
+                      bee1,
+                      width: 30,
+                      height: 30,
                     ),
-                    child: Image.asset(loadingIndicator, width: 30,),
-                  ),
-                ],
-              ),
+                    Container(
+                      // width: message.length > 30 ? MediaQuery.of(context).size.width * 0.6 : null,
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                      margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topRight: const Radius.circular(18),
+                            topLeft: const Radius.circular(18),
+                            bottomLeft: Radius.circular(0),
+                            bottomRight: Radius.circular(18),
+                          ),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0x263463ED),
+                              blurRadius: 28,
+                              offset: Offset(0, 10),
+                              spreadRadius: 0,
+                            )
+                          ]),
+                      child: Image.asset(
+                        loadingIndicator,
+                        width: 30,
+                      ),
+                    ),
+                  ],
+                ),
               Showcase.withWidget(
                 height: 120,
                 width: 200.w,
                 disableDefaultTargetGestures: true,
                 targetBorderRadius: BorderRadius.circular(10),
-                key: tutorialProvider.isTutorialRunning ? TooltipKeys.showCase6 : new GlobalKey<State<StatefulWidget>>(),
+                key:
+                    tutorialProvider.isTutorialRunning ? TooltipKeys.showCase6 : new GlobalKey<State<StatefulWidget>>(),
                 tooltipPosition: TooltipPosition.top,
                 container: Container(
                   child: Column(
@@ -312,14 +329,15 @@ class _ChatViewState extends State<ChatView> {
                           borderRadius: BorderRadius.circular(8),
                           color: purple70,
                         ),
-                        child: Column(
-                            children: [
-                              Text(
-                                "Let's activate your AI sidekick! Invite friends and family to chat with your BargainB sidekick. Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals. Type @BB Show me the Top Deal from".tr() + "${userProvider.onboardingStore}",
-                                // maxLines: 4,
-                                style: TextStyles.textViewRegular13.copyWith(color: white),
-                              ),
-                            ]),
+                        child: Column(children: [
+                          Text(
+                            "Let's activate your AI sidekick! Invite friends and family to chat with your BargainB sidekick. Type @BB or @bargainb to ask questions, get personalized advice, and find the best deals. Type @BB Show me the Top Deal from"
+                                    .tr() +
+                                "${userProvider.onboardingStore}",
+                            // maxLines: 4,
+                            style: TextStyles.textViewRegular13.copyWith(color: white),
+                          ),
+                        ]),
                       ),
                       Container(
                         height: 11,
@@ -374,7 +392,7 @@ class _ChatViewState extends State<ChatView> {
   }
 
   Future<void> finishTutorial(TutorialProvider tutorialProvider, BuildContext showcaseContext) async {
-    if(tutorialProvider.isTutorialRunning){
+    if (tutorialProvider.isTutorialRunning) {
       ShowCaseWidget.of(showcaseContext).dismiss();
       await Future.delayed(Duration(seconds: 1));
       tutorialProvider.stopTutorial(showcaseContext);
@@ -388,7 +406,7 @@ class _ChatViewState extends State<ChatView> {
       await Provider.of<ChatlistsProvider>(context, listen: false)
           .sendMessage(text, widget.listId, widget.chatlistName, "messages");
       setState(() {
-      isBotLoading = true;
+        isBotLoading = true;
       });
       await get(Uri.parse(
           "https://us-central1-discountly.cloudfunctions.net/getChatbot-new?question=${text}&listId=${widget.listId}&collectionName=messages&userId=${FirebaseAuth.instance.currentUser?.uid}"));
@@ -405,8 +423,4 @@ class _ChatViewState extends State<ChatView> {
       });
     }
   }
-
-
 }
-
-

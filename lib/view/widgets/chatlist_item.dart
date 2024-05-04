@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/view/components/search_delegate.dart';
@@ -43,7 +45,14 @@ class _ChatlistItemState extends State<ChatlistItem> {
 
   @override
   void initState() {
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     try {
+      log("IN CHATLIST BUILD: ${widget.item['text']}");
       isChecked = widget.item['item_isChecked'];
       text = widget.item['text'] ?? '';
       itemName = widget.item['item_name'];
@@ -56,21 +65,16 @@ class _ChatlistItemState extends State<ChatlistItem> {
       itemId = widget.item.data().containsKey("item_id") ? widget.item['item_id'] : -1;
       itemBrand = widget.item.data().containsKey("item_brand") ? widget.item['item_brand'] : '';
       itemCategory = widget.item.data().containsKey("item_category") ? widget.item['item_category'] : '';
-    }catch(e){
+    } catch (e) {
       print(e);
     }
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return text.isNotEmpty
+    return text.isNotEmpty        //case of item is plain text
         ? Row(
             children: [
               Checkbox(
                 value: isChecked,
                 checkColor: purple70,
-                side: BorderSide(color: purple70, width: 2),
+                side: const BorderSide(color: purple70, width: 2),
                 onChanged: (value) {
                   setState(() {
                     widget.item.data().update('item_isChecked', (value) => !isChecked);
@@ -86,19 +90,21 @@ class _ChatlistItemState extends State<ChatlistItem> {
                     print(e);
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("OperationNotDone".tr())));
                   });
-                  TrackingUtils().trackCheckBoxItemClicked(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Mark off chatlist item", "Chatlist screen", isChecked);
-                  TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Check off item", DateTime.now().toUtc().toString(), "Chatlist screen");
+                  TrackingUtils().trackCheckBoxItemClicked(FirebaseAuth.instance.currentUser!.uid,
+                      DateTime.now().toUtc().toString(), "Mark off chatlist item", "Chatlist screen", isChecked);
+                  TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Check off item",
+                      DateTime.now().toUtc().toString(), "Chatlist screen");
                 },
               ),
               TextButton(
                 onPressed: () async {
                   setState(() {
-                  isClicked = !isClicked;
+                    isClicked = !isClicked;
                   });
                   try {
-                    TrackingUtils().trackTextLinkClicked(
-                        FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Chatlist screen", "Click chatlist item");
-                  }catch(e){
+                    TrackingUtils().trackTextLinkClicked(FirebaseAuth.instance.currentUser!.uid,
+                        DateTime.now().toUtc().toString(), "Chatlist screen", "Click chatlist item");
+                  } catch (e) {
                     print(e);
                   }
                 },
@@ -107,22 +113,37 @@ class _ChatlistItemState extends State<ChatlistItem> {
                   style: TextStylesInter.textViewRegular16,
                 ),
               ),
-              if(isClicked)
-                IconButton(onPressed: () async {
-                  var pref = await SharedPreferences.getInstance();
-                  AppNavigator.push(context: context, screen: AlgoliaSearchScreen(query: text));
-                  TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open search", DateTime.now().toUtc().toString(), "Chatlist screen");
-                  // showSearch(context: context, delegate: MySearchDelegate(pref: pref),query: text);
-                }, icon: Icon(Icons.arrow_right,color: greyText,)),
-              Spacer(),
-              if(isClicked)
-                IconButton(onPressed: (){
-                FirebaseFirestore.instance.collection('/lists/${widget.item.reference.parent.parent!.id}/items').doc(widget.item.id).delete();
-                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "delete manual(text) item", DateTime.now().toUtc().toString(), "Chatlist screen");
-                }, icon: Icon(Icons.close,color: greyText,size: 18,))
+              if (isClicked)
+                IconButton(
+                    onPressed: () async {
+                      AppNavigator.push(context: context, screen: AlgoliaSearchScreen(query: text));
+                      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open search",
+                          DateTime.now().toUtc().toString(), "Chatlist screen");
+                      // showSearch(context: context, delegate: MySearchDelegate(pref: pref),query: text);
+                    },
+                    icon: const Icon(
+                      Icons.arrow_right,
+                      color: greyText,
+                    )),
+              const Spacer(),
+              if (isClicked)
+                IconButton(
+                    onPressed: () {
+                      FirebaseFirestore.instance
+                          .collection('/lists/${widget.item.reference.parent.parent!.id}/items')
+                          .doc(widget.item.id)
+                          .delete();
+                      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
+                          "delete manual(text) item", DateTime.now().toUtc().toString(), "Chatlist screen");
+                    },
+                    icon: const Icon(
+                      Icons.close,
+                      color: greyText,
+                      size: 18,
+                    ))
             ],
           )
-        : Column(
+        : Column(                     //case of item is a product
             children: [
               Row(
                 // crossAxisAlignment: CrossAxisAlignment.center,
@@ -135,7 +156,7 @@ class _ChatlistItemState extends State<ChatlistItem> {
                           Checkbox(
                             value: isChecked,
                             checkColor: purple70,
-                            side: BorderSide(color: purple70, width: 2),
+                            side: const BorderSide(color: purple70, width: 2),
                             onChanged: (value) {
                               setState(() {
                                 widget.item.data().update('item_isChecked', (value) => !isChecked);
@@ -155,8 +176,10 @@ class _ChatlistItemState extends State<ChatlistItem> {
                               double parsedItemPrice = double.parse(itemPrice);
                               double discount = itemOldPrice != '' ? (parsedItemOldPrice - parsedItemPrice) : 0;
                               print("RECORDING PURCHASES");
-                              if(isChecked)
-                                FirebaseFirestore.instance.doc('/users/${FirebaseAuth.instance.currentUser!.uid}').update({
+                              if (isChecked)
+                                FirebaseFirestore.instance
+                                    .doc('/users/${FirebaseAuth.instance.currentUser!.uid}')
+                                    .update({
                                   // FieldPath.fromString('purchase_record.${itemCategory}'): FieldValue.arrayUnion([itemName]),
                                   FieldPath.fromString('purchase_record.${itemCategory}'): FieldValue.arrayUnion([
                                     {
@@ -167,10 +190,15 @@ class _ChatlistItemState extends State<ChatlistItem> {
                                       "product_id": itemId,
                                     }
                                   ])
-                              }).catchError((e){
-                                print("Error: $e");
-                              });
-                              TrackingUtils().trackCheckBoxItemClicked(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Mark off chatlist item", "Chatlist screen", isChecked);
+                                }).catchError((e) {
+                                  print("Error: $e");
+                                });
+                              TrackingUtils().trackCheckBoxItemClicked(
+                                  FirebaseAuth.instance.currentUser!.uid,
+                                  DateTime.now().toUtc().toString(),
+                                  "Mark off chatlist item",
+                                  "Chatlist screen",
+                                  isChecked);
                             },
                           ),
                           GestureDetector(
@@ -209,7 +237,7 @@ class _ChatlistItemState extends State<ChatlistItem> {
                               10.ph,
                             ],
                           ),
-                          Spacer(),
+                          const Spacer(),
                           Text("X " + itemQuantity.toString()),
                           10.pw,
                           GestureDetector(
@@ -226,10 +254,11 @@ class _ChatlistItemState extends State<ChatlistItem> {
                                           storeName: storeName,
                                           listId: widget.item.reference.parent.parent!.id,
                                           itemPrice: itemPrice,
-                                      itemOldPrice: itemOldPrice,
+                                          itemOldPrice: itemOldPrice,
                                           itemDocId: widget.item.id,
                                         ));
-                                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "edit item", DateTime.now().toUtc().toString(), "Chatlist screen");
+                                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "edit item",
+                                    DateTime.now().toUtc().toString(), "Chatlist screen");
                               },
                               child: SvgPicture.asset(
                                 edit,
