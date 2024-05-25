@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../generated/locale_keys.g.dart';
+import '../../../../providers/subscription_provider.dart';
 import '../../../../utils/tracking_utils.dart';
 import '../../../../view/screens/support_screen.dart';
 import '../../../onboarding/presentation/views/onboarding_subscription_screen.dart';
@@ -89,7 +90,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         .toList()),
               ),
               15.ph,
-              if (PurchaseApi.isSubscribed)
+              if (SubscriptionProvider.get(context).isSubscribed)
                 Column(
                   children: [
                     Text(
@@ -110,7 +111,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     ),
                   ],
                 ),
-              if(!PurchaseApi.isSubscribed) ...[
+              if(!SubscriptionProvider.get(context).isSubscribed) ...[
                 FutureBuilder(
                     future: offersFuture,
                     builder: (ctx, snapshot) {

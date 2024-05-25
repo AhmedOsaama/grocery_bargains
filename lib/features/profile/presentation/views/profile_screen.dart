@@ -89,7 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   if (provider.user == null) {
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children:[
+                        children: [
                           Text(provider.errorMessage ?? ""),
                           buildNoProfileData(context),
                         ]

@@ -1,5 +1,6 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/view/screens/language_screen.dart';
+import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:bargainb/view/screens/preferences_screen.dart';
 import 'package:bargainb/view/screens/privacy_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -150,8 +151,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             const Spacer(),
             GenericButton(
-              onPressed: () {
-                showDialog(
+              onPressed: () async {
+                bool isSignedOut = await showDialog(
                   context: context,
                   builder: (ctx) => ProfileDialog(
                         title: LocaleKeys.signout.tr(),
@@ -159,6 +160,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         buttonText: LocaleKeys.signout.tr(),
                         isSigningOut: true,
                       ));
+                if(isSignedOut) {
+                  AppNavigator.popToFrist(context: context);
+                  NavigatorController.jumpToTab(0);
+                }
                 TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Signout", DateTime.now().toUtc().toString(), "Profile screen");
               },
               width: double.infinity,

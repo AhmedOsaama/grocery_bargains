@@ -163,6 +163,7 @@ Easy Cancellation: Cancel anytime before the trial ends at no cost."""
                                         child: Text(
                                           "Yes, FREE one-month trial of BargainB ".tr(),
                                           style: TextStylesInter.textViewSemiBold16,
+                                          textAlign: TextAlign.center,
                                         )),
                                     10.ph,
                                     GenericButton(

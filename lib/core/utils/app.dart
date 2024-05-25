@@ -6,6 +6,7 @@ import 'package:bargainb/features/onboarding/presentation/views/onboarding_subsc
 import 'package:bargainb/features/profile/data/repos/profile_repo_impl.dart';
 import 'package:bargainb/features/profile/presentation/manager/user_provider.dart';
 import 'package:bargainb/features/registration/presentation/views/register_screen.dart';
+import 'package:bargainb/providers/subscription_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -61,16 +62,13 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> initMixpanel() async {
-    mixPanel = await Mixpanel.init("3aa827fb2f1cdf5ff2393b84d9c40bac",
-        trackAutomaticEvents: true, optOutTrackingDefault: kDebugMode); //live
+    var mixpanelToken = kDebugMode ? '752b3abf782a7347499ccb3ebb504194' : '3aa827fb2f1cdf5ff2393b84d9c40bac';
+    mixPanel = await Mixpanel.init(mixpanelToken, trackAutomaticEvents: true);
     FlutterBranchSdk.disableTracking(kDebugMode);
-    // await Mixpanel.init("752b3abf782a7347499ccb3ebb504194", trackAutomaticEvents: true, optOutTrackingDefault: false);  //dev
   }
 
   @override
   Widget build(BuildContext context) {
-    // print("USER ID: ${FirebaseAuth.instance.currentUser!.email}");
-    // Provider.of<UserProvider>(context,listen: false).signOut(context);
     return ScreenUtilInit(
       designSize: const Size(390, 844),
       minTextAdapt: true,
@@ -96,16 +94,14 @@ class _MyAppState extends State<MyApp> {
                       return const SplashWithProgressIndicator();
                     }
                     if (snapshot.hasData) {
-                      // Provider.of<AuthUserProvider>(context, listen: false).fetchUser();
+                      //user opens app via notification
                       if (widget.notificationMessage != null) {
                         return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
                       }
                       return const MainScreen();
                     }
                     return widget.isFirstTime ?
-                    const WelcomeScreen()
-                        : const MainScreen();
-                    // return RegisterScreen(isLogin: false);
+                    const WelcomeScreen() : const MainScreen();
                   });
             }),
         localizationsDelegates: context.localizationDelegates,
@@ -138,6 +134,7 @@ void initializeMyApp(RemoteMessage? notificationMessage, bool isFirstTime) {
             ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider()),
             ChangeNotifierProvider<AuthUserProvider>(create: (_) => AuthUserProvider(getIt.get<ProfileRepoImpl>())),
             ChangeNotifierProvider<SuggestionRepository>(create: (_) => SuggestionRepository()),
+            ChangeNotifierProvider<SubscriptionProvider>(create: (_) => SubscriptionProvider()..initSubscription()),
           ],
           child: MyApp(notificationMessage: notificationMessage, isFirstTime: isFirstTime),
         ))),

@@ -5,6 +5,7 @@ import 'package:bargainb/features/onboarding/presentation/views/widgets/first_su
 import 'package:bargainb/features/onboarding/presentation/views/widgets/fourth_survey.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/second_survey.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/third_survey.dart';
+import 'package:bargainb/services/hubspot_service.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/foundation.dart';
@@ -383,7 +384,8 @@ class _SurveyScreenState extends State<SurveyScreen> {
         'month_pay_preference': monthPayPreference,
         "hubspot_owner_id": "1252705237",
       };
-      if (kReleaseMode) createHubspotContact(contactData);
+      // createHubspotContact(contactData);
+      if (kReleaseMode) HubspotService.createHubspotContact(contactData);
       if (kDebugMode) log(contactData.toString());
       trackSurveySubmitted();
       AppNavigator.pushReplacement(context: context, screen: FreeTrialScreen());
@@ -408,28 +410,4 @@ class _SurveyScreenState extends State<SurveyScreen> {
         monthPayPreference);
   }
 
-  Future<void> createHubspotContact(Map userData) async {
-    print("creating hubspot contact");
-    var contactData = jsonEncode({"properties": userData});
-    try {
-      var response = await post(
-        Uri.parse('https://api.hubapi.com/crm/v3/objects/contacts'),
-        headers: {
-          'Authorization': 'Bearer pat-eu1-6afeefb9-6630-45c6-b31e-e292f251c251',
-          'Content-Type': 'application/json'
-        },
-        body: contactData,
-      );
-      if (response.statusCode == 201) {
-        var decodedResponse = jsonDecode(response.body);
-        print("DONE creating hubspot contact: ${decodedResponse}");
-        // var pref = await SharedPreferences.getInstance();
-        // pref.setString("hubspot_id", decodedResponse['id']);
-      } else {
-        log("ERROR CREATING HUBSPOT CONTACT: ${response.statusCode} ---> ${response.body}");
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
 }

@@ -134,8 +134,7 @@ class _ProfileDialogState extends State<ProfileDialog> {
                             });
                             await FirebaseFirestore.instance.collection('/users').doc(userId).delete();
                           }
-                          AppNavigator.pushReplacement(
-                              context: context, screen: RegisterScreen(isLogin: false));
+                          AppNavigator.pop(context: context,object: true);
                         },
                         child: Text(
                           widget.buttonText,

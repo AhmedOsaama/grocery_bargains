@@ -22,6 +22,7 @@ import 'package:http/http.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../config/routes/app_navigator.dart';
+import '../../../../providers/subscription_provider.dart';
 import '../../../../utils/app_colors.dart';
 import '../../../../utils/tracking_utils.dart';
 import '../../../../view/components/button.dart';
@@ -138,7 +139,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
           duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
       pageNumber++;
     } else if (pageNumber >= _totalPages - 1) {
-      if(PurchaseApi.isSubscribed){
+      if(SubscriptionProvider.get(context).isSubscribed){
         AppNavigator.pushReplacement(
             context: context,
             screen: RegisterScreen(isLogin: false,));

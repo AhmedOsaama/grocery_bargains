@@ -116,7 +116,18 @@ class ProfileSettingsWidget extends StatelessWidget {
               TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
                   "Open Support screen", DateTime.now().toUtc().toString(), "Profile screen");
             }),
-        10.ph
+        10.ph,
+      // SettingRow(
+      //     icon: const Icon(
+      //       Icons.logout,
+      //       color: mainPurple,
+      //     ),
+      //     settingText: LocaleKeys.signout.tr(),
+      //     onTap: () {
+      //       // pushNewScreen(context, screen: SupportScreen(), withNavBar: true);
+      //       TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
+      //           "Open Support screen", DateTime.now().toUtc().toString(), "Profile screen");
+      //     })
     ],
     );
   }

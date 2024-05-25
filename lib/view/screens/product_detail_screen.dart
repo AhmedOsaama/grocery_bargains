@@ -25,6 +25,7 @@ import 'package:showcaseview/showcaseview.dart';
 import '../../features/home/presentation/views/widgets/skip_tutorial_button.dart';
 import '../../models/list_item.dart';
 import '../../features/home/data/models/product.dart';
+import '../../providers/subscription_provider.dart';
 import '../../providers/tutorial_provider.dart';
 import '../../utils/tooltips_keys.dart';
 import '../../utils/triangle_painter.dart';
@@ -163,7 +164,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   void addProductToList(ChatlistsProvider chatlistsProvider) {
-    if (PurchaseApi.isSubscribed) {
+    if (SubscriptionProvider.get(context).isSubscribed) {
       chatlistsProvider.addProductToList(context, listItem);
     } else {
       AppNavigator.showFeatureBlockedDialog(context);
@@ -335,7 +336,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                           ),
                                           GestureDetector(
                                             onTap: () async {
-                                              if(FirebaseAuth.instance.currentUser != null && PurchaseApi.isSubscribed) {
+                                              if(FirebaseAuth.instance.currentUser != null && SubscriptionProvider.get(context).isSubscribed) {
                                                 ShowCaseWidget.of(ctx).dismiss();
                                                 var id = await Provider.of<ChatlistsProvider>(context, listen: false)
                                                     .createChatList([]);

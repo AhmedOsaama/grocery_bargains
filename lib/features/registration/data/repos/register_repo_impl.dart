@@ -16,6 +16,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../../../config/routes/app_navigator.dart';
 import '../../../../providers/google_sign_in_provider.dart';
+import '../../../../providers/subscription_provider.dart';
 import '../../../../providers/user_provider.dart';
 import '../../../../services/purchase_service.dart';
 import '../../../../utils/tracking_utils.dart';
@@ -121,7 +122,8 @@ class RegisterRepoImpl implements RegisterRepo {
   @override
   Future<void> goToNextScreen(BuildContext context) async {
     await PurchaseApi.init();
-    if (!PurchaseApi.isSubscribed) {
+    await SubscriptionProvider.get(context).initSubscription();
+    if (!SubscriptionProvider.get(context).isSubscribed) {
       await AppNavigator.pushReplacement(context: context, screen: ConfirmSubscriptionScreen());
     } else {
       var isHubspotContact = await Provider.of<UserProvider>(context,listen: false).getHubSpotStatus();

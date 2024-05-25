@@ -1,6 +1,8 @@
+import 'package:bargainb/providers/subscription_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../services/purchase_service.dart';
 import '../../utils/tracking_utils.dart';
@@ -24,7 +26,7 @@ class AppNavigator {
     return Navigator.of(context).pop<dynamic>(object);
   }
 
-  static dynamic popToFrist({required BuildContext context, dynamic object}) {
+  static dynamic popToFrist({required BuildContext context}) {
     return Navigator.of(context).popUntil((rout) => rout.isFirst);
   }
 
@@ -37,7 +39,7 @@ class AppNavigator {
   static showFeatureBlockedDialog(BuildContext context){
     if (FirebaseAuth.instance.currentUser == null) {
       showSignInDialog(context);
-    } else if (!PurchaseApi.isSubscribed) {
+    } else if (!SubscriptionProvider.get(context).isSubscribed) {
       showSubscribeDialog(context);
     }
   }
@@ -45,7 +47,7 @@ class AppNavigator {
   static goToChatlistTab(BuildContext context) {
     if (FirebaseAuth.instance.currentUser == null) {
       showSignInDialog(context);
-    } else if (!PurchaseApi.isSubscribed) {
+    } else if (!SubscriptionProvider.get(context).isSubscribed) {
       showSubscribeDialog(context);
     } else {
       NavigatorController.jumpToTab(1);
@@ -56,7 +58,7 @@ class AppNavigator {
   static goToProfileTab(BuildContext context) {
     if (FirebaseAuth.instance.currentUser == null) {
       showSignInDialog(context);
-    } else if (!PurchaseApi.isSubscribed) {
+    } else if (!SubscriptionProvider.get(context).isSubscribed) {
       showSubscribeDialog(context);
     } else {
       NavigatorController.jumpToTab(2);

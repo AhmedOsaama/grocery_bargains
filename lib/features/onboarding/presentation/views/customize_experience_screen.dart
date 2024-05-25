@@ -5,6 +5,7 @@ import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/onboarding_stepper.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:bargainb/providers/user_provider.dart';
+import 'package:bargainb/services/hubspot_service.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
@@ -179,7 +180,7 @@ class _CustomizeExperienceScreenState extends State<CustomizeExperienceScreen> {
                       setState(() {});
                     },
                     maxLines: 5,
-                    boxShadow: BoxShadow(
+                    boxShadow: const BoxShadow(
                       color: Color(0x0F000000),
                       blurRadius: 14,
                       offset: Offset(0, 2),
@@ -202,6 +203,7 @@ class _CustomizeExperienceScreenState extends State<CustomizeExperienceScreen> {
         ? null
         : () {
             var isValid = _formKey.currentState?.validate();
+            log(userProvider.email);
             if (isValid!) {
               _formKey.currentState!.save();
               var contactData = {
@@ -213,8 +215,7 @@ class _CustomizeExperienceScreenState extends State<CustomizeExperienceScreen> {
                 'biggest_frustration': _biggestFrustrationsController.text.trim(),
                 "hubspot_owner_id": "1252705237",
               };
-              if(kReleaseMode) createHubspotContact(contactData);
-              // AppNavigator.pushReplacement(context: context, screen: MainScreen());
+              if(kReleaseMode) HubspotService.createHubspotContact(contactData);
               AppNavigator.pop(context: context);
               Provider.of<UserProvider>(context, listen: false).turnOffFirstTime();
               Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
@@ -227,32 +228,4 @@ class _CustomizeExperienceScreenState extends State<CustomizeExperienceScreen> {
     TrackingUtils().trackFormSubmitted('Guest', DateTime.now().toUtc().toString(), "Onboarding Form Submission");
   }
 
-  Future<void> createHubspotContact(Map userData) async {
-    print("creating hubspot contact");
-    var contactData = jsonEncode({"properties": userData});
-    try {
-      var response = await post(
-        Uri.parse('https://api.hubapi.com/crm/v3/objects/contacts'),
-        headers: {
-          'Authorization': 'Bearer pat-eu1-6afeefb9-6630-45c6-b31e-e292f251c251',
-          'Content-Type': 'application/json'
-        },
-        body: contactData,
-      ).catchError((e) {
-        print("ERROR CREATING HUBSPOT CONTACT");
-        print(e);
-      });
-      if(response.statusCode == 201) {
-        await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
-          'isHubspotContact': true,
-        });
-        print("DONE creating hubspot contact");
-      }else{
-        log("ERROR CREATING HUBSPOT CONTACT: ${response.statusCode} ---> ${response.body}");
-      }
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Added Hubspot Contact")));
-    } catch (e) {
-      print(e);
-    }
-  }
 }

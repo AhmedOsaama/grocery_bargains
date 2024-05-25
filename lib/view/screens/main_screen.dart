@@ -32,6 +32,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../config/routes/app_navigator.dart';
 import '../../features/onboarding/presentation/views/widgets/onboarding_stepper.dart';
 import '../../providers/chatlists_provider.dart';
+import '../../providers/subscription_provider.dart';
 import 'chatlist_view_screen.dart';
 
 Key tabKey = UniqueKey();
@@ -103,7 +104,7 @@ class _MainScreenState extends State<MainScreen> {
         }
         if (listId != null) {                         //case when a user clicks on a deep link to a chatlist
           var currentUserId = FirebaseAuth.instance.currentUser?.uid;
-          if(!PurchaseApi.isSubscribed){
+          if(!SubscriptionProvider.get(context).isSubscribed){
             ScaffoldMessenger.of(context)
                 .showSnackBar(const SnackBar(content: Text("Sorry you need to be subscribed to use this feature")));
             AppNavigator.goToChatlistTab(context);
@@ -162,6 +163,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     var tutorialProvider = Provider.of<TutorialProvider>(context);
+    Provider.of<SubscriptionProvider>(context);
     if(tutorialProvider.canShowConfetti) _confettiController.play();
     return Scaffold(
         resizeToAvoidBottomInset: true,
@@ -210,14 +212,14 @@ class _MainScreenState extends State<MainScreen> {
                               tutorialProvider.hideTutorialConfetti();
                             },),
                           ),
-                          if(PurchaseApi.isSubscribed) OnboardingStepper(activeStep: 4, stepSize: 10),
+                          if(SubscriptionProvider.get(context).isSubscribed) OnboardingStepper(activeStep: 4, stepSize: 10),
                           Text('Grocery shopping just got smarter!'.tr(), style: TextStylesInter.textViewSemiBold20,textAlign: TextAlign.center,),
                           15.ph,
-                          if(PurchaseApi.isSubscribed)
+                          if(SubscriptionProvider.get(context).isSubscribed)
                             Text("You've successfully completed BargainB's onboarding process. Now, you're ready to unlock the power of your grocery assistant and start saving big on your groceries".tr(),
                               style: TextStylesInter.textViewRegular13,
                               textAlign: TextAlign.center,),
-                          if(!PurchaseApi.isSubscribed)
+                          if(!SubscriptionProvider.get(context).isSubscribed)
                           Text("You've successfully completed BargainB's onboarding process. Now, you're ready start saving big on your groceries".tr(),
                             style: TextStylesInter.textViewRegular13,
                             textAlign: TextAlign.center,),

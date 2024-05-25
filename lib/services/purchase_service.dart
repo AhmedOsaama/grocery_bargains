@@ -12,13 +12,10 @@ class PurchaseApi{
 
   static var subscriptionPeriod = "None";
   static var subscriptionPrice = "None";
-  static var subscriptionPricePerMonth = "None";
-  static bool isSubscribed = false;
+  // static bool isSubscribed = true;
 
   static Future init() async{
     var apiKey = Platform.isIOS ? 'appl_HUpmOoVSBSzFEjDWMemOoWSxdBq' : 'goog_TKFhZiVZKEYVhHGVqldnltUOYyJ';
-    // await Purchases.setLogLevel(LogLevel.debug);
-    // await Purchases.configure(PurchasesConfiguration(apiKey));
     try {
       await Purchases.configure(PurchasesConfiguration(apiKey)
         ..appUserID = FirebaseAuth.instance.currentUser!.uid);
@@ -27,7 +24,7 @@ class PurchaseApi{
       debugPrint("ISSUE WITH INIT PURCHASE API: $e");
       await Purchases.configure(PurchasesConfiguration(apiKey));
     }
-    await checkSubscriptionStatus();
+    // await checkSubscriptionStatus();
   }
 
   static Future<List<Offering>> fetchOffers() async {
@@ -42,7 +39,7 @@ class PurchaseApi{
     }
   }
 
-  static Future<void> checkSubscriptionStatus() async {
+  static Future<bool> checkSubscriptionStatus() async {
    var value = await Purchases.getCustomerInfo();
    if(value.entitlements.all.containsKey('all_analysis_features')) {
      try {
@@ -51,19 +48,17 @@ class PurchaseApi{
          var product = await getSubscriptionProduct(productIdentifier);
          subscriptionPeriod = getSubscriptionPeriod(productIdentifier);
          subscriptionPrice = getSubscriptionPriceString(product);
-         subscriptionPricePerMonth = getPricePerMonth(subscriptionPeriod, getSubscriptionPrice(product));
-         isSubscribed = true;
+         return true;
        }
      } catch (e) {
-       log("ERROR IN SUBSCRIPTION: $e");
+       log("ERROR GETTING SUBSCRIPTION STATUS: $e");
      }
    }
+   return false;
   }
 
   static Future<StoreProduct> getSubscriptionProduct(String productIdentifier) async {
-    // print("Product identifier: $productIdentifier");
     var products = await Purchases.getProducts([productIdentifier]);
-    // print("Products: ${products}");
     var product = products.first;
     return product;
   }
@@ -91,7 +86,7 @@ class PurchaseApi{
     if(subscriptionPeriod == "Monthly"){
       return "$subscriptionPrice / Month";
     }if(subscriptionPeriod == "Yearly"){
-      return (subscriptionPrice / 12).toStringAsFixed(2) + " / Month";
+      return "${(subscriptionPrice / 12).toStringAsFixed(2)} / Month";
     }
     return LocaleKeys.onePayment.tr();
   }

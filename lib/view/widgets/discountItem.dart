@@ -19,6 +19,7 @@ import '../../config/routes/app_navigator.dart';
 import '../../models/list_item.dart';
 import '../../features/home/data/models/product.dart';
 import '../../providers/chatlists_provider.dart';
+import '../../providers/subscription_provider.dart';
 import '../../utils/style_utils.dart';
 import '../../utils/tracking_utils.dart';
 import '../screens/product_detail_screen.dart';
@@ -114,7 +115,7 @@ class DiscountItem extends StatelessWidget {
               onTap: () {
                 if (FirebaseAuth.instance.currentUser == null) {
                   AppNavigator.showSignInDialog(context);
-                } else if (!PurchaseApi.isSubscribed) {
+                } else if (!SubscriptionProvider.get(context).isSubscribed) {
                   AppNavigator.showSubscribeDialog(context);
                 } else {
                   var listItem = ListItem(
