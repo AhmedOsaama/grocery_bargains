@@ -4,6 +4,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../utils/app_colors.dart';
+import '../../../../../utils/tracking_utils.dart';
 import '../../../../../view/components/generic_field.dart';
 
 class FourthSurvey extends StatefulWidget {
@@ -21,6 +22,14 @@ class _FourthSurveyState extends State<FourthSurvey> {
   var premiumAppInterest = "";
   var monthlySubscriptionPrice = "";
   var monthPayPreference = "";
+
+  var screenName = "Survey Info Collection 4: Valuing Your Views";
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), screenName);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +69,13 @@ class _FourthSurveyState extends State<FourthSurvey> {
                   activeColor: purple70,
                   dense: true,
                   onChanged: (value) {
+                    TrackingUtils().trackSurveyAction(
+                        '$screenName - Q1: $value Clicked',
+                        "Guest",
+                        DateTime.now().toUtc().toString(),
+                        screenName,
+                        value,
+                        "Q1 - ${widget.questionsMap['q1'].toString()}");
                     setState(() {
                       premiumAppInterest = value!;
                     });
@@ -84,6 +100,13 @@ class _FourthSurveyState extends State<FourthSurvey> {
                   activeColor: purple70,
                   dense: true,
                   onChanged: (value) {
+                    TrackingUtils().trackSurveyAction(
+                        '$screenName - Q2: $value Clicked',
+                        "Guest",
+                        DateTime.now().toUtc().toString(),
+                        screenName,
+                        value,
+                        "Q2 - ${widget.questionsMap['q2'].toString()}");
                     setState(() {
                       monthlySubscriptionPrice = value!;
                     });
@@ -108,6 +131,13 @@ class _FourthSurveyState extends State<FourthSurvey> {
                   activeColor: purple70,
                   dense: true,
                   onChanged: (value) {
+                    TrackingUtils().trackSurveyAction(
+                        '$screenName - Q3: $value Clicked',
+                        "Guest",
+                        DateTime.now().toUtc().toString(),
+                        screenName,
+                        value,
+                        "Q3 - ${widget.questionsMap['q3'].toString()}");
                     setState(() {
                       monthPayPreference = value!;
                     });

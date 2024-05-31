@@ -18,8 +18,20 @@ import '../../../../utils/assets_manager.dart';
 import '../../../../utils/tracking_utils.dart';
 import '../../../../view/components/button.dart';
 
-class FreeTrialScreen extends StatelessWidget {
+class FreeTrialScreen extends StatefulWidget {
   const FreeTrialScreen({Key? key}) : super(key: key);
+
+  @override
+  State<FreeTrialScreen> createState() => _FreeTrialScreenState();
+}
+
+class _FreeTrialScreenState extends State<FreeTrialScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), "Begin Trial Screen");
+  }
 
   @override
   Widget build(BuildContext context) {

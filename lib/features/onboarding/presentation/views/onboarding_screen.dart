@@ -63,10 +63,11 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   children: [
                     SecondOnboarding(
                       showFAB: () {
-                        if (showFAB == false)
+                        if (showFAB == false) {
                           setState(() {
                             showFAB = true;
                           });
+                        }
                       },
                       disableFAB: () {
                         showFAB = false;

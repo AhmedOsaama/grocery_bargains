@@ -34,6 +34,7 @@ class TrackingUtils {
   static const favouriteStoreKey = 'Favourite store';
   static const subscriptionPlanKey = 'Subscription plan';
   static const subscriptionPriceKey = 'Subscription price';
+  static const questionKey = 'Question';
 
   static const surveyAgeRangeKey = "Survey Age Range";
   static const surveyGenderKey = "Survey Gender";
@@ -472,6 +473,24 @@ class TrackingUtils {
       ..addCustomData(userIdKey, userId)
       ..addCustomData(timeStampKey, timestamp)
       ..addCustomData(pageNameKey, pageName)
+    );
+  }
+
+
+  void trackSurveyAction(String eventName, String userId, String timestamp, String pageName, String buttonName, String questionText){
+    mixpanel.track(eventName, properties: {
+      userIdKey : userId,
+      timeStampKey : timestamp,
+      pageNameKey : pageName,
+      buttonNameKey : buttonName,
+      questionKey : questionText,
+    });
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(eventName)
+      ..addCustomData(userIdKey, userId)
+      ..addCustomData(timeStampKey, timestamp)
+      ..addCustomData(pageNameKey, pageName)
+      ..addCustomData(buttonNameKey, buttonName)
+      ..addCustomData(questionKey, questionText)
     );
   }
 }

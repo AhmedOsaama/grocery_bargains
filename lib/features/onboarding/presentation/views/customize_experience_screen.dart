@@ -201,15 +201,29 @@ class _CustomizeExperienceScreenState extends State<CustomizeExperienceScreen> {
   Function()? submitForm(bool isTextEmpty, UserProvider userProvider, BuildContext context) {
     return isTextEmpty
         ? null
-        : () {
+        : () async {
             var isValid = _formKey.currentState?.validate();
             log(userProvider.email);
             if (isValid!) {
               _formKey.currentState!.save();
+              var country = "N/A";
+              var city = "N/A";
+              try {
+                var response = await get(Uri.parse("http://ip-api.com/json"));
+                if (response.statusCode == 200) {
+                  var responseMap = jsonDecode(response.body);
+                  country = responseMap['country'];
+                  city = responseMap['city'];
+                }
+              }catch(e){
+                log(e.toString());
+              }
               var contactData = {
                 "email": userProvider.email,
                 "firstname": userProvider.name,
                 'phone': userProvider.phoneNumber,
+                'country': country,
+                'city': city,
                 'shopping_goals': _goalsController.text.trim(),
                 'favorite_store': selectedStore,
                 'biggest_frustration': _biggestFrustrationsController.text.trim(),

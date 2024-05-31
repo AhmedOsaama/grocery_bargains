@@ -1,5 +1,6 @@
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:bargainb/utils/style_utils.dart';
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
@@ -20,6 +21,14 @@ class _FirstSurveyState extends State<FirstSurvey> {
   var gender = "Choose Gender";
   var age = "";
   var groceryTime = "";
+
+  var screenName = 'Survey Info Collection 1: Crafting Your Ideal App';
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), screenName);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,17 +62,26 @@ class _FirstSurveyState extends State<FirstSurvey> {
             children: (widget.questionsMap['q1_answers'] as List)
                 .map(
                   (answer) => RadioListTile(
-                    title: Text(answer.toString().tr(), style: TextStylesInter.textViewRegular14,),
+                      title: Text(
+                        answer.toString().tr(),
+                        style: TextStylesInter.textViewRegular14,
+                      ),
                       value: answer,
                       groupValue: age,
                       activeColor: purple70,
                       dense: true,
                       onChanged: (value) {
+                        TrackingUtils().trackSurveyAction(
+                            '$screenName - Q1: $value Clicked',
+                            "Guest",
+                            DateTime.now().toUtc().toString(),
+                            screenName,
+                            value,
+                            "Q1 - ${widget.questionsMap['q1'].toString()}");
                         setState(() {
                           age = value!;
                         });
                         widget.saveResponse(age, gender, groceryTime);
-
                       }),
                 )
                 .toList(),
@@ -78,21 +96,30 @@ class _FirstSurveyState extends State<FirstSurvey> {
             children: (widget.questionsMap['q2_answers'] as List)
                 .map(
                   (answer) => RadioListTile(
-                  title: Text(answer.toString().tr(), style: TextStylesInter.textViewRegular14,),
-                  value: answer,
-                  groupValue: gender,
-                  activeColor: purple70,
-                  dense: true,
-                  onChanged: (value) {
-                    setState(() {
-                      gender = value!;
-                    });
-                    widget.saveResponse(age, gender, groceryTime);
-                  }),
-            )
+                      title: Text(
+                        answer.toString().tr(),
+                        style: TextStylesInter.textViewRegular14,
+                      ),
+                      value: answer,
+                      groupValue: gender,
+                      activeColor: purple70,
+                      dense: true,
+                      onChanged: (value) {
+                        TrackingUtils().trackSurveyAction(
+                            '$screenName - Q2: $value Clicked',
+                            "Guest",
+                            DateTime.now().toUtc().toString(),
+                            screenName,
+                            value,
+                            "Q2 - ${widget.questionsMap['q2'].toString()}");
+                        setState(() {
+                          gender = value!;
+                        });
+                        widget.saveResponse(age, gender, groceryTime);
+                      }),
+                )
                 .toList(),
           ),
-
           20.ph,
           Text(
             widget.questionsMap['q3'].toString().tr(),
@@ -103,18 +130,28 @@ class _FirstSurveyState extends State<FirstSurvey> {
             children: (widget.questionsMap['q3_answers'] as List)
                 .map(
                   (answer) => RadioListTile(
-                      title: Text(answer.toString().tr(), style: TextStylesInter.textViewRegular14,),
+                      title: Text(
+                        answer.toString().tr(),
+                        style: TextStylesInter.textViewRegular14,
+                      ),
                       value: answer,
-                  groupValue: groceryTime,
+                      groupValue: groceryTime,
                       activeColor: purple70,
                       dense: true,
-                  onChanged: (value) {
-                    setState(() {
-                      groceryTime = value!;
-                    });
-                    widget.saveResponse(age, gender, groceryTime);
-                  }),
-            )
+                      onChanged: (value) {
+                        TrackingUtils().trackSurveyAction(
+                            '$screenName - Q3: $value Clicked',
+                            "Guest",
+                            DateTime.now().toUtc().toString(),
+                            screenName,
+                            value,
+                            "Q3 - ${widget.questionsMap['q3'].toString()}");
+                        setState(() {
+                          groceryTime = value!;
+                        });
+                        widget.saveResponse(age, gender, groceryTime);
+                      }),
+                )
                 .toList(),
           ),
         ],

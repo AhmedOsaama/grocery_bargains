@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../utils/app_colors.dart';
+import '../../../../../utils/tracking_utils.dart';
 import '../../../../../view/components/generic_field.dart';
 
 class ThirdSurvey extends StatefulWidget {
@@ -28,6 +29,14 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
   var _groceryAttractionsController = TextEditingController();
   var _groceryInterestsController = TextEditingController();
   var _groceryConcernsController = TextEditingController();
+
+  var screenName = "Survey Info Collection 3: Unpacking Your Grocery Habits";
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), screenName);
+  }
 
   SizedBox? buildGroceryAttractionsSecondaryWidget(String answer) {
     return answer == "Other" ? SizedBox(
@@ -147,6 +156,13 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
                       secondary: buildGroceryAttractionsSecondaryWidget(answer),
                       dense: true,
                       onChanged: (value) {
+                        TrackingUtils().trackSurveyAction(
+                            '$screenName - Q1: $value Clicked',
+                            "Guest",
+                            DateTime.now().toUtc().toString(),
+                            screenName,
+                            value,
+                            "Q1 - ${widget.questionsMap['q1'].toString()}");
                         setState(() {
                           groceryAttractions = value!;
                           _groceryAttractionsController.clear();
@@ -177,6 +193,13 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
                       dense: true,
                       secondary: buildGroceryInterestsSecondaryWidget(answer),
                       onChanged: (value) {
+                        TrackingUtils().trackSurveyAction(
+                            '$screenName - Q2: $value Clicked',
+                            "Guest",
+                            DateTime.now().toUtc().toString(),
+                            screenName,
+                            value,
+                            "Q2 - ${widget.questionsMap['q2'].toString()}");
                         setState(() {
                           groceryInterests = value;
                           _groceryInterestsController.clear();
@@ -208,6 +231,13 @@ class _ThirdSurveyState extends State<ThirdSurvey> {
                       secondary: buildGroceryConcernsSecondaryWidget(answer),
                       controlAffinity: ListTileControlAffinity.leading,
                       onChanged: (value) {
+                        TrackingUtils().trackSurveyAction(
+                            '$screenName - Q3: ${answer.key} Clicked',
+                            "Guest",
+                            DateTime.now().toUtc().toString(),
+                            screenName,
+                            answer.key,
+                            "Q3 - ${widget.questionsMap['q3'].toString()}");
                         if (value!) {
                           groceryConcerns.add(answer.key);
                         } else {

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../utils/app_colors.dart';
+import '../../../../../utils/tracking_utils.dart';
 import '../../../../../view/components/generic_field.dart';
 
 class SecondSurvey extends StatefulWidget {
@@ -24,6 +25,14 @@ class _SecondSurveyState extends State<SecondSurvey> {
   var discountFindings = [];
 
   var _groceryChallengesController = TextEditingController();
+
+  var screenName = "Survey Info Collection 2: A Little About You";
+
+  @override
+  void initState() {
+    super.initState();
+    TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), screenName);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +75,13 @@ class _SecondSurveyState extends State<SecondSurvey> {
                       activeColor: purple70,
                       dense: true,
                       onChanged: (value) {
+                        TrackingUtils().trackSurveyAction(
+                            '$screenName - Q1: $value Clicked',
+                            "Guest",
+                            DateTime.now().toUtc().toString(),
+                            screenName,
+                            value,
+                            "Q1 - ${widget.questionsMap['q1'].toString()}");
                         setState(() {
                           groceryMethod = value!;
                         });
@@ -94,6 +110,13 @@ class _SecondSurveyState extends State<SecondSurvey> {
                     dense: true,
                     secondary: buildSecondaryWidget(answer),
                     onChanged: (value) {
+                      TrackingUtils().trackSurveyAction(
+                          '$screenName - Q2: ${answer.key} Clicked',
+                          "Guest",
+                          DateTime.now().toUtc().toString(),
+                          screenName,
+                          answer.key,
+                          "Q2 - ${widget.questionsMap['q2'].toString()}");
                       if (value!) {
                         groceryChallenges.add(answer.key);
                       } else {
@@ -131,6 +154,13 @@ class _SecondSurveyState extends State<SecondSurvey> {
                       dense: true,
                       controlAffinity: ListTileControlAffinity.leading,
                       onChanged: (value) {
+                        TrackingUtils().trackSurveyAction(
+                            '$screenName - Q3: ${answer.key} Clicked',
+                            "Guest",
+                            DateTime.now().toUtc().toString(),
+                            screenName,
+                            answer.key,
+                            "Q3 - ${widget.questionsMap['q3'].toString()}");
                         if (value!) {
                           discountFindings.add(answer.key);
                         } else {

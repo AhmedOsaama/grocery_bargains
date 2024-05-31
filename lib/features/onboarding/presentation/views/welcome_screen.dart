@@ -25,6 +25,15 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
+
+  @override
+  void initState() {
+    trackFirstTimeUser();
+    TrackingUtils().trackPageView("Guest", DateTime.now().toUtc().toString(), "Welcome Screen");
+    if (kReleaseMode) sendNewInstallMessage();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -194,13 +203,6 @@ Easy Cancellation: Cancel anytime before the trial ends at no cost."""
         ),
       ),
     );
-  }
-
-  @override
-  void initState() {
-    trackFirstTimeUser();
-    if (kReleaseMode) sendNewInstallMessage();
-    super.initState();
   }
 
   Future<void> sendNewInstallMessage() async {
