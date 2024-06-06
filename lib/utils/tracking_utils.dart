@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:bargainb/utils/algolia_tracking_utils.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 
@@ -492,6 +495,17 @@ class TrackingUtils {
       ..addCustomData(buttonNameKey, buttonName)
       ..addCustomData(questionKey, questionText)
     );
+    FirebaseAnalytics.instance.isSupported().then((value) => log("IS FIREBASE SUPPROTED: $value"));
+    FirebaseAnalytics.instance.logLevelEnd(levelName: "TEST LEVEL");
+    FirebaseAnalytics.instance.logEvent(name: eventName, parameters: {
+      userIdKey : userId,
+      timeStampKey : timestamp,
+      pageNameKey : pageName,
+      buttonNameKey : buttonName,
+      questionKey : questionText,
+    }).then((value) {
+      log("FIREBASE EVENT: track survey action logged");
+    });
   }
 }
 

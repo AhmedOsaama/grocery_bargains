@@ -88,6 +88,7 @@ dependencies:
   flutter_native_splash: ^2.2.19
   get_it: ^7.6.0
   sentry_flutter: ^8.1.0
+  firebase_analytics: ^10.5.1
 
 
 
