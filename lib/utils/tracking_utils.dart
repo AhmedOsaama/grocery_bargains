@@ -5,404 +5,346 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 
+import '../core/utils/tracking_constants.dart';
+
 class TrackingUtils {
-  static const userIdKey = 'UserID';
-  static const buttonNameKey = 'ButtonName';
-  static const pageNameKey = 'PageName';
-  static const popUpNameKey = 'PopUpName';
-  static const textLinkNameKey = 'TextLinkName';
-  static const languageSelectedKey = 'LanguageSelected';
-  static const toggleNameKey = 'ToggleName';
-  static const valueKey = 'value';
-  static const sideMenuNameKey = 'SideMenuName';
-  static const sideMenuItemClickedNameKey = 'SideMenuItemClickedName';
-  static const cbiNameKey = 'CBIName';
-  static const cbiPageNameKey = 'CBIPageName';
-  static const timeStampKey = 'Time';
-  static const errorMessageKey = 'Error Message';
-  static const searchQueryKey = 'SearchQuery';
-  static const productNameKey = 'ProductName';
-  static const discountedKey = 'Discounted';
-  static const chatlistHostIdKey = 'ChatlistHostID';
-  static const chatlistHostNameKey = 'ChatlistHostName';
-  static const quantityKey = 'Quantity';
-  static const actionTypeKey = 'ActionType';
-  static const productIdKey = 'ProductID';
-  static const productCategoryKey = 'ProductCategory';
-  static const statusKey = 'Status';
-  static const messageTextKey = 'MessageText';
-  static const chatlistIdKey = 'ChatlistID';
-  static const chatlistNameKey = 'ChatlistName';
-  static const filterTypeKey = 'Filter type';
-  static const favouriteStoreKey = 'Favourite store';
-  static const subscriptionPlanKey = 'Subscription plan';
-  static const subscriptionPriceKey = 'Subscription price';
-  static const questionKey = 'Question';
-
-  static const surveyAgeRangeKey = "Survey Age Range";
-  static const surveyGenderKey = "Survey Gender";
-  static const surveyGroceryTimeKey = "Survey Grocery Time";
-
-  static const surveyGroceryMethodKey = "Survey Grocery Method";
-  static const surveyGroceryChallengesKey = "Survey Grocery Challenge";
-  static const surveyDiscountFindingsKey = "Survey Discount Findings";
-
-  static const surveyGroceryAttractionsKey = "Survey Grocery Attractions";
-  static const surveyGroceryInterestsKey = "Survey Grocery Interests";
-  static const surveyGroceryConcernsKey = "Survey Grocery Concerns";
-
-  static const surveyPremiumAppInterestKey = "Survey Premium App Interest";
-  static const surveyMonthlySubscriptionPriceKey = "Survey Monthly subscription Price";
-  static const surveyMonthPayPreferenceKey = "Survey Month Pay Preference";
-
-  static const buttonClickEvent = 'ButtonClick';
-  static const pageViewEvent = 'PageView';
-  static const popPageViewEvent = 'PopPageView';
-  static const textLinkClickedEvent = 'TextLink Clicked';
-  static const languageSelectedEvent = 'Language Selected';
-  static const appStartLanguageEvent = 'App Start Language';
-  static const booleanToggleClicksEvent = 'Boolean Toggle Clicks';
-  static const sideMenuItemClickedEvent = 'SideMenuItemClicked';
-  static const checkboxItemClickedEvent = 'CheckboxItemClicked';
-  static const signUpEvent = 'Signup';
-  static const loginEvent = 'Login';
-  static const appOpenEvent = 'AppOpen';
-  static const searchEvent = 'Search';
-  static const productActionEvent = 'Product Action';
-  static const shareProductEvent = 'ShareProduct';
-  static const phoneNumberVerifiedEvent = 'PhoneNumberVerified';
-  static const chatlistMessageSentEvent = 'CLMessageSent';
-  static const filterUsedEvent = 'FilterUsed';
-  static const formSubmittedEvent = 'FormSubmitted';
-  static const chooseFavouriteStoreEvent = 'chooseFavouriteStore';
-  static const subscriptionEvent = 'subscription_Successful';
-  static const firstTimeEvent = 'firstTime_User';
-  static const surveyEvent = 'SurveySubmitted';
-  static const surveyStartedEvent = 'SurveyStarted';
-  static const surveySkippedEvent = 'SurveySkipped';
-
-
-
   Mixpanel mixpanel = Mixpanel('3aa827fb2f1cdf5ff2393b84d9c40bac');
 
   void trackButtonClick(String userId, String buttonName, String timestamp, String pageName){
-    mixpanel.track(buttonClickEvent, properties: {
-      userIdKey: userId,
-      buttonNameKey: buttonName,
-      pageNameKey: pageName,
-      timeStampKey: timestamp,
+    mixpanel.track(TrackingConstants.buttonClickEvent, properties: {
+      TrackingConstants.userIdKey: userId,
+      TrackingConstants.buttonNameKey: buttonName,
+      TrackingConstants.pageNameKey: pageName,
+      TrackingConstants.timeStampKey: timestamp,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(buttonClickEvent)
-      ..addCustomData(userIdKey, userId)
-        ..addCustomData(buttonNameKey, buttonName)
-        ..addCustomData(pageNameKey, pageName)
-        ..addCustomData(timeStampKey, timestamp)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.buttonClickEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+        ..addCustomData(TrackingConstants.buttonNameKey, buttonName)
+        ..addCustomData( TrackingConstants.pageNameKey, pageName)
+        ..addCustomData( TrackingConstants.timeStampKey, timestamp)
     );
+    FirebaseAnalytics.instance.logEvent(name: TrackingConstants.buttonClickEvent, parameters: {
+      TrackingConstants.userIdKey: userId,
+      TrackingConstants.buttonNameKey: buttonName,
+      TrackingConstants.pageNameKey: pageName,
+      TrackingConstants.timeStampKey: timestamp,
+    });
   }
 
   void trackPageView(String userId, String timestamp, String pageName){
-    mixpanel.track(pageViewEvent, properties: {
-      userIdKey: userId,
-      pageNameKey: pageName,
-      timeStampKey: timestamp,
+    mixpanel.track(TrackingConstants.pageViewEvent, properties: {
+      TrackingConstants.userIdKey: userId,
+       TrackingConstants.pageNameKey: pageName,
+       TrackingConstants.timeStampKey: timestamp,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(pageViewEvent)
-      ..addCustomData(userIdKey, userId)
-      ..addCustomData(pageNameKey, pageName)
-      ..addCustomData(timeStampKey, timestamp)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.pageViewEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+      ..addCustomData(TrackingConstants.pageNameKey, pageName)
+      ..addCustomData(TrackingConstants.timeStampKey, timestamp)
     );
+    FirebaseAnalytics.instance.logEvent(name: TrackingConstants.pageViewEvent, parameters: {
+      TrackingConstants.userIdKey: userId,
+      TrackingConstants.pageNameKey: pageName,
+      TrackingConstants.timeStampKey: timestamp,
+    });
   }
 
   void trackPopPageView(String userId, String timestamp, String popUpName){
-    mixpanel.track(popPageViewEvent, properties: {
-      userIdKey: userId,
-      popUpNameKey: popUpName,
-      timeStampKey: timestamp,
+    mixpanel.track(TrackingConstants.popPageViewEvent, properties: {
+      TrackingConstants.userIdKey: userId,
+      TrackingConstants.popUpNameKey: popUpName,
+       TrackingConstants.timeStampKey: timestamp,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(popPageViewEvent)
-      ..addCustomData(userIdKey, userId)
-      ..addCustomData(popUpNameKey, popUpName)
-      ..addCustomData(timeStampKey, timestamp)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.popPageViewEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+      ..addCustomData(TrackingConstants.popUpNameKey, popUpName)
+      ..addCustomData( TrackingConstants.timeStampKey, timestamp)
     );
+    FirebaseAnalytics.instance.logEvent(name: TrackingConstants.popPageViewEvent, parameters: {
+      TrackingConstants.userIdKey: userId,
+      TrackingConstants.popUpNameKey: popUpName,
+      TrackingConstants.timeStampKey: timestamp,
+    });
   }
 
   void trackTextLinkClicked(String userId, String timestamp, String pageName, String textLinkName){
-    mixpanel.track(textLinkClickedEvent, properties: {
-      userIdKey: userId,
-      pageNameKey: pageName,
-      timeStampKey: timestamp,
-      textLinkNameKey: textLinkName,
+    mixpanel.track(TrackingConstants.textLinkClickedEvent, properties: {
+      TrackingConstants.userIdKey: userId,
+       TrackingConstants.pageNameKey: pageName,
+       TrackingConstants.timeStampKey: timestamp,
+      TrackingConstants.textLinkNameKey: textLinkName,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(textLinkClickedEvent)
-      ..addCustomData(userIdKey, userId)
-      ..addCustomData(pageNameKey, pageName)
-      ..addCustomData(timeStampKey, timestamp)
-      ..addCustomData(textLinkNameKey, textLinkName)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.textLinkClickedEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+      ..addCustomData( TrackingConstants.pageNameKey, pageName)
+      ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+      ..addCustomData(TrackingConstants.textLinkNameKey, textLinkName)
     );
   }
 
   void trackLanguageSelected(String userId, String timestamp, String languageSelected){
-    mixpanel.track(languageSelectedEvent, properties: {
-      userIdKey: userId,
-      timeStampKey: timestamp,
-      languageSelectedKey: languageSelected,
+    mixpanel.track(TrackingConstants.languageSelectedEvent, properties: {
+      TrackingConstants.userIdKey: userId,
+       TrackingConstants.timeStampKey: timestamp,
+      TrackingConstants.languageSelectedKey: languageSelected,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(languageSelectedEvent)
-      ..addCustomData(userIdKey, userId)
-      ..addCustomData(timeStampKey, timestamp)
-      ..addCustomData(languageSelectedKey, languageSelected)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.languageSelectedEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+      ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+      ..addCustomData(TrackingConstants.languageSelectedKey, languageSelected)
     );
   }
 
   void trackAppStartLanguage(String timestamp, String languageSelected){
-    mixpanel.track(appStartLanguageEvent, properties: {
-      timeStampKey: timestamp,
-      languageSelectedKey: languageSelected,
+    mixpanel.track(TrackingConstants.appStartLanguageEvent, properties: {
+       TrackingConstants.timeStampKey: timestamp,
+      TrackingConstants.languageSelectedKey: languageSelected,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(appStartLanguageEvent)
-      ..addCustomData(timeStampKey, timestamp)
-      ..addCustomData(languageSelectedKey, languageSelected)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.appStartLanguageEvent)
+      ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+      ..addCustomData(TrackingConstants.languageSelectedKey, languageSelected)
     );
   }
 
   void trackBooleanToggleClicks(String userId, String timestamp, bool value, String toggleName, String pageName){
-    mixpanel.track(booleanToggleClicksEvent, properties: {
-      userIdKey: userId,
-      timeStampKey: timestamp,
-      valueKey: value.toString(),
-      toggleNameKey: toggleName,
-      pageNameKey: pageName,
+    mixpanel.track(TrackingConstants.booleanToggleClicksEvent, properties: {
+      TrackingConstants.userIdKey: userId,
+       TrackingConstants.timeStampKey: timestamp,
+      TrackingConstants.valueKey: value.toString(),
+      TrackingConstants.toggleNameKey: toggleName,
+       TrackingConstants.pageNameKey: pageName,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(booleanToggleClicksEvent)
-      ..addCustomData(userIdKey, userId)
-      ..addCustomData(timeStampKey, timestamp)
-      ..addCustomData(valueKey, value.toString())
-      ..addCustomData(toggleNameKey, toggleName)
-      ..addCustomData(pageNameKey, pageName)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.booleanToggleClicksEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+      ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+      ..addCustomData(TrackingConstants.valueKey, value.toString())
+      ..addCustomData(TrackingConstants.toggleNameKey, toggleName)
+      ..addCustomData( TrackingConstants.pageNameKey, pageName)
     );
   }
 
   void trackSideMenuItemClicked(String userId, String timestamp, String sideMenuName, String sideMenuItemClickedName, String pageName){
-    mixpanel.track(sideMenuItemClickedEvent, properties: {
-      userIdKey: userId,
-      timeStampKey: timestamp,
-      sideMenuNameKey: sideMenuName,
-      sideMenuItemClickedEvent: sideMenuItemClickedName,
-      pageNameKey: pageName,
+    mixpanel.track(TrackingConstants.sideMenuItemClickedEvent, properties: {
+      TrackingConstants.userIdKey: userId,
+       TrackingConstants.timeStampKey: timestamp,
+      TrackingConstants.sideMenuNameKey: sideMenuName,
+      TrackingConstants.sideMenuItemClickedEvent: sideMenuItemClickedName,
+       TrackingConstants.pageNameKey: pageName,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(sideMenuItemClickedEvent)
-      ..addCustomData(userIdKey, userId)
-      ..addCustomData(timeStampKey, timestamp)
-      ..addCustomData(sideMenuNameKey, sideMenuName)
-      ..addCustomData(sideMenuItemClickedEvent, sideMenuItemClickedName)
-      ..addCustomData(pageNameKey, pageName)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.sideMenuItemClickedEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+      ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+      ..addCustomData(TrackingConstants.sideMenuNameKey, sideMenuName)
+      ..addCustomData(TrackingConstants.sideMenuItemClickedEvent, sideMenuItemClickedName)
+      ..addCustomData( TrackingConstants.pageNameKey, pageName)
     );
   }
 
   void trackCheckBoxItemClicked(String userId, String timestamp, String cbiName, String cbiPageName, bool value){
-    mixpanel.track(checkboxItemClickedEvent, properties: {
-      userIdKey: userId,
-      timeStampKey: timestamp,
-      cbiNameKey: cbiName,
-      cbiPageNameKey: cbiPageName,
-      valueKey: value.toString(),
+    mixpanel.track(TrackingConstants.checkboxItemClickedEvent, properties: {
+      TrackingConstants.userIdKey: userId,
+       TrackingConstants.timeStampKey: timestamp,
+      TrackingConstants.cbiNameKey: cbiName,
+       TrackingConstants.pageNameKey: cbiPageName,
+      TrackingConstants.valueKey: value.toString(),
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(checkboxItemClickedEvent)
-      ..addCustomData(userIdKey, userId)
-      ..addCustomData(timeStampKey, timestamp)
-      ..addCustomData(cbiNameKey, cbiName)
-      ..addCustomData(cbiPageNameKey, cbiPageName)
-      ..addCustomData(valueKey, value.toString())
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.checkboxItemClickedEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+      ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+      ..addCustomData(TrackingConstants.cbiNameKey, cbiName)
+      ..addCustomData(TrackingConstants.pageNameKey, cbiPageName)
+      ..addCustomData(TrackingConstants.valueKey, value.toString())
     );
   }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   void trackFirstTimeUser(String timestamp){
-    mixpanel.track(firstTimeEvent, properties: {
-      timeStampKey : timestamp,
+    mixpanel.track(TrackingConstants.firstTimeEvent, properties: {
+       TrackingConstants.timeStampKey : timestamp,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(firstTimeEvent)
-        ..addCustomData(timeStampKey, timestamp)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.firstTimeEvent)
+        ..addCustomData( TrackingConstants.timeStampKey, timestamp)
     );
   }
 
   void trackSignup(String userId, String timestamp){
-    mixpanel.track(signUpEvent, properties: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
+    mixpanel.track(TrackingConstants.signUpEvent, properties: {
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(signUpEvent)
-      ..addCustomData(userIdKey, userId)
-        ..addCustomData(timeStampKey, timestamp)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.signUpEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+        ..addCustomData( TrackingConstants.timeStampKey, timestamp)
     );
   }
 
   void trackLogin(String userId, String timestamp){
-    mixpanel.track(loginEvent, properties: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
+    mixpanel.track(TrackingConstants.loginEvent, properties: {
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(loginEvent)
-      ..addCustomData(userIdKey, userId)
-        ..addCustomData(timeStampKey, timestamp)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.loginEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+        ..addCustomData( TrackingConstants.timeStampKey, timestamp)
     );
   }
 
   void trackAppOpen(String userId, String timestamp){
-    mixpanel.track(appOpenEvent, properties: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
+    mixpanel.track(TrackingConstants.appOpenEvent, properties: {
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(appOpenEvent)
-      ..addCustomData(userIdKey, userId)
-        ..addCustomData(timeStampKey, timestamp)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.appOpenEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+        ..addCustomData( TrackingConstants.timeStampKey, timestamp)
     );
   }
 
   void trackSearch(String userId, String timestamp, String searchQuery, {required String queryId, required List<String> objectIDs, required List<int> positions}){
-    mixpanel.track(searchEvent, properties: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
-      searchQueryKey : searchQuery,
+    mixpanel.track(TrackingConstants.searchEvent, properties: {
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
+      TrackingConstants.searchQueryKey : searchQuery,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(searchEvent)
-      ..addCustomData(userIdKey, userId)
-        ..addCustomData(timeStampKey, timestamp)
-        ..addCustomData(searchQueryKey, searchQuery)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.searchEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+        ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+        ..addCustomData(TrackingConstants.searchQueryKey, searchQuery)
     );
-    if(objectIDs.isNotEmpty || positions.isNotEmpty)
-    AlgoliaTrackingUtils.trackAlgoliaClickEvent(userId, objectIDs, queryId, positions, searchEvent);
+    if(objectIDs.isNotEmpty || positions.isNotEmpty) {
+      AlgoliaTrackingUtils.trackAlgoliaClickEvent(userId, objectIDs, queryId, positions, TrackingConstants.searchEvent);
+    }
   }
 
 
   void trackProductAction(String userId, String timestamp, bool discounted, String chatlistId, String ChatlistName, String quantity, String actionType, {String? productId}){
-    mixpanel.track(productActionEvent, properties: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
-      discountedKey : discounted.toString(),
-      chatlistIdKey : chatlistId,
-      chatlistNameKey : ChatlistName,
-      quantityKey : quantity,
-      actionTypeKey : actionType,
+    mixpanel.track(TrackingConstants.productActionEvent, properties: {
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
+      TrackingConstants.discountedKey : discounted.toString(),
+      TrackingConstants.chatlistIdKey : chatlistId,
+      TrackingConstants.chatlistNameKey : ChatlistName,
+      TrackingConstants.quantityKey : quantity,
+      TrackingConstants.actionTypeKey : actionType,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(productActionEvent)
-      ..addCustomData(userIdKey, userId)
-        ..addCustomData(timeStampKey, timestamp)
-        ..addCustomData(discountedKey, discounted.toString())
-        ..addCustomData(chatlistIdKey, chatlistId)
-        ..addCustomData(chatlistNameKey, ChatlistName)
-        ..addCustomData(quantityKey, quantity)
-        ..addCustomData(actionTypeKey, actionType)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.productActionEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+        ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+        ..addCustomData(TrackingConstants.discountedKey, discounted.toString())
+        ..addCustomData(TrackingConstants.chatlistIdKey, chatlistId)
+        ..addCustomData(TrackingConstants.chatlistNameKey, ChatlistName)
+        ..addCustomData(TrackingConstants.quantityKey, quantity)
+        ..addCustomData(TrackingConstants.actionTypeKey, actionType)
     );
-    AlgoliaTrackingUtils.trackAlgoliaConversionEvent(userId, productId, productActionEvent);
+    AlgoliaTrackingUtils.trackAlgoliaConversionEvent(userId, productId, TrackingConstants.productActionEvent);
   }
 
   void trackShareProduct(String userId, String timestamp, String productId, String productName, String productCategory){
-    mixpanel.track(shareProductEvent, properties: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
-      productIdKey : productId,
-      productNameKey : productName,
-      productCategoryKey : productCategory,
+    mixpanel.track(TrackingConstants.shareProductEvent, properties: {
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
+      TrackingConstants.productIdKey : productId,
+      TrackingConstants.productNameKey : productName,
+      TrackingConstants. productCategoryKey : productCategory,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(shareProductEvent)
-      ..addCustomData(userIdKey, userId)
-        ..addCustomData(timeStampKey, timestamp)
-        ..addCustomData(productIdKey, productId)
-        ..addCustomData(productNameKey, productName)
-        ..addCustomData(productCategoryKey, productCategory)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.shareProductEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+        ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+        ..addCustomData(TrackingConstants.productIdKey, productId)
+        ..addCustomData(TrackingConstants.productNameKey, productName)
+        ..addCustomData(TrackingConstants.productCategoryKey, productCategory)
     );
   }
 
   void trackPhoneNumberVerified(String userId, String timestamp, bool status){
     var verificationStatus =  status ? "success" : "fail";
-    mixpanel.track(phoneNumberVerifiedEvent, properties: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
-      statusKey : verificationStatus,
+    mixpanel.track(TrackingConstants.phoneNumberVerifiedEvent, properties: {
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
+      TrackingConstants.statusKey : verificationStatus,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(phoneNumberVerifiedEvent)
-      ..addCustomData(userIdKey, userId)
-        ..addCustomData(timeStampKey, timestamp)
-        ..addCustomData(statusKey, verificationStatus)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.phoneNumberVerifiedEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+        ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+        ..addCustomData(TrackingConstants.statusKey, verificationStatus)
     );
   }
 
   void trackChatlistMessageSent(String userId, String timestamp, String messageText, String chatlistId, String chatlistName){
-    mixpanel.track(chatlistMessageSentEvent, properties: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
-      messageTextKey : messageText,
-      chatlistIdKey : chatlistId,
-      chatlistNameKey : chatlistName,
+    mixpanel.track(TrackingConstants.chatlistMessageSentEvent, properties: {
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
+      TrackingConstants.messageTextKey : messageText,
+      TrackingConstants.chatlistIdKey : chatlistId,
+      TrackingConstants. chatlistNameKey : chatlistName,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(chatlistMessageSentEvent)
-      ..addCustomData(userIdKey, userId)
-        ..addCustomData(timeStampKey, timestamp)
-        ..addCustomData(messageTextKey, messageText)
-        ..addCustomData(chatlistIdKey, chatlistId)
-        ..addCustomData(chatlistNameKey, chatlistName)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.chatlistMessageSentEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+        ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+        ..addCustomData(TrackingConstants.messageTextKey, messageText)
+        ..addCustomData(TrackingConstants.chatlistIdKey, chatlistId)
+        ..addCustomData(TrackingConstants.chatlistNameKey, chatlistName)
     );
   }
 
   void trackFilterUsed(String userId, String timestamp, String pageName, String filterType){
-    mixpanel.track(filterUsedEvent, properties: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
-      pageNameKey : pageName,
-      filterTypeKey : filterType,
+    mixpanel.track(TrackingConstants.filterUsedEvent, properties: {
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
+       TrackingConstants.pageNameKey : pageName,
+      TrackingConstants.filterTypeKey : filterType,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(filterUsedEvent)
-      ..addCustomData(userIdKey, userId)
-        ..addCustomData(timeStampKey, timestamp)
-        ..addCustomData(pageNameKey, pageName)
-        ..addCustomData(filterTypeKey, filterType)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.filterUsedEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+        ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+        ..addCustomData( TrackingConstants.pageNameKey, pageName)
+        ..addCustomData(TrackingConstants.filterTypeKey, filterType)
     );
   }
 
   void trackFormSubmitted(String userId, String timestamp, String pageName){
-    mixpanel.track(formSubmittedEvent, properties: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
-      pageNameKey : pageName,
+    mixpanel.track(TrackingConstants.formSubmittedEvent, properties: {
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
+       TrackingConstants.pageNameKey : pageName,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(formSubmittedEvent)
-      ..addCustomData(userIdKey, userId)
-        ..addCustomData(timeStampKey, timestamp)
-        ..addCustomData(pageNameKey, pageName)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.formSubmittedEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+        ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+        ..addCustomData( TrackingConstants.pageNameKey, pageName)
     );
   }
 
   void trackFavouriteStores(String userId, String timestamp, String pageName, String favouriteStore){
-    mixpanel.track(chooseFavouriteStoreEvent, properties: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
-      pageNameKey : pageName,
-      favouriteStoreKey : favouriteStore,
+    mixpanel.track(TrackingConstants.chooseFavouriteStoreEvent, properties: {
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
+       TrackingConstants.pageNameKey : pageName,
+      TrackingConstants.favouriteStoreKey : favouriteStore,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(chooseFavouriteStoreEvent)
-      ..addCustomData(userIdKey, userId)
-        ..addCustomData(timeStampKey, timestamp)
-        ..addCustomData(pageNameKey, pageName)
-        ..addCustomData(favouriteStoreKey, favouriteStore)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.chooseFavouriteStoreEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+        ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+        ..addCustomData( TrackingConstants.pageNameKey, pageName)
+        ..addCustomData(TrackingConstants.favouriteStoreKey, favouriteStore)
     );
   }
 
   void trackSubscriptionAction(String userId, String timestamp, String pageName, String plan, String price){
-    mixpanel.track(subscriptionEvent, properties: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
-      pageNameKey : pageName,
-      subscriptionPlanKey : plan,
-      subscriptionPriceKey : price,
+    mixpanel.track(TrackingConstants.subscriptionEvent, properties: {
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
+       TrackingConstants.pageNameKey : pageName,
+      TrackingConstants.subscriptionPlanKey : plan,
+      TrackingConstants. subscriptionPriceKey : price,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(subscriptionEvent)
-      ..addCustomData(userIdKey, userId)
-        ..addCustomData(timeStampKey, timestamp)
-        ..addCustomData(pageNameKey, pageName)
-        ..addCustomData(subscriptionPlanKey, plan)
-        ..addCustomData(subscriptionPriceKey, price)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.subscriptionEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+        ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+        ..addCustomData( TrackingConstants.pageNameKey, pageName)
+        ..addCustomData(TrackingConstants.subscriptionPlanKey, plan)
+        ..addCustomData(TrackingConstants.subscriptionPriceKey, price)
     );
   }
 
@@ -422,87 +364,88 @@ class TrackingUtils {
       String monthlySubscriptionPrice,
       String monthPayPreference,
       ){
-    mixpanel.track(surveyEvent, properties: {
-      surveyAgeRangeKey : ageRange,
-      surveyGenderKey : gender,
-      surveyGroceryTimeKey : groceryTime,
-      surveyGroceryMethodKey : groceryMethod,
-      surveyGroceryChallengesKey : groceryChallenges,
-      surveyDiscountFindingsKey : discountFindings,
-      surveyGroceryAttractionsKey : groceryAttractions,
-      surveyGroceryInterestsKey : groceryInterests,
-      surveyGroceryConcernsKey : groceryConcerns,
-      surveyPremiumAppInterestKey : premiumAppInterest,
-      surveyMonthlySubscriptionPriceKey : monthlySubscriptionPrice,
-      surveyMonthPayPreferenceKey : monthPayPreference,
+    mixpanel.track(TrackingConstants.surveyEvent, properties: {
+      TrackingConstants.surveyAgeRangeKey : ageRange,
+      TrackingConstants.surveyGenderKey : gender,
+       TrackingConstants.surveyGroceryTimeKey : groceryTime,
+      TrackingConstants.surveyGroceryMethodKey : groceryMethod,
+      TrackingConstants.surveyGroceryChallengesKey : groceryChallenges,
+      TrackingConstants.surveyDiscountFindingsKey : discountFindings,
+      TrackingConstants.surveyGroceryAttractionsKey : groceryAttractions,
+      TrackingConstants.surveyGroceryInterestsKey : groceryInterests,
+      TrackingConstants.      surveyGroceryConcernsKey : groceryConcerns,
+      TrackingConstants.surveyPremiumAppInterestKey : premiumAppInterest,
+      TrackingConstants.surveyMonthlySubscriptionPriceKey : monthlySubscriptionPrice,
+      TrackingConstants.surveyMonthPayPreferenceKey : monthPayPreference,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(surveyEvent)
-        ..addCustomData(timeStampKey, timestamp)
-        ..addCustomData(pageNameKey, pageName)
-        ..addCustomData(surveyAgeRangeKey, ageRange)
-        ..addCustomData(surveyGenderKey, gender)
-        ..addCustomData(surveyGroceryTimeKey, groceryTime)
-        ..addCustomData(surveyGroceryMethodKey, groceryMethod)
-        ..addCustomData(surveyGroceryChallengesKey, groceryChallenges)
-        ..addCustomData(surveyDiscountFindingsKey, discountFindings)
-        ..addCustomData(surveyGroceryInterestsKey, groceryInterests)
-        ..addCustomData(surveyGroceryConcernsKey, groceryConcerns)
-        ..addCustomData(surveyPremiumAppInterestKey, premiumAppInterest)
-        ..addCustomData(surveyMonthlySubscriptionPriceKey, monthlySubscriptionPrice)
-        ..addCustomData(surveyMonthPayPreferenceKey, monthPayPreference)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.surveyEvent)
+        ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+        ..addCustomData( TrackingConstants.pageNameKey, pageName)
+        ..addCustomData(TrackingConstants.surveyAgeRangeKey, ageRange)
+        ..addCustomData(TrackingConstants.surveyGenderKey, gender)
+        ..addCustomData( TrackingConstants.surveyGroceryTimeKey, groceryTime)
+        ..addCustomData(TrackingConstants.surveyGroceryMethodKey, groceryMethod)
+        ..addCustomData(TrackingConstants.surveyGroceryChallengesKey, groceryChallenges)
+        ..addCustomData(TrackingConstants.surveyDiscountFindingsKey, discountFindings)
+        ..addCustomData(TrackingConstants.surveyGroceryInterestsKey, groceryInterests)
+        ..addCustomData(TrackingConstants.surveyGroceryConcernsKey, groceryConcerns)
+        ..addCustomData(TrackingConstants.surveyPremiumAppInterestKey, premiumAppInterest)
+        ..addCustomData(TrackingConstants.surveyMonthlySubscriptionPriceKey, monthlySubscriptionPrice)
+        ..addCustomData(TrackingConstants.surveyMonthPayPreferenceKey, monthPayPreference)
     );
   }
 
   void trackSurveyStarted(String userId, String timestamp, String pageName){
-    mixpanel.track(surveyStartedEvent, properties: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
-      pageNameKey : pageName,
+    mixpanel.track(TrackingConstants.surveyStartedEvent, properties: {
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
+       TrackingConstants.pageNameKey : pageName,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(surveyStartedEvent)
-      ..addCustomData(userIdKey, userId)
-      ..addCustomData(timeStampKey, timestamp)
-      ..addCustomData(pageNameKey, pageName)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.surveyStartedEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+      ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+      ..addCustomData( TrackingConstants.pageNameKey, pageName)
     );
   }
 
   void trackSurveySkipped(String userId, String timestamp, String pageName){
-    mixpanel.track(surveySkippedEvent, properties: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
-      pageNameKey : pageName,
+    mixpanel.track(TrackingConstants.surveySkippedEvent, properties: {
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
+       TrackingConstants.pageNameKey : pageName,
     });
-    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(surveySkippedEvent)
-      ..addCustomData(userIdKey, userId)
-      ..addCustomData(timeStampKey, timestamp)
-      ..addCustomData(pageNameKey, pageName)
+    FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(TrackingConstants.surveySkippedEvent)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+      ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+      ..addCustomData( TrackingConstants.pageNameKey, pageName)
     );
   }
 
 
   void trackSurveyAction(String eventName, String userId, String timestamp, String pageName, String buttonName, String questionText){
     mixpanel.track(eventName, properties: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
-      pageNameKey : pageName,
-      buttonNameKey : buttonName,
-      questionKey : questionText,
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
+       TrackingConstants.pageNameKey : pageName,
+      TrackingConstants.buttonNameKey : buttonName,
+      TrackingConstants.questionKey : questionText,
     });
     FlutterBranchSdk.trackContentWithoutBuo(branchEvent: BranchEvent.customEvent(eventName)
-      ..addCustomData(userIdKey, userId)
-      ..addCustomData(timeStampKey, timestamp)
-      ..addCustomData(pageNameKey, pageName)
-      ..addCustomData(buttonNameKey, buttonName)
-      ..addCustomData(questionKey, questionText)
+      ..addCustomData(TrackingConstants.userIdKey, userId)
+      ..addCustomData( TrackingConstants.timeStampKey, timestamp)
+      ..addCustomData( TrackingConstants.pageNameKey, pageName)
+      ..addCustomData(TrackingConstants.buttonNameKey, buttonName)
+      ..addCustomData(TrackingConstants.questionKey, questionText)
     );
     FirebaseAnalytics.instance.isSupported().then((value) => log("IS FIREBASE SUPPROTED: $value"));
-    FirebaseAnalytics.instance.logLevelEnd(levelName: "TEST LEVEL");
+    FirebaseAnalytics.instance.logLevelStart(levelName: "TEST LEVEL");
+    eventName = "survey_action";
     FirebaseAnalytics.instance.logEvent(name: eventName, parameters: {
-      userIdKey : userId,
-      timeStampKey : timestamp,
-      pageNameKey : pageName,
-      buttonNameKey : buttonName,
-      questionKey : questionText,
+      TrackingConstants.userIdKey : userId,
+       TrackingConstants.timeStampKey : timestamp,
+       TrackingConstants.pageNameKey : pageName,
+      TrackingConstants.buttonNameKey : buttonName,
+      TrackingConstants.questionKey : questionText,
     }).then((value) {
       log("FIREBASE EVENT: track survey action logged");
     });
