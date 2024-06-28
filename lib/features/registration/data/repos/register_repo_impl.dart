@@ -11,6 +11,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:provider/provider.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -121,7 +122,8 @@ class RegisterRepoImpl implements RegisterRepo {
 
   @override
   Future<void> goToNextScreen(BuildContext context) async {
-    await PurchaseApi.init();
+    // log(FirebaseAuth.instance.currentUser!.uid.toString());
+   // var loginResult = await Purchases.logIn(FirebaseAuth.instance.currentUser!.uid);
     await SubscriptionProvider.get(context).initSubscription();
     if (!SubscriptionProvider.get(context).isSubscribed) {
       await AppNavigator.pushReplacement(context: context, screen: ConfirmSubscriptionScreen());

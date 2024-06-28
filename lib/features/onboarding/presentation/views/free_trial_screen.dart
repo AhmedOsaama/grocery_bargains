@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:bargainb/features/onboarding/presentation/views/onboarding_screen.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
+import 'package:bargainb/providers/subscription_provider.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -91,7 +92,7 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
                     height: 60,
                     onPressed: () async {
                       await initiateFreeSubscription(context);
-                      AppNavigator.pushReplacement(context: context, screen: OnBoardingScreen());
+                      // AppNavigator.pushReplacement(context: context, screen: OnBoardingScreen());
                     },
                     child: Text(
                       "Begin Free Trial".tr(),
@@ -127,6 +128,7 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
     }
     if (hasPurchased) {
       trackSubscription();
+      SubscriptionProvider.get(context).changeSubscriptionStatus(hasPurchased);
       AppNavigator.pushReplacement(context: context, screen: OnBoardingScreen());
     }
   }

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/features/onboarding/presentation/views/onboarding_subscription_screen.dart';
+import 'package:bargainb/providers/subscription_provider.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/button.dart';
@@ -288,6 +289,7 @@ How to Cancel: To cancel, simply go to your Google Play account settings, naviga
       }
     }
     if (hasPurchased) {
+      SubscriptionProvider.get(context).changeSubscriptionStatus(hasPurchased);
       TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Confirm and buy Subscription",
           DateTime.now().toUtc().toString(), "Confirm Subscription Screen");
     }

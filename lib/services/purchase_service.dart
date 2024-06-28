@@ -17,9 +17,9 @@ class PurchaseApi{
   static Future init() async{
     var apiKey = Platform.isIOS ? 'appl_HUpmOoVSBSzFEjDWMemOoWSxdBq' : 'goog_TKFhZiVZKEYVhHGVqldnltUOYyJ';
     try {
-      await Purchases.configure(PurchasesConfiguration(apiKey)
-        ..appUserID = FirebaseAuth.instance.currentUser!.uid);
-      print("USER ID: ${FirebaseAuth.instance.currentUser!.uid}");
+      await Purchases.configure(PurchasesConfiguration(apiKey));
+        // ..appUserID = FirebaseAuth.instance.currentUser!.uid);
+      // print("USER ID: ${FirebaseAuth.instance.currentUser!.uid}");
     }catch(e){
       debugPrint("ISSUE WITH INIT PURCHASE API: $e");
       await Purchases.configure(PurchasesConfiguration(apiKey));
@@ -28,7 +28,7 @@ class PurchaseApi{
   }
 
   static Future<List<Offering>> fetchOffers() async {
-    await init();
+    // await init();
     try {
       final offerings = await Purchases.getOfferings();
       final current = offerings.current;
@@ -65,7 +65,8 @@ class PurchaseApi{
 
   static Future<bool> purchasePackage(Package package) async {
     try {
-      await Purchases.purchasePackage(package);
+      CustomerInfo customerInfo = await Purchases.purchasePackage(package);
+      log(customerInfo.toString());
       await checkSubscriptionStatus();
       return true;
     }catch(e){
