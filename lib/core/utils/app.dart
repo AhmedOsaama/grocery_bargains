@@ -2,6 +2,7 @@
 import 'package:bargainb/core/utils/service_locators.dart';
 import 'package:bargainb/features/onboarding/presentation/views/confirm_subscription_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/customize_experience_screen.dart';
+import 'package:bargainb/features/onboarding/presentation/views/onboarding_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/onboarding_subscription_screen.dart';
 import 'package:bargainb/features/profile/data/repos/profile_repo_impl.dart';
 import 'package:bargainb/features/profile/presentation/manager/user_provider.dart';

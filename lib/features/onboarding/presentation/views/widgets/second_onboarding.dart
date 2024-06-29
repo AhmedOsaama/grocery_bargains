@@ -43,6 +43,7 @@ class _SecondOnboardingState extends State<SecondOnboarding> {
     "Lidl": lidle_store,
     "Aldi": aldi,
   };
+  late String botMessage;
 
   @override
   void initState() {
@@ -55,8 +56,8 @@ class _SecondOnboardingState extends State<SecondOnboarding> {
   @override
   void didChangeDependencies() {
     print(context.locale.languageCode);
-    // botFuture = BotService(Dio()).post(message: context.locale.languageCode == "en" ? '@BB show me the top deals from $_selectedStore'
-    // : "@BB laat me de beste deals van $_selectedStore zien");
+    botMessage = context.locale.languageCode == "en" ? '@BB show me the top deals from $_selectedStore'
+        : "@BB laat me de beste deals van $_selectedStore zien";
     super.didChangeDependencies();
   }
 
@@ -68,8 +69,6 @@ class _SecondOnboardingState extends State<SecondOnboarding> {
 
   @override
   Widget build(BuildContext context) {
-    var botMessage = context.locale.languageCode == "en" ? '@BB show me the top deals from $_selectedStore'
-    : "@BB laat me de beste deals van $_selectedStore zien";
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: Column(
@@ -105,8 +104,10 @@ class _SecondOnboardingState extends State<SecondOnboarding> {
                 onTap: () async {
                   setState(() {
                     _selectedStore = entry.key;
-                  botFuture = BotService(Dio()).post(message: botMessage);
+                    botMessage = context.locale.languageCode == "en" ? '@BB show me the top deals from $_selectedStore'
+                        : "@BB laat me de beste deals van $_selectedStore zien";
                   });
+                  botFuture = BotService(Dio()).post(message: botMessage);
                   Provider.of<UserProvider>(context, listen: false).setOnboardingStore(_selectedStore);
                   botFuture.whenComplete(() => playSound());
                   userMessageFuture.whenComplete(() => playSound());

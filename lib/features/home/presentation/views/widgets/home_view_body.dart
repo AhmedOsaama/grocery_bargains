@@ -28,7 +28,12 @@ class HomeViewBody extends StatefulWidget {
   final bool showFAB;
   final Function(bool) updateFAB;
   final BuildContext showcaseContext;
-  const HomeViewBody({Key? key, required this.scrollController, required this.showFAB, required this.updateFAB, required this.showcaseContext})
+  const HomeViewBody(
+      {Key? key,
+      required this.scrollController,
+      required this.showFAB,
+      required this.updateFAB,
+      required this.showcaseContext})
       : super(key: key);
 
   @override
@@ -58,51 +63,49 @@ class _HomeViewBodyState extends State<HomeViewBody> {
   @override
   void didChangeDependencies() {
     // log("Tracking app start language: ${context.locale.languageCode}");
-    TrackingUtils()
-        .trackAppStartLanguage(DateTime.now().toUtc().toString(), context.locale.languageCode);
+    TrackingUtils().trackAppStartLanguage(DateTime.now().toUtc().toString(), context.locale.languageCode);
     super.didChangeDependencies();
   }
 
-
   @override
   Widget build(BuildContext context) {
-        return SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10.w),
-            child: CustomScrollView(
-              controller: widget.scrollController,
-              slivers: [
-                SliverToBoxAdapter(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 15.h,
-                    ),
-                    SearchShowcase(showcaseContext: widget.showcaseContext),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    const CategoriesRow(),
-                    const CategoriesList(),
-                    const NewChatlistWidget(),
-                    SizedBox(
-                      height: 10.h,
-                    ),
-                    const LatestBargainsRow(),
-                  ],
-                )),
-                const LatestBargainsList(),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SeeMoreButton(),
-                  ),
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10.w),
+        child: CustomScrollView(
+          controller: widget.scrollController,
+          slivers: [
+            SliverToBoxAdapter(
+                child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 15.h,
                 ),
+                SearchShowcase(showcaseContext: widget.showcaseContext),
+                SizedBox(
+                  height: 10.h,
+                ),
+                const CategoriesRow(),
+                const CategoriesList(),
+                const NewChatlistWidget(),
+                SizedBox(
+                  height: 10.h,
+                ),
+                const LatestBargainsRow(),
               ],
+            )),
+            const LatestBargainsList(),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: SeeMoreButton(),
+              ),
             ),
-          ),
-        );
+          ],
+        ),
+      ),
+    );
   }
 
   void addScrollListener() {
