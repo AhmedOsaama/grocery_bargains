@@ -223,6 +223,7 @@ How to Cancel: To cancel, simply go to your Google Play account settings, naviga
       }
     }
     if(hasPurchased) {
+      SubscriptionProvider.get(context).changeSubscriptionStatus(hasPurchased);
       trackSubscription();
       setState(() {
         this.selectedPlan = PurchaseApi.subscriptionPeriod;

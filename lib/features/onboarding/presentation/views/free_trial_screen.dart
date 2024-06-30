@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:bargainb/features/onboarding/presentation/views/onboarding_screen.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
@@ -9,6 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../../../../config/routes/app_navigator.dart';
 import '../../../../providers/tutorial_provider.dart';
@@ -121,10 +123,19 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
           SnackBar(content: Text("Couldn't fetch plans from Google or Apple store. Please try again later")));
     } else {
       final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
-      hasPurchased = await PurchaseApi.purchasePackage(packages[0]).catchError((e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Couldn't buy the monthly package")));
-        AppNavigator.pop(context: context);
-      });
+      if(Platform.isAndroid) {
+        var subscriptionOption = packages.first.storeProduct.subscriptionOptions!.firstWhere((option) =>
+        option.freePhase != null);
+        hasPurchased = await PurchaseApi.purchaseSubscriptionOption(subscriptionOption).catchError((e) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Couldn't buy the monthly offer package")));
+          AppNavigator.pop(context: context);
+        });
+      }else{
+        hasPurchased = await PurchaseApi.purchasePackage(packages[0]).catchError((e) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Couldn't buy the monthly package")));
+          AppNavigator.pop(context: context);
+        });
+      }
     }
     if (hasPurchased) {
       trackSubscription();

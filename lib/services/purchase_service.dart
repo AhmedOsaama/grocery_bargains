@@ -75,6 +75,18 @@ class PurchaseApi{
     }
   }
 
+  static Future<bool> purchaseSubscriptionOption(SubscriptionOption subscriptionOption) async {
+    try {
+      CustomerInfo customerInfo = await Purchases.purchaseSubscriptionOption(subscriptionOption);
+      log(customerInfo.toString());
+      await checkSubscriptionStatus();
+      return true;
+    }catch(e){
+      print("Error in purchasing: $e");
+      return false;
+    }
+  }
+
   static String getSubscriptionPriceString(StoreProduct product) {
     return product.priceString;
   }

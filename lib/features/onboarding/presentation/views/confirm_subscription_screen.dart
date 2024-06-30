@@ -20,6 +20,7 @@ import 'package:bargainb/features/profile/presentation/views/profile_screen.dart
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/models/offering_wrapper.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../../../../generated/locale_keys.g.dart';
 import '../../../../providers/user_provider.dart';
@@ -199,7 +200,6 @@ class _ConfirmSubscriptionScreenState extends State<ConfirmSubscriptionScreen> {
                               var hasPurchased =
                                   await initiateSubscription(context, userProvider.onboardingSubscriptionPlan);
                               if (hasPurchased) {
-                                // print("Has purchased");
                                 trackSubscription(userProvider);
                                 await AppNavigator.pushReplacement(context: context, screen: CustomizeExperienceScreen());
                                 // AppNavigator.pushReplacement(context: context, screen: MainScreen());
