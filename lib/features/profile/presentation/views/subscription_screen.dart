@@ -15,7 +15,7 @@ import '../../../../generated/locale_keys.g.dart';
 import '../../../../providers/subscription_provider.dart';
 import '../../../../utils/tracking_utils.dart';
 import '../../../../view/screens/support_screen.dart';
-import '../../../onboarding/presentation/views/onboarding_subscription_screen.dart';
+import '../../../onboarding/presentation/views/widgets/plan_container.dart';
 
 class SubscriptionScreen extends StatefulWidget {
   SubscriptionScreen({Key? key}) : super(key: key);

@@ -1,10 +1,10 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:bargainb/features/onboarding/presentation/views/onboarding_screen.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:bargainb/providers/subscription_provider.dart';
 import 'package:bargainb/utils/style_utils.dart';
+import 'package:bargainb/view/screens/main_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -140,7 +140,7 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
     if (hasPurchased) {
       trackSubscription();
       SubscriptionProvider.get(context).changeSubscriptionStatus(hasPurchased);
-      AppNavigator.pushReplacement(context: context, screen: OnBoardingScreen());
+      AppNavigator.pushReplacement(context: context, screen: MainScreen());
     }
   }
 

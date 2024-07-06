@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
-import 'package:bargainb/features/onboarding/presentation/views/onboarding_screen.dart';
+import 'package:bargainb/core/utils/app_tracking_utils.dart';
+import 'package:bargainb/features/onboarding/presentation/views/personalize_ai_screen.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
+import 'package:bargainb/features/registration/presentation/views/register_screen.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/button.dart';
@@ -15,7 +17,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../utils/app_colors.dart';
 import '../../../../utils/tracking_utils.dart';
-import 'survey_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -165,9 +166,10 @@ Easy Cancellation: Cancel anytime before the trial ends at no cost."""
                                         borderRadius: BorderRadius.circular(10),
                                         color: brightOrange,
                                         height: 60,
-                                        onPressed: () {
-                                          AppNavigator.push(context: context, screen: const SurveyScreen());
-                                          TrackingUtils().trackSurveyStarted("Guest", DateTime.now().toUtc().toString(), "Welcome Screen");
+                                        onPressed: () async {
+                                          await AppTrackingUtils.showAppTrackingDialog();
+                                          AppNavigator.push(context: context, screen: RegisterScreen(isLogin: false));
+                                          TrackingUtils().trackButtonClick("Guest", "Yes, free month trial", DateTime.now().toUtc().toString(), "Welcome Screen");
                                         },
                                         child: Text(
                                           "Yes, FREE one-month trial of BargainB ".tr(),
@@ -182,8 +184,8 @@ Easy Cancellation: Cancel anytime before the trial ends at no cost."""
                                         height: 60,
                                         borderColor: const Color(0xFFEBEBEB),
                                         onPressed: () {
-                                          AppNavigator.push(context: context, screen: const OnBoardingScreen());
-                                          TrackingUtils().trackSurveySkipped("Guest", DateTime.now().toUtc().toString(), "Welcome Screen");
+                                          AppNavigator.push(context: context, screen: const PersonalizeAIScreen());
+                                          TrackingUtils().trackButtonClick("Guest","No I don't want a free trial", DateTime.now().toUtc().toString(), "Welcome Screen");
                                         },
                                         child: Text(
                                           "Nope, I don’t want a free trial".tr(),

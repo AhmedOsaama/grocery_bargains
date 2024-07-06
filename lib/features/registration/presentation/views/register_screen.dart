@@ -47,6 +47,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 15.w),
         // padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -56,10 +60,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  height: 100.h,
-                ),
-                if (isLogin) Center(child: SvgPicture.asset(bargainbIcon)),
+                Center(child: SvgPicture.asset(bargainbIcon)),
                 30.ph,
                 Center(
                   child: Text(

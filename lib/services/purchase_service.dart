@@ -17,11 +17,11 @@ class PurchaseApi{
   static Future init() async{
     var apiKey = Platform.isIOS ? 'appl_HUpmOoVSBSzFEjDWMemOoWSxdBq' : 'goog_TKFhZiVZKEYVhHGVqldnltUOYyJ';
     try {
-      await Purchases.configure(PurchasesConfiguration(apiKey));
-        // ..appUserID = FirebaseAuth.instance.currentUser!.uid);
+      await Purchases.configure(PurchasesConfiguration(apiKey)
+        ..appUserID = FirebaseAuth.instance.currentUser!.uid);
       // print("USER ID: ${FirebaseAuth.instance.currentUser!.uid}");
     }catch(e){
-      debugPrint("ISSUE WITH INIT PURCHASE API: $e");
+      debugPrint("ISSUE WITH INIT PURCHASE API: current user is null");
       await Purchases.configure(PurchasesConfiguration(apiKey));
     }
     // await checkSubscriptionStatus();

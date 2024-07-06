@@ -1,4 +1,3 @@
-import 'package:bargainb/features/onboarding/presentation/views/confirm_subscription_screen.dart';
 import 'package:bargainb/features/profile/presentation/views/subscription_screen.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/view/screens/main_screen.dart';

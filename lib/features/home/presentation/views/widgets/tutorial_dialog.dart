@@ -32,7 +32,7 @@ class TutorialDialog extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.all(15),
         width: ScreenUtil().screenWidth * 0.95,
-        height: 200.h,
+        height: 250.h,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8.r),
           color: purple70,

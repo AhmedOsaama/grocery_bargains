@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:bargainb/features/onboarding/presentation/views/confirm_subscription_screen.dart';
 import 'package:bargainb/features/profile/data/models/User.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:bargainb/features/profile/presentation/views/subscription_screen.dart';

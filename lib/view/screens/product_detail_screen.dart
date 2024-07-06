@@ -306,74 +306,72 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 targetBorderRadius: BorderRadius.circular(10),
                                 key: tutorialProvider.isTutorialRunning && index == 0
                                     ? TooltipKeys.showCase4
-                                    : new GlobalKey<State<StatefulWidget>>(),
+                                    : GlobalKey<State<StatefulWidget>>(),
                                 tooltipPosition: TooltipPosition.bottom,
-                                container: Container(
-                                  child: Column(
-                                    children: [
-                                      Container(
-                                        height: 11,
-                                        width: 13,
-                                        child: CustomPaint(
-                                          painter: TrianglePainter(
-                                            strokeColor: purple70,
-                                            strokeWidth: 1,
-                                            paintingStyle: PaintingStyle.fill,
-                                          ),
+                                container: Column(
+                                  children: [
+                                    Container(
+                                      height: 11,
+                                      width: 13,
+                                      child: CustomPaint(
+                                        painter: TrianglePainter(
+                                          strokeColor: purple70,
+                                          strokeWidth: 1,
+                                          paintingStyle: PaintingStyle.fill,
                                         ),
                                       ),
-                                      Container(
-                                        padding: EdgeInsets.all(15),
-                                        width: 210.w,
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(8.r),
-                                          color: purple70,
-                                        ),
-                                        child: Column(children: [
-                                          Text(
-                                            " View all the available prices, add to your list, and streamline your shopping experience".tr(),
-                                            style: TextStyles.textViewRegular16.copyWith(color: white),
-                                          ),
-                                          GestureDetector(
-                                            onTap: () async {
-                                              if(FirebaseAuth.instance.currentUser != null && SubscriptionProvider.get(context).isSubscribed) {
-                                                ShowCaseWidget.of(ctx).dismiss();
-                                                var id = await Provider.of<ChatlistsProvider>(context, listen: false)
-                                                    .createChatList([]);
-                                                await pushNewScreen(context,
-                                                    screen: ChatListViewScreen(
-                                                      listId: id,
-                                                    ),
-                                                    withNavBar: false);
-                                                NavigatorController.jumpToTab(1);
-                                                ShowCaseWidget.of(ctx).next();
-                                              }else{
-                                                tutorialProvider.stopTutorial(context);
-                                                AppNavigator.pop(context: context);
-                                                NavigatorController.jumpToTab(0);
-                                              }
-                                            },
-                                            child: Row(
-                                              // mainAxisAlignment: MainAxisAlignment.end,
-                                              children: [
-                                                SkipTutorialButton(tutorialProvider: tutorialProvider, context: ctx),
-                                                Spacer(),
-                                                Text(
-                                                  "Next".tr(),
-                                                  style: TextStyles.textViewSemiBold14.copyWith(color: white),
-                                                ),
-                                                Icon(
-                                                  Icons.arrow_forward_ios,
-                                                  color: white,
-                                                  size: 15.sp,
-                                                )
-                                              ],
-                                            ),
-                                          )
-                                        ]),
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.all(15),
+                                      width: 250.w,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8.r),
+                                        color: purple70,
                                       ),
-                                    ],
-                                  ),
+                                      child: Column(children: [
+                                        Text(
+                                          " View all the available prices, add to your list, and streamline your shopping experience".tr(),
+                                          style: TextStyles.textViewRegular16.copyWith(color: white),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            if(FirebaseAuth.instance.currentUser != null && SubscriptionProvider.get(context).isSubscribed) {
+                                              ShowCaseWidget.of(ctx).dismiss();
+                                              var id = await Provider.of<ChatlistsProvider>(context, listen: false)
+                                                  .createChatList([]);
+                                              await pushNewScreen(context,
+                                                  screen: ChatListViewScreen(
+                                                    listId: id,
+                                                  ),
+                                                  withNavBar: false);
+                                              NavigatorController.jumpToTab(1);
+                                              ShowCaseWidget.of(ctx).next();
+                                            }else{
+                                              tutorialProvider.stopTutorial(context);
+                                              AppNavigator.pop(context: context);
+                                              NavigatorController.jumpToTab(0);
+                                            }
+                                          },
+                                          child: Row(
+                                            // mainAxisAlignment: MainAxisAlignment.end,
+                                            children: [
+                                              SkipTutorialButton(tutorialProvider: tutorialProvider, context: ctx),
+                                              Spacer(),
+                                              Text(
+                                                "Next".tr(),
+                                                style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                                              ),
+                                              Icon(
+                                                Icons.arrow_forward_ios,
+                                                color: white,
+                                                size: 15.sp,
+                                              )
+                                            ],
+                                          ),
+                                        )
+                                      ]),
+                                    ),
+                                  ],
                                 ),
                                 height: 50,
                                 width: 50,

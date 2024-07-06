@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:bargainb/features/onboarding/presentation/views/free_trial_screen.dart';
 import 'package:bargainb/features/registration/data/repos/register_repo.dart';
 import 'package:bargainb/models/bargainb_user.dart';
 import 'package:bargainb/view/screens/main_screen.dart';
@@ -18,12 +19,11 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../../../../config/routes/app_navigator.dart';
 import '../../../../providers/google_sign_in_provider.dart';
 import '../../../../providers/subscription_provider.dart';
+import '../../../../providers/tutorial_provider.dart';
 import '../../../../providers/user_provider.dart';
 import '../../../../services/purchase_service.dart';
 import '../../../../utils/tracking_utils.dart';
 import '../../../../view/widgets/otp_dialog.dart';
-import '../../../onboarding/presentation/views/confirm_subscription_screen.dart';
-import '../../../onboarding/presentation/views/customize_experience_screen.dart';
 
 class RegisterRepoImpl implements RegisterRepo {
 
@@ -122,19 +122,8 @@ class RegisterRepoImpl implements RegisterRepo {
 
   @override
   Future<void> goToNextScreen(BuildContext context) async {
-    // log(FirebaseAuth.instance.currentUser!.uid.toString());
-   // var loginResult = await Purchases.logIn(FirebaseAuth.instance.currentUser!.uid);
-    await SubscriptionProvider.get(context).initSubscription();
-    if (!SubscriptionProvider.get(context).isSubscribed) {
-      await AppNavigator.pushReplacement(context: context, screen: ConfirmSubscriptionScreen());
-    } else {
-      var isHubspotContact = await Provider.of<UserProvider>(context,listen: false).getHubSpotStatus();
-      if(!isHubspotContact) {
-        AppNavigator.pushReplacement(context: context, screen: CustomizeExperienceScreen());
-      }else{
-        AppNavigator.pushReplacement(context: context, screen: const MainScreen());
-      }
-    }
+    Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
+    AppNavigator.pushReplacement(context: context, screen: const FreeTrialScreen());
   }
 
   @override

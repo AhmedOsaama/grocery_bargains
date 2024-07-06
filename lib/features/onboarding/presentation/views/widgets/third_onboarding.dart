@@ -119,14 +119,7 @@ class _ThirdOnboardingState extends State<ThirdOnboarding> {
     if (appTrackingStatus == TrackingStatus.notDetermined) {
       appTrackingStatus = await AppTrackingTransparency.requestTrackingAuthorization();
     }
-    log(appTrackingStatus.name);
-    print(appTrackingStatus.name);
-    // if(appTrackingStatus == TrackingStatus.authorized || appTrackingStatus == TrackingStatus.notSupported) {
       widget.goToNextPage();
       return;
-    // }
-    // if (appTrackingStatus == TrackingStatus.denied) {
-    //   exit(1);
-    // }
   }
 }
