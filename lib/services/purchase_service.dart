@@ -87,6 +87,18 @@ class PurchaseApi{
     }
   }
 
+  static Future<bool> purchaseDiscountedPackage(Package package, PromotionalOffer offer) async {
+    try {
+      CustomerInfo customerInfo = await Purchases.purchaseDiscountedPackage(package, offer);
+      log(customerInfo.toString());
+      await checkSubscriptionStatus();
+      return true;
+    }catch(e){
+      print("Error in purchasing: $e");
+      return false;
+    }
+  }
+
   static String getSubscriptionPriceString(StoreProduct product) {
     return product.priceString;
   }

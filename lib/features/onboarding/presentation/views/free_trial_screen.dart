@@ -127,12 +127,15 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
         var subscriptionOption = packages.first.storeProduct.subscriptionOptions!.firstWhere((option) =>
         option.freePhase != null);
         hasPurchased = await PurchaseApi.purchaseSubscriptionOption(subscriptionOption).catchError((e) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Couldn't buy the monthly offer package")));
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Couldn't buy the monthly offer package android")));
           AppNavigator.pop(context: context);
         });
-      }else{
-        hasPurchased = await PurchaseApi.purchasePackage(packages[0]).catchError((e) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Couldn't buy the monthly package")));
+      }else if(Platform.isIOS){
+        var product = packages[0].storeProduct;
+        var discount = product.discounts![0];
+        var promotionalObject = await Purchases.getPromotionalOffer(product, discount);
+        hasPurchased = await PurchaseApi.purchaseDiscountedPackage(packages[0], promotionalObject).catchError((e) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Couldn't buy the free month trial ios")));
           AppNavigator.pop(context: context);
         });
       }

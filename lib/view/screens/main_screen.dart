@@ -69,7 +69,6 @@ class _MainScreenState extends State<MainScreen> {
       'token': deviceToken,
       'timestamp': Timestamp.now(),
     });
-    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Added device token")));
   }
 
   @override
