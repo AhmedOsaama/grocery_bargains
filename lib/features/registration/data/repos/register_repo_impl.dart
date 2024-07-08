@@ -122,7 +122,6 @@ class RegisterRepoImpl implements RegisterRepo {
 
   @override
   Future<void> goToNextScreen(BuildContext context) async {
-    Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
     AppNavigator.pushReplacement(context: context, screen: const FreeTrialScreen());
   }
 

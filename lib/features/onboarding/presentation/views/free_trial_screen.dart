@@ -143,6 +143,7 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
     if (hasPurchased) {
       trackSubscription();
       SubscriptionProvider.get(context).changeSubscriptionStatus(hasPurchased);
+      Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
       AppNavigator.pushReplacement(context: context, screen: MainScreen());
     }
   }

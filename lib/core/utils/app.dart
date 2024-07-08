@@ -93,8 +93,8 @@ class _MyAppState extends State<MyApp> {
                       if (widget.notificationMessage != null) {
                         return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
                       }
-                      return const WelcomeScreen();
-                      // return const MainScreen();
+                      // return const WelcomeScreen();
+                      return const MainScreen();
                     }
                     return widget.isFirstTime ?
                     const WelcomeScreen() : const MainScreen();
