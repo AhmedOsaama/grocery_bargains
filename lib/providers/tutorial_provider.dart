@@ -1,6 +1,8 @@
 import 'dart:developer';
 
+import 'package:bargainb/providers/user_provider.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';
 
@@ -29,7 +31,7 @@ class TutorialProvider with ChangeNotifier {
 
   Future<void> activateWelcomeTutorial() async {
     var pref = await SharedPreferences.getInstance();
-    var hasSeenTutorial = pref.getBool("hasSeenTutorial") ?? false;
+    var hasSeenTutorial = pref.getBool(hasSeenTutorialPrefKey) ?? false;
     if (!hasSeenTutorial) {
       canShowWelcomeDialog = true;
       notifyListeners();
@@ -42,6 +44,7 @@ class TutorialProvider with ChangeNotifier {
       showTutorialConfetti();
       notifyListeners();
       setTutorialStatus(true);
+      Provider.of<UserProvider>(context,listen: false).turnOffFirstTime();
   }
 
   ///checks whether tutorial was shown to user or not

@@ -68,9 +68,9 @@ class _HomeViewState extends State<HomeView> {
     if (tutorialProvider.canShowWelcomeDialog) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showWelcomeDialog(context, builder);
-        setState(() {
+        // setState(() {
           tutorialProvider.canShowWelcomeDialog = false;
-        });
+        // });
         startTutorialStopwatch(context);
       });
     }
