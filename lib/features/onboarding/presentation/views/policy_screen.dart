@@ -2,7 +2,7 @@ import 'package:bargainb/features/onboarding/presentation/views/terms_of_service
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/style_utils.dart';
-import 'package:bargainb/view/screens/support_screen.dart';
+import 'package:bargainb/features/profile/presentation/views/support_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 

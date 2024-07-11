@@ -40,12 +40,7 @@ dependencies:
   sign_in_with_apple: ^4.3.0
   intl: ^0.18.1
   flutter_svg: ^2.0.9
-  firebase_core: ^2.4.0
-  cloud_firestore: ^4.2.0
-  firebase_auth: ^4.2.1
   image_picker: ^0.8.6
-  firebase_storage: ^11.0.9
-  firebase_dynamic_links: ^5.0.10
   share_plus: ^6.0.0
   easy_localization: ^3.0.1
   flutter_automation: ^2.0.0
@@ -55,11 +50,9 @@ dependencies:
   dots_indicator: ^2.1.0
   http: ^0.13.5
   dotted_border: ^2.0.0+3
-  firebase_messaging: ^14.3.0
   flutter_branch_sdk: ^6.6.0
   flutter_contacts: ^1.1.6
   intl_phone_field: ^3.1.0
-  firebase_app_check: ^0.1.1+14
   pinput: ^2.2.31
   mixpanel_flutter: ^2.1.1
   app_tracking_transparency: ^2.0.3
@@ -88,7 +81,12 @@ dependencies:
   flutter_native_splash: ^2.2.19
   get_it: ^7.6.0
   sentry_flutter: ^8.1.0
-  firebase_analytics: ^10.5.1
+  firebase_auth: ^5.1.2
+  firebase_analytics: ^11.2.0
+  firebase_storage: ^12.1.1
+  cloud_firestore: ^5.1.0
+  firebase_app_check: ^0.3.0+3
+  firebase_messaging: ^15.0.3
 
 
 

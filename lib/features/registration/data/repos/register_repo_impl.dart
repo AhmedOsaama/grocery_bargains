@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:bargainb/features/onboarding/presentation/views/free_trial_screen.dart';
 import 'package:bargainb/features/registration/data/repos/register_repo.dart';
 import 'package:bargainb/models/bargainb_user.dart';
-import 'package:bargainb/view/screens/main_screen.dart';
+import 'package:bargainb/features/home/presentation/views/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';

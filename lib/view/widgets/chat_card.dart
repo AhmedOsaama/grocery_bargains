@@ -17,7 +17,7 @@ import '../../utils/assets_manager.dart';
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
 import '../../utils/tracking_utils.dart';
-import '../screens/chatlist_view_screen.dart';
+import '../../features/chatlists/presentation/views/chatlist_view_screen.dart';
 
 class ChatCard extends StatelessWidget {
   final List<ChatList> allLists;

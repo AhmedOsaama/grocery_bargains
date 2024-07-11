@@ -1,39 +1,24 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/features/profile/data/models/User.dart';
-import 'package:bargainb/features/profile/data/repos/profile_repo_impl.dart';
 import 'package:bargainb/features/profile/presentation/views/widgets/profile_settings_widget.dart';
 import 'package:bargainb/features/profile/presentation/views/widgets/user_image_widget.dart';
 import 'package:bargainb/features/registration/presentation/views/register_screen.dart';
-import 'package:bargainb/providers/google_sign_in_provider.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
-import 'package:bargainb/view/screens/register_screen.dart';
-import 'package:bargainb/view/screens/support_screen.dart';
 import 'package:bargainb/view/widgets/otp_dialog.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
-import 'package:bargainb/utils/app_colors.dart';
-import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../providers/tutorial_provider.dart';
 import '../../../../utils/assets_manager.dart';
-import '../../../../view/widgets/image_source_picker_dialog.dart';
 import '../manager/user_provider.dart';
 
 class ProfileScreen extends StatefulWidget {

@@ -1,15 +1,5 @@
-import 'dart:convert';
 
-import 'package:bargainb/config/routes/app_navigator.dart';
-import 'package:bargainb/models/chatlist.dart';
-import 'package:bargainb/features/home/data/models/product.dart';
-import 'package:bargainb/models/user_info.dart';
 import 'package:bargainb/providers/products_provider.dart';
-import 'package:bargainb/services/network_services.dart';
-import 'package:bargainb/view/screens/contact_profile_screen.dart';
-import 'package:bargainb/view/screens/main_screen.dart';
-import 'package:bargainb/view/screens/product_detail_screen.dart';
-import 'package:bargainb/view/widgets/chat_search_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -17,11 +7,9 @@ import 'package:bargainb/utils/app_colors.dart';
 
 import 'package:bargainb/utils/icons_manager.dart';
 import 'package:bargainb/utils/style_utils.dart';
-import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:bargainb/view/widgets/product_item.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/list_item.dart';
 import '../../providers/chatlists_provider.dart';
 
 class MessageBubble extends StatefulWidget {

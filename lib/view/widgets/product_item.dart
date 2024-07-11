@@ -1,11 +1,8 @@
-import 'package:bargainb/utils/assets_manager.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:bargainb/providers/products_provider.dart';
-import 'package:bargainb/view/components/plus_button.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 
 import '../../utils/app_colors.dart';

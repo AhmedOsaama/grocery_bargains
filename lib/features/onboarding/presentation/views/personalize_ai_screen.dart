@@ -4,7 +4,7 @@ import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/core/utils/app_tracking_utils.dart';
 import 'package:bargainb/providers/tutorial_provider.dart';
-import 'package:bargainb/view/screens/main_screen.dart';
+import 'package:bargainb/features/home/presentation/views/main_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';

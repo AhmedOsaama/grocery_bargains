@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>482980918038-lpplqbj7s1rn3ugms25src4rmbnprb0q.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.482980918038-lpplqbj7s1rn3ugms25src4rmbnprb0q</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>482980918038-6v3quvl1e3gc5kr5hfrui7qlgv7a73ag.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAmfeB192or9_pazHBplSp8a9z5k6elO0w</string>
+	<key>GCM_SENDER_ID</key>
+	<string>482980918038</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>thebargainb.app</string>
+	<key>PROJECT_ID</key>
+	<string>discountly</string>
+	<key>STORAGE_BUCKET</key>
+	<string>discountly.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:482980918038:ios:fa10c1a6b5719271155637</string>
+	<key>DATABASE_URL</key>
+	<string>https://discountly-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

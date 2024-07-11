@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -12,23 +13,21 @@ class PurchaseApi{
 
   static var subscriptionPeriod = "None";
   static var subscriptionPrice = "None";
-  // static bool isSubscribed = true;
 
   static Future init() async{
-    var apiKey = Platform.isIOS ? 'appl_HUpmOoVSBSzFEjDWMemOoWSxdBq' : 'goog_TKFhZiVZKEYVhHGVqldnltUOYyJ';
-    try {
-      await Purchases.configure(PurchasesConfiguration(apiKey)
-        ..appUserID = FirebaseAuth.instance.currentUser!.uid);
-      // print("USER ID: ${FirebaseAuth.instance.currentUser!.uid}");
-    }catch(e){
-      debugPrint("ISSUE WITH INIT PURCHASE API: current user is null");
-      await Purchases.configure(PurchasesConfiguration(apiKey));
+    if(!kIsWeb) {
+      var apiKey = Platform.isIOS ? 'appl_HUpmOoVSBSzFEjDWMemOoWSxdBq' : 'goog_TKFhZiVZKEYVhHGVqldnltUOYyJ';
+      try {
+        await Purchases.configure(PurchasesConfiguration(apiKey)
+          ..appUserID = FirebaseAuth.instance.currentUser!.uid);
+      } catch (e) {
+        debugPrint("ISSUE WITH INIT PURCHASE API: current user is null");
+        await Purchases.configure(PurchasesConfiguration(apiKey));
+      }
     }
-    // await checkSubscriptionStatus();
   }
 
   static Future<List<Offering>> fetchOffers() async {
-    // await init();
     try {
       final offerings = await Purchases.getOfferings();
       final current = offerings.current;

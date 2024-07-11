@@ -7,7 +7,7 @@ import '../../../../../config/routes/app_navigator.dart';
 import '../../../../../utils/app_colors.dart';
 import '../../../../../utils/style_utils.dart';
 import '../../../../../utils/tracking_utils.dart';
-import '../../../../../view/screens/latest_bargains_screen.dart';
+import '../latest_bargains_screen.dart';
 
 class LatestBargainsRow extends StatelessWidget {
   const LatestBargainsRow({Key? key}) : super(key: key);

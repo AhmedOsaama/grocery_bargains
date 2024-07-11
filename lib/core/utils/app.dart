@@ -1,10 +1,10 @@
-
 import 'package:bargainb/core/utils/service_locators.dart';
 import 'package:bargainb/features/profile/data/repos/profile_repo_impl.dart';
 import 'package:bargainb/features/profile/presentation/manager/user_provider.dart';
 import 'package:bargainb/providers/subscription_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,8 @@ import '../../providers/products_provider.dart';
 import '../../providers/suggestion_provider.dart';
 import '../../providers/tutorial_provider.dart';
 import '../../providers/user_provider.dart';
-import '../../view/screens/main_screen.dart';
+import '../../features/home/presentation/views/main_screen.dart';
+import '../../view/widgets/app_home_widget.dart';
 
 class MyApp extends StatefulWidget {
   final RemoteMessage? notificationMessage;
@@ -41,19 +42,11 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    final transaction = Sentry.startTransaction('main initstate', 'task');
-    try {
       getAllProductsFuture = Provider.of<ProductsProvider>(context, listen: false)
           .getAllProducts()
           .timeout(const Duration(seconds: 3), onTimeout: () {});
       authStateChangesStream = FirebaseAuth.instance.authStateChanges();
       initMixpanel();
-    } catch (exception) {
-      transaction.throwable = exception;
-      transaction.status = const SpanStatus.internalError();
-    } finally {
-      transaction.finish();
-    }
   }
 
   Future<void> initMixpanel() async {
@@ -65,41 +58,15 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(390, 844),
+      designSize: kIsWeb ? const Size(1920, 1079) : const Size(390, 844),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, _) => MaterialApp(
         title: 'BargainB',
-        theme: ThemeData(
-          canvasColor: Colors.white,
-          useMaterial3: false
-        ),
+        theme: ThemeData(canvasColor: Colors.white, useMaterial3: false),
         navigatorObservers: [SentryNavigatorObserver()],
         debugShowCheckedModeBanner: false,
-        home: FutureBuilder(
-            future: getAllProductsFuture,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const SplashWithProgressIndicator();
-              }
-              return StreamBuilder(
-                  stream: authStateChangesStream,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const SplashWithProgressIndicator();
-                    }
-                    if (snapshot.hasData) {
-                      //user opens app via notification
-                      if (widget.notificationMessage != null) {
-                        return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
-                      }
-                      // return const WelcomeScreen();
-                      if(!widget.isFirstTime) return const MainScreen();
-                    }
-                    return widget.isFirstTime ?
-                    const WelcomeScreen() : const MainScreen();
-                  });
-            }),
+        home: getHomeWidget(getAllProductsFuture: getAllProductsFuture, widget: widget),
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
@@ -108,9 +75,10 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+
 void initializeMyApp(RemoteMessage? notificationMessage, bool isFirstTime) {
   SentryFlutter.init(
-        (options) {
+    (options) {
       options.dsn = kReleaseMode
           ? 'https://9ac26c76cf0349d59d82538e91345ada@o4504179587940352.ingest.sentry.io/4504831610126336'
           : '';

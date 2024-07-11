@@ -13,8 +13,8 @@ import '../../../../../utils/style_utils.dart';
 import '../../../../../utils/tooltips_keys.dart';
 import '../../../../../utils/tracking_utils.dart';
 import '../../../../../utils/triangle_painter.dart';
-import '../../../../../view/components/search_widget.dart';
-import '../../../../../view/screens/product_detail_screen.dart';
+import '../../../../search/presentation/views/widgets/search_widget.dart';
+import '../product_detail_screen.dart';
 import '../../../data/models/product.dart';
 import 'skip_tutorial_button.dart';
 
@@ -80,7 +80,7 @@ class SearchShowcase extends StatelessWidget {
         ),
         height: 50,
         width: 50,
-        child: SearchWidget(isBackButton: false));
+        child: const SearchWidget(isBackButton: false));
   }
 
   Future<void> goToProductPageTutorial(BuildContext context, BuildContext builder) async {

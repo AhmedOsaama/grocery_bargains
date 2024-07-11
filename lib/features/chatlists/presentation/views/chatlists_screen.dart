@@ -1,7 +1,4 @@
-import 'package:bargainb/features/chatlists/presentation/views/widgets/sign_in_widget.dart';
 import 'package:bargainb/models/chatlist.dart';
-import 'package:bargainb/utils/assets_manager.dart';
-import 'package:bargainb/view/screens/register_screen.dart';
 import 'package:bargainb/view/widgets/chat_card.dart';
 import 'package:bargainb/view/widgets/create_list_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,7 +6,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:bargainb/generated/locale_keys.g.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
@@ -21,8 +17,6 @@ import 'package:bargainb/view/components/dotted_container.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 
 import '../../../../utils/tracking_utils.dart';
-import '../../../../view/components/search_widget.dart';
-import '../../../onboarding/presentation/views/widgets/onboarding_stepper.dart';
 
 class ChatlistsScreen extends StatefulWidget {
   const ChatlistsScreen({Key? key}) : super(key: key);

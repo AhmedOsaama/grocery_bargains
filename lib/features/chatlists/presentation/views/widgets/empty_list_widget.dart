@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../../../generated/locale_keys.g.dart';
 import '../../../../../utils/app_colors.dart';
 import '../../../../../utils/style_utils.dart';
-import '../../../../../view/widgets/chat_view_widget.dart';
+import 'chat_view_widget.dart';
 
 class EmptyListWidget extends StatelessWidget {
   const EmptyListWidget({

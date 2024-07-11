@@ -1,7 +1,6 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 
-import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
 
 class DottedContainer extends StatelessWidget {

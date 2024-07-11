@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -49,11 +43,23 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyCIyOylKW-Fa5TIm100tBO0hGn2LeEJTTE',
+    appId: '1:482980918038:web:3a4e1c306715b73d155637',
+    messagingSenderId: '482980918038',
+    projectId: 'discountly',
+    authDomain: 'discountly.firebaseapp.com',
+    databaseURL: 'https://discountly-default-rtdb.firebaseio.com',
+    storageBucket: 'discountly.appspot.com',
+    measurementId: 'G-JDQBVM2XQH',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDtPDcahINRujuuC2djvRiIU-QlaQCwJqQ',
     appId: '1:482980918038:android:4fa3cdb6195575d4155637',
     messagingSenderId: '482980918038',
     projectId: 'discountly',
+    databaseURL: 'https://discountly-default-rtdb.firebaseio.com',
     storageBucket: 'discountly.appspot.com',
   );
 
@@ -62,8 +68,21 @@ class DefaultFirebaseOptions {
     appId: '1:482980918038:ios:fa10c1a6b5719271155637',
     messagingSenderId: '482980918038',
     projectId: 'discountly',
+    databaseURL: 'https://discountly-default-rtdb.firebaseio.com',
     storageBucket: 'discountly.appspot.com',
-    androidClientId: '482980918038-bpafq0068sgf6vtemnbitrov3esm5d8p.apps.googleusercontent.com',
+    androidClientId: '482980918038-6v3quvl1e3gc5kr5hfrui7qlgv7a73ag.apps.googleusercontent.com',
+    iosClientId: '482980918038-lpplqbj7s1rn3ugms25src4rmbnprb0q.apps.googleusercontent.com',
+    iosBundleId: 'thebargainb.app',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyAmfeB192or9_pazHBplSp8a9z5k6elO0w',
+    appId: '1:482980918038:ios:fa10c1a6b5719271155637',
+    messagingSenderId: '482980918038',
+    projectId: 'discountly',
+    databaseURL: 'https://discountly-default-rtdb.firebaseio.com',
+    storageBucket: 'discountly.appspot.com',
+    androidClientId: '482980918038-6v3quvl1e3gc5kr5hfrui7qlgv7a73ag.apps.googleusercontent.com',
     iosClientId: '482980918038-lpplqbj7s1rn3ugms25src4rmbnprb0q.apps.googleusercontent.com',
     iosBundleId: 'thebargainb.app',
   );

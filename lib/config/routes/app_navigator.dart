@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../services/purchase_service.dart';
 import '../../utils/tracking_utils.dart';
-import '../../view/screens/main_screen.dart';
+import '../../features/home/presentation/views/main_screen.dart';
 import '../../view/widgets/signin_dialog.dart';
 import '../../view/widgets/subscribe_dialog.dart';
 

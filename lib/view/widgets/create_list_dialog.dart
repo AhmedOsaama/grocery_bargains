@@ -15,7 +15,7 @@ import '../../utils/style_utils.dart';
 import '../../utils/tracking_utils.dart';
 import '../components/button.dart';
 import '../components/generic_field.dart';
-import '../screens/chatlist_view_screen.dart';
+import '../../features/chatlists/presentation/views/chatlist_view_screen.dart';
 
 class CreateListDialog extends StatefulWidget {
   const CreateListDialog({Key? key}) : super(key: key);

@@ -18,7 +18,7 @@ import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
 import '../../utils/tracking_utils.dart';
 import '../components/close_button.dart';
-import '../screens/product_detail_screen.dart';
+import '../../features/home/presentation/views/product_detail_screen.dart';
 
 class ProductDialog extends StatefulWidget {
   String itemImage;

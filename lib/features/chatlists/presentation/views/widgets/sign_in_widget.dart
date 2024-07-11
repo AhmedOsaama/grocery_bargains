@@ -9,7 +9,6 @@ import '../../../../../utils/assets_manager.dart';
 import '../../../../../utils/style_utils.dart';
 import '../../../../../view/components/button.dart';
 import '../../../../../view/components/dotted_container.dart';
-import '../../../../../view/screens/register_screen.dart';
 
 class SignInWidget extends StatelessWidget {
   const SignInWidget({

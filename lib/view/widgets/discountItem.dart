@@ -22,7 +22,7 @@ import '../../providers/chatlists_provider.dart';
 import '../../providers/subscription_provider.dart';
 import '../../utils/style_utils.dart';
 import '../../utils/tracking_utils.dart';
-import '../screens/product_detail_screen.dart';
+import '../../features/home/presentation/views/product_detail_screen.dart';
 
 class DiscountItem extends StatelessWidget {
   final Product product;

@@ -2,8 +2,6 @@ import 'dart:developer';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/utils/empty_padding.dart';
-import 'package:bargainb/view/components/search_delegate.dart';
-import 'package:bargainb/view/screens/algolia_search_screen.dart';
 import 'package:bargainb/view/widgets/product_dialog.dart';
 import 'package:bargainb/view/widgets/size_container.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,6 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../features/search/presentation/views/algolia_search_screen.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
@@ -176,7 +175,7 @@ class _ChatlistItemState extends State<ChatlistItem> {
                               double parsedItemPrice = double.parse(itemPrice);
                               double discount = itemOldPrice != '' ? (parsedItemOldPrice - parsedItemPrice) : 0;
                               print("RECORDING PURCHASES");
-                              if (isChecked)
+                              if (isChecked) {
                                 FirebaseFirestore.instance
                                     .doc('/users/${FirebaseAuth.instance.currentUser!.uid}')
                                     .update({
@@ -193,6 +192,7 @@ class _ChatlistItemState extends State<ChatlistItem> {
                                 }).catchError((e) {
                                   print("Error: $e");
                                 });
+                              }
                               TrackingUtils().trackCheckBoxItemClicked(
                                   FirebaseAuth.instance.currentUser!.uid,
                                   DateTime.now().toUtc().toString(),

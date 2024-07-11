@@ -32,6 +32,7 @@ class GenericField extends StatefulWidget {
   final EdgeInsets? contentPadding;
   final bool? enabled;
   final AutovalidateMode? autoValidateMode;
+  final double? width;
 
   GenericField({
     super.key,
@@ -59,7 +60,7 @@ class GenericField extends StatefulWidget {
     this.boxShadow,
     this.enabled,
     this.autoValidateMode,
-    this.suffixConstraints, this.fillColor, this.contentPadding,
+    this.suffixConstraints, this.fillColor, this.contentPadding, this.width,
   });
 
   @override
@@ -70,6 +71,7 @@ class _GenericFieldState extends State<GenericField> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: widget.width,
       decoration: BoxDecoration(
           border: Border.all(color: widget.colorStyle),
           borderRadius: BorderRadius.circular(widget.borderRaduis),

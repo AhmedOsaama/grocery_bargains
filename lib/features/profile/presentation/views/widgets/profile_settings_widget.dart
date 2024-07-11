@@ -18,10 +18,9 @@ import '../../../../../providers/tutorial_provider.dart';
 import '../../../../../utils/app_colors.dart';
 import '../../../../../utils/icons_manager.dart';
 import '../../../../../utils/tracking_utils.dart';
-import '../../../../../view/screens/dummy_subscription_screen.dart';
-import '../../../../../view/screens/main_screen.dart';
-import '../../../../../view/screens/settings_screen.dart';
-import '../../../../../view/screens/support_screen.dart';
+import '../../../../home/presentation/views/main_screen.dart';
+import '../settings_screen.dart';
+import '../support_screen.dart';
 import '../../../../../view/widgets/setting_row.dart';
 
 class ProfileSettingsWidget extends StatelessWidget {
@@ -52,7 +51,7 @@ class ProfileSettingsWidget extends StatelessWidget {
             TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
                 "Open google/apple store rating page", DateTime.now().toUtc().toString(), "Profile screen");
           }),
-        Divider(),
+        const Divider(),
         SettingRow(
           icon: const Icon(
             Icons.person,
@@ -81,7 +80,7 @@ class ProfileSettingsWidget extends StatelessWidget {
         ),
         10.ph,
         SettingRow(
-          icon: Icon(
+          icon: const Icon(
             Icons.settings_outlined,
             color: mainPurple,
           ),
@@ -111,7 +110,7 @@ class ProfileSettingsWidget extends StatelessWidget {
             ),
             settingText: LocaleKeys.support.tr(),
             onTap: () {
-              pushNewScreen(context, screen: SupportScreen(), withNavBar: true);
+              pushNewScreen(context, screen: const SupportScreen(), withNavBar: true);
               TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
                   "Open Support screen", DateTime.now().toUtc().toString(), "Profile screen");
             }),

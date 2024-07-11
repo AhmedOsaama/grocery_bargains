@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "482980918038",
+    "firebase_url": "https://discountly-default-rtdb.firebaseio.com",
     "project_id": "discountly",
     "storage_bucket": "discountly.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "482980918038-6v3quvl1e3gc5kr5hfrui7qlgv7a73ag.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "thebargainb.app",
+            "certificate_hash": "ce898110a4f086be0bbfe189e7a61a8717dc0419"
+          }
+        },
         {
           "client_id": "482980918038-bpafq0068sgf6vtemnbitrov3esm5d8p.apps.googleusercontent.com",
           "client_type": 1,
@@ -38,6 +47,14 @@
           }
         },
         {
+          "client_id": "482980918038-ro62n8jupvsdpc44k58b6vksd81n014s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "thebargainb.app",
+            "certificate_hash": "e562ac115de3ec4487032df13326686cde7abcb4"
+          }
+        },
+        {
           "client_id": "482980918038-0fjaabbmejs3ean7hltoe7t5tsujc6v1.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -55,10 +72,10 @@
               "client_type": 3
             },
             {
-              "client_id": "482980918038-lpplqbj7s1rn3ugms25src4rmbnprb0q.apps.googleusercontent.com",
+              "client_id": "482980918038-3q7n9s54gq7dddcr971e77h8hr866g6l.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "thebargainb.app"
+                "bundle_id": "com.bargainb.app"
               }
             }
           ]

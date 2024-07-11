@@ -12,7 +12,7 @@ import '../../../../../utils/app_colors.dart';
 import '../../../../../utils/icons_manager.dart';
 import '../../../../../utils/style_utils.dart';
 import '../../../../../utils/tracking_utils.dart';
-import '../../../../../view/screens/category_screen.dart';
+import '../category_screen.dart';
 
 class CategoriesList extends StatefulWidget {
   const CategoriesList({Key? key}) : super(key: key);

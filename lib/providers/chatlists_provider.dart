@@ -13,10 +13,10 @@ import 'package:persistent_bottom_nav_bar_v2/persistent-tab-view.dart';
 import '../config/routes/app_navigator.dart';
 import '../generated/locale_keys.g.dart';
 import '../utils/assets_manager.dart';
-import '../view/screens/chatlist_view_screen.dart';
+import '../features/chatlists/presentation/views/chatlist_view_screen.dart';
 import '../features/chatlists/presentation/views/chatlists_screen.dart';
-import '../view/screens/main_screen.dart';
-import '../view/screens/product_detail_screen.dart';
+import '../features/home/presentation/views/main_screen.dart';
+import '../features/home/presentation/views/product_detail_screen.dart';
 import '../view/widgets/choose_list_dialog.dart';
 import '../view/widgets/signin_dialog.dart';
 

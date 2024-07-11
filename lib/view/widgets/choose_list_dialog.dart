@@ -1,6 +1,6 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
-import 'package:bargainb/view/screens/chatlist_view_screen.dart';
-import 'package:bargainb/view/screens/main_screen.dart';
+import 'package:bargainb/features/chatlists/presentation/views/chatlist_view_screen.dart';
+import 'package:bargainb/features/home/presentation/views/main_screen.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';

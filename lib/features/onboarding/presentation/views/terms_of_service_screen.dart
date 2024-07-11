@@ -11,7 +11,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../../utils/app_colors.dart';
 import '../../../../utils/style_utils.dart';
 import '../../../../utils/tracking_utils.dart';
-import '../../../../view/screens/support_screen.dart';
+import '../../../profile/presentation/views/support_screen.dart';
 
 class TermsOfServiceScreen extends StatefulWidget {
   const TermsOfServiceScreen({Key? key}) : super(key: key);

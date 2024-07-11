@@ -14,7 +14,6 @@ import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
 import '../../utils/tracking_utils.dart';
 import '../components/button.dart';
-import '../screens/register_screen.dart';
 
 class SigninDialog extends StatefulWidget {
   final String title;

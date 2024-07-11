@@ -15,7 +15,7 @@ import '../features/home/data/models/product.dart';
 import '../utils/assets_manager.dart';
 import '../utils/icons_manager.dart';
 import '../utils/tracking_utils.dart';
-import '../view/screens/product_detail_screen.dart';
+import '../features/home/presentation/views/product_detail_screen.dart';
 
 class ProductsProvider with ChangeNotifier {
   List<Product> deals = [];

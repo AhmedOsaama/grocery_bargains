@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../providers/products_provider.dart';
-import '../../../../../view/widgets/chat_view_widget.dart';
+import 'chat_view_widget.dart';
 import '../../../../../view/widgets/chatlist_item.dart';
 
 class ItemListWidget extends StatelessWidget {

@@ -21,7 +21,6 @@ import '../../providers/google_sign_in_provider.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
 import '../components/button.dart';
-import '../screens/register_screen.dart';
 import 'otp_dialog.dart';
 
 class ProfileDialog extends StatefulWidget {

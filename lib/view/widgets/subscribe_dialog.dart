@@ -1,6 +1,6 @@
 import 'package:bargainb/features/profile/presentation/views/subscription_screen.dart';
 import 'package:bargainb/utils/assets_manager.dart';
-import 'package:bargainb/view/screens/main_screen.dart';
+import 'package:bargainb/features/home/presentation/views/main_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,6 @@ import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
 import '../../utils/tracking_utils.dart';
 import '../components/button.dart';
-import '../screens/register_screen.dart';
 
 class SubscribeDialog extends StatefulWidget {
   final String title;
