@@ -14,21 +14,18 @@ class FormWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 427,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStylesInter.textViewMedium16
-                .copyWith(color: greyColor),
-            textAlign: TextAlign.center,
-          ),
-          10.ph,
-          textField
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStylesInter.textViewMedium16
+              .copyWith(color: greyColor),
+          textAlign: TextAlign.center,
+        ),
+        10.ph,
+        textField
+      ],
     );
   }
 }

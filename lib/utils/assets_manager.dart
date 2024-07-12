@@ -54,5 +54,6 @@ const String groceryGames = "$imgPath/grocery_games.png";
 const String groceryGamesDutch = "$imgPath/grocery_games_dutch.png";
 const String chats = "$imgPath/chats.png";
 const String chatsDutch = "$imgPath/chats_dutch.png";
+const String signupBg  = "$imgPath/signup_bg.png";
 
 
