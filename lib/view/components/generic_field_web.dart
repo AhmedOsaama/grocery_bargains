@@ -4,7 +4,7 @@ import 'package:bargainb/utils/style_utils.dart';
 
 import '../../utils/app_colors.dart';
 
-class GenericField extends StatefulWidget {
+class GenericFieldWeb extends StatefulWidget {
   final TextEditingController? controller;
   final String? Function(String?)? validation;
   final void Function(String)? onSubmitted;
@@ -25,16 +25,16 @@ class GenericField extends StatefulWidget {
   final int? maxLines;
   final bool? isFilled;
   final Color? fillColor;
-  final Color colorStyle;
+  final Color borderColor;
   final double borderRaduis;
-  final BoxShadow? boxShadow;
+  final List<BoxShadow>? boxShadow;
   final BoxConstraints? suffixConstraints;
   final EdgeInsets? contentPadding;
   final bool? enabled;
   final AutovalidateMode? autoValidateMode;
   final double? width;
 
-  GenericField({
+  GenericFieldWeb({
     super.key,
     this.onSaved,
     this.controller,
@@ -51,7 +51,7 @@ class GenericField extends StatefulWidget {
     this.isProfile = false,
     this.autoFocus = false,
     this.maxLines = 1,
-    this.colorStyle = lightGrey,
+    this.borderColor = lightGrey,
     this.borderRaduis = 10,
     this.obscureText = false,
     this.onChanged,
@@ -67,21 +67,14 @@ class GenericField extends StatefulWidget {
   });
 
   @override
-  State<GenericField> createState() => _GenericFieldState();
+  State<GenericFieldWeb> createState() => _GenericFieldWebState();
 }
 
-class _GenericFieldState extends State<GenericField> {
+class _GenericFieldWebState extends State<GenericFieldWeb> {
   @override
   Widget build(BuildContext context) {
     return Container(
       width: widget.width,
-      decoration: BoxDecoration(
-          border: Border.all(color: widget.colorStyle),
-          borderRadius: BorderRadius.circular(widget.borderRaduis),
-          boxShadow: [
-            widget.boxShadow ??
-                const BoxShadow(blurRadius: 62, offset: Offset(0, 4), color: Color.fromRGBO(153, 171, 198, 0.18))
-          ]),
       child: TextFormField(
         focusNode: widget.focusNode,
         autofocus: widget.autoFocus!,
@@ -117,21 +110,11 @@ class _GenericFieldState extends State<GenericField> {
               widget.hintStyle ?? TextStylesInter.textViewRegular12.copyWith(color: Color.fromRGBO(13, 1, 64, 0.6)),
           border: OutlineInputBorder(
               borderSide: BorderSide(
-                color: widget.isFilled == true ? Colors.transparent : widget.colorStyle,
-              ),
-              borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: widget.isFilled == true ? Colors.transparent : widget.colorStyle,
+                color: widget.borderColor,
               ),
               borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
           enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: widget.isFilled == true ? Colors.transparent : widget.colorStyle),
-              borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
-          errorBorder: OutlineInputBorder(
-              borderSide: const BorderSide(
-                color: primary,
-              ),
+              borderSide: BorderSide(color: widget.borderColor),
               borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
         ),
       ),

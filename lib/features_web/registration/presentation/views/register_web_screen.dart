@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:bargainb/features/registration/data/repos/register_repo_impl.dart';
 import 'package:bargainb/features/registration/presentation/views/widgets/form_widget.dart';
+import 'package:bargainb/features_web/registration/presentation/views/widgets/phone_field_web.dart';
 import 'package:bargainb/models/bargainb_user.dart';
 import 'package:bargainb/utils/empty_padding.dart';
+import 'package:bargainb/view/components/generic_field_web.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -48,17 +50,6 @@ class _RegisterWebScreenState extends State<RegisterWebScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        foregroundColor: greyColor,
-        actions: [
-          Text(
-            "STEP 01/02",
-            style: TextStylesInter.textViewMedium14.copyWith(color: greyColor),
-          )
-        ],
-      ),
       body: Center(
         child: Form(
           key: _formKey,
@@ -84,73 +75,42 @@ class _RegisterWebScreenState extends State<RegisterWebScreen> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  50.ph,
-                  if (!isLogin)
+                  40.ph,
+                  if (!isLogin)...[
                     FormWidget(
-                      title: LocaleKeys.fullName.tr(),
-                      textField: GenericField(
+                      title: "${LocaleKeys.fullName.tr()}*",
+                      textField: GenericFieldWeb(
                         hintText: "Brandone Louis",
+                        borderColor: const Color(0xffEBEBEB),
+                        borderRaduis: 6,
                         validation: (value) => Validator.text(value),
                         onSaved: (value) {
                           username = value!;
                         },
                       ),
                     ),
-                  25.ph,
-                  if (!isLogin)
+                    25.ph,
                     FormWidget(
-                      title: LocaleKeys.email.tr(),
-                      textField: GenericField(
+                      title: "${LocaleKeys.email.tr()}*",
+                      textField: GenericFieldWeb(
                         hintText: "Brandonelouis@gmail.com",
+                        borderColor: const Color(0xffEBEBEB),
+                        borderRaduis: 6,
                         validation: (value) => Validator.email(value),
                         onSaved: (value) {
                           email = value!;
                         },
                       ),
                     ),
+                  ],
                   25.ph,
                   FormWidget(
-                      title: "Phone Number",
-                      textField: Container(
-                        decoration: BoxDecoration(boxShadow: Utils.boxShadow),
-                        child: IntlPhoneField(
-                          disableLengthCheck: false,
-                          initialCountryCode: "NL",
-                          decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    color: Colors.transparent,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10)),
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    color: Colors.transparent,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10)),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    color: Colors.transparent,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10)),
-                              errorBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    color: Colors.transparent,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10)),
-                              fillColor: Colors.white,
-                              filled: true,
-                              hintText: "789 123 456",
-                              hintStyle: TextStylesInter.textViewRegular16),
-                          // inputFormatters: [],
-                          onSaved: (phone) {
-                            print(phone?.completeNumber);
-                            phoneNumber = phone!.completeNumber;
-                          },
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: (value) {
-                            return Validator.phoneValidator(value!.number);
-                          },
-                        ),
+                      title: "Phone Number*",
+                      textField: PhoneFieldWeb(
+                        borderColor: const Color(0xffEBEBEB),
+                        onSaved: (phone) {
+                          phoneNumber = phone!.completeNumber;
+                        },
                       )),
                   25.ph,
                   Row(
@@ -176,11 +136,8 @@ class _RegisterWebScreenState extends State<RegisterWebScreen> {
                   ),
                   25.ph,
                   GenericButton(
-                      shadow: [
-                        BoxShadow(blurRadius: 9, offset: const Offset(0, 10), color: verdigris.withOpacity(0.25))
-                      ],
                       height: 70.h,
-                      color: brightOrange,
+                      color: const Color(0xff3463ED),
                       borderRadius: BorderRadius.circular(6),
                       width: double.infinity,
                       onPressed: () async {
