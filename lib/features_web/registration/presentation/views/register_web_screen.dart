@@ -22,33 +22,29 @@ import '../../../../utils/style_utils.dart';
 import '../../../../utils/validator.dart';
 import '../../../../view/components/button.dart';
 
-class RegisterWebScreen extends StatefulWidget {
+class RegisterWebScreen extends StatelessWidget {
   RegisterWebScreen({super.key, required this.isLogin});
   bool isLogin;
 
-  @override
-  State<RegisterWebScreen> createState() => _RegisterWebScreenState();
-}
-
-class _RegisterWebScreenState extends State<RegisterWebScreen> {
-  bool isLogin = false;
-  @override
-  void initState() {
-    isLogin = widget.isLogin;
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
-    print("HEIGHT: ${ScreenUtil().screenHeight}");
-    print("WIDTH: ${ScreenUtil().screenWidth}");
-    return Scaffold(
-      body: !isMobileScreen(context) ? Row(
-        children: [
-          Expanded(child: Image.asset(signupBg, fit: BoxFit.fill, height: ScreenUtil().screenHeight,)),
-          RegisterFormWeb()
-        ],
-      ) : RegisterFormWeb()
-    );
+    return Scaffold(body: LayoutBuilder(builder: (ctx, constraints) {
+      // log("WIDTH: " + constraints.maxWidth.toString());
+      // log("HEIGHT: " + constraints.maxHeight.toString());
+      if (constraints.maxWidth > 550) {
+        return Row(
+          children: [
+            Expanded(
+                child: Image.asset(
+              signupBg,
+              fit: BoxFit.fill,
+            )),
+            Expanded(child: RegisterFormWeb(isLogin: isLogin,))
+          ],
+        );
+      }
+      return RegisterFormWeb(isLogin: isLogin);
+    }));
   }
 }

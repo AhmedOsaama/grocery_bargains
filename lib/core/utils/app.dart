@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bargainb/core/utils/service_locators.dart';
 import 'package:bargainb/features/profile/data/repos/profile_repo_impl.dart';
 import 'package:bargainb/features/profile/presentation/manager/user_provider.dart';
@@ -77,30 +79,24 @@ class _MyAppState extends State<MyApp> {
 
 
 void initializeMyApp(RemoteMessage? notificationMessage, bool isFirstTime) {
-  SentryFlutter.init(
-    (options) {
-      options.dsn = kReleaseMode
-          ? 'https://9ac26c76cf0349d59d82538e91345ada@o4504179587940352.ingest.sentry.io/4504831610126336'
-          : '';
-      options.tracesSampleRate = 1.0;
-    },
-    appRunner: () => runApp(EasyLocalization(
-        supportedLocales: const [Locale('en'), Locale('nl')],
-        path: 'assets/translations',
-        fallbackLocale: const Locale('en'),
-        // startLocale: const Locale('nl'),
-        child: MultiProvider(
-          providers: [
-            ChangeNotifierProvider<GoogleSignInProvider>(create: (_) => GoogleSignInProvider()),
-            ChangeNotifierProvider<ProductsProvider>(create: (_) => ProductsProvider()),
-            ChangeNotifierProvider<ChatlistsProvider>(create: (_) => ChatlistsProvider()),
-            ChangeNotifierProvider<TutorialProvider>(create: (_) => TutorialProvider()),
-            ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider()),
-            ChangeNotifierProvider<AuthUserProvider>(create: (_) => AuthUserProvider(getIt.get<ProfileRepoImpl>())),
-            ChangeNotifierProvider<SuggestionRepository>(create: (_) => SuggestionRepository()),
-            ChangeNotifierProvider<SubscriptionProvider>(create: (_) => SubscriptionProvider()..initSubscription()),
-          ],
-          child: MyApp(notificationMessage: notificationMessage, isFirstTime: isFirstTime),
-        ))),
+  runApp(
+      EasyLocalization(
+          supportedLocales: const [Locale('en'), Locale('nl')],
+          path: 'assets/translations',
+          fallbackLocale: const Locale('en'),
+          // startLocale: const Locale('nl'),
+          child: MultiProvider(
+            providers: [
+              ChangeNotifierProvider<GoogleSignInProvider>(create: (_) => GoogleSignInProvider()),
+              ChangeNotifierProvider<ProductsProvider>(create: (_) => ProductsProvider()),
+              ChangeNotifierProvider<ChatlistsProvider>(create: (_) => ChatlistsProvider()),
+              ChangeNotifierProvider<TutorialProvider>(create: (_) => TutorialProvider()),
+              ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider()),
+              ChangeNotifierProvider<AuthUserProvider>(create: (_) => AuthUserProvider(getIt.get<ProfileRepoImpl>())),
+              ChangeNotifierProvider<SuggestionRepository>(create: (_) => SuggestionRepository()),
+              ChangeNotifierProvider<SubscriptionProvider>(create: (_) => SubscriptionProvider()..initSubscription()),
+            ],
+            child: MyApp(notificationMessage: notificationMessage, isFirstTime: isFirstTime),
+          ))
   );
 }

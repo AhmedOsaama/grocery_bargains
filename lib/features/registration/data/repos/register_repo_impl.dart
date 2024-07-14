@@ -123,13 +123,15 @@ class RegisterRepoImpl implements RegisterRepo {
 
   @override
   Future<void> goToNextScreen(BuildContext context) async {
-    if(kIsWeb){
+    if (kIsWeb) {
+      print("SUCCESSFULLY REGISTERED");
+      //TODO:
       //customer portal
       //activate tutorial
       //home page
-      return;
+    } else {
+      AppNavigator.pushReplacement(context: context, screen: const FreeTrialScreen());
     }
-    AppNavigator.pushReplacement(context: context, screen: const FreeTrialScreen());
   }
 
   @override
@@ -137,6 +139,7 @@ class RegisterRepoImpl implements RegisterRepo {
     UserCredential? userCredential;
     try {
       final credential = await SignInWithApple.getAppleIDCredential(
+        webAuthenticationOptions: WebAuthenticationOptions(clientId: "com.bargainb.client", redirectUri: Uri.parse("https://thebargainb.com")),
         scopes: [
           AppleIDAuthorizationScopes.email,
           AppleIDAuthorizationScopes.fullName,
@@ -148,7 +151,7 @@ class RegisterRepoImpl implements RegisterRepo {
       );
       userCredential = await FirebaseAuth.instance.signInWithCredential(appleCredential);
     } catch (e) {
-      print(e);
+      print("Error signing in with apple: $e");
       return null;
     }
     return userCredential;

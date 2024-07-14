@@ -47,6 +47,7 @@ class GenericButton extends StatelessWidget {
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           padding: padding,
+          // maximumSize: ,
           side: BorderSide(color: borderColor),
           backgroundColor: color,
           // shadowColor: shadowColorButton,

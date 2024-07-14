@@ -1,3 +1,4 @@
+import 'package:bargainb/features_web/home/presentation/views/home_web_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -20,20 +21,22 @@ class getHomeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return kIsWeb ? RegisterWebScreen(isLogin: false)
+    return kIsWeb
+        ? HomeWebScreen()
         : FutureBuilder(
-        future: getAllProductsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const SplashWithProgressIndicator();
-          }
-          if(FirebaseAuth.instance.currentUser != null){            //logged in
-            if (widget.notificationMessage != null) {
-              return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
-            }
-            if (!widget.isFirstTime) return const MainScreen();
-          }
-          return widget.isFirstTime ? const WelcomeScreen() : const MainScreen();       //logged out
-        });
+            future: getAllProductsFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const SplashWithProgressIndicator();
+              }
+              if (FirebaseAuth.instance.currentUser != null) {
+                //logged in
+                if (widget.notificationMessage != null) {
+                  return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
+                }
+                if (!widget.isFirstTime) return const MainScreen();
+              }
+              return widget.isFirstTime ? const WelcomeScreen() : const MainScreen(); //logged out
+            });
   }
 }

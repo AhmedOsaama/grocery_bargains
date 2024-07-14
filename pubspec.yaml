@@ -124,7 +124,9 @@ flutter:
   assets:
     - assets/images/
     - assets/images/categories/
+    - assets/images/web_images/
     - assets/icon/category_icons/
+    - assets/icon/web_icons/
     - assets/icon/
     - assets/translations/
     - assets/sounds/

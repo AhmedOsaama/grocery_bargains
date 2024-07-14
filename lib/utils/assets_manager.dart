@@ -1,4 +1,5 @@
 const String imgPath = 'assets/images';
+const String imgWebPath = 'assets/images/web_images';
 
 const String albert = '$imgPath/albert.png';
 const String jumbo = '$imgPath/jumbo.png';
@@ -55,5 +56,12 @@ const String groceryGamesDutch = "$imgPath/grocery_games_dutch.png";
 const String chats = "$imgPath/chats.png";
 const String chatsDutch = "$imgPath/chats_dutch.png";
 const String signupBg  = "$imgPath/signup_bg.png";
+const String bargainbLogo  = "$imgPath/bargainb_logo.png";
+const String facebook  = "$imgWebPath/facebook.png";
+const String instagram  = "$imgWebPath/instagram.png";
+const String linkedin  = "$imgWebPath/linkedin.png";
+const String twitter  = "$imgWebPath/twitter.png";
+const String downloadAppStore  = "$imgWebPath/download_app_store.png";
+const String downloadPlayStore  = "$imgWebPath/download_play_store.png";
 
 

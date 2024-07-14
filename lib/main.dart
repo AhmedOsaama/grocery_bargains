@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bargainb/core/utils/service_locators.dart';
@@ -9,30 +10,50 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/utils/app.dart';
+import 'features/profile/data/repos/profile_repo_impl.dart';
+import 'features/profile/presentation/manager/user_provider.dart';
 import 'firebase_options.dart';
+import 'providers/chatlists_provider.dart';
+import 'providers/google_sign_in_provider.dart';
+import 'providers/products_provider.dart';
+import 'providers/subscription_provider.dart';
+import 'providers/suggestion_provider.dart';
+import 'providers/tutorial_provider.dart';
+import 'providers/user_provider.dart';
 
 @pragma('vm:entry-point')
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
   setupServiceLocator();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  await Future.wait([
-    EasyLocalization.ensureInitialized(),
-    SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp],
-    ),
-    PurchaseApi.init(),
-  ]);
-  var notificationMessage = await FirebaseMessaging.instance.getInitialMessage();
-  var pref = await SharedPreferences.getInstance();
-  var isFirstTime = pref.getBool("firstTime") ?? true;
-
-  initializeMyApp(notificationMessage, isFirstTime);
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    await Future.wait([
+      EasyLocalization.ensureInitialized(),
+      SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp],
+      ),
+      PurchaseApi.init(),
+    ]);
+    await SentryFlutter.init(
+      (options) {
+        options.dsn = kReleaseMode
+            ? 'https://9ac26c76cf0349d59d82538e91345ada@o4504179587940352.ingest.sentry.io/4504831610126336'
+            : '';
+        options.tracesSampleRate = 1.0;
+      },
+    );
+    var notificationMessage = await FirebaseMessaging.instance.getInitialMessage();
+    var pref = await SharedPreferences.getInstance();
+    var isFirstTime = pref.getBool("firstTime") ?? true;
+    initializeMyApp(notificationMessage, isFirstTime);
+  }, (error, stack) async {
+    await Sentry.captureException(error, stackTrace: stack);
+  });
 }
-
-

@@ -73,7 +73,7 @@ class GenericFieldWeb extends StatefulWidget {
 class _GenericFieldWebState extends State<GenericFieldWeb> {
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: widget.width,
       child: TextFormField(
         focusNode: widget.focusNode,
