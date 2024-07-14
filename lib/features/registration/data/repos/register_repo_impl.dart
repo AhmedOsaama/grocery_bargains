@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:bargainb/features/onboarding/presentation/views/free_trial_screen.dart';
 import 'package:bargainb/features/registration/data/repos/register_repo.dart';
+import 'package:bargainb/features_web/home/presentation/views/home_web_screen.dart';
 import 'package:bargainb/models/bargainb_user.dart';
 import 'package:bargainb/features/home/presentation/views/main_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -125,10 +126,9 @@ class RegisterRepoImpl implements RegisterRepo {
   Future<void> goToNextScreen(BuildContext context) async {
     if (kIsWeb) {
       print("SUCCESSFULLY REGISTERED");
-      //TODO:
       //customer portal
       //activate tutorial
-      //home page
+      AppNavigator.pushReplacement(context: context, screen: const HomeWebScreen());
     } else {
       AppNavigator.pushReplacement(context: context, screen: const FreeTrialScreen());
     }
