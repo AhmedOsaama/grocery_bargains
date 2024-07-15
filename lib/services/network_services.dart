@@ -59,14 +59,4 @@ class NetworkServices {
   }
 
 
-  static Future<http.Response> getSearchSuggestions(String searchTerm, String tableName) async {
-    final url = Uri.parse(
-      'https://us-central1-discountly.cloudfunctions.net/test_search_list?tableName=$tableName&searchIndex=$searchTerm'
-    );
-    var response = await http.get(
-        url, headers: {'Content-Type': 'application/json',});
-    return response;
-  }
-
-
 }
