@@ -7,7 +7,7 @@ import 'package:http/http.dart';
 
 class HubspotService{
   static Future<void> createHubspotContact(Map userData) async {
-    print("Creating hubspot contact");
+    log("Creating hubspot contact");
     var contactData = jsonEncode({"properties": userData});
     try {
       var response = await post(
@@ -18,19 +18,19 @@ class HubspotService{
         },
         body: contactData,
       ).catchError((e) {
-        print("ERROR CREATING HUBSPOT CONTACT: $e");
+        log("ERROR CREATING HUBSPOT CONTACT: $e");
       });
       if(response.statusCode == 201) {
         await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).update({
           'isHubspotContact': true,
         });
-        print("DONE creating hubspot contact");
+        log("DONE creating hubspot contact");
       }else{
         log("ERROR CREATING HUBSPOT CONTACT: ${response.statusCode} ---> ${response.body}");
       }
       // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Added Hubspot Contact")));
     } catch (e) {
-      print(e);
+      log(e.toString());
     }
   }
 

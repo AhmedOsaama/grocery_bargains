@@ -374,6 +374,11 @@ abstract class TextStylesInter {
     fontWeight: regular,
     fontFamily: fontFamilyInter,
   );
+  static TextStyle textViewRegular24 = TextStyle(
+    fontSize: 24.sp,
+    fontWeight: regular,
+    fontFamily: fontFamilyInter,
+  );
   static TextStyle textViewMedium15 = TextStyle(
     fontSize: 15.sp,
     fontWeight: medium,

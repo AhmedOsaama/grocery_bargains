@@ -15,7 +15,8 @@ import '../../../../../utils/icons_manager.dart';
 import '../../../../../utils/style_utils.dart';
 import '../../../../../utils/validator.dart';
 import '../../../../../view/components/button.dart';
-
+//to try google sign in in development
+// flutter run -d chrome --web-hostname localhost --web-port 7357
 class RegisterFormWeb extends StatefulWidget {
   final bool isLogin;
   const RegisterFormWeb({super.key, required this.isLogin});
@@ -60,10 +61,13 @@ class _RegisterFormWebState extends State<RegisterFormWeb> {
               height: 12.h,
             ),
             Center(
-              child: Text(
-                isLogin ? LocaleKeys.getTheLatestDiscounts.tr() : LocaleKeys.getTheLatestDiscounts.tr(),
-                style: TextStylesInter.textViewRegular18.copyWith(color: greyColor),
-                textAlign: TextAlign.center,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 100),
+                child: Text(
+                  isLogin ? LocaleKeys.getTheLatestDiscounts.tr() : LocaleKeys.getTheLatestDiscounts.tr(),
+                  style: TextStylesInter.textViewRegular18.copyWith(color: greyColor),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
             40.ph,

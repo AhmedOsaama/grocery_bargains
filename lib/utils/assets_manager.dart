@@ -63,5 +63,9 @@ const String linkedin  = "$imgWebPath/linkedin.png";
 const String twitter  = "$imgWebPath/twitter.png";
 const String downloadAppStore  = "$imgWebPath/download_app_store.png";
 const String downloadPlayStore  = "$imgWebPath/download_play_store.png";
+const String dealsPrompt  = "$imgWebPath/deals_prompt.png";
+const String mealsPrompt  = "$imgWebPath/meal_prompt.png";
+const String dietaryPrompt  = "$imgWebPath/dietary_prompt.png";
+const String nutritionPrompt  = "$imgWebPath/nutrition_prompt.png";
 
 

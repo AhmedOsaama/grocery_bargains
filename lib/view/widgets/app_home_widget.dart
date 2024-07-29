@@ -23,6 +23,7 @@ class getHomeWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return kIsWeb
         ? HomeWebScreen()
+        // ? RegisterWebScreen(isLogin: false)
         : FutureBuilder(
             future: getAllProductsFuture,
             builder: (context, snapshot) {
