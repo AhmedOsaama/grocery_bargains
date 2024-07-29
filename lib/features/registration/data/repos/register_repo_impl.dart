@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:bargainb/features/onboarding/presentation/views/free_trial_screen.dart';
@@ -6,6 +7,7 @@ import 'package:bargainb/features/registration/data/repos/register_repo.dart';
 import 'package:bargainb/features_web/home/presentation/views/home_web_screen.dart';
 import 'package:bargainb/models/bargainb_user.dart';
 import 'package:bargainb/features/home/presentation/views/main_screen.dart';
+import 'package:bargainb/services/hubspot_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,6 +15,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -221,10 +224,12 @@ class RegisterRepoImpl implements RegisterRepo {
     //in case of email auth: only email is provided in usercredential
     //in case of social auth: email, username and photo are provided in usercredential
     try {
-      String email = userCredential.user!.email!;
+      String email = userCredential.user!.email ?? "";
       String username = userCredential.user!.displayName ?? "User";
       String imageURL = userCredential.user!.photoURL ?? "";
       String phoneNumber = userCredential.user?.phoneNumber ?? '';
+      String country = "";
+      String city = "";
       var language = context.locale.languageCode;
       // log("startup language: $language");
       var deviceToken = await FirebaseMessaging.instance
@@ -249,9 +254,8 @@ class RegisterRepoImpl implements RegisterRepo {
           'daily': false,
         },
       };
-      // log("USER ID: ");
-      // log(userCredential.user!.uid);
       await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set(userData);
+     createHubspotContact(email, username, phoneNumber, country, city);
 
       Provider.of<UserProvider>(context, listen: false)
           .setUserData(userCredential.user!.uid, username, email, phoneNumber, deviceToken!, imageURL);
@@ -279,6 +283,30 @@ class RegisterRepoImpl implements RegisterRepo {
         });
     } catch (e) {
       log("Error occurred in saveUserData: $e");
+    }
+  }
+
+  Future<void> createHubspotContact(String email, String username, String phoneNumber, String country, String city) async {
+    try {
+      var response = await get(Uri.parse("http://ip-api.com/json"));
+      if (response.statusCode == 200) {
+        var responseMap = jsonDecode(response.body);
+        country = responseMap['country'];
+        city = responseMap['city'];
+      }
+    }catch(e){
+      log(e.toString());
+    }
+    var hubspotData = {
+      "email": email,
+      "firstname": username,
+      'phone': phoneNumber,
+      'country': country,
+      'city': city,
+      "hubspot_owner_id": "1252705237",
+    };
+    if(kReleaseMode){
+      await HubspotService.createHubspotContact(hubspotData);
     }
   }
 
