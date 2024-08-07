@@ -401,15 +401,38 @@ class _ChatViewState extends State<ChatView> {
 
   Future<void> submitMessage(BuildContext context) async {
     var text = messageController.text.trim();
-    if (['@BargainB', '@Bargainb', '@bargainb', '@bb', '@BB'].any((element) => text.contains(element))) {
+    var prompt = "@bb";
+    if (['@BargainB', '@Bargainb', '@bargainb', '@bb', '@BB'].any((element) {
+      prompt = element;
+      return text.contains(element);
+    })) {
       messageController.clear();
       await Provider.of<ChatlistsProvider>(context, listen: false)
           .sendMessage(text, widget.listId, widget.chatlistName, "messages");
+      text = text.replaceFirst(prompt, "");
       setState(() {
         isBotLoading = true;
       });
-      await get(Uri.parse(
-          "https://us-central1-discountly.cloudfunctions.net/getChatbot-new?question=${text}&listId=${widget.listId}&collectionName=messages&userId=${FirebaseAuth.instance.currentUser?.uid}"));
+      var response = await post(Uri.parse("https://yswessi.pythonanywhere.com/chat"), headers: {
+        "Content-Type": "application/json"
+      }, body: json.encode({
+        "input": text
+      },));
+      var botResponse = jsonDecode(response.body)['output'];
+      await FirebaseFirestore.instance.collection('/lists/${widget.listId}/messages').add({
+        'item_name': "",
+        'item_image': "",
+        'item_description': "",
+        'store_name': "",
+        'isAddedToList': false,
+        'item_price': 0.0,
+        'item_oldPrice': "",
+        'message': botResponse,
+        'createdAt': Timestamp.fromDate(DateTime.now().toUtc()),
+        'userId': "bargainb",
+        'username': "BargainB",
+        'userImageURL': '',
+      });
       setState(() {
         isBotLoading = false;
       });
