@@ -87,6 +87,8 @@ dependencies:
   cloud_firestore: ^5.1.0
   firebase_app_check: ^0.3.0+3
   firebase_messaging: ^15.0.3
+  upgrader: ^6.5.0
+  in_app_update: ^4.2.3
 
 
 
