@@ -132,9 +132,12 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
         });
       }else if(Platform.isIOS){
         var product = packages[0].storeProduct;
-        var discount = product.discounts![0];
-        var promotionalObject = await Purchases.getPromotionalOffer(product, discount);
-        hasPurchased = await PurchaseApi.purchaseDiscountedPackage(packages[0], promotionalObject).catchError((e) {
+        var introductoryOffer = product.introductoryPrice;
+        if(introductoryOffer == null){
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Couldn't buy the free month trial. The offer might have been expired")));
+          return;
+        }
+        hasPurchased = await PurchaseApi.purchasePackage(packages[0]).catchError((e) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Couldn't buy the free month trial ios")));
           AppNavigator.pop(context: context);
         });
