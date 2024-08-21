@@ -123,6 +123,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
                       var monthlyPrice = packages[0].storeProduct.priceString;
                       var yearlyPrice = packages[1].storeProduct.priceString;
+                      var yearlyDiscountPercentage = 0.33;
                       try {
                         if (Platform.isIOS) {
                           var introductoryPrice = packages[1].storeProduct.introductoryPrice;
@@ -130,8 +131,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                         }
                         if (Platform.isAndroid) {
                           var subscriptionOptions = packages[1].storeProduct.subscriptionOptions;
-                          if (subscriptionOptions!.first.introPhase != null)
+                          if (subscriptionOptions!.first.introPhase != null) {
+                          yearlyDiscountPercentage = subscriptionOptions.first.introPhase!.price / yearlyPrice;
                             yearlyPrice = subscriptionOptions.first.introPhase!.price.formatted;
+                          }
                         }
                       } catch (e) {
                         print("Something went wrong while fetching offers: $e");
@@ -149,7 +152,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                             },
                             price: yearlyPrice,
                             plan: "Yearly",
-                            offerText: "You Save".tr() + " 63%",
+                            offerText: "${"You Save".tr()} ${(1 - yearlyDiscountPercentage) * 100}%",
                           ),
                           PlanContainer(
                             selectedPlan: selectedPlan,

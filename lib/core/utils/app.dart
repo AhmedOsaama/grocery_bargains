@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:developer';
+import 'dart:io';
 
 import 'package:bargainb/core/utils/service_locators.dart';
 import 'package:bargainb/features/profile/data/repos/profile_repo_impl.dart';
@@ -12,9 +14,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:upgrader/upgrader.dart';
 
 import '../../features/onboarding/presentation/views/splash_progress_screen.dart';
 import '../../features/onboarding/presentation/views/welcome_screen.dart';
@@ -40,6 +44,7 @@ class _MyAppState extends State<MyApp> {
   late Mixpanel mixPanel;
   late Future getAllProductsFuture;
   late Stream authStateChangesStream;
+  late Widget homeWidget;
 
   @override
   void initState() {
@@ -48,6 +53,7 @@ class _MyAppState extends State<MyApp> {
           .getAllProducts()
           .timeout(const Duration(seconds: 3), onTimeout: () {});
       authStateChangesStream = FirebaseAuth.instance.authStateChanges();
+      homeWidget = getHomeWidget(getAllProductsFuture: getAllProductsFuture, widget: widget);
       initMixpanel();
   }
 
@@ -68,7 +74,26 @@ class _MyAppState extends State<MyApp> {
         theme: ThemeData(canvasColor: Colors.white, useMaterial3: false),
         navigatorObservers: [SentryNavigatorObserver()],
         debugShowCheckedModeBanner: false,
-        home: getHomeWidget(getAllProductsFuture: getAllProductsFuture, widget: widget),
+        home: Platform.isIOS ? UpgradeAlert(
+          upgrader: Upgrader(
+            showIgnore: false,
+            dialogStyle: UpgradeDialogStyle.cupertino
+          ),
+            child: homeWidget
+        ) : FutureBuilder(
+          future: InAppUpdate.checkForUpdate(),
+          builder: (context, snapshot) {
+            if(snapshot.hasData) {
+              var updateInfo = snapshot.data;
+              log(updateInfo.toString());
+              if(updateInfo?.updateAvailability == UpdateAvailability.updateAvailable) {
+                InAppUpdate.performImmediateUpdate().then((value) {
+                });
+              }
+            }
+            return homeWidget;
+          }
+        ),
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
