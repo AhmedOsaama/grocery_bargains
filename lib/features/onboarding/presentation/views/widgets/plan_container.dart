@@ -11,13 +11,15 @@ class PlanContainer extends StatefulWidget {
   final Function changePlan;
   final String? offerText;
   final String price;
+  final double? beforeDiscountPrice;
+  final String currencyCode;
   PlanContainer(
       {Key? key,
         required this.selectedPlan,
         required this.changePlan,
         this.offerText,
         required this.price,
-        required this.plan})
+        required this.plan, this.beforeDiscountPrice, required this.currencyCode})
       : super(key: key);
 
   @override
@@ -65,8 +67,15 @@ class _PlanContainerState extends State<PlanContainer> {
                   ),
                 ),
               Spacer(),
-              Text(widget.price,
-                  textAlign: TextAlign.center, style: TextStylesInter.textViewSemiBold20.copyWith(fontSize: 16.sp)),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(widget.price,
+                      textAlign: TextAlign.center, style: TextStylesInter.textViewSemiBold20.copyWith(fontSize: 16.sp)),
+                  if(widget.beforeDiscountPrice != null) Text('${widget.currencyCode} ${widget.beforeDiscountPrice!.toStringAsFixed(2)}',
+                      textAlign: TextAlign.center, style: TextStylesInter.textViewSemiBold20.copyWith(fontSize: 13.sp,color: Colors.grey, decoration: TextDecoration.lineThrough)),
+                ],
+              ),
             ],
           ),
         ),

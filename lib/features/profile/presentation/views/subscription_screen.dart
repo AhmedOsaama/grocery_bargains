@@ -11,6 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../../../../providers/subscription_provider.dart';
 import '../../../../utils/tracking_utils.dart';
@@ -38,7 +39,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   var selectedPlan = "None";
   var selectedPlanPrice = "None";
-  late Future<List> offersFuture;
+  late Future<List<Offering>> offersFuture;
 
   @override
   void initState() {
@@ -107,7 +108,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       selectedPlan: PurchaseApi.subscriptionPeriod,
                       changePlan: (value) {},
                       price: PurchaseApi.subscriptionPrice,
-                      plan: PurchaseApi.subscriptionPeriod,
+                      plan: PurchaseApi.subscriptionPeriod, currencyCode: '',
                     ),
                   ],
                 ),
@@ -123,22 +124,9 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
                       var monthlyPrice = packages[0].storeProduct.priceString;
                       var yearlyPrice = packages[1].storeProduct.priceString;
-                      var yearlyDiscountPercentage = 0.33;
-                      try {
-                        if (Platform.isIOS) {
-                          var introductoryPrice = packages[1].storeProduct.introductoryPrice;
-                          if (introductoryPrice != null) yearlyPrice = introductoryPrice.priceString;
-                        }
-                        if (Platform.isAndroid) {
-                          var subscriptionOptions = packages[1].storeProduct.subscriptionOptions;
-                          if (subscriptionOptions!.first.introPhase != null) {
-                          yearlyDiscountPercentage = subscriptionOptions.first.introPhase!.price / yearlyPrice;
-                            yearlyPrice = subscriptionOptions.first.introPhase!.price.formatted;
-                          }
-                        }
-                      } catch (e) {
-                        print("Something went wrong while fetching offers: $e");
-                      }
+                      var currencyCode = packages.first.storeProduct.currencyCode;
+                      var yearlyBeforeDiscountPrice = packages[1].storeProduct.price / 0.33;
+                      // var yearlyDiscountPercentage = 0.33;
                       // log(offer.toString());
                       return Column(
                         children: [
@@ -151,8 +139,10 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                               });
                             },
                             price: yearlyPrice,
+                            beforeDiscountPrice: yearlyBeforeDiscountPrice,
+                            currencyCode: currencyCode,
                             plan: "Yearly",
-                            offerText: "${"You Save".tr()} ${(1 - yearlyDiscountPercentage) * 100}%",
+                            offerText: "${"You Save".tr()} 67%",
                           ),
                           PlanContainer(
                             selectedPlan: selectedPlan,
@@ -163,6 +153,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                               });
                             },
                             price: monthlyPrice,
+                            currencyCode: currencyCode,
                             plan: "Monthly",
                           ),
                         ],

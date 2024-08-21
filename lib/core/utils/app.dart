@@ -83,9 +83,9 @@ class _MyAppState extends State<MyApp> {
         ) : FutureBuilder(
           future: InAppUpdate.checkForUpdate(),
           builder: (context, snapshot) {
-            if(snapshot.hasData) {
+            if(snapshot.data != null) {
               var updateInfo = snapshot.data;
-              log(updateInfo.toString());
+              log("UPDATEEEEEEEEEEE: ${updateInfo.toString()}");
               if(updateInfo?.updateAvailability == UpdateAvailability.updateAvailable) {
                 InAppUpdate.performImmediateUpdate().then((value) {
                 });
