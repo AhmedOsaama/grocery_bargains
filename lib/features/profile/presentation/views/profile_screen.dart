@@ -5,6 +5,7 @@ import 'package:bargainb/features/profile/data/models/User.dart';
 import 'package:bargainb/features/profile/presentation/views/widgets/profile_settings_widget.dart';
 import 'package:bargainb/features/profile/presentation/views/widgets/user_image_widget.dart';
 import 'package:bargainb/features/registration/presentation/views/register_screen.dart';
+import 'package:bargainb/features/registration/presentation/views/signup_screen.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/widgets/otp_dialog.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -214,7 +215,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ScaffoldMessenger.of(context)
                 .showSnackBar(const SnackBar(content: Text("UID Copied successfully, please send it to the developer")));
             FirebaseAuth.instance.signOut();
-            AppNavigator.pushReplacement(context: context, screen: RegisterScreen(isLogin: true));
+            AppNavigator.pushReplacement(context: context, screen: SignupScreen());
             try {
               TrackingUtils().trackTextLinkClicked(FirebaseAuth.instance.currentUser!.uid,
                   DateTime.now().toUtc().toString(), "Profile Screen", "Error profile sign-out link");

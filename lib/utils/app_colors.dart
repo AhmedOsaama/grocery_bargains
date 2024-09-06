@@ -47,5 +47,8 @@ const Color purple30 = Color.fromRGBO(194, 208, 250, 1);
 const Color purple50 = Color.fromRGBO(153, 177, 246, 1);
 const Color purple70 = Color.fromRGBO(113, 146, 242, 1);
 const Color lightPurple = Color.fromRGBO(245, 247, 254, 1);
-
 Color buttonColor = const Color.fromRGBO(188, 188, 188, 1);
+
+Color primaryGreen = const Color(0xff00B207);
+Color secondaryGreen = const Color(0xff256428);
+Color canvasColor = const Color(0xffFAFFFA);

@@ -88,7 +88,7 @@ class _OtpDialogState extends State<OtpDialog> {
                 },
                 style: ElevatedButton.styleFrom(
                     fixedSize: const Size(130, 60),
-                    backgroundColor: yellow,
+                    backgroundColor: primaryGreen,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(6)),
                     foregroundColor: Colors.white),

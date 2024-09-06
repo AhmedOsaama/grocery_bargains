@@ -154,16 +154,7 @@ class ProductsProvider with ChangeNotifier {
     AppNavigator.push(
         context: context,
         screen: ProductDetailScreen(
-          productId: product.id,
-          productBrand: product.brand,
-          oldPrice: product.oldPrice,
-          storeName: getStoreName(product.storeId),
-          productName: product.name,
-          imageURL: product.image,
-          description: product.description,
-          size1: product.unit,
-          productCategory: product.category,
-          price1: double.tryParse(product.price ?? "") ?? 0.0, gtin: product.gtin,
+        product: product,
         ));
     try{
       TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open product page", DateTime.now().toUtc().toString(), "Chatlist screen");

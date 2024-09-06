@@ -165,7 +165,6 @@ class _MainScreenState extends State<MainScreen> {
     Provider.of<SubscriptionProvider>(context);
     if(tutorialProvider.canShowConfetti) _confettiController.play();
     return Scaffold(
-        resizeToAvoidBottomInset: true,
         body: Stack(
           children: [
             PersistentTabView(
@@ -175,6 +174,7 @@ class _MainScreenState extends State<MainScreen> {
               items: _navBarsItems(),
               screens: _buildScreens(),
               navBarStyle: NavBarStyle.simple,
+              // hideNavigationBarWhenKeyboardShows: false,
             ),
             if(tutorialProvider.canShowConfetti) ...[
               Container(
@@ -286,33 +286,32 @@ class _MainScreenState extends State<MainScreen> {
   List<PersistentBottomNavBarItem> _navBarsItems() {
     return [
       PersistentBottomNavBarItem(
-        icon: Icon(
-          Icons.home_outlined,
-          size: 24.sp,
-        ),
+        icon: SvgPicture.asset(homeActive,),
+        inactiveIcon: SvgPicture.asset(homeInactive,),
         title: ("Home".tr()),
-        textStyle: TextStyle(fontSize: 12.sp),
-        activeColorPrimary: selectedColor,
-        inactiveColorPrimary: unSelectedColor,
+        // textStyle: TextStyle(fontSize: 12.sp),
+        activeColorPrimary: Colors.black,
+        inactiveColorPrimary: Colors.black,
       ),
       PersistentBottomNavBarItem(
-          icon: SvgPicture.asset(bbIcon, color: selectedColor ,),
-          inactiveIcon: SvgPicture.asset(bbIcon, color: unSelectedColor ,),
+          icon: SvgPicture.asset(bbActive ,),
+          inactiveIcon: SvgPicture.asset(bbInactive,),
           title: ("Assistant".tr()),
-          textStyle: TextStyle(fontSize: 12.sp),
-          activeColorPrimary: selectedColor,
-          inactiveColorPrimary: unSelectedColor,
+          // textStyle: TextStyle(fontSize: 12.sp),
+          activeColorPrimary: Colors.black,
+          inactiveColorPrimary: Colors.black,
           onPressed: (_) => AppNavigator.goToChatlistTab(context)
       ),
       PersistentBottomNavBarItem(
-          icon: Icon(
+          inactiveIcon: Icon(
             Icons.account_circle_outlined,
             size: 24.sp,
           ),
+          icon: SvgPicture.asset(profileActive,),
           title: ("profile".tr()),
-          textStyle: TextStyle(fontSize: 12.sp),
-          activeColorPrimary: selectedColor,
-          inactiveColorPrimary: unSelectedColor,
+          // textStyle: TextStyle(fontSize: 12.sp),
+          activeColorPrimary: Colors.black,
+          inactiveColorPrimary: Colors.black,
           onPressed: (_) => AppNavigator.goToProfileTab(context)
     ),
     ];

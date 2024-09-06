@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 const String fontFamilyPoppins = "Poppins";
 const String fontFamilyInter = "Inter";
+const String fontFamilyPaytoneOne = "Paytone One";
 
 const FontWeight light = FontWeight.w300;
 const FontWeight regular = FontWeight.w400;

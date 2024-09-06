@@ -6,6 +6,7 @@ import 'package:bargainb/core/utils/service_locators.dart';
 import 'package:bargainb/features/profile/data/repos/profile_repo_impl.dart';
 import 'package:bargainb/features/profile/presentation/manager/user_provider.dart';
 import 'package:bargainb/providers/subscription_provider.dart';
+import 'package:bargainb/utils/app_colors.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,15 +21,12 @@ import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:upgrader/upgrader.dart';
 
-import '../../features/onboarding/presentation/views/splash_progress_screen.dart';
-import '../../features/onboarding/presentation/views/welcome_screen.dart';
 import '../../providers/chatlists_provider.dart';
 import '../../providers/google_sign_in_provider.dart';
 import '../../providers/products_provider.dart';
 import '../../providers/suggestion_provider.dart';
 import '../../providers/tutorial_provider.dart';
 import '../../providers/user_provider.dart';
-import '../../features/home/presentation/views/main_screen.dart';
 import '../../view/widgets/app_home_widget.dart';
 
 class MyApp extends StatefulWidget {
@@ -42,18 +40,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late Mixpanel mixPanel;
-  late Future getAllProductsFuture;
   late Stream authStateChangesStream;
   late Widget homeWidget;
 
   @override
   void initState() {
     super.initState();
-      getAllProductsFuture = Provider.of<ProductsProvider>(context, listen: false)
-          .getAllProducts()
-          .timeout(const Duration(seconds: 3), onTimeout: () {});
       authStateChangesStream = FirebaseAuth.instance.authStateChanges();
-      homeWidget = getHomeWidget(getAllProductsFuture: getAllProductsFuture, widget: widget);
+      homeWidget = getHomeWidget(widget: widget);
       initMixpanel();
   }
 
@@ -66,12 +60,12 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: kIsWeb ? const Size(1920, 1079) : const Size(390, 844),
+      designSize: const Size(390, 844),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, _) => MaterialApp(
         title: 'BargainB',
-        theme: ThemeData(canvasColor: Colors.white, useMaterial3: false),
+        theme: ThemeData(canvasColor: canvasColor, useMaterial3: false),
         navigatorObservers: [SentryNavigatorObserver()],
         debugShowCheckedModeBanner: false,
         home: Platform.isIOS ? UpgradeAlert(

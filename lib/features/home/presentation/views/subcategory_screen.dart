@@ -1,3 +1,4 @@
+import 'package:bargainb/features/home/presentation/views/widgets/product_item.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -91,7 +92,6 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
     return Scaffold(
       backgroundColor: white,
       appBar: SearchAppBar(
-        isBackButton: true,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -230,14 +230,11 @@ class _SubCategoryScreenState extends State<SubCategoryScreen> {
                             subCategory: results.elementAt(index).subCategory,
                             offer: results.elementAt(index).offer,
                             englishName: results.elementAt(index).englishName,
-                            similarId: results.elementAt(index).similarId,
-                            similarStId: results.elementAt(index).similarStId,
                             availableNow: results.elementAt(index).availableNow,
                             dateAdded: results.elementAt(index).dateAdded,
                           );
-                          return DiscountItem(
+                          return ProductItem(
                             product: p,
-                            inGridView: false,
                           );
                         });
                   }),

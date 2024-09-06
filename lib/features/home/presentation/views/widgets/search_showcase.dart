@@ -1,3 +1,5 @@
+import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/features/search/presentation/views/algolia_search_screen.dart';
 import 'package:bargainb/providers/tutorial_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,16 +20,22 @@ import '../product_detail_screen.dart';
 import '../../../data/models/product.dart';
 import 'skip_tutorial_button.dart';
 
-class SearchShowcase extends StatelessWidget {
+class SearchShowcase extends StatefulWidget {
   final BuildContext showcaseContext;
   const SearchShowcase({Key? key, required this.showcaseContext}) : super(key: key);
 
+  @override
+  State<SearchShowcase> createState() => _SearchShowcaseState();
+}
+
+class _SearchShowcaseState extends State<SearchShowcase> {
+  var key = GlobalKey<State<StatefulWidget>>();
   @override
   Widget build(BuildContext context) {
     var tutorialProvider = Provider.of<TutorialProvider>(context);
     return Showcase.withWidget(
         targetBorderRadius: BorderRadius.circular(10),
-        key: tutorialProvider.isTutorialRunning ? TooltipKeys.showCase2 : GlobalKey<State<StatefulWidget>>(),
+        key: tutorialProvider.isTutorialRunning ? TooltipKeys.showCase2 : key,
         container: Column(
           children: [
             SizedBox(
@@ -55,12 +63,12 @@ class SearchShowcase extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () async {
-                    await goToProductPageTutorial(context, showcaseContext);
-                    ShowCaseWidget.of(showcaseContext).next();
+                    await goToProductPageTutorial(context, widget.showcaseContext);
+                    ShowCaseWidget.of(widget.showcaseContext).next();
                   },
                   child: Row(
                     children: [
-                      SkipTutorialButton(tutorialProvider: tutorialProvider, context: showcaseContext),
+                      SkipTutorialButton(tutorialProvider: tutorialProvider, context: widget.showcaseContext),
                       Spacer(),
                       Text(
                         "Next".tr(),
@@ -80,7 +88,7 @@ class SearchShowcase extends StatelessWidget {
         ),
         height: 50,
         width: 50,
-        child: const SearchWidget(isBackButton: false));
+        child: const SearchWidget());
   }
 
   Future<void> goToProductPageTutorial(BuildContext context, BuildContext builder) async {
@@ -90,17 +98,7 @@ class SearchShowcase extends StatelessWidget {
       Product product = Provider.of<ProductsProvider>(context, listen: false).products.first;
       await pushNewScreen(context,
           screen: ProductDetailScreen(
-            productId: product.id,
-            productBrand: product.brand,
-            storeName: productsProvider.getStoreName(product.storeId),
-            productName: product.name,
-            imageURL: product.image,
-            description: product.description,
-            oldPrice: product.oldPrice,
-            productCategory: product.category,
-            price1: double.tryParse(product.price) ?? 0.0,
-            size1: product.unit,
-            gtin: product.gtin,
+          product: product,
           ));
       ShowCaseWidget.of(builder).next();
       try {
@@ -115,5 +113,4 @@ class SearchShowcase extends StatelessWidget {
       print(e);
     }
   }
-
 }

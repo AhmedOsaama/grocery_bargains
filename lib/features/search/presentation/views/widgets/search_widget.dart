@@ -1,78 +1,96 @@
 import 'package:bargainb/utils/empty_padding.dart';
-import 'package:bargainb/utils/tracking_utils.dart';
-import 'package:bargainb/features/search/presentation/views/algolia_autocomplete_screen.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../../config/routes/app_navigator.dart';
-import '../../../../../generated/locale_keys.g.dart';
+import '../../../../../models/query_suggestions.dart';
+import '../../../../../providers/suggestion_provider.dart';
 import '../../../../../utils/app_colors.dart';
 import '../../../../../utils/icons_manager.dart';
 import '../../../../../utils/style_utils.dart';
-import '../../../../home/presentation/views/main_screen.dart';
+import '../../../../../view/components/generic_field.dart';
+import '../algolia_search_screen.dart';
 
-
-class SearchWidget extends StatelessWidget {
-  final bool isNotificationOpened;
-  final bool isBackButton;
-  const SearchWidget({Key? key, this.isNotificationOpened = false, required this.isBackButton}) : super(key: key);
+class SearchWidget extends StatefulWidget {
+  final TextEditingController? searchController;
+  const SearchWidget({super.key, this.searchController});
 
   @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        // isBackButton ? 15.pw : Container(),
-        isBackButton ?
-        GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: isNotificationOpened ? () => AppNavigator.pushReplacement(
-              context: context, screen: MainScreen()) : () => AppNavigator.pop(context: context),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if(isBackButton)
-              Icon(Icons.arrow_back_ios,color: mainPurple,),
-              SvgPicture.asset(bargainbIcon, height: 42.h,),
-            ],
-          ),
-        ) :  SvgPicture.asset(bargainbIcon, height: 42.h,),
+  State<SearchWidget> createState() => _SearchWidgetState();
+}
 
-        6.pw,
-        Expanded(
-          child: GestureDetector(
-            onTap: () async {
-              // AppNavigator.push(context: context, screen: AlgoliaSearchScreen());
-              AppNavigator.push(context: context, screen: AlgoliaAutoCompleteScreen());
-              try{
-                TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open search", DateTime.now().toUtc().toString(), "Home screen");
-              }catch(e){
-                TrackingUtils().trackButtonClick("Guest", "Open search", DateTime.now().toUtc().toString(), "Home screen");
-              }
-            },
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.w,vertical: 12.h),
-              decoration: BoxDecoration(
-                color: white,
-                border: Border.all(color: grey),
-                borderRadius: BorderRadius.circular(999),
-              ),
-              child: Row(
-                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Icon(Icons.search,color: Colors.black,),
-                  10.pw,
-                  Text(LocaleKeys.whatAreYouLookingFor.tr(),style: TextStyles.textViewSemiBold14
-                      .copyWith(color: greyText),)
-                ],
-              ),
+class _SearchWidgetState extends State<SearchWidget> {
+  @override
+  Widget build(BuildContext context) {
+    var textController = TextEditingController();
+    final suggestionRepository = context.read<SuggestionRepository>();
+    return Padding(
+      padding: const EdgeInsets.only(top: 5),
+      child: Row(
+        children: [
+          Expanded(
+            child: TypeAheadField<QuerySuggestion>(
+              suggestionsCallback: (search) async {
+                suggestionRepository.query(search);
+                var suggestions = await suggestionRepository.suggestions.first;
+                return suggestions;
+              },
+              builder: (context, controller, focusNode) {
+                if(widget.searchController != null){
+                  controller = widget.searchController!;
+                }
+                textController = controller;
+                return GenericField(
+                    controller: textController,
+                    focusNode: focusNode,
+                    hintText: "What are you looking for?",
+                    hintStyle: TextStyles.textViewRegular14.copyWith(color: Color(0xff71717A)),
+                    border: const OutlineInputBorder(
+                        borderSide: BorderSide.none
+                    ),
+                    boxShadow:  const [
+                      BoxShadow(
+                        offset: Offset(0,1),
+                        blurRadius: 3,
+                        color: Color.fromRGBO(0, 178, 7, 0.1),
+                      ),
+                      BoxShadow(
+                        offset: Offset(0,1),
+                        blurRadius: 2,
+                        spreadRadius: -1,
+                        color: Color.fromRGBO(44, 116, 47, 0.1),
+                      ),
+                    ]
+                );
+              },
+              itemBuilder: (context, option) {
+                return ListTile(title: Text(option.query),);
+              },
+              onSelected: (suggestion){
+                AppNavigator.push(context: context, screen: AlgoliaSearchScreen(query: suggestion.query,));
+              },
             ),
           ),
-        ),
-      ],
+          10.pw,
+          SizedBox(
+            width: 40,
+            height: 40,
+            child: ElevatedButton(onPressed: (){
+              AppNavigator.push(context: context, screen: AlgoliaSearchScreen(query: textController.text.trim(),));
+            }, style: ElevatedButton.styleFrom(
+                backgroundColor: primaryGreen,
+                padding: EdgeInsets.zero,
+                // fixedSize: Size(40, 40),
+                // maximumSize: ,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                )
+            ), child: SvgPicture.asset(search, color: Colors.white,),),
+          )
+        ],
+      ),
     );
   }
 }

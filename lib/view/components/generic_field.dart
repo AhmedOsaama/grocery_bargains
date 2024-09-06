@@ -27,12 +27,13 @@ class GenericField extends StatefulWidget {
   final Color? fillColor;
   final Color colorStyle;
   final double borderRaduis;
-  final BoxShadow? boxShadow;
+  final List<BoxShadow>? boxShadow;
   final BoxConstraints? suffixConstraints;
   final EdgeInsets? contentPadding;
   final bool? enabled;
   final AutovalidateMode? autoValidateMode;
   final double? width;
+  final OutlineInputBorder? border;
 
   GenericField({
     super.key,
@@ -64,6 +65,7 @@ class GenericField extends StatefulWidget {
     this.fillColor,
     this.contentPadding,
     this.width,
+    this.border,
   });
 
   @override
@@ -76,12 +78,10 @@ class _GenericFieldState extends State<GenericField> {
     return Container(
       width: widget.width,
       decoration: BoxDecoration(
-          border: Border.all(color: widget.colorStyle),
+        // border: Border.all(color: widget.colorStyle),
           borderRadius: BorderRadius.circular(widget.borderRaduis),
-          boxShadow: [
-            widget.boxShadow ??
-                const BoxShadow(blurRadius: 62, offset: Offset(0, 4), color: Color.fromRGBO(153, 171, 198, 0.18))
-          ]),
+          boxShadow: widget.boxShadow
+      ),
       child: TextFormField(
         focusNode: widget.focusNode,
         autofocus: widget.autoFocus!,
@@ -104,6 +104,7 @@ class _GenericFieldState extends State<GenericField> {
         onChanged: widget.onChanged,
         onTap: widget.onTap,
         decoration: InputDecoration(
+          isDense: true,
           filled: widget.isFilled,
           prefixIcon: widget.prefixIcon,
           suffixIcon: widget.suffixIcon,
@@ -114,25 +115,21 @@ class _GenericFieldState extends State<GenericField> {
           suffixIconConstraints: widget.suffixConstraints,
           labelStyle: const TextStyle(fontSize: 16, color: Color(0xff343434)),
           hintStyle:
-              widget.hintStyle ?? TextStylesInter.textViewRegular12.copyWith(color: Color.fromRGBO(13, 1, 64, 0.6)),
-          border: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: widget.isFilled == true ? Colors.transparent : widget.colorStyle,
-              ),
-              borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: widget.isFilled == true ? Colors.transparent : widget.colorStyle,
-              ),
-              borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
-          enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: widget.isFilled == true ? Colors.transparent : widget.colorStyle),
-              borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
-          errorBorder: OutlineInputBorder(
-              borderSide: const BorderSide(
-                color: primary,
-              ),
-              borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
+          widget.hintStyle ?? TextStylesInter.textViewRegular12.copyWith(color: Color.fromRGBO(13, 1, 64, 0.6)),
+          border: widget.border,
+          // focusedBorder: OutlineInputBorder(
+          //     borderSide: BorderSide(
+          //       color: widget.isFilled == true ? Colors.transparent : widget.colorStyle,
+          //     ),
+          //     borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
+          // enabledBorder: OutlineInputBorder(
+          //     borderSide: BorderSide(color: widget.isFilled == true ? Colors.transparent : widget.colorStyle),
+          //     borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
+          // errorBorder: OutlineInputBorder(
+          //     borderSide: const BorderSide(
+          //       color: Colors.green,
+          //     ),
+          //     borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
         ),
       ),
     );

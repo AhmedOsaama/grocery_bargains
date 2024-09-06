@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 class Product {
   late int id;
   late String name;
@@ -5,18 +7,16 @@ class Product {
   late String link;
   late String category;
   late String subCategory;
-  late String price;
+  late double price;
   late String unit;
   String? pricePerUnit;
-  String? oldPrice;
+  double? oldPrice;
   String? offer;
   late String brand;
   late String image;
   late String description;
   late String englishName;
   late int storeId;
-  String? similarId;
-  String? similarStId;
   late int availableNow;
   String? dateAdded;
 
@@ -37,58 +37,57 @@ class Product {
     required this.description,
     required this.englishName,
     required this.storeId,
-    this.similarId,
-    this.similarStId,
     required this.availableNow,
     this.dateAdded,
   });
 
 
   Product.fromJson(Map<String, dynamic> json){
-    id = json['id'] ?? -1;
-    name = json['name'] ?? 'N/A';
-    gtin = json['gtin'] ?? 'N/A';
-    link = json['link'] ?? 'N/A';
-    category = json['category'] ?? 'N/A';
-    subCategory = json['sub_category'] ?? 'N/A';
-    price = json['price'] ?? 'N/A';
-    unit = json['unit'] ?? 'N/A';
-    pricePerUnit = json['price_per_unit'] ?? 'N/A';
-    oldPrice = json['old_price'] ?? 'N/A';
-    offer = json['offer'] ?? 'N/A';
-    brand = json['brand'] ?? 'N/A';
-    image = json['image'] ?? 'N/A';
-    description = json['description'] ?? 'N/A';
-    englishName = json['english_name'] ?? 'N/A';
-    storeId = json['store_id'] ?? -1;
-    similarId = json['similar_id'] ?? 'N/A';
-    similarStId = json['similar_st_id'] ?? 'N/A';
-    availableNow = json['available_now'] ?? -1;
-    dateAdded = json['date_added'] ?? 'N/A';
+    try {
+      id = json['id'] ?? -1;
+      name = json['product_name'] ?? 'N/A';
+      gtin = json['gtin'] ?? 'N/A';
+      link = json['link'] ?? 'N/A';
+      category = json['category_name'] ?? 'N/A';
+      subCategory = json['subcategory_name'] ?? 'N/A';
+      price = json['price'] ?? 'N/A';
+      unit = json['unit'] ?? 'N/A';
+      pricePerUnit = json['price_per_unit'] ?? 'N/A';
+      oldPrice = json['old_price'] ?? 0.0;
+      offer = json['offer'] ?? 'N/A';
+      brand = json['brand'] ?? 'N/A';
+      image = json['image_path'] ?? 'N/A';
+      description = json['description'] ?? 'N/A';
+      englishName = json['english_name'] ?? 'N/A';
+      storeId = json['store_id'] ?? -1;
+      availableNow = json['available_now'] ?? -1;
+      dateAdded = json['date_added'] ?? 'N/A';
+    }catch(e){
+      log("ERROR IN JSON PRODUCT: $e");
+      log("PRODUCT: ${price}, ${oldPrice}");
+    }
   }
 
   Map<String, dynamic> toJson() {
     final _data = <String, dynamic>{};
     _data['id'] = id;
-    _data['name'] = name;
+    _data['product_name'] = name;
     _data['gtin'] = gtin;
     _data['link'] = link;
-    _data['category'] = category;
-    _data['sub_category'] = subCategory;
+    _data['category_name'] = category;
+    _data['subcategory_name'] = subCategory;
     _data['price'] = price;
     _data['unit'] = unit;
     _data['price_per_unit'] = pricePerUnit;
     _data['old_price'] = oldPrice;
     _data['offer'] = offer;
     _data['brand'] = brand;
-    _data['image'] = image;
+    _data['image_path'] = image;
     _data['description'] = description;
     _data['english_name'] = englishName;
     _data['store_id'] = storeId;
-    _data['similar_id'] = similarId;
-    _data['similar_st_id'] = similarStId;
     _data['available_now'] = availableNow;
-    _data['date_added'] = dateAdded;
+    // _data['date_added'] = dateAdded;
     return _data;
   }
 }

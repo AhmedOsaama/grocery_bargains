@@ -4,7 +4,7 @@ import 'dart:developer';
 
 import 'package:bargainb/features/onboarding/presentation/views/free_trial_screen.dart';
 import 'package:bargainb/features/registration/data/repos/register_repo.dart';
-import 'package:bargainb/features_web/home/presentation/views/home_web_screen.dart';
+import 'package:bargainb/features/registration/presentation/views/email_address_screen.dart';
 import 'package:bargainb/models/bargainb_user.dart';
 import 'package:bargainb/features/home/presentation/views/main_screen.dart';
 import 'package:bargainb/services/hubspot_service.dart';
@@ -37,20 +37,17 @@ class RegisterRepoImpl implements RegisterRepo {
   @override
   Future<void> authenticateUser({required BuildContext context, required BargainbUser user,
       required GlobalKey<FormState> formKey, required bool isLogin, required bool rememberMe}) async {
-    var isValid = formKey.currentState?.validate();
     FocusScope.of(context).unfocus();
-    if (isValid!) {
-      formKey.currentState?.save();
+    log(user.phoneNumber);
       await submitAuthForm(context: context, user: user, isLogin: isLogin).timeout(
         const Duration(seconds: 180),
       );
       saveRememberMePref(rememberMe);
-    }
   }
 
   @override
   Future<void> submitAuthForm({required BargainbUser user, required BuildContext context, required bool isLogin}) async {
-    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
+    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
     try {
       if (!isLogin) {
         signup(context, user);
@@ -80,7 +77,7 @@ class RegisterRepoImpl implements RegisterRepo {
     }
     await storeUserInfo(context: context, userCredential: userCredential!);
     saveRememberMePref(rememberMe);
-    goToNextScreen(context);
+    goToNextScreen(context, false);
     TrackingUtils().trackLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
   }
 
@@ -126,15 +123,12 @@ class RegisterRepoImpl implements RegisterRepo {
   }
 
   @override
-  Future<void> goToNextScreen(BuildContext context) async {
-    if (kIsWeb) {
-      print("SUCCESSFULLY REGISTERED");
-      //customer portal
-      //activate tutorial
-      AppNavigator.pushReplacement(context: context, screen: const HomeWebScreen());
-    } else {
-      AppNavigator.pushReplacement(context: context, screen: const FreeTrialScreen());
-    }
+  Future<void> goToNextScreen(BuildContext context, bool isSignup) async {
+      if(isSignup){
+        AppNavigator.pushReplacement(context: context, screen: const EmailAddressScreen());
+      } else {
+        AppNavigator.pushReplacement(context: context, screen: const FreeTrialScreen());
+      }
   }
 
   @override
@@ -337,17 +331,11 @@ class RegisterRepoImpl implements RegisterRepo {
     print("Signing Up...");
     var result =
         await FirebaseFirestore.instance.collection('users').where('phoneNumber', isEqualTo: user.phoneNumber).get();
+    // log(result.docs.first.data().toString());
     if (result.docs.isNotEmpty) {
       //phone number check
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: Text("PhoneNumberAlready".tr())));
-      return;
-    }
-    var result1 = await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: user.email).get();
-    if (result1.docs.isNotEmpty) {
-      // email check
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(backgroundColor: Theme.of(context).colorScheme.error, content: Text("EmailAlready".tr())));
       return;
     }
     var userCredential = await loginWithPhoneNumber(user.phoneNumber, context);
@@ -356,7 +344,7 @@ class RegisterRepoImpl implements RegisterRepo {
     }
     user.phoneNumber = userCredential.user!.phoneNumber!;
     await finalizePhoneSignup(userCredential, context);
-    goToNextScreen(context);
+    goToNextScreen(context, true);
   }
 
   Future<void> login(BuildContext context, BargainbUser user) async {
@@ -378,7 +366,7 @@ class RegisterRepoImpl implements RegisterRepo {
       userCredential,
       result,
     );
-    goToNextScreen(context);
+    goToNextScreen(context, false);
   }
 
 

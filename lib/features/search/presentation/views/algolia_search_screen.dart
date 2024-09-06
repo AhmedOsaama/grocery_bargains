@@ -1,7 +1,12 @@
+import 'dart:developer';
+
 import 'package:algolia/algolia.dart';
 import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
+import 'package:bargainb/features/search/presentation/views/widgets/filter_bottom_sheet.dart';
+import 'package:bargainb/features/search/presentation/views/widgets/search_appBar.dart';
 import 'package:bargainb/providers/products_provider.dart';
 import 'package:bargainb/utils/algolia_utils.dart';
+import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/generic_field.dart';
@@ -18,12 +23,13 @@ import '../../../../generated/locale_keys.g.dart';
 import '../../../../utils/app_colors.dart';
 import '../../../../utils/icons_manager.dart';
 import '../../../../utils/style_utils.dart';
-import '../../../../view/widgets/discountItem.dart';
 import '../../../home/data/models/product.dart';
+import '../../../home/presentation/views/widgets/product_item.dart';
 
 class AlgoliaSearchScreen extends StatefulWidget {
   final String query;
-  const AlgoliaSearchScreen({Key? key, this.query = ''}) : super(key: key);
+  final String? category;
+  const AlgoliaSearchScreen({Key? key, this.query = '', this.category}) : super(key: key);
 
   @override
   State<AlgoliaSearchScreen> createState() => _AlgoliaSearchScreenState();
@@ -33,27 +39,36 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
   final PagingController<int, Product> _pagingController = PagingController(firstPageKey: 0);
   final _searchTextController = TextEditingController();
   final _productsSearcher =
-      HitsSearcher(applicationID: 'DG62X9U03X', apiKey: 'e862c47c6741eef540abe9fb5f68eef6', indexName: 'dev_PRODUCTS');
-  // indexName: 'productss');
+  HitsSearcher(applicationID: AlgoliaApp.applicationID, apiKey: AlgoliaApp.searchOnlyKey, indexName: AlgoliaApp.hitsIndex);
 
-  final GlobalKey<ScaffoldState> _mainScaffoldKey = GlobalKey();
-  String sortDropdownValue = 'Sort';
 
 
   final _filterState = FilterState();
 
-  late final _facetList = FacetList(
+
+  late final storeFilter = FacetList(
+      searcher: _productsSearcher,
+      filterState: _filterState,
+      selectionMode: SelectionMode.multiple,
+      attribute: 'store_name');
+
+  late final categoryFilter = FacetList(
       searcher: _productsSearcher,
       filterState: _filterState,
       selectionMode: SelectionMode.single,
-      attribute: 'store_id');
+      attribute: 'category_name');
 
-  var storeDropdownValue = "Store";
+  late final subcategoryFilter = FacetList(
+      searcher: _productsSearcher,
+      filterState: _filterState,
+      selectionMode: SelectionMode.single,
+      attribute: 'subcategory_name');
+
 
   Stream<SearchMetadata> get _searchMetadata => _productsSearcher.responses.map(SearchMetadata.fromResponse);
   Stream<HitsPage> get _searchPage => _productsSearcher.responses.map(HitsPage.fromResponse);
 
-  var storeList = ['Store', 'Albert Heijn', 'Jumbo', 'Hoogvliet', "Dirk"];
+  // var storeList = ['Store', 'Albert Heijn', 'Jumbo', 'Hoogvliet', "Dirk"];
 
   @override
   void initState() {
@@ -62,14 +77,15 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
     _searchTextController.addListener(() => _productsSearcher.query(_searchTextController.text));
 
     _searchTextController.addListener(
-      () => _productsSearcher.applyState(
-        (state) => state.copyWith(
-          query: _searchTextController.text,
-          page: 0,
-          clickAnalytics: true
+          () => _productsSearcher.applyState(
+            (state) => state.copyWith(
+            query: _searchTextController.text,
+            page: 0,
+            clickAnalytics: true
         ),
       ),
     );
+
 
     _searchPage.listen((page) {
       if (page.pageKey == 0) {
@@ -82,12 +98,16 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
     });
 
     _pagingController.addPageRequestListener((pageKey) => _productsSearcher.applyState((state) => state.copyWith(
-          page: pageKey,
-      clickAnalytics: true
-        )));
+        page: pageKey,
+        clickAnalytics: true
+    )));
 
     _productsSearcher.connectFilterState(_filterState);
     _filterState.filters.listen((_) => _pagingController.refresh());
+    if(widget.category != null) {
+      categoryFilter.toggle(widget.category!);
+    }
+    // selectedStoreFilter.add(selectableFacets[index].item.value);
 
 
     try {
@@ -106,212 +126,70 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
     _productsSearcher.dispose();
     _pagingController.dispose();
     _filterState.dispose();
-    _facetList.dispose();
+    storeFilter.dispose();
+    categoryFilter.dispose();
+    subcategoryFilter.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          80.ph,
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              children: [
-                GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => AppNavigator.pop(context: context),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.arrow_back_ios,
-                        color: mainPurple,
-                      ),
-                      SvgPicture.asset(
-                        bargainbIcon,
-                        height: 42.h,
-                      ),
-                    ],
-                  ),
-                ),
-                6.pw,
-                Expanded(
-                  child: GenericField(
-                    controller: _searchTextController,
-                    borderRaduis: 999,
-                    colorStyle: grey,
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: Colors.black,
-                    ),
-                    hintText: LocaleKeys.whatAreYouLookingFor.tr(),
-                    hintStyle: TextStyles.textViewSemiBold14.copyWith(color: greyText),
-                  ),
-                ),
-              ],
+      appBar: SearchAppBar(controller: _searchTextController),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            10.ph,
+            widget.category != null ?
+            Text("Results for '${widget.category}'", style: TextStylesPaytoneOne.textViewRegular24,)
+            :
+            Text("Results for '${widget.query}'", style: TextStylesPaytoneOne.textViewRegular24,),
+            Center(
+              child: StreamBuilder<SearchMetadata>(
+                stream: _searchMetadata,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const SizedBox.shrink();
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text('${snapshot.data!.nbHits} items'),
+                  );
+                },
+              ),
             ),
-          ),
-          // SizedBox(
-          //     height: 50,
-          //     child: TextField(
-          //       controller: _searchTextController,
-          //       decoration: const InputDecoration(
-          //         border: InputBorder.none,
-          //         hintText: 'Enter a search term',
-          //         prefixIcon: Icon(Icons.search),
-          //       ),
-          //     )),
-          10.ph,
-          _filters(context),
-          Center(
-            child: StreamBuilder<SearchMetadata>(
-              stream: _searchMetadata,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const SizedBox.shrink();
-                }
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text('${snapshot.data!.nbHits} hits'),
-                );
-              },
-            ),
-          ),
-          Expanded(child: _hits(context))
-        ],
+            Align(
+                alignment: Alignment.centerRight,
+                child: IconButton(onPressed: () async {
+                  showModalBottomSheet(context: context,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)
+                      ),
+                      builder: (ctx) => FilterBottomSheet(storeFilter: storeFilter, categoryFilter: categoryFilter,
+                        subCategoryFilter: subcategoryFilter, filterState: _filterState, productSearcher: _productsSearcher,));
+                }, icon: Icon(Icons.filter_list))),
+            Expanded(child: _hits(context))
+          ],
+        ),
       ),
     );
   }
 
-  Widget _filters(BuildContext context) => StreamBuilder<List<SelectableItem<Facet>>>(
-      stream: _facetList.facets,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const SizedBox.shrink();
-        }
-        final selectableFacets = snapshot.data ?? [];
-        if (selectableFacets.length != storeList.length - 1) return SizedBox.shrink();
-        return Row(
-          children: [
-            15.pw,
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 15.w),
-              decoration: BoxDecoration(color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r)),border: Border.all(color: grey)),
-              child: DropdownButton<String>(
-                value: sortDropdownValue,
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: Colors.white,
-                ),
-                iconSize: 24,
-                underline: Container(),
-                dropdownColor: orange70,
-                style: TextStylesInter.textViewRegular14.copyWith(color: Colors.white),
-                borderRadius: BorderRadius.circular(4.r),
-                onChanged: (String? newValue) {
-                  try {
-                    TrackingUtils().trackFilterUsed(
-                        FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
-                        "Category screen", 'price');
-                  }catch(e){
-                    print(e);
-                    TrackingUtils().trackFilterUsed(
-                        "Guest", DateTime.now().toUtc().toString(),
-                        "Category screen", 'price');
-                  }
-                  setState(() {
-                    sortDropdownValue = newValue!;
-                    Provider.of<ProductsProvider>(context, listen: false).sortProducts(sortDropdownValue, _pagingController.itemList!);
-                    // _pagingController.refresh();
-                  });
-                },
-                items: <String>['Sort', 'Low price', 'High price'].map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value.tr(),
-                      style: TextStyles.textViewMedium12,
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 10),
-              padding: EdgeInsets.symmetric(horizontal: 15.w),
-              decoration: BoxDecoration(
-                  color: orange70, borderRadius: BorderRadius.all(Radius.circular(6.r)), border: Border.all(color: grey)),
-              child: DropdownButton<String>(
-                value: storeDropdownValue,
-                icon: Icon(
-                  Icons.keyboard_arrow_down,
-                  color: Colors.white,
-                ),
-                dropdownColor: orange70,
-                iconSize: 24,
-                underline: Container(),
-                style: TextStylesInter.textViewRegular14.copyWith(color: Colors.white),
-                borderRadius: BorderRadius.circular(4.r),
-                onChanged: changeFilter,
-                items: storeList.map<DropdownMenuItem<String>>((String value) {
-                  var index = storeList.indexOf(value) - 1;
-                  if (value == 'Store' || selectableFacets.isEmpty) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(
-                        value.tr(),
-                        style: TextStyles.textViewMedium12,
-                      ),
-                    );
-                  }
-                  var selectableFacet = selectableFacets[index];
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      "$value (${selectableFacet.item.count})",
-                      style: TextStyles.textViewMedium12,
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ],
-        );
-      });
-
-  void changeFilter(String? newValue) async {
-    try {
-      TrackingUtils().trackFilterUsed(
-          FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Search screen", 'store');
-    } catch (e) {
-      print(e);
-      TrackingUtils().trackFilterUsed("Guest", DateTime.now().toUtc().toString(), "Search screen", 'store');
-    }
-    setState(() {
-      storeDropdownValue = newValue!;
-    });
-    if (storeDropdownValue == "Store") _filterState.clear();
-    if (storeDropdownValue != 'Store') _facetList.toggle(storeList.indexOf(storeDropdownValue).toString());
-  }
 
   Widget _hits(BuildContext context) => PagedGridView<int, Product>(
       pagingController: _pagingController,
-      padding: EdgeInsets.symmetric(horizontal: 10),
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 200.w,
-          mainAxisExtent: 332.h,
+          mainAxisExtent: 280,
           crossAxisSpacing: 10,
           mainAxisSpacing: 10),
       builderDelegate: PagedChildBuilderDelegate<Product>(
         noItemsFoundIndicatorBuilder: (_) => const Center(
           child: Text('No results found'),
         ),
-        itemBuilder: (_, item, __) => DiscountItem(
-          inGridView: false,
+        itemBuilder: (_, item, __) => ProductItem(
           product: item,
         ),
       ));

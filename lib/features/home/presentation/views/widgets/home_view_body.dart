@@ -6,8 +6,13 @@ import 'package:bargainb/features/home/presentation/views/widgets/categories_row
 import 'package:bargainb/features/home/presentation/views/widgets/latest_bargains_row.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/search_showcase.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/see_more_button.dart';
+import 'package:bargainb/features/search/presentation/views/algolia_search_screen.dart';
+import 'package:bargainb/features/search/presentation/views/widgets/search_widget.dart';
+import 'package:bargainb/providers/subscription_provider.dart';
+import 'package:bargainb/utils/empty_padding.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -18,10 +23,17 @@ import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:showcaseview/showcaseview.dart';
 
+import '../../../../../config/routes/app_navigator.dart';
+import '../../../../../utils/assets_manager.dart';
 import '../../../../../utils/tracking_utils.dart';
+import '../../../../chatlists/presentation/views/widgets/chatlist_overview_widget.dart';
 import '../../../data/models/product.dart';
+import '../top_deals_screen.dart';
+import 'forward_button.dart';
+import 'home_stores.dart';
 import 'latest_bargains_list.dart';
 import 'new_chatlist_widget.dart';
+import 'top_deals_row.dart';
 
 class HomeViewBody extends StatefulWidget {
   final ScrollController scrollController;
@@ -57,7 +69,6 @@ class _HomeViewBodyState extends State<HomeViewBody> {
       TrackingUtils()
           .trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Home Screen");
     }
-    addScrollListener();
   }
 
   @override
@@ -71,52 +82,50 @@ class _HomeViewBodyState extends State<HomeViewBody> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.w),
-        child: CustomScrollView(
-          controller: widget.scrollController,
-          slivers: [
-            SliverToBoxAdapter(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 15.h,
-                ),
-                SearchShowcase(showcaseContext: widget.showcaseContext),
-                SizedBox(
-                  height: 10.h,
-                ),
-                const CategoriesRow(),
-                const CategoriesList(),
-                const NewChatlistWidget(),
-                SizedBox(
-                  height: 10.h,
-                ),
-                const LatestBargainsRow(),
-              ],
-            )),
-            const LatestBargainsList(),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: SeeMoreButton(),
+        padding: EdgeInsets.symmetric(horizontal: 15),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              15.ph,
+              // SearchWidget(),
+              SearchShowcase(showcaseContext: widget.showcaseContext,),
+              SizedBox(
+                height: 10.h,
               ),
-            ),
-          ],
+              Text(
+                "Shop Latest Offer By Categories",
+                style: TextStylesPaytoneOne.textViewRegular24,
+              ),
+              const CategoriesList(),
+              // const NewChatlistWidget(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Top deals",
+                    style: TextStylesPaytoneOne.textViewRegular24,
+                  ),
+                  ForwardButton(onTap: () {
+                    AppNavigator.push(context: context, screen: AlgoliaSearchScreen());
+                  }),
+                ],
+              ),
+              TopDealsRow(),
+              10.ph,
+              Text(
+                "Shop Latest Offer By Store",
+                style: TextStylesPaytoneOne.textViewRegular24,
+              ),
+              10.ph,
+              const HomeStores(),
+              20.ph,
+              if(!Provider.of<SubscriptionProvider>(context, listen: false).isSubscribed)
+              Image.asset(homeSubscribe),
+            ],
+          ),
         ),
       ),
     );
-  }
-
-  void addScrollListener() {
-    return widget.scrollController.addListener(() {
-      double showOffset = 200.0;
-      if (widget.scrollController.offset > showOffset) {
-        if (!widget.showFAB) widget.updateFAB(true);
-      } else {
-        if (widget.showFAB) widget.updateFAB(false);
-      }
-    });
   }
 
   @override

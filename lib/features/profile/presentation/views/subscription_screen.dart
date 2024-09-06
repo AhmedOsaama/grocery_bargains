@@ -50,7 +50,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(title: ''),
+      appBar: const MyAppBar(title: ''),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: SingleChildScrollView(
@@ -101,7 +101,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     10.ph,
                     Text(
                       "You are upgraded to premium".tr(),
-                      style: TextStylesInter.textViewLight15.copyWith(color: Color(0xFF48484A)),
+                      style: TextStylesInter.textViewLight15.copyWith(color: const Color(0xFF48484A)),
                     ),
                     10.ph,
                     PlanContainer(
@@ -117,7 +117,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     future: offersFuture,
                     builder: (ctx, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting)
-                        return Center(
+                        return const Center(
                           child: CircularProgressIndicator(),
                         );
                       var offerings = snapshot.data ?? [];
@@ -198,20 +198,20 @@ How to Cancel: To cancel, simply go to your Google Play account settings, naviga
     if (offerings.isEmpty) {
       print("No plans found");
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Couldn't fetch plans from Google or Apple store. Please try again later")));
+          const SnackBar(content: Text("Couldn't fetch plans from Google or Apple store. Please try again later")));
     } else {
       final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
       if (selectedPlan == "Monthly") {
         hasPurchased = await PurchaseApi.purchasePackage(packages[0]).catchError((e) {
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Couldn't buy the monthly package")));
+              const SnackBar(content: Text("Couldn't buy the monthly package")));
           AppNavigator.pop(context: context);
         });
       }
       if (selectedPlan == "Yearly") {
         hasPurchased = await PurchaseApi.purchasePackage(packages[1]).catchError((e) {
           ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Couldn't buy the monthly package")));
+              const SnackBar(content: Text("Couldn't buy the monthly package")));
           AppNavigator.pop(context: context);
         });
       }

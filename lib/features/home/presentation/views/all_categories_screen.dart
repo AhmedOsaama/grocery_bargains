@@ -39,7 +39,7 @@ class _AllCategoriesScreenState extends State<AllCategoriesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: white,
-      appBar: SearchAppBar(isBackButton: true,),
+      appBar: SearchAppBar(),
       body: WillPopScope(
         onWillPop: () {
           FocusScope.of(context).unfocus();

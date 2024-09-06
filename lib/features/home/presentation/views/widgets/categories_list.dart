@@ -1,3 +1,4 @@
+import 'package:bargainb/features/search/presentation/views/algolia_search_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,7 @@ class _CategoriesListState extends State<CategoriesList> {
                     child: GestureDetector(
                       onTap: () {
                         pushNewScreen(context,
-                            screen: CategoryScreen(
+                            screen: AlgoliaSearchScreen(
                               category: element.category,
                             ),
                             withNavBar: true);

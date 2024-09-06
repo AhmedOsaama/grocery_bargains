@@ -507,4 +507,8 @@ class ChatlistsProvider with ChangeNotifier {
           }),
     ));
   }
+
+  Future<void> showChooseListDialog({required BuildContext context, required ListItem listItem}) async {
+    showDialog(context: context, builder: (ctx) => ChooseListDialog(item: listItem, context: context));
+  }
 }

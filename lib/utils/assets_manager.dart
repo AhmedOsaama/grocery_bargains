@@ -68,4 +68,26 @@ const String mealsPrompt  = "$imgWebPath/meal_prompt.png";
 const String dietaryPrompt  = "$imgWebPath/dietary_prompt.png";
 const String nutritionPrompt  = "$imgWebPath/nutrition_prompt.png";
 
+const String splash = "$imgPath/splash.png";
+const String beeLine1 = "$imgPath/bee_line_1.png";
+const String beeLine2 = "$imgPath/bee_line_2.png";
+const String highlight1 = "$imgPath/highlight_1.png";
+const String highlight2 = "$imgPath/highlight_2.png";
+const String highlight3 = "$imgPath/highlight_3.png";
+const String welcome = "$imgPath/welcome.png";
+const String moreStores = "$imgPath/more_stores.png";
+const String spar = "$imgPath/spar.png";
+const String coop = "$imgPath/coop.png";
+const String loginCover = "$imgPath/login_cover.png";
+const String bbIconNew = "$imgPath/bb_icon_new.png";
+const String loginBeeLine = "$imgPath/login_bee_line.png";
+const String createList = "$imgPath/create_list.png";
+const String homeSubscribe = "$imgPath/home_subscribe.png";
+const String productImage = "$imgPath/product_image.png";
+const String premiumBB = "$imgPath/premiumbb.png";
+const String subInfo1 = "$imgPath/sub_info_1.png";
+const String subInfo2 = "$imgPath/sub_info_2.png";
+const String subInfo3 = "$imgPath/sub_info_3.png";
+const String subInfo4 = "$imgPath/sub_info_4.png";
+
 

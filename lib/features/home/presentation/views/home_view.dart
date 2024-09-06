@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:bargainb/features/home/presentation/views/widgets/home_floating_button.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/nav_bar_showcase.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/tutorial_dialog.dart';
+import 'package:bargainb/features/search/presentation/views/widgets/search_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:showcaseview/showcaseview.dart';
@@ -10,6 +11,7 @@ import 'package:showcaseview/showcaseview.dart';
 import '../../../../providers/chatlists_provider.dart';
 import '../../../../providers/tutorial_provider.dart';
 import 'widgets/home_view_body.dart';
+import 'widgets/search_showcase.dart';
 
 class HomeView extends StatefulWidget {
   HomeView({Key? key}) : super(key: key);
@@ -28,7 +30,8 @@ class _HomeViewState extends State<HomeView> {
       builder: Builder(builder: (builder){
         startTutorial(context, builder);
         return Scaffold(
-          resizeToAvoidBottomInset: true,
+
+          // resizeToAvoidBottomInset: false,
           backgroundColor: Colors.white,
           floatingActionButton: HomeFloatingButton(showFAB: showFAB, scrollController: scrollController),
           floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,

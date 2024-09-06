@@ -668,3 +668,11 @@ abstract class TextStylesInter {
     fontFamily: fontFamilyInter,
   );
 }
+
+abstract class TextStylesPaytoneOne{
+  static TextStyle textViewRegular24 = TextStyle(
+    fontSize: 24.sp,
+    fontWeight: regular,
+    fontFamily: fontFamilyPaytoneOne,
+  );
+}

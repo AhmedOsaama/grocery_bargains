@@ -26,7 +26,7 @@ abstract class RegisterRepo {
   Future<void> storeUserInfo({required BuildContext context,
     required UserCredential userCredential});
 
-  Future<void> goToNextScreen(BuildContext context);
+  Future<void> goToNextScreen(BuildContext context, bool isSignup);
 
   Future<void> saveUserData(UserCredential userCredential, BuildContext context);
 

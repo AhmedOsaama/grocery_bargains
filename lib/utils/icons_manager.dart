@@ -1,5 +1,4 @@
 const String imgPath = 'assets/icon';
-const String imgWebPath = 'assets/icon/web_icons';
 
 const String apple = "$imgPath/apple.png";
 const String backIcon = "$imgPath/back.svg";
@@ -29,6 +28,8 @@ const String unreachedStepIcon = "$imgPath/unreached_step.svg";
 const String activeStepIcon = "$imgPath/active_step.svg";
 const String pendingStepIcon = "$imgPath/pending_step.svg";
 const String bbIcon = "$imgPath/bb_icon.svg";
-const String assistantIcon = "$imgWebPath/assistant.svg";
-const String homeIcon = "$imgWebPath/home.svg";
-const String todayDealIcon = "$imgWebPath/today_deal.svg";
+const String homeActive = "$imgPath/home_active.svg";
+const String homeInactive = "$imgPath/home_inactive.svg";
+const String bbActive = "$imgPath/bb_active.svg";
+const String bbInactive = "$imgPath/bb_inactive.svg";
+const String profileActive = "$imgPath/profile_active.svg";
