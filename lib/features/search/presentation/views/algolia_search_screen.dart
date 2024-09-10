@@ -29,7 +29,8 @@ import '../../../home/presentation/views/widgets/product_item.dart';
 class AlgoliaSearchScreen extends StatefulWidget {
   final String query;
   final String? category;
-  const AlgoliaSearchScreen({Key? key, this.query = '', this.category}) : super(key: key);
+  final String? store;
+  const AlgoliaSearchScreen({Key? key, this.query = '', this.category, this.store}) : super(key: key);
 
   @override
   State<AlgoliaSearchScreen> createState() => _AlgoliaSearchScreenState();
@@ -104,8 +105,12 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
 
     _productsSearcher.connectFilterState(_filterState);
     _filterState.filters.listen((_) => _pagingController.refresh());
+
     if(widget.category != null) {
       categoryFilter.toggle(widget.category!);
+    }
+    if(widget.store != null) {
+      storeFilter.toggle(widget.store!);
     }
     // selectedStoreFilter.add(selectableFacets[index].item.value);
 

@@ -25,7 +25,7 @@ class GenericField extends StatefulWidget {
   final int? maxLines;
   final bool? isFilled;
   final Color? fillColor;
-  final Color colorStyle;
+  final Color? colorStyle;
   final double borderRaduis;
   final List<BoxShadow>? boxShadow;
   final BoxConstraints? suffixConstraints;
@@ -34,6 +34,8 @@ class GenericField extends StatefulWidget {
   final AutovalidateMode? autoValidateMode;
   final double? width;
   final OutlineInputBorder? border;
+  final OutlineInputBorder? enabledBorder;
+  final OutlineInputBorder? focusedBorder;
 
   GenericField({
     super.key,
@@ -52,7 +54,7 @@ class GenericField extends StatefulWidget {
     this.isProfile = false,
     this.autoFocus = false,
     this.maxLines = 1,
-    this.colorStyle = lightGrey,
+    this.colorStyle,
     this.borderRaduis = 10,
     this.obscureText = false,
     this.onChanged,
@@ -65,7 +67,7 @@ class GenericField extends StatefulWidget {
     this.fillColor,
     this.contentPadding,
     this.width,
-    this.border,
+    this.border, this.enabledBorder, this.focusedBorder,
   });
 
   @override
@@ -78,7 +80,7 @@ class _GenericFieldState extends State<GenericField> {
     return Container(
       width: widget.width,
       decoration: BoxDecoration(
-        // border: Border.all(color: widget.colorStyle),
+        border: widget.colorStyle != null ? Border.all(color: widget.colorStyle!) : null,
           borderRadius: BorderRadius.circular(widget.borderRaduis),
           boxShadow: widget.boxShadow
       ),
@@ -117,18 +119,21 @@ class _GenericFieldState extends State<GenericField> {
           hintStyle:
           widget.hintStyle ?? TextStylesInter.textViewRegular12.copyWith(color: Color.fromRGBO(13, 1, 64, 0.6)),
           border: widget.border,
+          focusedBorder: widget.focusedBorder,
+          enabledBorder: widget.enabledBorder,
           // focusedBorder: OutlineInputBorder(
           //     borderSide: BorderSide(
-          //       color: widget.isFilled == true ? Colors.transparent : widget.colorStyle,
+          //       color: widget.colorStyle!,
           //     ),
           //     borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
           // enabledBorder: OutlineInputBorder(
-          //     borderSide: BorderSide(color: widget.isFilled == true ? Colors.transparent : widget.colorStyle),
+          //     borderSide: BorderSide(color: widget.isFilled == true ? Colors.transparent : widget.colorStyle!),
           //     borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
           // errorBorder: OutlineInputBorder(
           //     borderSide: const BorderSide(
           //       color: Colors.green,
           //     ),
+          // )
           //     borderRadius: BorderRadius.circular(widget.borderRaduis.sp)),
         ),
       ),

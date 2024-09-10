@@ -12,7 +12,7 @@ class SizeContainer extends StatelessWidget {
     return Container(
         padding: EdgeInsets.symmetric(horizontal: 15,vertical: 2),
         decoration: BoxDecoration(
-            color: mainPurple,
+            color: primaryGreen,
             borderRadius: BorderRadius.circular(10)
         ),
         child: Text(

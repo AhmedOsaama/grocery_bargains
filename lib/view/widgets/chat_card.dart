@@ -1,6 +1,7 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/models/chatlist.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
+import 'package:bargainb/providers/subscription_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +19,7 @@ import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
 import '../../utils/tracking_utils.dart';
 import '../../features/chatlists/presentation/views/chatlist_view_screen.dart';
+import '../../utils/utils.dart';
 
 class ChatCard extends StatelessWidget {
   final List<ChatList> allLists;
@@ -47,6 +49,10 @@ class ChatCard extends StatelessWidget {
               },
               child: Container(
                 padding: EdgeInsets.only(left: 17.w, top: 10.h, bottom: 10.h),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: Utils.boxShadow
+                ),
                 child: Row(
                   children: [
                     Expanded(
@@ -71,6 +77,7 @@ class ChatCard extends StatelessWidget {
                             style: TextStylesInter.textViewRegular14.copyWith(color: Color.fromRGBO(72, 72, 74, 1)),
                             overflow: TextOverflow.ellipsis,
                           ),
+                          if(SubscriptionProvider.get(context).isSubscribed)
                           FutureBuilder(
                               future: getUserImages(allLists[i].id),
                               builder: (context, snapshot) {
@@ -98,7 +105,7 @@ class ChatCard extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text.rich(TextSpan(
-            text: "${LocaleKeys.chatlist.tr()} ",
+            text: "List".tr(),
             style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
             children: [
               TextSpan(

@@ -16,8 +16,8 @@ class MessageBubble extends StatefulWidget {
   // final String message;
   final int itemId;
   final String itemName;
-  final String itemPrice;
-  final String itemOldPrice;
+  final double itemPrice;
+  final double itemOldPrice;
   final String itemSize;
   final String itemImage;
   final String itemBrand;
@@ -117,17 +117,23 @@ class _MessageBubbleState extends State<MessageBubble> {
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                           margin: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
                           decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(offset: Offset(0, 1),
+                              blurRadius: 2,
+                                color: Color.fromRGBO(0, 178, 7, 0.1)
+                              )
+                            ],
                             borderRadius: BorderRadius.only(
                               topRight: const Radius.circular(18),
                               topLeft: const Radius.circular(18),
                               bottomLeft: const Radius.circular(18) ,
                               bottomRight: const Radius.circular(0),
                             ),
-                            color: mainPurple,
+                            color: Color(0xffCBEBCC),
                           ),
                           child: Text(
                             widget.message,
-                            style: TextStyles.textViewRegular15.copyWith(color: Colors.white ),
+                            style: TextStyles.textViewRegular15,
                             softWrap: true,
                             textAlign: TextAlign.left,
                           ),
@@ -145,11 +151,11 @@ class _MessageBubbleState extends State<MessageBubble> {
                               bottomLeft: const Radius.circular(0),
                               bottomRight: const Radius.circular(18),
                             ),
-                            color: widget.userId == "bargainb" ? Colors.white : purple50,
+                            color: widget.userId == "bargainb" ? Color(0xffEDF2EE) : purple50,
                           ),
                           child: Text(
                             widget.message,
-                            style: TextStyles.textViewRegular16.copyWith(color:  widget.userId == "bargainb" ? Colors.black : Colors.white ),
+                            style: TextStyles.textViewRegular16,
                             textAlign: TextAlign.left,
                           ),
                         ),

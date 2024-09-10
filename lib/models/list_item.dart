@@ -5,8 +5,8 @@ class ListItem {
   String brand;
   String imageURL;
   int quantity;
-  String price;
-  String? oldPrice;
+  double price;
+  double? oldPrice;
   String storeName;
   bool isChecked;
   String text;

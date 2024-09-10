@@ -294,9 +294,9 @@ class _MainScreenState extends State<MainScreen> {
         inactiveColorPrimary: Colors.black,
       ),
       PersistentBottomNavBarItem(
-          icon: SvgPicture.asset(bbActive ,),
-          inactiveIcon: SvgPicture.asset(bbInactive,),
-          title: ("Assistant".tr()),
+          icon: SubscriptionProvider.get(context).isSubscribed ? SvgPicture.asset(bbActive ,) : SvgPicture.asset(freeListActive),
+          inactiveIcon: SubscriptionProvider.get(context).isSubscribed ?  SvgPicture.asset(bbInactive,) : SvgPicture.asset(freeListInActive,),
+          title: SubscriptionProvider.get(context).isSubscribed ? "Assistant".tr() : "Lists".tr(),
           // textStyle: TextStyle(fontSize: 12.sp),
           activeColorPrimary: Colors.black,
           inactiveColorPrimary: Colors.black,

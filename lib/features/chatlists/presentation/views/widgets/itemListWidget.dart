@@ -22,6 +22,7 @@ class ItemListWidget extends StatelessWidget {
     required this.jumboItems,
     required this.hoogvlietItems,
     required this.dirkItems,
+    required this.edekaItems,
   });
 
   final List quicklyAddedItems;
@@ -31,6 +32,7 @@ class ItemListWidget extends StatelessWidget {
   final List jumboItems;
   final List hoogvlietItems;
   final List dirkItems;
+  final List edekaItems;
 
   @override
   Widget build(BuildContext context) {
@@ -105,16 +107,30 @@ class ItemListWidget extends StatelessWidget {
                 }).toList(),
               ),
             ],
-            const Divider(
-              color: Colors.black,
-            ),
-            Text(LocaleKeys.quickAdd.tr(), style: TextStylesInter.textViewMedium14,),
+            if (edekaItems.isNotEmpty) ...[
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Image.asset(
+                  Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("edeka24"),
+                  width: 60,
+                  height: 30,
+                ),
+              ),
+              5.ph,
+              Column(
+                children: edekaItems.map((item) {
+                  return ChatlistItem(item: item);
+                }).toList(),
+              ),
+            ],
+            Text("Quick Add Items", style: TextStylesInter.textViewMedium14,),
+            10.ph,
             Column(
               children: quicklyAddedItems.map((item) {
                 return ChatlistItem(item: item);
               }).toList(),
             ),
-            5.ph,
+            20.ph,
             QuickItemTextField(quickItemController: quickItemController, listId: widget.listId),
           ],
         ),

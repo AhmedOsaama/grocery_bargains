@@ -47,7 +47,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
       authStateChangesStream = FirebaseAuth.instance.authStateChanges();
-      homeWidget = getHomeWidget(widget: widget);
+      homeWidget = getHomeWidget(widget: widget, notificationMessage: widget.notificationMessage, isFirstTime: widget.isFirstTime,);
       initMixpanel();
   }
 

@@ -163,7 +163,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 GenericButton(
                     width: double.infinity,
                     borderRadius: BorderRadius.circular(10),
-                    color: brightOrange,
+                    color: primaryGreen,
                     height: 60,
                     onPressed: () async {
                       await initiateSubscription(context, selectedPlan);

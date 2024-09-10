@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bargainb/models/chatlist.dart';
 import 'package:bargainb/models/user_info.dart';
+import 'package:bargainb/providers/subscription_provider.dart';
 import 'package:bargainb/providers/tutorial_provider.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
@@ -108,6 +109,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  15.ph,
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
                     child: Row(
@@ -116,15 +118,15 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                             onTap: () => AppNavigator.pop(context: context),
                             child: Icon(
                               Icons.arrow_back_ios_new_outlined,
-                              color: mainPurple,
+                              color: primaryGreen,
                             )),
                         5.pw,
                         isEditingName
                             ? Container(
-                                width: 200.w,
+                                width: 200,
                                 child: TextFormField(
                                   initialValue: chatList.name,
-                                  style: TextStyles.textViewSemiBold24.copyWith(color: prussian),
+                                  style: TextStylesPaytoneOne.textViewRegular24,
                                   focusNode: chatlistNameFocus,
                                   onFieldSubmitted: (value) async {
                                     chatlistNameFocus.unfocus();
@@ -133,7 +135,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                 ),
                               )
                             : Container(
-                                width: 150.w,
+                                width: 150,
                                 child: Text(
                                   chatList.name,
                                   maxLines: 2,
@@ -142,6 +144,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                                 ),
                               ),
                         Spacer(),
+                        if(SubscriptionProvider.get(context).isSubscribed)
                         Showcase.withWidget(
                           height: 50,
                           width: 150.w,
@@ -159,11 +162,12 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                             },
                             icon: SvgPicture.asset(
                               newperson,
-                              color: Colors.black,
+                              color: primaryGreen,
                             ),
                           ),
                         ),
                         10.pw,
+                        if(SubscriptionProvider.get(context).isSubscribed)
                         Container(
                           width: listUsers.length > 1 ? 60.w : 30.w,
                           height: 40,
@@ -215,7 +219,6 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                       child: ChatView(
                     listId: widget.listId,
                     showInviteMembersDialog: showInviteMembersDialog,
-                    isExpandingChatlist: widget.isExpandingChatlist,
                     chatlistName: chatList.name,
                     showcaseContext: showcaseContext,
                   ))

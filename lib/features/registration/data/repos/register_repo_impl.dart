@@ -249,7 +249,7 @@ class RegisterRepoImpl implements RegisterRepo {
         },
       };
       await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set(userData);
-     createHubspotContact(email, username, phoneNumber, country, city);
+     // createHubspotContact(email, username, phoneNumber, country, city);
 
       Provider.of<UserProvider>(context, listen: false)
           .setUserData(userCredential.user!.uid, username, email, phoneNumber, deviceToken!, imageURL);

@@ -285,7 +285,7 @@ class ChatlistsProvider with ChangeNotifier {
         'store_name': "",
         'isAddedToList': false,
         'item_price': 0.0,
-        'item_oldPrice': "",
+        'item_oldPrice': 0.0,
         'message': message,
         'createdAt': Timestamp.fromDate(DateTime.now().toUtc()),
         'userId': FirebaseAuth.instance.currentUser!.uid,

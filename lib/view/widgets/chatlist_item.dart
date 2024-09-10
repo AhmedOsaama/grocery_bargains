@@ -7,7 +7,9 @@ import 'package:bargainb/view/widgets/size_container.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -44,14 +46,12 @@ class _ChatlistItemState extends State<ChatlistItem> {
 
   @override
   void initState() {
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     try {
-      log("IN CHATLIST BUILD: ${widget.item['text']}");
       isChecked = widget.item['item_isChecked'];
       text = widget.item['text'] ?? '';
       itemName = widget.item['item_name'];
@@ -67,13 +67,14 @@ class _ChatlistItemState extends State<ChatlistItem> {
     } catch (e) {
       print(e);
     }
-    return text.isNotEmpty        //case of item is plain text
+    return text.isNotEmpty //case of item is plain text
         ? Row(
             children: [
               Checkbox(
                 value: isChecked,
-                checkColor: purple70,
-                side: const BorderSide(color: purple70, width: 2),
+                checkColor: Colors.white,
+                activeColor: primaryGreen,
+                side: BorderSide(color: primaryGreen, width: 2),
                 onChanged: (value) {
                   setState(() {
                     widget.item.data().update('item_isChecked', (value) => !isChecked);
@@ -95,54 +96,22 @@ class _ChatlistItemState extends State<ChatlistItem> {
                       DateTime.now().toUtc().toString(), "Chatlist screen");
                 },
               ),
-              TextButton(
-                onPressed: () async {
-                  setState(() {
-                    isClicked = !isClicked;
-                  });
-                  try {
-                    TrackingUtils().trackTextLinkClicked(FirebaseAuth.instance.currentUser!.uid,
-                        DateTime.now().toUtc().toString(), "Chatlist screen", "Click chatlist item");
-                  } catch (e) {
-                    print(e);
-                  }
-                },
+              Container(
+                width: 250,
+                padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: Color(0xffD6D6D6)),
+                ),
                 child: Text(
                   text,
-                  style: TextStylesInter.textViewRegular16,
+                  style: TextStylesInter.textViewRegular14.copyWith(color: Color(0xff71717A,), decoration: isChecked ? TextDecoration.lineThrough : null),
                 ),
               ),
-              if (isClicked)
-                IconButton(
-                    onPressed: () async {
-                      AppNavigator.push(context: context, screen: AlgoliaSearchScreen(query: text));
-                      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open search",
-                          DateTime.now().toUtc().toString(), "Chatlist screen");
-                      // showSearch(context: context, delegate: MySearchDelegate(pref: pref),query: text);
-                    },
-                    icon: const Icon(
-                      Icons.arrow_right,
-                      color: greyText,
-                    )),
-              const Spacer(),
-              if (isClicked)
-                IconButton(
-                    onPressed: () {
-                      FirebaseFirestore.instance
-                          .collection('/lists/${widget.item.reference.parent.parent!.id}/items')
-                          .doc(widget.item.id)
-                          .delete();
-                      TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
-                          "delete manual(text) item", DateTime.now().toUtc().toString(), "Chatlist screen");
-                    },
-                    icon: const Icon(
-                      Icons.close,
-                      color: greyText,
-                      size: 18,
-                    ))
             ],
           )
-        : Column(                     //case of item is a product
+        : Column(
+            //case of item is a product
             children: [
               Row(
                 // crossAxisAlignment: CrossAxisAlignment.center,
@@ -253,8 +222,8 @@ class _ChatlistItemState extends State<ChatlistItem> {
                                           itemName: itemName,
                                           storeName: storeName,
                                           listId: widget.item.reference.parent.parent!.id,
-                                          itemPrice: itemPrice,
-                                          itemOldPrice: itemOldPrice,
+                                          itemPrice: itemPrice.toString(),
+                                          itemOldPrice: itemOldPrice.toString(),
                                           itemDocId: widget.item.id,
                                         ));
                                 TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "edit item",
@@ -266,7 +235,7 @@ class _ChatlistItemState extends State<ChatlistItem> {
                               )),
                           12.pw,
                           Text(
-                            "€ ${(double.parse(itemPrice) * itemQuantity).toStringAsFixed(2)}",
+                            "€ ${(itemPrice * itemQuantity).toStringAsFixed(2)}",
                             style: TextStyles.textViewMedium13.copyWith(
                               color: prussian,
                               decoration: isChecked ? TextDecoration.lineThrough : null,
@@ -283,22 +252,22 @@ class _ChatlistItemState extends State<ChatlistItem> {
                   105.pw,
                   SizeContainer(itemSize: itemSize),
                   10.pw,
-                  if (itemOldPrice != null && itemOldPrice.isNotEmpty && itemOldPrice != "N/A") ...[
-                    Text(
-                      "€ ${itemOldPrice}",
-                      // "€ 2.33",
-                      style:
-                          TextStyles.textViewMedium10.copyWith(color: greyText, decoration: TextDecoration.lineThrough),
-                    ),
-                    5.pw,
-                    Text(
-                      "€ ${(double.parse(itemOldPrice) - double.parse(itemPrice)).toStringAsFixed(2)} less",
-                      // "€ ${2.33 - 1.00} less",
-                      style: TextStyles.textViewMedium10.copyWith(
-                        color: greenSecondary,
-                      ),
-                    ),
-                  ],
+                  // if (itemOldPrice != null && itemOldPrice != 0.0) ...[
+                  //   Text(
+                  //     "€ ${itemOldPrice}",
+                  //     // "€ 2.33",
+                  //     style:
+                  //         TextStyles.textViewMedium10.copyWith(color: greyText, decoration: TextDecoration.lineThrough),
+                  //   ),
+                  //   5.pw,
+                  //   Text(
+                  //     "€ ${(itemOldPrice - itemPrice).toStringAsFixed(2)} less",
+                  //     // "€ ${2.33 - 1.00} less",
+                  //     style: TextStyles.textViewMedium10.copyWith(
+                  //       color: greenSecondary,
+                  //     ),
+                  //   ),
+                  // ],
                 ],
               ),
             ],

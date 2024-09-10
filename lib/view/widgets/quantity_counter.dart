@@ -11,46 +11,33 @@ class QuantityCounter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Row(
       children: [
-        Container(
-          child: Row(
-            // mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: () {
-                  if (quantity > 0) {
-                   decreaseQuantity();
-                  }
-                },
-                icon: Icon(Icons.remove),
-                color: mainPurple,
-              ),
-              VerticalDivider(
-                color: grey,
-              ),
-              Text(
-                quantity.toString(),
-                style: TextStyles.textViewMedium18,
-              ),
-              VerticalDivider(
-                color: grey,
-              ),
-              IconButton(
-                  onPressed: () {
-                   increaseQuantity();
-                  },
-                  icon: Icon(Icons.add),
-                  color: mainPurple),
-            ],
-          ),
+        IconButton(
+          onPressed: () {
+            if (quantity > 0) {
+             decreaseQuantity();
+            }
+          },
+          icon: Icon(Icons.remove),
+          color: primaryGreen,
+        ),
+        VerticalDivider(
+          color: grey,
         ),
         Text(
-          "Quantity",
-          style: TextStyles.textViewMedium12
-              .copyWith(color: blackSecondary),
+          quantity.toString(),
+          style: TextStyles.textViewMedium18,
         ),
+        VerticalDivider(
+          color: grey,
+        ),
+        IconButton(
+            onPressed: () {
+             increaseQuantity();
+            },
+            icon: Icon(Icons.add),
+            color: primaryGreen),
       ],
     );
   }

@@ -17,6 +17,7 @@ class Product {
   late String description;
   late String englishName;
   late int storeId;
+  late String storeName;
   late int availableNow;
   String? dateAdded;
 
@@ -43,6 +44,9 @@ class Product {
 
 
   Product.fromJson(Map<String, dynamic> json){
+    if(json['price'].runtimeType == String){
+      json['price'] = double.parse(json['price']);
+    }
     try {
       id = json['id'] ?? -1;
       name = json['product_name'] ?? 'N/A';
@@ -50,7 +54,7 @@ class Product {
       link = json['link'] ?? 'N/A';
       category = json['category_name'] ?? 'N/A';
       subCategory = json['subcategory_name'] ?? 'N/A';
-      price = json['price'] ?? 'N/A';
+      price = json['price'] ?? 0.0;
       unit = json['unit'] ?? 'N/A';
       pricePerUnit = json['price_per_unit'] ?? 'N/A';
       oldPrice = json['old_price'] ?? 0.0;
@@ -60,11 +64,11 @@ class Product {
       description = json['description'] ?? 'N/A';
       englishName = json['english_name'] ?? 'N/A';
       storeId = json['store_id'] ?? -1;
+      storeName = json['store_name'] ?? 'N/A';
       availableNow = json['available_now'] ?? -1;
       dateAdded = json['date_added'] ?? 'N/A';
     }catch(e){
-      log("ERROR IN JSON PRODUCT: $e");
-      log("PRODUCT: ${price}, ${oldPrice}");
+      log("ERROR IN Product.fromJson: $e");
     }
   }
 

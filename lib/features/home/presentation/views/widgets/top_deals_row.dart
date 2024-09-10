@@ -35,7 +35,7 @@ class _TopDealsRowState extends State<TopDealsRow> {
         _pagingController.refresh();
       }
       _pagingController.appendPage(page.items, page.nextPageKey);
-      log(page.items.map((e) => "price: ${e.price}, oldPrice: ${e.oldPrice}\n").toList().toString());
+      // log(page.items.map((e) => "price: ${e.price}, oldPrice: ${e.oldPrice}\n").toList().toString());
     }).onError((error) {
       print("ERROR IN TopDealsRow pagination: $error");
       return _pagingController.error = error;

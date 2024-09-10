@@ -9,21 +9,24 @@ class HomeStores extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Map stores = {
-      "Albert Heijn": albert,
-      "Jumbo": jumbo,
+      "albert": albert,
+      "jumbo": jumbo,
       "Dirk": dirkLogo,
-      "Hoogvliet": hoogLogo,
+      "hoogvliet": hoogLogo,
       "Spar": spar,
       "Coop": coop,
-      "Lidl": lidle_store,
+      // "Plus": ,
       "Aldi": aldi,
+      "edeka24": edeka,
+      // "Rewe": ,
+
     };
     return Center(
       child: Wrap(
         spacing: 10,
         runSpacing: 20,
         children: stores.entries.map((store) {
-          return StoreCard(store: store.value, width: 40, height: 40, paddingValue: 16,);
+          return StoreCard(storeImage: store.value, storeName: store.key, width: 40, height: 40, paddingValue: 16,);
         }).toList(),
       ),
     );

@@ -33,3 +33,5 @@ const String homeInactive = "$imgPath/home_inactive.svg";
 const String bbActive = "$imgPath/bb_active.svg";
 const String bbInactive = "$imgPath/bb_inactive.svg";
 const String profileActive = "$imgPath/profile_active.svg";
+const String freeListActive = "$imgPath/free_list_active.svg";
+const String freeListInActive= "$imgPath/free_list_inactive.svg";

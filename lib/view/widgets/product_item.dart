@@ -10,10 +10,10 @@ import '../../utils/icons_manager.dart';
 import '../../utils/style_utils.dart';
 
 class ProductItemWidget extends StatelessWidget {
-  final String price;
+  final double price;
   final String brand;
   final int quantity;
-  final String oldPrice;
+  final double oldPrice;
   final String name;
   final String size;
   final String imagePath;
@@ -99,7 +99,7 @@ class ProductItemWidget extends StatelessWidget {
           Text("X " + quantity.toString(), style: TextStylesInter.textViewLight12.copyWith(color: blackSecondary),),
           5.pw,
           Text(
-                  "€${(double.parse(price) * quantity).toStringAsFixed(2)}",
+                  "€${(price * quantity).toStringAsFixed(2)}",
                   style:
                       TextStylesInter.textViewMedium10.copyWith(color: blackSecondary),
                 ),

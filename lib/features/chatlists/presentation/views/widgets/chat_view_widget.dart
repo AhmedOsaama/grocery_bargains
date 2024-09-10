@@ -3,9 +3,9 @@ import 'dart:developer';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/features/chatlists/presentation/views/widgets/chatlist_overview_widget.dart';
-import 'package:bargainb/features/chatlists/presentation/views/widgets/first_time_empty_list_widget.dart';
 import 'package:bargainb/features/chatlists/presentation/views/widgets/quick_item_text_field.dart';
 import 'package:bargainb/features/home/data/models/product_category.dart';
+import 'package:bargainb/providers/subscription_provider.dart';
 import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/down_triangle_painter.dart';
@@ -31,29 +31,21 @@ import 'package:bargainb/view/components/dotted_container.dart';
 import 'package:bargainb/view/components/generic_field.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 
-import 'add_friends_widget.dart';
-import 'empty_list_widget.dart';
+import 'chat_prompts_widget.dart';
 import 'itemListWidget.dart';
-import '../../../../../models/list_item.dart';
-import '../../../../../providers/products_provider.dart';
 import '../../../../../providers/tutorial_provider.dart';
-import '../../../../../utils/tracking_utils.dart';
-import '../../../../../utils/triangle_painter.dart';
-import '../../../../../view/widgets/discountItem.dart';
 import '../../../../../view/widgets/message_bubble.dart';
 
 class ChatView extends StatefulWidget {
   final String listId;
   final String chatlistName;
   final Function showInviteMembersDialog;
-  final bool? isExpandingChatlist;
   final BuildContext showcaseContext;
 
   ChatView(
       {Key? key,
       required this.listId,
       required this.showInviteMembersDialog,
-      this.isExpandingChatlist,
       required this.chatlistName,
       required this.showcaseContext})
       : super(key: key);
@@ -76,6 +68,7 @@ class _ChatViewState extends State<ChatView> {
   List jumboItems = [];
   List hoogvlietItems = [];
   List dirkItems = [];
+  List edekaItems = [];
   List quicklyAddedItems = [];
   TextEditingController quickItemController = TextEditingController();
   var pageNumber = 0;
@@ -124,6 +117,7 @@ class _ChatViewState extends State<ChatView> {
           }
           return Column(
             children: [
+              Provider.of<SubscriptionProvider>(context,listen: false).isSubscribed ?
               Expanded(
                 child: PageView(
                   controller: pageController,
@@ -137,7 +131,7 @@ class _ChatViewState extends State<ChatView> {
                     buildListView(items, context),
                   ],
                 ),
-              ),
+              ) : Expanded(child: buildListView(items, context))
               // 20.ph,
             ],
           );
@@ -167,15 +161,8 @@ class _ChatViewState extends State<ChatView> {
             ));
   }
 
-  EmptyListWidget buildEmptyListWidget() {
-    return EmptyListWidget(quickItemController: quickItemController, widget: widget);
-  }
 
-  FirstTimeEmptyListWidget buildFirstTimeEmptyListWidget() {
-    return FirstTimeEmptyListWidget(quickItemController: quickItemController, listId: widget.listId);
-  }
-
-  ItemListWidget buildItemList(BuildContext context, List<QueryDocumentSnapshot> items) {
+  Widget buildItemList(BuildContext context, List<QueryDocumentSnapshot> items) {
     clearAllStoreLists();
     populateStoreLists(items);
     return ItemListWidget(
@@ -185,22 +172,28 @@ class _ChatViewState extends State<ChatView> {
         albertItems: albertItems,
         jumboItems: jumboItems,
         hoogvlietItems: hoogvlietItems,
-        dirkItems: dirkItems);
+        dirkItems: dirkItems,
+        edekaItems: edekaItems,
+    );
   }
 
   void populateStoreLists(List<QueryDocumentSnapshot<Object?>> items) {
+    // log("Items: ${items.last.data()}");
     for (var item in items) {
-      if (item['store_name'] == "Albert") {
+      if (item['store_name'] == "albert") {
         albertItems.add(item);
       }
-      if (item['store_name'] == "Jumbo") {
+      if (item['store_name'] == "jumbo") {
         jumboItems.add(item);
       }
-      if (item['store_name'] == "Hoogvliet") {
+      if (item['store_name'] == "hoogvliet") {
         hoogvlietItems.add(item);
       }
       if (item['store_name'] == "Dirk") {
         dirkItems.add(item);
+      }
+      if (item['store_name'] == "edeka24") {
+        edekaItems.add(item);
       }
       if (item['store_name'].isEmpty) {
         quicklyAddedItems.add(item);
@@ -235,15 +228,20 @@ class _ChatViewState extends State<ChatView> {
                 pageNumber: pageNumber,
               ),
               (messages.isEmpty || !snapshot.hasData)
-                  ? Expanded(
-                      child: AddFriendsWidget(
-                      showInviteDialog: widget.showInviteMembersDialog,
-                    ))
+                  ? Expanded(child: ChatPrompts(
+                sendPrompt: (prompt) async {
+                  messageController.text = prompt;
+                  await submitMessage(context);
+                },
+              ))
                   : Expanded(
                       child: ListView.builder(
                           reverse: true,
                           itemCount: messages.length,
-                          itemBuilder: (ctx, index) => Container(
+                          itemBuilder: (ctx, index) {
+                            log(messages[index]['item_price'].runtimeType.toString());
+                            log(messages[index]['item_oldPrice'].runtimeType.toString());
+                            return Container(
                                 padding: const EdgeInsets.all(8.0),
                                 child: MessageBubble(
                                   itemId: (messages[index].data()! as Map).containsKey('item_id')
@@ -259,8 +257,8 @@ class _ChatViewState extends State<ChatView> {
                                       ? messages[index]['item_size']
                                       : "",
                                   itemName: messages[index]['item_name'],
-                                  itemPrice: messages[index]['item_price'].toString(),
-                                  itemOldPrice: messages[index]['item_oldPrice'] ?? "0.0",
+                                  itemPrice: messages[index]['item_price'],
+                                  itemOldPrice: messages[index]['item_oldPrice'],
                                   itemImage: messages[index]['item_image'],
                                   storeName: messages[index]['store_name'] ?? "",
                                   isMe: messages[index]['userId'] == FirebaseAuth.instance.currentUser!.uid,
@@ -272,8 +270,10 @@ class _ChatViewState extends State<ChatView> {
                                   key: ValueKey(messages[index].id),
                                   isAddedToList: messages[index]['isAddedToList'],
                                 ),
-                              )),
+                              );
+                          }),
                     ),
+              // Spacer(),
               if (isBotLoading)
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -359,9 +359,18 @@ class _ChatViewState extends State<ChatView> {
                       Expanded(
                         child: GenericField(
                           controller: messageController,
-                          hintText: LocaleKeys.textHere.tr(),
+                          hintText: "How can I help you?".tr(),
                           hintStyle: TextStylesInter.textViewRegular14.copyWith(color: hintText),
-                          contentPadding: EdgeInsets.only(left: 10),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color(0xffEBEBEB)
+                            )
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color(0xffEBEBEB)
+                            )
+                          ),
                           borderRaduis: 99999,
                           onSubmitted: (_) async {
                             ShowCaseWidget.of(showcaseContext).dismiss();
@@ -371,15 +380,18 @@ class _ChatViewState extends State<ChatView> {
                         ),
                       ),
                       5.pw,
-                      GestureDetector(
-                        onTap: () async {
+                      ElevatedButton(
+                        onPressed: () async {
                           ShowCaseWidget.of(showcaseContext).dismiss();
                           await submitMessage(context);
                           finishTutorial(tutorialProvider, showcaseContext);
                         },
-                        child: SvgPicture.asset(
-                          send,
+                        style: ElevatedButton.styleFrom(
+                          // fixedSize: Size(32, 32),
+                          minimumSize: Size(32, 32),
+                          backgroundColor: primaryGreen
                         ),
+                        child: Icon(Icons.send),
                       ),
                     ],
                   ),
@@ -425,7 +437,7 @@ class _ChatViewState extends State<ChatView> {
         'store_name': "",
         'isAddedToList': false,
         'item_price': 0.0,
-        'item_oldPrice': "",
+        'item_oldPrice': 0.0,
         'message': botResponse,
         'createdAt': Timestamp.fromDate(DateTime.now().toUtc()),
         'userId': "bargainb",

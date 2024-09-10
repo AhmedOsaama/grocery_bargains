@@ -40,27 +40,20 @@ class AppNavigator {
   static showFeatureBlockedDialog(BuildContext context){
     if (FirebaseAuth.instance.currentUser == null) {
       showSignInDialog(context);
-    } else if (!SubscriptionProvider.get(context).isSubscribed) {
-      showSubscribeDialog(context);
     }
   }
 
   static goToChatlistTab(BuildContext context) {
     if (FirebaseAuth.instance.currentUser == null) {
       showSignInDialog(context);
-    } else if (!SubscriptionProvider.get(context).isSubscribed) {
-      showSubscribeDialog(context);
-    } else {
+    }
       NavigatorController.jumpToTab(1);
       trackOpenChatlists();
-    }
   }
 
   static goToProfileTab(BuildContext context) {
     if (FirebaseAuth.instance.currentUser == null) {
       showSignInDialog(context);
-    } else if (!SubscriptionProvider.get(context).isSubscribed) {
-      showSubscribeDialog(context);
     } else {
       NavigatorController.jumpToTab(2);
       trackOpenProfile();

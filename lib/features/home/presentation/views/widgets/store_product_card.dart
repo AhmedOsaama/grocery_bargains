@@ -47,6 +47,9 @@ class StoreProductCard extends StatelessWidget {
     if(storeId == 4){
       return dirkLogo;
     }
+    if(storeId == 5){
+      return edeka;
+    }
     return bargainbLogo;
     // if(storeId == 5){
     //   return e;

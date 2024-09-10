@@ -51,7 +51,7 @@ class ProductsProvider with ChangeNotifier {
         products.add(product);
       }
     }catch(e){
-      print("Error getting similar products: $e");
+      log("Error getting similar products: $e");
     }
     return products;
   }
@@ -214,8 +214,12 @@ class ProductsProvider with ChangeNotifier {
       return jumbo;
     }if(selectedStore == "Hoogvliet"){
       return hoogvlietLogo;
-    }if(selectedStore == "Dirk"){
+    }
+    if(selectedStore == "Dirk"){
       return dirkLogo;
+    }
+    if(selectedStore == "edeka24"){
+      return edeka;
     }
     return imageError;
   }

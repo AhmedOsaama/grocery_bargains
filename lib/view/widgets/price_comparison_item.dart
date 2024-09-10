@@ -1,6 +1,8 @@
 import 'package:bargainb/utils/empty_padding.dart';
+import 'package:bargainb/utils/icons_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../utils/app_colors.dart';
 import '../../utils/style_utils.dart';
@@ -9,12 +11,11 @@ class PriceComparisonItem extends StatelessWidget {
   final String price;
   final String size;
   final String storeImagePath;
-  final bool isSameStore;                                         //to show the arrow button or not
   const PriceComparisonItem(
       {Key? key,
       required this.price,
       required this.size,
-      required this.storeImagePath, required this.isSameStore})
+      required this.storeImagePath})
       : super(key: key);
 
   @override
@@ -28,7 +29,12 @@ class PriceComparisonItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Image.asset(
+          storeImagePath == imageError ?
+          SvgPicture.asset(
+            storeImagePath,
+            width: 50,
+            height: 50,
+          ) : Image.asset(
             storeImagePath,
             width: 50,
             height: 50,
@@ -50,22 +56,13 @@ class PriceComparisonItem extends StatelessWidget {
             ],
           ),
           Spacer(),
-          if(!isSameStore)
           Container(
             padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: purple30)
               ),
-              child: Icon(Icons.arrow_forward_ios,color: mainPurple,)),
-          if(isSameStore)
-            Container(
-                padding: EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: purple30)
-                ),
-                child: Icon(Icons.add, color: mainPurple,)),
+              child: Icon(Icons.arrow_forward_ios,color: primaryGreen,)),
         ],
       ),
     );

@@ -1,12 +1,15 @@
 import 'package:bargainb/features/home/presentation/views/widgets/store_product_card.dart';
+import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../../config/routes/app_navigator.dart';
+import '../../../../../models/list_item.dart';
 import '../../../../../utils/app_colors.dart';
 import '../../../../../utils/style_utils.dart';
 import '../../../../../utils/utils.dart';
@@ -102,7 +105,19 @@ class ProductItem extends StatelessWidget {
                 ),
                 InkWell(
                   onTap: () {
-
+                    Provider.of<ChatlistsProvider>(context,listen: false).addProductToList(context, ListItem(
+                        id: product.id,
+                        storeName: product.storeName,
+                        name: product.name,
+                        brand: product.brand,
+                        oldPrice: product.price,
+                        price: product.price,
+                        isChecked: false,
+                        quantity: 1,
+                        imageURL: product.image,
+                        size: product.unit,
+                        category: product.category,
+                        text: ''));
                   },
                   child: Container(
                     padding: EdgeInsets.all(5),

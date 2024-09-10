@@ -31,50 +31,48 @@ class _ChatlistOverviewWidgetState extends State<ChatlistOverviewWidget> {
       margin: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Color(0xFF979797)),
         color: Colors.white,
         boxShadow: Utils.boxShadow,
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text.rich(TextSpan(
-              text: "${LocaleKeys.chatlist.tr()} ",
+              text: "List".tr(),
               style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
               children: [
                 TextSpan(
                     text: " ${widget.items.length} ${LocaleKeys.items.tr()}",
                     style: TextStylesInter.textViewBold10.copyWith(color: blackSecondary))
               ])),
-          5.pw,
           Text.rich(TextSpan(
-              text: "${LocaleKeys.total.tr()} ",
+              text: "${LocaleKeys.total.tr()}: ",
               style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
               children: [
                 TextSpan(
                     text: " €${getTotalListPrice(widget.items)}",
-                    style: TextStylesInter.textViewBold10.copyWith(color: mainPurple))
+                    style: TextStylesInter.textViewBold10.copyWith(color: secondaryGreen))
               ])),
-          5.pw,
           Text.rich(TextSpan(
-              text: "${LocaleKeys.savings.tr()} ",
+              text: "${LocaleKeys.savings.tr()}: ",
               style: TextStylesInter.textViewRegular10.copyWith(color: greyText),
               children: [
                 TextSpan(
                     text: " €${getTotalListSavings(widget.items)}",
                     style: TextStylesInter.textViewBold10.copyWith(color: greenSecondary))
               ])),
-          Spacer(),
+          // Spacer(),
           IconButton(
               onPressed: switchChatView,
               icon: widget.pageNumber == 0
                   ? Icon(
-                      Icons.notes,
-                      color: mainPurple,
+                      Icons.list,
+                      color: primaryGreen,
                       // size: 45.sp,
                     )
                   : Icon(
                       Icons.chat_outlined,
-                      color: mainPurple,
+                      color: primaryGreen,
                       // size: 45.sp,
                     )),
         ],

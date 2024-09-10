@@ -29,7 +29,7 @@ class QuickItemTextField extends StatelessWidget {
                 imageURL: '',
                 isChecked: false,
                 name: value.trim(),
-                price: "0.0",
+                price: 0.0,
                 quantity: 0,
                 size: '',
                 text: value.trim(),
@@ -40,10 +40,17 @@ class QuickItemTextField extends StatelessWidget {
             DateTime.now().toUtc().toString(), "Chatlist screen");
       },
       hintText: LocaleKeys.addSomethingQuickly.tr(),
-      contentPadding: EdgeInsets.only(left: 10),
-      hintStyle: TextStylesInter.textViewRegular12.copyWith(color: purple70),
-      colorStyle: Colors.transparent,
-      fillColor: lightPurple,
+     // border: const OutlineInputBorder(
+     //   borderSide: BorderSide(color: Colors.red)
+     // ),
+      enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Color(0xffD6D6D6))
+      ),
+      focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Color(0xffD6D6D6))
+      ),
+      // contentPadding: EdgeInsets.only(left: 10),
+      hintStyle: TextStylesInter.textViewRegular12.copyWith(color: primaryGreen),
       suffixIcon: TextButton(
         onPressed: () async {
           if (quickItemController.text.isEmpty) return;
@@ -54,7 +61,7 @@ class QuickItemTextField extends StatelessWidget {
                   imageURL: '',
                   isChecked: false,
                   name: quickItemController.text.trim(),
-                  price: "0.0",
+                  price: 0.0,
                   quantity: 0,
                   size: '',
                   text: quickItemController.text.trim(),
@@ -66,7 +73,7 @@ class QuickItemTextField extends StatelessWidget {
         },
         child: Text(
           LocaleKeys.add.tr(),
-          style: TextStylesInter.textViewBold12.copyWith(color: mainPurple),
+          style: TextStylesInter.textViewBold12.copyWith(color: primaryGreen),
         ),
       ),
     );

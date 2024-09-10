@@ -6,6 +6,7 @@ import 'package:bargainb/features/home/presentation/views/widgets/categories_row
 import 'package:bargainb/features/home/presentation/views/widgets/latest_bargains_row.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/search_showcase.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/see_more_button.dart';
+import 'package:bargainb/features/profile/presentation/views/subscription_screen.dart';
 import 'package:bargainb/features/search/presentation/views/algolia_search_screen.dart';
 import 'package:bargainb/features/search/presentation/views/widgets/search_widget.dart';
 import 'package:bargainb/providers/subscription_provider.dart';
@@ -120,7 +121,11 @@ class _HomeViewBodyState extends State<HomeViewBody> {
               const HomeStores(),
               20.ph,
               if(!Provider.of<SubscriptionProvider>(context, listen: false).isSubscribed)
-              Image.asset(homeSubscribe),
+              GestureDetector(
+                onTap: (){
+                  AppNavigator.push(context: context, screen: SubscriptionScreen());
+                },
+                  child: Image.asset(homeSubscribe)),
             ],
           ),
         ),

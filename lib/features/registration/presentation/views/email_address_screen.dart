@@ -1,7 +1,11 @@
+import 'dart:developer';
 
+import 'package:bargainb/services/hubspot_service.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/generic_field.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -25,7 +29,7 @@ class _EmailAddressScreenState extends State<EmailAddressScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:  AppBar(
+      appBar: AppBar(
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -43,17 +47,26 @@ class _EmailAddressScreenState extends State<EmailAddressScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Enter your email address", style: TextStylesPaytoneOne.textViewRegular24,),
+              Text(
+                "Enter your email address",
+                style: TextStylesPaytoneOne.textViewRegular24,
+              ),
               15.ph,
-              Text("Add your email to aid in recovery", style: TextStylesInter.textViewMedium12,),
+              Text(
+                "Add your email to aid in recovery",
+                style: TextStylesInter.textViewMedium12,
+              ),
               25.ph,
-              Text("Email address*", style: TextStylesInter.textViewMedium12,),
+              Text(
+                "Email address*",
+                style: TextStylesInter.textViewMedium12,
+              ),
               15.ph,
               GenericField(
                 controller: _emailAddressController,
                 hintText: "jan.jansen@example.com",
                 autoValidateMode: AutovalidateMode.onUserInteraction,
-                validation: (value) => Validator.text(value),
+                validation: (value) => Validator.email(value),
               ),
               30.ph,
               GenericButton(
@@ -61,10 +74,25 @@ class _EmailAddressScreenState extends State<EmailAddressScreen> {
                   color: primaryGreen,
                   borderRadius: BorderRadius.circular(6),
                   width: double.infinity,
-                  onPressed: () {
-                    if(_formKey.currentState!.validate()) {
-                      //TODO: store email in hubspot
-                      //TODO: store email in user collection
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                            .update({
+                          'email': _emailAddressController.text.trim(),
+                        });
+                        var userData = await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                            .get();
+                        var hubspotContactId = userData.get("hubspot_contact_id");
+                        HubspotService.updateHubspotContact(
+                            {"email": _emailAddressController.text.trim()}, hubspotContactId);
+                      } catch (e) {
+                        log("email_address_screen Error: $e");
+                      }
                       AppNavigator.push(context: context, screen: WelcomeScreen());
                     }
                   },

@@ -1,4 +1,5 @@
 import 'package:bargainb/models/chatlist.dart';
+import 'package:bargainb/providers/subscription_provider.dart';
 import 'package:bargainb/view/widgets/chat_card.dart';
 import 'package:bargainb/view/widgets/create_list_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -44,7 +45,6 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
           },
           child: Container(
             width: double.infinity,
-            color: Color(0xFFEBEFFD),
             child: Column(
               // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -53,7 +53,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                       child: Text(
-                        LocaleKeys.myChatlists.tr(),
+                        SubscriptionProvider.get(context).isSubscribed ? "Chats".tr() : "Lists".tr(),
                         textAlign: TextAlign.start,
                         style: TextStylesInter.textViewBold26.copyWith(color: blackSecondary),
                       ),
@@ -95,7 +95,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
         itemBuilder: (ctx, i) {
           return Column(
             children: [
-              GestureDetector(child: ChatCard(allLists, i)),
+              ChatCard(allLists, i),
               if (i == allLists.length - 1) ...[
                 30.ph,
                 getFab(),
@@ -131,7 +131,7 @@ class _ChatlistsScreenState extends State<ChatlistsScreen> {
         TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Create Chatlist",
             DateTime.now().toUtc().toString(), "Chatlist screen");
       },
-      color: mainOrange,
+      color: primaryGreen,
       padding: EdgeInsets.zero,
       borderRadius: BorderRadius.circular(20),
       child: const Icon(

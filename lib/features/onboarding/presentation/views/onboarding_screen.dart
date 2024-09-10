@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -13,6 +14,7 @@ import 'package:bargainb/view/components/button.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:http/http.dart';
 
 import '../../../../services/hubspot_service.dart';
 import 'widgets/fourth_onboarding_survey.dart';
@@ -168,28 +170,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     log("Sixth screen Responses: $dietaryPreferences");
   }
 
-  void saveSeventhScreenResponses(String selectedBudget) {
+  Future<void> saveSeventhScreenResponses(String selectedBudget) async {
     this.selectedBudget = selectedBudget;
     log("Seventh screen Responses: $selectedBudget");
-    //TODO: finish hubspot
+    var country = "";
+    var city = "";
+    try {
+      var response = await get(Uri.parse("http://ip-api.com/json"));
+      if (response.statusCode == 200) {
+        var responseMap = jsonDecode(response.body);
+        country = responseMap['country'];
+        city = responseMap['city'];
+      }
+    }catch(e){
+      log(e.toString());
+    }
     HubspotService.createHubspotContact({
-      // "firstname": "Guest",
-      // 'phone': "Guest Phone",
-      // 'age': ageRange,
-      // 'gender': gender,
-      // 'country': country,
-      // 'city': city,
-      // 'grocery_time': groceryTime,
-      // 'grocery_method': groceryMethod,
-      // 'grocery_challenges': groceryChallenges.toString(),
-      // "discount_findings": discountFindings.toString(),
-      // 'grocery_attractions': groceryAttractions,
-      // 'grocery_interests': groceryInterests,
-      // 'grocery_concerns': groceryConcerns.toString(),
-      // 'premium_app_interest': premiumAppInterest,
-      // 'monthly_subscription_price': monthlySubscriptionPrice,
-      // 'month_pay_preference': monthPayPreference,
-      // "hubspot_owner_id": "1252705237",
+      "firstname": firstName,
+      'last_name': lastName,
+      'country': country,
+      'city': city,
+      'bargainb_goals': selectedGoals.toString(),
+      'dietary_preferences': dietaryPreferences.toString(),
+      'favourite_stores': selectedStores.toString(),
+      'shopping_list_people': soloShopper ? "One person" : "Grown ups: $numOfGrownUps, Little Ones: $numOfLittleOnes, Furry Friends $numOfFurryFriends",
+      'typical_shopping_list': shoppingList.toString(),
+      'grocery_monthly_budget': this.selectedBudget.toString(),
+      "hubspot_owner_id": "1252705237",
     });
   }
 }

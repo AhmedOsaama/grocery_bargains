@@ -2,6 +2,8 @@ import 'package:http/http.dart' as http;
 
 class NetworkServices {
 
+  static String stagingUrl = "https://staging.thebargainb.com/api";
+
   //"all" requests
 
   static Future<http.Response> getAllCategories() async {
