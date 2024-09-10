@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:bargainb/features/search/presentation/views/widgets/search_appBar.dart';
+import 'package:bargainb/utils/down_triangle_painter.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -84,7 +85,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     try {
       var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
 
-        List<Product> similarProducts = await productsProvider.getSimilarProducts(widget.product.gtin);
+        List<Product> similarProducts = await productsProvider.getSimilarProducts(widget.product.id);
         for (var product in similarProducts) {
           // log(product.storeName);
           // log(product.storeId.toString());
@@ -129,7 +130,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     var tutorialProvider = Provider.of<TutorialProvider>(context);
-    log(widget.product.id.toString());
     return Scaffold(
       appBar: SearchAppBar(),
       body: Padding(
@@ -216,73 +216,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                     Divider(),
                     if(widget.product.description != "N/A" && widget.product.description.isNotEmpty) ...[
-                      Text("DESCRIPTION", style: TextStylesInter.textViewRegular12,),
+                      Text("DESCRIPTION".tr(), style: TextStylesInter.textViewRegular12,),
                       15.ph,
                       Text(widget.product.description, style: TextStylesInter.textViewRegular14,),
                       Divider(),
                     ],
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton(onPressed: (){
-                          addProductToList();
-                        }, style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-                            fixedSize: Size(250, 40),
-                            backgroundColor: primaryGreen,
-                            foregroundColor: Colors.white
-                        ),
-                          child: Text("Add to list", style: TextStylesInter.textViewMedium12,),),
-                        10.pw,
-                        OutlinedButton(onPressed: (){
-                          Provider.of<ProductsProvider>(context, listen: false).shareProductViaDeepLink(
-                              widget.product.name, widget.product.id, widget.product.storeName, context);
-                          try {
-                            TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
-                                "Share product", DateTime.now().toUtc().toString(), "Product screen");
-                          } catch (e) {
-                            print(e);
-                            TrackingUtils().trackButtonClick("Guest", "Share categories",
-                                DateTime.now().toUtc().toString(), "Product screen");
-                          }
-                        }, child: Row(
-                          children: [
-                            Text("Share", style: TextStylesInter.textViewMedium12.copyWith(color: Color(0xff0F0F0F)),),
-                            5.pw,
-                            Icon(Icons.share_outlined, color: Color(0xff0F0F0F),)
-                          ],
-                        )),
-                      ],
-                    ),
                     20.ph,
-                    if (canUpdateQuantity)
-                      QuantityCounter(
-                        quantity: quantity,
-                        increaseQuantity: increaseQuantity,
-                        decreaseQuantity: decreaseQuantity,
-                      ),
-                    Container(
-                      padding: EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: purple30, width: 2), borderRadius: BorderRadius.circular(15)),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.report_gmailerrorred,
-                            color: mainPurple,
-                          ),
-                          15.pw,
-                          Flexible(
-                            child: Text(
-                              "The price shown are available online and may not reflect in store. Confirm prices before visiting store",
-                              style: TextStyles.textViewLight12.copyWith(color: const Color.fromRGBO(62, 62, 62, 1)),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    25.ph,
-                    Text("Where to buy ?", style: TextStylesInter.textViewMedium14.copyWith(color: Color(0xff123013)),),
+                    Text("Where to buy ?".tr(), style: TextStylesInter.textViewMedium14.copyWith(color: Color(0xff123013)),),
                     FutureBuilder(
                         future: getComparisonsFuture,
                         builder: (context, snapshot) {
@@ -290,7 +230,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             return Center(child: CircularProgressIndicator());
                           }
                           if(comparisonItems.isEmpty) {
-                            return const Center(child: Text("No comparisons found for this product"));
+                            return Center(child: Text("No comparisons found for this product".tr()));
                           }
                           return ListView.builder(
                             shrinkWrap: true,
@@ -302,31 +242,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 key: tutorialProvider.isTutorialRunning && index == 0
                                     ? TooltipKeys.showCase4
                                     : GlobalKey<State<StatefulWidget>>(),
-                                tooltipPosition: TooltipPosition.bottom,
+                                tooltipPosition: TooltipPosition.top,
                                 container: Column(
                                   children: [
                                     Container(
-                                      height: 11,
-                                      width: 13,
-                                      child: CustomPaint(
-                                        painter: TrianglePainter(
-                                          strokeColor: purple70,
-                                          strokeWidth: 1,
-                                          paintingStyle: PaintingStyle.fill,
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
                                       padding: EdgeInsets.all(15),
-                                      width: 250.w,
+                                      width: 200.w,
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8.r),
+                                        borderRadius: BorderRadius.circular(8),
                                         color: purple70,
                                       ),
                                       child: Column(children: [
                                         Text(
                                           " View all the available prices, add to your list, and streamline your shopping experience".tr(),
-                                          style: TextStyles.textViewRegular16.copyWith(color: white),
+                                          style: TextStyles.textViewRegular16.copyWith(color: Colors.white),
                                         ),
                                         GestureDetector(
                                           onTap: () async {
@@ -348,13 +277,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                             }
                                           },
                                           child: Row(
-                                            // mainAxisAlignment: MainAxisAlignment.end,
                                             children: [
                                               SkipTutorialButton(tutorialProvider: tutorialProvider, context: ctx),
                                               Spacer(),
                                               Text(
                                                 "Next".tr(),
-                                                style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                                                style: TextStyles.textViewSemiBold14.copyWith(color: Colors.white),
                                               ),
                                               Icon(
                                                 Icons.arrow_forward_ios,
@@ -366,6 +294,17 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                         )
                                       ]),
                                     ),
+                                    Container(
+                                      height: 11,
+                                      width: 13,
+                                      child: CustomPaint(
+                                        painter: DownTrianglePainter(
+                                          strokeColor: purple70,
+                                          strokeWidth: 1,
+                                          paintingStyle: PaintingStyle.fill,
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
                                 height: 50,
@@ -375,6 +314,76 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             },
                           );
                         }),
+                    20.ph,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(onPressed: (){
+                          addProductToList();
+                        }, style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                            fixedSize: Size(250, 40),
+                            backgroundColor: primaryGreen,
+                            foregroundColor: Colors.white
+                        ),
+                          child: Text("Add to list".tr(), style: TextStylesInter.textViewMedium12,),),
+                        10.pw,
+                        OutlinedButton(onPressed: (){
+                          Provider.of<ProductsProvider>(context, listen: false).shareProductViaDeepLink(
+                              widget.product.name, widget.product.id, widget.product.storeName, context);
+                          try {
+                            TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,
+                                "Share product", DateTime.now().toUtc().toString(), "Product screen");
+                          } catch (e) {
+                            print(e);
+                            TrackingUtils().trackButtonClick("Guest", "Share categories",
+                                DateTime.now().toUtc().toString(), "Product screen");
+                          }
+                        }, child: Row(
+                          children: [
+                            Text("Share".tr(), style: TextStylesInter.textViewMedium12.copyWith(color: Color(0xff0F0F0F)),),
+                            5.pw,
+                            Icon(Icons.share_outlined, color: Color(0xff0F0F0F),)
+                          ],
+                        )),
+                      ],
+                    ),
+                    20.ph,
+                    if (canUpdateQuantity)
+                      Row(
+                        children: [
+                          Text("Quantity".tr(), style: TextStylesInter.textViewRegular14,),
+                          20.pw,
+                          QuantityCounter(
+                            quantity: quantity,
+                            increaseQuantity: increaseQuantity,
+                            decreaseQuantity: decreaseQuantity,
+                          ),
+                        ],
+                      ),
+                    25.ph,
+
+                    Container(
+                      padding: EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: purple30, width: 2), borderRadius: BorderRadius.circular(15)),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.report_gmailerrorred,
+                            color: mainPurple,
+                          ),
+                          15.pw,
+                          Flexible(
+                            child: Text(
+                              "The price shown are available online and may not reflect in store. Confirm prices before visiting store".tr(),
+                              style: TextStyles.textViewLight12.copyWith(color: const Color.fromRGBO(62, 62, 62, 1)),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
                   ],
                 ),
               );

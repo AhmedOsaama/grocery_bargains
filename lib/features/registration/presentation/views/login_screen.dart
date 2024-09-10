@@ -65,12 +65,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Image.asset(bbIconNew,),
-                  Text("Login", style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: Colors.white),),
+                  Text("Login".tr(), style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: Colors.white),),
                   10.ph,
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 35),
                     child: Text(
-                      "Login to get the latest discounts, create lists, and share the discounts or shopping with family and friends",
+                      "Login to get the latest discounts, create lists, and share the discounts or shopping with family and friends".tr(),
                       style: TextStylesInter.textViewRegular12.copyWith(color: Colors.white),
                       textAlign: TextAlign.center,
                     ),
@@ -79,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "Phone number*",
+                      "Phone number*".tr(),
                       style:
                       TextStylesInter.textViewBold12.copyWith(color: Colors.white),
                     ),
@@ -141,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 });
                               }),
                           Text(
-                            "Remember me",
+                            "Remember me".tr(),
                             style: TextStylesInter.textViewRegular12.copyWith(
                                 color: Colors.white),
                           ),
@@ -165,13 +165,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         }
                       },
                       child: Text(
-                        "LOGIN",
+                        "LOGIN".tr(),
                         style: TextStyles.textViewMedium16,
                       )),
                   20.ph,
-                  const Row(
+                   Row(
                     children: [
-                      Expanded(
+                      const Expanded(
                         child: Divider(
                           // indent: 20.0,
                           endIndent: 10.0,
@@ -180,10 +180,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       Text(
-                        "OR",
-                        style: TextStyle(color: Color(0xffE0F3E1)),
+                        "OR".tr(),
+                        style: const TextStyle(color: Color(0xffE0F3E1)),
                       ),
-                      Expanded(
+                      const Expanded(
                         child: Divider(
                           indent: 10.0,
                           // endIndent: 20.0,
@@ -196,10 +196,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Don't have an account ? ", style: TextStylesInter.textViewRegular14.copyWith(color: Colors.white),),
+                      Text("Don't have an account ? ".tr(), style: TextStylesInter.textViewRegular14.copyWith(color: Colors.white),),
                       TextButton(onPressed: (){
                         AppNavigator.push(context: context, screen: SignupScreen());
-                      }, child: Text("Signup", style: TextStylesInter.textViewRegular14.copyWith(color: const Color(0xffFF8A00)),))
+                      }, child: Text("Signup".tr(), style: TextStylesInter.textViewRegular14.copyWith(color: const Color(0xffFF8A00)),))
                     ],
                   )
                 ],

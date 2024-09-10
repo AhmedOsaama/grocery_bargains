@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:bargainb/features/registration/presentation/views/login_screen.dart';
 import 'package:bargainb/features/registration/presentation/views/register_screen.dart';
 import 'package:bargainb/features/registration/presentation/views/signup_screen.dart';
 import 'package:bargainb/utils/assets_manager.dart';
@@ -97,7 +98,7 @@ class _SigninDialogState extends State<SigninDialog> {
                         onPressed: () async {
                           AppNavigator.pop(context: context);
                           pushNewScreen(context,
-                              screen: SignupScreen(), withNavBar: false);
+                              screen: LoginScreen(), withNavBar: false);
                         },
                         child: Text(
                           widget.buttonText,

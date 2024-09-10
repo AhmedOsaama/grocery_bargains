@@ -41,11 +41,11 @@ class ProductsProvider with ChangeNotifier {
     return products;
   }
 
-  Future<List<Product>> getSimilarProducts(String gtin) async {
+  Future<List<Product>> getSimilarProducts(int id) async {
     List<Product> products = [];
     try {
-      var response = await NetworkServices.getSimilarProducts(gtin);
-      List productsList = jsonDecode(response.body);
+      var response = await NetworkServices.getSimilarProducts(id);
+      List productsList = jsonDecode(response.body)['data'];
       for (var decodedProduct in productsList) {
         var product = Product.fromJson(decodedProduct);
         products.add(product);
@@ -81,7 +81,6 @@ class ProductsProvider with ChangeNotifier {
     }catch(e){
       print("Error getting all categories: $e");
     }
-    print("categories length: ${categories.length}");
     notifyListeners();
     return response.statusCode;
   }

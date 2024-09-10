@@ -3,6 +3,7 @@ import 'package:bargainb/features/onboarding/presentation/views/free_trial_scree
 import 'package:bargainb/services/hubspot_service.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/empty_padding.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../utils/style_utils.dart';
@@ -35,12 +36,12 @@ class _SeventhOnboardingSurveyState extends State<SeventhOnboardingSurvey> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Last Question! What’s your monthly grocery budget ?",
+          "Last Question! What’s your monthly grocery budget ?".tr(),
           style: TextStylesPaytoneOne.textViewRegular24,
         ),
         10.ph,
         Text(
-          "Please enter your average monthly grocery budget to help us find the best deals within your spending range",
+          "Please enter your average monthly grocery budget to help us find the best deals within your spending range".tr(),
           style: TextStylesInter.textViewMedium12,
         ),
         25.ph,
@@ -49,7 +50,7 @@ class _SeventhOnboardingSurveyState extends State<SeventhOnboardingSurvey> {
               .map(
                 (budget) => RadioListTile(
                 title: Text(
-                  budget,
+                  budget.tr(),
                   style: TextStylesInter.textViewRegular14,
                 ),
                 value: budget,
@@ -66,7 +67,7 @@ class _SeventhOnboardingSurveyState extends State<SeventhOnboardingSurvey> {
         ),
         if (showErrorText)
           Text(
-            "Please select at least one choice to proceed.",
+            "Please select at least one choice to proceed.".tr(),
             style: TextStylesInter.textViewRegular10.copyWith(color: Colors.red),
           ),
         Spacer(),
@@ -87,7 +88,7 @@ class _SeventhOnboardingSurveyState extends State<SeventhOnboardingSurvey> {
             color: primaryGreen,
             borderRadius: BorderRadius.circular(6),
             child: Text(
-              "Next",
+              "Next".tr(),
               style: TextStylesInter.textViewMedium16,
             ))
       ],

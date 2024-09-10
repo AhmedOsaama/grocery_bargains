@@ -1,4 +1,5 @@
 import 'package:bargainb/utils/empty_padding.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -45,7 +46,7 @@ class _SearchWidgetState extends State<SearchWidget> {
                 return GenericField(
                     controller: textController,
                     focusNode: focusNode,
-                    hintText: "What are you looking for?",
+                    hintText: "What are you looking for?".tr(),
                     hintStyle: TextStyles.textViewRegular14.copyWith(color: Color(0xff71717A)),
                     border: const OutlineInputBorder(
                         borderSide: BorderSide.none

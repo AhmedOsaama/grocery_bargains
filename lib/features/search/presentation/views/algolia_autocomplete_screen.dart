@@ -3,6 +3,7 @@ import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/icons_manager.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -52,13 +53,13 @@ class _AlgoliaAutoCompleteScreenState extends State<AlgoliaAutoCompleteScreen> {
             Row(
               children: [
                 Text(
-                  "Your searches",
+                  "Your searches".tr(),
                   style: TextStylesInter.textViewBold14,
                 ),
                 const Spacer(),
                 TextButton(
                     onPressed: () => suggestionRepository.clearHistory(),
-                    child: const Text("Clear",
+                    child: Text("Clear".tr(),
                         style: TextStyle(color: Color(0xFF5468FF))))
               ],
             ),
@@ -73,7 +74,7 @@ class _AlgoliaAutoCompleteScreenState extends State<AlgoliaAutoCompleteScreen> {
           _sectionHeader(
               suggestionRepository.suggestions,
               Text(
-                "Search Suggestions",
+                "Search Suggestions".tr(),
                 style: TextStylesInter.textViewBold14,
               )),
           _sectionBody(

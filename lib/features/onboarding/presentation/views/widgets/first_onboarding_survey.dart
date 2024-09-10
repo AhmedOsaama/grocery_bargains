@@ -29,23 +29,23 @@ class _FirstOnboardingSurveyState extends State<FirstOnboardingSurvey> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-        Text("What's your name ?", style: TextStylesPaytoneOne.textViewRegular24,),
+        Text("What's your name ?".tr(), style: TextStylesPaytoneOne.textViewRegular24,),
           10.ph,
-          Text("Let us know how to properly address you", style: TextStylesInter.textViewMedium12,),
+          Text("Let us know how to properly address you".tr(), style: TextStylesInter.textViewMedium12,),
           20.ph,
-          Text("First Name", style: TextStylesInter.textViewMedium12,),
+          Text("First Name".tr(), style: TextStylesInter.textViewMedium12,),
           5.ph,
           GenericField(
             controller: _firstNameController,
-            hintText: "Enter first name",
+            hintText: "Enter first name".tr(),
             validation: (value) => Validator.text(value),
           ),
           20.ph,
-          Text("Last Name", style: TextStylesInter.textViewMedium12,),
+          Text("Last Name".tr(), style: TextStylesInter.textViewMedium12,),
           5.ph,
           GenericField(
             controller: _lastNameController,
-            hintText: "Enter last name",
+            hintText: "Enter last name".tr(),
             validation: (value) => Validator.text(value),
           ),
           Spacer(),
@@ -66,7 +66,7 @@ class _FirstOnboardingSurveyState extends State<FirstOnboardingSurvey> {
               color: primaryGreen,
               borderRadius: BorderRadius.circular(6),
               child: Text(
-                "Next",
+                "Next".tr(),
                 style: TextStylesInter.textViewMedium16,
               )),
         ],

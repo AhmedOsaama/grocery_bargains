@@ -95,7 +95,7 @@ class _SearchShowcaseState extends State<SearchShowcase> {
     var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
     ShowCaseWidget.of(builder).dismiss();
     try {
-      Product product = Provider.of<ProductsProvider>(context, listen: false).products.first;
+      Product product = Provider.of<ProductsProvider>(context, listen: false).products[10];
       await pushNewScreen(context,
           screen: ProductDetailScreen(
           product: product,

@@ -51,7 +51,7 @@ class _getHomeWidgetState extends State<getHomeWidget> {
               // return widget.isFirstTime ? const HighlightsScreen() :
               // const MainScreen(); //logged out
               // const HighlightsScreen(); //logged out
-              return EmailAddressScreen();
+              return MainScreen();
             });
   }
 }

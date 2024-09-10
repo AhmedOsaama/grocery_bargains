@@ -1,4 +1,5 @@
 import 'package:bargainb/utils/empty_padding.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../utils/app_colors.dart';
@@ -22,7 +23,7 @@ class _FifthOnboardingSurveyState extends State<FifthOnboardingSurvey> {
     "Chips", "Pet Food", "Soap", "Toiletries",
     "Cleaning Products", "Juice",
     "Cold Cuts", "Soft Drinks", "Sausages",
-    "Fruits  ", "Ready Made", "Potatoes",
+    "Fruits", "Ready Made", "Potatoes",
     "Beer", "Vegetables", "Candy", "Tea",
   ];
 
@@ -37,12 +38,12 @@ class _FifthOnboardingSurveyState extends State<FifthOnboardingSurvey> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "What’s on your typical shopping list ?",
+            "What’s on your typical shopping list ?".tr(),
             style: TextStylesPaytoneOne.textViewRegular24,
           ),
           10.ph,
           Text(
-            "Choose the items that are usually on your grocery shopping list. You can select multiple options.",
+            "Choose the items that are usually on your grocery shopping list. You can select multiple options.".tr(),
             style: TextStylesInter.textViewMedium12,
           ),
           20.ph,
@@ -50,7 +51,7 @@ class _FifthOnboardingSurveyState extends State<FifthOnboardingSurvey> {
             spacing: 10,
             children: choices.map((choice) {
               return ActionChip(
-                label: Text(choice),
+                label: Text(choice.tr()),
                 padding: EdgeInsets.all(10),
                 onPressed: selectedChoices.contains(choice)
                     ? null
@@ -69,7 +70,7 @@ class _FifthOnboardingSurveyState extends State<FifthOnboardingSurvey> {
           if (selectedChoices.isNotEmpty) Text("Selected Choices: $selectedChoices"),
           if (showErrorText)
             Text(
-              "Please select at least one goal to proceed.",
+              "Please select at least one goal to proceed.".tr(),
               style: TextStylesInter.textViewRegular10.copyWith(color: Colors.red),
             ),
           // Spacer(),
@@ -90,7 +91,7 @@ class _FifthOnboardingSurveyState extends State<FifthOnboardingSurvey> {
               color: primaryGreen,
               borderRadius: BorderRadius.circular(6),
               child: Text(
-                "Next",
+                "Next".tr(),
                 style: TextStylesInter.textViewMedium16,
               ))
         ],

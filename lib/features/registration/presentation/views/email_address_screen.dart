@@ -5,6 +5,7 @@ import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/generic_field.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -48,17 +49,17 @@ class _EmailAddressScreenState extends State<EmailAddressScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Enter your email address",
+                "Enter your email address".tr(),
                 style: TextStylesPaytoneOne.textViewRegular24,
               ),
               15.ph,
               Text(
-                "Add your email to aid in recovery",
+                "Add your email to aid in recovery".tr(),
                 style: TextStylesInter.textViewMedium12,
               ),
               25.ph,
               Text(
-                "Email address*",
+                "Email address*".tr(),
                 style: TextStylesInter.textViewMedium12,
               ),
               15.ph,
@@ -97,7 +98,7 @@ class _EmailAddressScreenState extends State<EmailAddressScreen> {
                     }
                   },
                   child: Text(
-                    "Next",
+                    "Next".tr(),
                     style: TextStyles.textViewMedium16,
                   ))
             ],

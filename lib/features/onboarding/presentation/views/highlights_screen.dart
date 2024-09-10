@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:bargainb/config/routes/app_navigator.dart';
+import 'package:bargainb/features/onboarding/presentation/views/policy_screen.dart';
+import 'package:bargainb/features/onboarding/presentation/views/terms_of_service_screen.dart';
 import 'package:bargainb/features/registration/presentation/views/login_screen.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/assets_manager.dart';
@@ -8,6 +10,7 @@ import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/button.dart';
 import 'package:dots_indicator/dots_indicator.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -71,13 +74,13 @@ class _HighlightsScreenState extends State<HighlightsScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    highlight['title']!,
+                    highlight['title']!.tr(),
                     style: TextStyles.textViewSemiBold24.copyWith(color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
                   10.ph,
                   Text(
-                    highlight['subtitle']!,
+                    highlight['subtitle']!.tr(),
                     style: TextStyles.textViewRegular18.copyWith(color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
@@ -107,7 +110,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> {
                     color: primaryGreen,
                     borderRadius: BorderRadius.circular(6),
                     child: Text(
-                      "Get Started",
+                      "Get Started".tr(),
                       style: TextStylesInter.textViewMedium16,
                     ),
                   ),
@@ -121,7 +124,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> {
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(6),
                     child: Text(
-                      "I got an account, Log me in",
+                      "I got an account, Log me in".tr(),
                       style: TextStylesInter.textViewMedium16.copyWith(color: Colors.black),
                     ),
                   ),
@@ -129,21 +132,21 @@ class _HighlightsScreenState extends State<HighlightsScreen> {
                   Text.rich(
                     textAlign: TextAlign.center,
                     TextSpan(
-                        text: "By logging or registering you agree to our ",
+                        text: "By logging or registering you agree to our ".tr(),
                         style: TextStylesInter.textViewRegular12.copyWith(color: Colors.white),
                         children: [
                           TextSpan(
-                              text: "Terms of Service",
+                              text: "Terms of Service".tr(),
                               style: const TextStyle(color: Colors.brown),
                               recognizer: TapGestureRecognizer()
-                                ..onTap = () => log("Terms of service pressed")),
-                          const TextSpan(
-                            text: " and ",
+                                ..onTap = () => AppNavigator.push(context: context, screen: TermsOfServiceScreen())),
+                          TextSpan(
+                            text: " and ".tr(),
                           ),
                           TextSpan(
-                              text: "Privacy Policy",
+                              text: "Privacy Policy".tr(),
                               style: const TextStyle(color: Colors.brown),
-                              recognizer: TapGestureRecognizer()..onTap = () => log("Privacy Policy pressed"))
+                              recognizer: TapGestureRecognizer()..onTap = () => AppNavigator.push(context: context, screen: PolicyScreen()))
                         ]),
                   ),
                   20.ph,

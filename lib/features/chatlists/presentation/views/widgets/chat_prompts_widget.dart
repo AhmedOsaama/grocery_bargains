@@ -34,11 +34,11 @@ class ChatPrompts extends StatelessWidget {
       children: [
         Image.asset(newBee),
         10.ph,
-        Text("Hi! I’m your BargainB grocery assistant", style: TextStylesPaytoneOne.textViewRegular24.copyWith(fontSize: 12),),
+        Text("Hi! I’m your BargainB grocery assistant".tr(), style: TextStylesPaytoneOne.textViewRegular24.copyWith(fontSize: 12),),
         10.ph,
         SizedBox(
           width: 230,
-            child: Text(" I’m here to help you save money, find the best deals, and make your shopping easier", style: TextStylesInter.textViewRegular10, textAlign: TextAlign.center,)),
+            child: Text(" I’m here to help you save money, find the best deals, and make your shopping easier".tr(), style: TextStylesInter.textViewRegular10, textAlign: TextAlign.center,)),
         20.ph,
         Wrap(
           runSpacing: 20,
@@ -59,7 +59,7 @@ class ChatPrompts extends StatelessWidget {
                       )
                     ]
                   ),
-                  child: Text(prompt, style: TextStylesInter.textViewRegular10,),
+                  child: Text(prompt.tr(), style: TextStylesInter.textViewRegular10,),
                 ),
               );
           }).toList()

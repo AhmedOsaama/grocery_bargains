@@ -5,6 +5,7 @@ import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/utils/algolia_utils.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/style_utils.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 class FilterBottomSheet extends StatefulWidget {
@@ -39,7 +40,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
           children: [
             Row(
               children: [
-                Text("Sort and Filter", style: TextStylesPaytoneOne.textViewRegular24.copyWith(fontSize: 18),),
+                Text("Sort and Filter".tr(), style: TextStylesPaytoneOne.textViewRegular24.copyWith(fontSize: 18),),
                 Spacer(),
                 TextButton(onPressed: (){
                   setState(() {
@@ -48,7 +49,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
                   categorySelection = "";
                   subCategorySelection = "";
                   });
-                }, child: Text("Clear All", style: TextStylesInter.textViewRegular14.copyWith(decoration: TextDecoration.underline),),),
+                }, child: Text("Clear All".tr(), style: TextStylesInter.textViewRegular14.copyWith(decoration: TextDecoration.underline),),),
                 IconButton(onPressed: (){
                   AppNavigator.pop(context: context, object: {
                     "store": selectedStoreFilter,
@@ -59,25 +60,25 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
             ),
             Divider(),
             20.ph,
-            Text("Selected Filters:", style: TextStylesInter.textViewBold14,),
+            Text("Selected Filters:".tr(), style: TextStylesInter.textViewBold14,),
             10.ph,
             Text("Store: ${selectedStoreFilter}"),
             Text("Category: ${categorySelection}"),
             Text("Subcategory: ${subCategorySelection}"),
             20.ph,
             ExpansionTile(
-                title: Text("Sort by", style: TextStylesInter.textViewMedium20,),
+                title: Text("Sort by".tr(), style: TextStylesInter.textViewMedium20,),
                 subtitle: Text(sortBySelection),
                 children: [
                   RadioListTile(
-                      title: Text("Relevance", style: TextStylesInter.textViewMedium14,),
+                      title: Text("Relevance".tr(), style: TextStylesInter.textViewMedium14,),
                       value: "Relevance", groupValue: sortBySelection, onChanged: selectSortByOption),
                   RadioListTile(
-                      title: Text("Price Low to High", style: TextStylesInter.textViewMedium14,),
+                      title: Text("Price Low to High".tr(), style: TextStylesInter.textViewMedium14,),
                       value: "Price Low to High", groupValue: sortBySelection, onChanged: selectSortByOption
                   ),
                   RadioListTile(
-                      title: Text("Price High to Low", style: TextStylesInter.textViewMedium14,),
+                      title: Text("Price High to Low".tr(), style: TextStylesInter.textViewMedium14,),
                       value: "Price High to Low", groupValue: sortBySelection, onChanged: selectSortByOption
                   ),
                 ]),
@@ -99,7 +100,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         final selectableFacets = snapshot.data ?? [];
         // if (selectableFacets.length != storeList.length - 1) return SizedBox.shrink();
         return ExpansionTile(
-            title: Text("All stores", style: TextStylesInter.textViewMedium20,),
+            title: Text("All stores".tr(), style: TextStylesInter.textViewMedium20,),
             // subtitle: Text(selectedS),
             children: List.generate(selectableFacets.length, (index) => CheckboxListTile(
                 title: Text(selectableFacets[index].item.value, style: TextStylesInter.textViewMedium14,),
@@ -165,7 +166,7 @@ class _FilterBottomSheetState extends State<FilterBottomSheet> {
         final selectableFacets = snapshot.data ?? [];
         // if (selectableFacets.length != storeList.length - 1) return SizedBox.shrink();
        return ExpansionTile(
-            title: Text("All Categories", style: TextStylesInter.textViewMedium20,),
+            title: Text("All Categories".tr(), style: TextStylesInter.textViewMedium20,),
             subtitle: Text(categorySelection),
             children: List.generate(selectableFacets.length, (index) => RadioListTile(
                 title: Text(selectableFacets[index].item.value, style: TextStylesInter.textViewMedium14,),

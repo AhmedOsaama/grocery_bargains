@@ -1,8 +1,11 @@
 import 'dart:developer';
 
 import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
+import 'package:bargainb/providers/products_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../../utils/algolia_utils.dart';
 import '../../../../search/presentation/views/algolia_search_screen.dart';
@@ -35,6 +38,8 @@ class _TopDealsRowState extends State<TopDealsRow> {
         _pagingController.refresh();
       }
       _pagingController.appendPage(page.items, page.nextPageKey);
+      //to make products available to all screens
+      Provider.of<ProductsProvider>(context, listen: false).products.addAll(page.items);
       // log(page.items.map((e) => "price: ${e.price}, oldPrice: ${e.oldPrice}\n").toList().toString());
     }).onError((error) {
       print("ERROR IN TopDealsRow pagination: $error");
@@ -55,8 +60,8 @@ class _TopDealsRowState extends State<TopDealsRow> {
           pagingController: _pagingController,
           scrollDirection: Axis.horizontal,
           builderDelegate: PagedChildBuilderDelegate<Product>(
-            noItemsFoundIndicatorBuilder: (_) => const Center(
-              child: Text('No results found'),
+            noItemsFoundIndicatorBuilder: (_) => Center(
+              child: Text('No results found'.tr()),
             ),
             itemBuilder: (_, item, __) => ProductItem(
               product: item,

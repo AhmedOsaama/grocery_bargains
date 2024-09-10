@@ -30,7 +30,6 @@ class _HomeViewState extends State<HomeView> {
       builder: Builder(builder: (builder){
         startTutorial(context, builder);
         return Scaffold(
-
           // resizeToAvoidBottomInset: false,
           backgroundColor: Colors.white,
           floatingActionButton: HomeFloatingButton(showFAB: showFAB, scrollController: scrollController),

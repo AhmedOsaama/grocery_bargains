@@ -42,12 +42,13 @@ class ChatListViewScreen extends StatefulWidget {
   final bool isUsingDynamicLink;
   final bool isNotificationOpened;
   final bool? isExpandingChatlist;
+  final String? promptMessage;
   ChatListViewScreen({
     Key? key,
     required this.listId,
     this.isUsingDynamicLink = false,
     this.isNotificationOpened = false,
-    this.isExpandingChatlist,
+    this.isExpandingChatlist, this.promptMessage,
   }) : super(key: key);
 
   @override
@@ -221,6 +222,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                     showInviteMembersDialog: showInviteMembersDialog,
                     chatlistName: chatList.name,
                     showcaseContext: showcaseContext,
+                    promptMessage: widget.promptMessage,
                   ))
                 ],
               ),

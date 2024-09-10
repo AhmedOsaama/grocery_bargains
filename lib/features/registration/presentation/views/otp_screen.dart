@@ -1,6 +1,7 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/features/registration/presentation/views/email_address_screen.dart';
 import 'package:bargainb/utils/empty_padding.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pinput/pinput.dart';
@@ -43,7 +44,7 @@ class OtpScreen extends StatelessWidget {
                 },
 
                 child: Text(
-                  "Change mobile number",
+                  "Change mobile number".tr(),
                   style: TextStylesInter.textViewMedium12.copyWith(decoration: TextDecoration.underline, color: Colors.grey),
                 )),
             Pinput(
@@ -68,19 +69,19 @@ class OtpScreen extends StatelessWidget {
                   AppNavigator.push(context: context, screen: EmailAddressScreen());
                 },
                 child: Text(
-                  "Continue",
+                  "Continue".tr(),
                   style: TextStyles.textViewMedium16,
                 )),
             Row(
               children: [
                 Text(
-                  "Didn't receive it ?",
+                  "Didn't receive it ?".tr(),
                   style: TextStylesInter.textViewRegular14,
                 ),
                 TextButton(
                     onPressed: () {},
                     child: Text(
-                      "Resend Code",
+                      "Resend Code".tr(),
                       style: TextStylesInter.textViewRegular14.copyWith(color: Color(0xffFF8A00)),
                     ))
               ],

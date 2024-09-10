@@ -41,13 +41,15 @@ class ChatView extends StatefulWidget {
   final String chatlistName;
   final Function showInviteMembersDialog;
   final BuildContext showcaseContext;
+  final String? promptMessage;
 
   ChatView(
       {Key? key,
       required this.listId,
       required this.showInviteMembersDialog,
       required this.chatlistName,
-      required this.showcaseContext})
+      required this.showcaseContext, this.promptMessage,
+      })
       : super(key: key);
 
   @override
@@ -101,6 +103,9 @@ class _ChatViewState extends State<ChatView> {
         FirebaseFirestore.instance.collection("/lists/${widget.listId}/items")
             .orderBy('time')
     .snapshots();
+    if(widget.promptMessage != null){
+      messageController.text = widget.promptMessage!;
+    }
 
     super.initState();
   }

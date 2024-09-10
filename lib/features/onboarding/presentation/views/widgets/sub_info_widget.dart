@@ -1,4 +1,5 @@
 import 'package:bargainb/utils/empty_padding.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../utils/assets_manager.dart';
@@ -20,9 +21,9 @@ class SubInfoWidget extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: TextStylesInter.textViewBold14,),
+              Text(title.tr(), style: TextStylesInter.textViewBold14,),
               5.ph,
-              Text(subTitle, style: TextStylesInter.textViewRegular12,),
+              Text(subTitle.tr(), style: TextStylesInter.textViewRegular12,),
             ],
           ),
         ),

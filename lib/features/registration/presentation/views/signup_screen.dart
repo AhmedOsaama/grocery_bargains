@@ -6,6 +6,7 @@ import 'package:bargainb/features/onboarding/presentation/views/terms_of_service
 import 'package:bargainb/features/registration/presentation/views/otp_screen.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/style_utils.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -46,7 +47,7 @@ class SignupScreen extends StatelessWidget {
           key: _formKey,
           child: Column(
             children: [
-              Text("Enter your mobile number to get OTP", style: TextStylesPaytoneOne.textViewRegular24,),
+              Text("Enter your mobile number to get OTP".tr(), style: TextStylesPaytoneOne.textViewRegular24,),
               20.ph,
               IntlPhoneField(
                 disableLengthCheck: false,
@@ -95,18 +96,18 @@ class SignupScreen extends StatelessWidget {
                     }
                   },
                   child: Text(
-                    "Get OTP",
+                    "Get OTP".tr(),
                     style: TextStyles.textViewMedium16,
                   )),
               10.ph,
               Text.rich(
                 textAlign: TextAlign.center,
                 TextSpan(
-                    text: "By logging or registering you agree to our ",
+                    text: "By logging or registering you agree to our ".tr(),
                     style: TextStylesInter.textViewRegular12,
                     children: [
                       TextSpan(
-                          text: "Terms of Service",
+                          text: "Terms of Service".tr(),
                           style: TextStyle(color: Colors.orange),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () => AppNavigator.push(context: context, screen: TermsOfServiceScreen())),

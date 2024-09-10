@@ -1,4 +1,5 @@
 import 'package:bargainb/utils/empty_padding.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../utils/app_colors.dart';
@@ -37,12 +38,12 @@ class _FourthOnboardingSurveyState extends State<FourthOnboardingSurvey> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Where do you like to shop ?",
+          "Where do you like to shop ?".tr(),
           style: TextStylesPaytoneOne.textViewRegular24,
         ),
         10.ph,
         Text(
-          "Select the stores where you usually shop. You can choose multiple options.",
+          "Select the stores where you usually shop. You can choose multiple options.".tr(),
           style: TextStylesInter.textViewMedium12,
         ),
         25.ph,
@@ -94,7 +95,7 @@ class _FourthOnboardingSurveyState extends State<FourthOnboardingSurvey> {
         if (selectedStores.isNotEmpty) Text("Selected Stores: $selectedStores"),
         if (showErrorText)
           Text(
-            "Please select at least one goal to proceed.",
+            "Please select at least one goal to proceed.".tr(),
             style: TextStylesInter.textViewRegular10.copyWith(color: Colors.red),
           ),
         Spacer(),
@@ -114,7 +115,7 @@ class _FourthOnboardingSurveyState extends State<FourthOnboardingSurvey> {
             color: primaryGreen,
             borderRadius: BorderRadius.circular(6),
             child: Text(
-              "Next",
+              "Next".tr(),
               style: TextStylesInter.textViewMedium16,
             ))
       ],

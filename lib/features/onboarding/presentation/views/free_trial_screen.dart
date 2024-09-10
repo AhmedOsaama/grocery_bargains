@@ -59,22 +59,22 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
                 children: [
                   Image.asset(premiumBB),
                   10.pw,
-                  Text("PREMIUM", style: TextStylesInter.textViewBold14.copyWith(color: primaryGreen),)
+                  Text("PREMIUM".tr(), style: TextStylesInter.textViewBold14.copyWith(color: primaryGreen),)
                 ],
               ),
               Text.rich(TextSpan(
-                text: "Pays",
+                text: "Pays".tr(),
                 style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: primaryGreen),
                 children: [
-                  TextSpan(text: " for Itself", style: TextStyle(color: Color(0xff002401))),
-                  TextSpan(text: " with", style: TextStyle(color: primaryGreen)),
-                  TextSpan(text: " Grocery", style: TextStyle(color: Color(0xff002401))),
-                  TextSpan(text: " Savings", style: TextStyle(color: primaryGreen)),
+                   TextSpan(text: " for Itself".tr(), style: TextStyle(color: Color(0xff002401))),
+                  TextSpan(text: " with".tr(), style: TextStyle(color: primaryGreen)),
+                   TextSpan(text: " Grocery".tr(), style: TextStyle(color: Color(0xff002401))),
+                  TextSpan(text: " Savings".tr(), style: TextStyle(color: primaryGreen)),
                 ]
               )),
               10.ph,
               if(displayedContent == "plans") ...[
-              Text("How your free trial works", style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: Color(0xff181818)),),
+              Text("How your free trial works".tr(), style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: const Color(0xff181818)),),
                 if(!SubscriptionProvider.get(context).isSubscribed) ...[
                   FutureBuilder(
                       future: offersFuture,
@@ -86,7 +86,7 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
                         }
                         var offerings = snapshot.data ?? [];
                         if(offerings.isEmpty){
-                          return SizedBox.shrink();
+                          return const SizedBox.shrink();
                         }
                         final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
                         var monthlyPrice = packages[0].storeProduct.priceString;
@@ -126,7 +126,7 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
                       }),
                   10.ph,
                 ],
-                Spacer(),
+                const Spacer(),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 30),
                   child: Text("You authorize a recurring annual or monthly charge of your plan".tr(), textAlign: TextAlign.center,style: TextStylesInter.textViewRegular12,),
@@ -138,22 +138,22 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
                 15.ph,
               ],
               if(displayedContent == "info") ...[
-                SubInfoWidget(
+                const SubInfoWidget(
                   imagePath: subInfo1,
                     title: " AI-Powered Grocery Assistant", subTitle: " Personalized shopping recommendations, optimized lists, and meal planning made just for you."),
                 30.ph,
-                SubInfoWidget(
+                const SubInfoWidget(
                   imagePath: subInfo2,
                     title: "Best Prices, Latest Deals", subTitle: "Always access the freshest deals and the lowest prices from your favorite stores."),
                 30.ph,
-                SubInfoWidget(
+                const SubInfoWidget(
                   imagePath: subInfo3,
                     title: "Smart Price Comparisons", subTitle: "Compare prices across multiple stores automatically to ensure you're getting the best value."),
                 30.ph,
-                SubInfoWidget(
+                const SubInfoWidget(
                   imagePath: subInfo4,
                     title: "Collaborative Shopping", subTitle: "Share your shopping lists and savings with family, friends, or housemates."),
-                Spacer(),
+                const Spacer(),
               ],
               GenericButton(
                   width: double.infinity,
@@ -182,13 +182,13 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
                   shadow: [
                     BoxShadow(
                       blurRadius: 2,
-                      offset: Offset(0, 1),
+                      offset: const Offset(0, 1),
                       color: Colors.black.withOpacity(0.05),
                     )
                   ],
                   onPressed: () async {
                     Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
-                    AppNavigator.pushReplacement(context: context, screen: MainScreen());
+                    AppNavigator.pushReplacement(context: context, screen: const MainScreen());
                   },
                   child: Text(
                     "No Thanks".tr(),
@@ -253,7 +253,7 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
           option.freePhase != null);
           hasPurchased = await PurchaseApi.purchaseSubscriptionOption(subscriptionOption).catchError((e) {
             ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Couldn't buy the monthly offer package android")));
+                const SnackBar(content: Text("Couldn't buy the monthly offer package android")));
           });
         }else {
           hasPurchased = await PurchaseApi.purchasePackage(packages[0]).catchError((e) {
@@ -273,7 +273,7 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
       trackSubscription();
       SubscriptionProvider.get(context).changeSubscriptionStatus(hasPurchased);
       Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
-      AppNavigator.pushReplacement(context: context, screen: MainScreen());
+      AppNavigator.pushReplacement(context: context, screen: const MainScreen());
     }
     return hasPurchased;
   }

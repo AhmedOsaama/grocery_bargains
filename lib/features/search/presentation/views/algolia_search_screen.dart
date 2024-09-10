@@ -93,6 +93,7 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
         _pagingController.refresh();
       }
       _pagingController.appendPage(page.items, page.nextPageKey);
+      Provider.of<ProductsProvider>(context, listen: false).products.addAll(page.items);
     }).onError((error) {
       print("ERROR IN SEARCH: $error");
       return _pagingController.error = error;
@@ -191,8 +192,8 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
           crossAxisSpacing: 10,
           mainAxisSpacing: 10),
       builderDelegate: PagedChildBuilderDelegate<Product>(
-        noItemsFoundIndicatorBuilder: (_) => const Center(
-          child: Text('No results found'),
+        noItemsFoundIndicatorBuilder: (_) => Center(
+          child: Text('No results found'.tr()),
         ),
         itemBuilder: (_, item, __) => ProductItem(
           product: item,

@@ -1,16 +1,24 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:bargainb/core/utils/firestore_utils.dart';
+import 'package:bargainb/features/chatlists/presentation/views/chatlist_view_screen.dart';
+import 'package:bargainb/features/chatlists/presentation/views/widgets/chat_prompts_widget.dart';
+import 'package:bargainb/features/chatlists/presentation/views/widgets/chat_view_widget.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/categories_list.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/categories_row.dart';
+import 'package:bargainb/features/home/presentation/views/widgets/home_prompts_widget.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/latest_bargains_row.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/search_showcase.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/see_more_button.dart';
 import 'package:bargainb/features/profile/presentation/views/subscription_screen.dart';
 import 'package:bargainb/features/search/presentation/views/algolia_search_screen.dart';
 import 'package:bargainb/features/search/presentation/views/widgets/search_widget.dart';
+import 'package:bargainb/providers/chatlists_provider.dart';
 import 'package:bargainb/providers/subscription_provider.dart';
 import 'package:bargainb/utils/empty_padding.dart';
+import 'package:bargainb/view/components/generic_field.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -61,11 +69,12 @@ class _HomeViewBodyState extends State<HomeViewBody> {
   bool dialogOpened = false;
   var isFetching = false;
   late Future getProductsFuture;
+  TextEditingController messageController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    getProductsFuture = Provider.of<ProductsProvider>(context, listen: false).getProducts(1);
+    // getProductsFuture = Provider.of<ProductsProvider>(context, listen: false).getProducts(1);
     if (FirebaseAuth.instance.currentUser != null) {
       TrackingUtils()
           .trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Home Screen");
@@ -86,15 +95,73 @@ class _HomeViewBodyState extends State<HomeViewBody> {
         padding: EdgeInsets.symmetric(horizontal: 15),
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               15.ph,
               // SearchWidget(),
+              if(SubscriptionProvider.get(context).isSubscribed) ...[
+                Text("Welcome!".tr(), style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: primaryGreen.withOpacity(0.9  )),),
+                // Text("Ahmed!", style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: primaryGreen),),
+                10.ph,
+                Text("Buzzing with the best deals for you! How can I help you today?".tr(), style: TextStylesInter.textViewMedium14,),
+                15.ph,
+                HomePrompts(sendPrompt: (prompt){
+                  messageController.text = prompt;
+                }),
+                20.ph,
+                Row(
+                  children: [
+                    Expanded(
+                      child: GenericField(
+                        controller: messageController,
+                        hintText: "How can I help you?".tr(),
+                        hintStyle: TextStylesInter.textViewRegular14.copyWith(color: hintText),
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Color(0xffEBEBEB)
+                            )
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Color(0xffEBEBEB)
+                            )
+                        ),
+                        borderRaduis: 99999,
+                        onSubmitted: (value) async {
+                          var chatlist = Provider.of<ChatlistsProvider>(context, listen: false).chatlists.first;
+                          AppNavigator.push(context: context, screen: ChatListViewScreen(
+                            listId: chatlist.id,
+                            promptMessage: value,
+                          ));
+                        },
+                      ),
+                    ),
+                    5.pw,
+                    ElevatedButton(
+                      onPressed: () {
+                        var chatlist = Provider.of<ChatlistsProvider>(context, listen: false).chatlists.first;
+                        AppNavigator.push(context: context, screen: ChatListViewScreen(
+                          listId: chatlist.id,
+                          promptMessage: messageController.text.trim(),
+                        ));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        // fixedSize: Size(32, 32),
+                          minimumSize: Size(32, 32),
+                          backgroundColor: primaryGreen
+                      ),
+                      child: Icon(Icons.send),
+                    ),
+                  ],
+                )
+              ]
+              else
               SearchShowcase(showcaseContext: widget.showcaseContext,),
               SizedBox(
                 height: 10.h,
               ),
               Text(
-                "Shop Latest Offer By Categories",
+                "Shop Latest Offer By Categories".tr(),
                 style: TextStylesPaytoneOne.textViewRegular24,
               ),
               const CategoriesList(),
@@ -103,7 +170,7 @@ class _HomeViewBodyState extends State<HomeViewBody> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Top deals",
+                    "Top deals".tr(),
                     style: TextStylesPaytoneOne.textViewRegular24,
                   ),
                   ForwardButton(onTap: () {
@@ -114,7 +181,7 @@ class _HomeViewBodyState extends State<HomeViewBody> {
               TopDealsRow(),
               10.ph,
               Text(
-                "Shop Latest Offer By Store",
+                "Shop Latest Offer By Store".tr(),
                 style: TextStylesPaytoneOne.textViewRegular24,
               ),
               10.ph,

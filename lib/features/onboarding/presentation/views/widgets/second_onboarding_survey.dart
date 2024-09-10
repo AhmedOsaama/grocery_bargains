@@ -1,4 +1,5 @@
 import 'package:bargainb/utils/empty_padding.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,9 +28,9 @@ class _SecondOnboardingSurveyState extends State<SecondOnboardingSurvey> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Who’s on Your Shopping List ?", style: TextStylesPaytoneOne.textViewRegular24,),
+        Text("Who’s on Your Shopping List ?".tr(), style: TextStylesPaytoneOne.textViewRegular24,),
         10.ph,
-        Text("We want to make sure no one goes hungry. Who are you usually shopping for ?", style: TextStylesInter.textViewMedium12,),
+        Text("We want to make sure no one goes hungry. Who are you usually shopping for ?".tr(), style: TextStylesInter.textViewMedium12,),
         20.ph,
       GestureDetector(
         onTap: (){
@@ -70,8 +71,8 @@ class _SecondOnboardingSurveyState extends State<SecondOnboardingSurvey> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Just Me, Myself, and I", style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: Color(0xff1B461C))),
-                    Text("The solo shopper's dream—your grocery list, your rules!", style: TextStylesInter.textViewMedium12,)
+                    Text("Just Me, Myself, and I".tr(), style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: Color(0xff1B461C))),
+                    Text("The solo shopper's dream—your grocery list, your rules!".tr(), style: TextStylesInter.textViewMedium12,)
                   ],
                 ),
               ),
@@ -118,8 +119,8 @@ class _SecondOnboardingSurveyState extends State<SecondOnboardingSurvey> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("I’ve Got a Hungry Bunch", style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: Color(0xff1B461C))),
-                      Text("Whether it's family, friends, or even pets, let's make sure everyone gets their favorites!", style: TextStylesInter.textViewMedium12,)
+                      Text("I’ve Got a Hungry Bunch".tr(), style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: Color(0xff1B461C))),
+                      Text("Whether it's family, friends, or even pets, let's make sure everyone gets their favorites!".tr(), style: TextStylesInter.textViewMedium12,)
                     ],
                   ),
                 )
@@ -141,8 +142,8 @@ class _SecondOnboardingSurveyState extends State<SecondOnboardingSurvey> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Grown-Ups", style: TextStylesInter.textViewMedium14,),
-                      Text("Spouses, partners, or anyone who’s got an appetite.", style: TextStylesInter.textViewRegular10,),
+                      Text("Grown-Ups".tr(), style: TextStylesInter.textViewMedium14,),
+                      Text("Spouses, partners, or anyone who’s got an appetite.".tr(), style: TextStylesInter.textViewRegular10,),
                     ],
                   ),
                     Spacer(),
@@ -175,8 +176,8 @@ class _SecondOnboardingSurveyState extends State<SecondOnboardingSurvey> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Little Ones", style: TextStylesInter.textViewMedium14,),
-                      Text("Because your little ones are important", style: TextStylesInter.textViewRegular10,),
+                      Text("Little Ones".tr(), style: TextStylesInter.textViewMedium14,),
+                      Text("Because your little ones are important".tr(), style: TextStylesInter.textViewRegular10,),
                     ],
                   ),
                     Spacer(),
@@ -209,8 +210,8 @@ class _SecondOnboardingSurveyState extends State<SecondOnboardingSurvey> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Furry Friends", style: TextStylesInter.textViewMedium14,),
-                        Text("Because your pets have preferences too!", style: TextStylesInter.textViewRegular10,),
+                        Text("Furry Friends".tr(), style: TextStylesInter.textViewMedium14,),
+                        Text("Because your pets have preferences too!".tr(), style: TextStylesInter.textViewRegular10,),
                       ],
                     ),
                     Spacer(),
@@ -247,7 +248,7 @@ class _SecondOnboardingSurveyState extends State<SecondOnboardingSurvey> {
             color: primaryGreen,
             borderRadius: BorderRadius.circular(6),
             child: Text(
-              "Next",
+              "Next".tr(),
               style: TextStylesInter.textViewMedium16,
             )),
       ],

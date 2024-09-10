@@ -17,9 +17,9 @@ class NetworkServices {
 
   //by id
 
-  static Future<http.Response> getSimilarProducts(String gtin) async {
+  static Future<http.Response> getSimilarProducts(int id) async {
     final url = Uri.parse(
-        'https://europe-west1-discountly.cloudfunctions.net/get_products_by_gtin?gtin=$gtin');
+        '$stagingUrl/product/similar/$id');
     var response =
     await http.get(url, headers: {'Content-Type': 'application/json'});
     return response;

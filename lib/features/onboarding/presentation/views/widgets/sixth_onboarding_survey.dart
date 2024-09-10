@@ -1,4 +1,5 @@
 import 'package:bargainb/utils/empty_padding.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../utils/app_colors.dart';
@@ -18,7 +19,7 @@ class _SixthOnboardingSurveyState extends State<SixthOnboardingSurvey> {
   List<String> choices = [
     "Halal",
     "Vegetarian",
-    "Gluten-Free ",
+    "Gluten-Free",
     "Lactose-Free",
     "Nut-Free",
     "Low-Sugar",
@@ -37,12 +38,12 @@ class _SixthOnboardingSurveyState extends State<SixthOnboardingSurvey> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Do you have any dietary preferences ?",
+          "Do you have any dietary preferences ?".tr(),
           style: TextStylesPaytoneOne.textViewRegular24,
         ),
         10.ph,
         Text(
-          "Please select any dietary preferences you have. This will help us tailor your grocery recommendations.",
+          "Please select any dietary preferences you have. This will help us tailor your grocery recommendations.".tr(),
           style: TextStylesInter.textViewMedium12,
         ),
         25.ph,
@@ -50,7 +51,7 @@ class _SixthOnboardingSurveyState extends State<SixthOnboardingSurvey> {
           spacing: 10,
           children: choices.map((choice) {
             return ActionChip(
-              label: Text(choice),
+              label: Text(choice.tr()),
               padding: EdgeInsets.all(10),
               onPressed: selectedChoices.contains(choice)
                   ? null
@@ -74,7 +75,7 @@ class _SixthOnboardingSurveyState extends State<SixthOnboardingSurvey> {
         if (selectedChoices.isNotEmpty) Text("Selected Choices: $selectedChoices"),
         if (showErrorText)
           Text(
-            "Please select at least one goal to proceed.",
+            "Please select at least one goal to proceed.".tr(),
             style: TextStylesInter.textViewRegular10.copyWith(color: Colors.red),
           ),
         Spacer(),
@@ -94,7 +95,7 @@ class _SixthOnboardingSurveyState extends State<SixthOnboardingSurvey> {
             color: primaryGreen,
             borderRadius: BorderRadius.circular(6),
             child: Text(
-              "Next",
+              "Next".tr(),
               style: TextStylesInter.textViewMedium16,
             ))
       ],
