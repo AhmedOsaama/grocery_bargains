@@ -33,7 +33,7 @@ class ProfileSettingsWidget extends StatelessWidget {
     return Column(
     children: [
       SettingRow(
-          icon: Image.asset(diamond),
+          icon: Icon(Icons.star, color: primaryGreen,),
           settingText: "Rate Us".tr(),
           onTap: () async {
             Uri url =  Uri.parse(
@@ -53,9 +53,9 @@ class ProfileSettingsWidget extends StatelessWidget {
           }),
         const Divider(),
         SettingRow(
-          icon: const Icon(
+          icon: Icon(
             Icons.person,
-            color: mainPurple,
+            color: primaryGreen,
           ),
           settingText: "Your Status",
           value: userStatus,
@@ -69,7 +69,7 @@ class ProfileSettingsWidget extends StatelessWidget {
         SettingRow(
           icon: SvgPicture.asset(
             masterCard,
-            color: mainPurple,
+            color: primaryGreen,
           ),
           settingText: "Subscription",
           onTap: () {
@@ -80,9 +80,9 @@ class ProfileSettingsWidget extends StatelessWidget {
         ),
         10.ph,
         SettingRow(
-          icon: const Icon(
+          icon: Icon(
             Icons.settings_outlined,
-            color: mainPurple,
+            color: primaryGreen,
           ),
           settingText: LocaleKeys.settings.tr(),
           onTap: () {
@@ -93,7 +93,7 @@ class ProfileSettingsWidget extends StatelessWidget {
         ),
         10.ph,
         SettingRow(
-            icon: SvgPicture.asset(tutorial),
+            icon: SvgPicture.asset(tutorial, color: primaryGreen,),
             settingText: "Tutorial".tr(),
             onTap: () {
               Provider.of<TutorialProvider>(context, listen: false).setTutorialStatus(false);
@@ -104,9 +104,9 @@ class ProfileSettingsWidget extends StatelessWidget {
             }),
         10.ph,
         SettingRow(
-            icon: const Icon(
+            icon: Icon(
               Icons.help_outline_outlined,
-              color: mainPurple,
+              color: primaryGreen,
             ),
             settingText: LocaleKeys.support.tr(),
             onTap: () {

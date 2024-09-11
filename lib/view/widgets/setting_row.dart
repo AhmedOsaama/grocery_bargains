@@ -29,7 +29,7 @@ class SettingRow extends StatelessWidget {
             Container(
               padding: EdgeInsets.all(6),
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10), color: purple10),
+                  borderRadius: BorderRadius.circular(10), color: primaryGreen.withOpacity(0.1)),
               child: icon,
             ),
             12.pw,

@@ -41,17 +41,17 @@ class _getHomeWidgetState extends State<getHomeWidget> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const SplashWithProgressIndicator();
               }
-              // if (FirebaseAuth.instance.currentUser != null) {
-              //   //logged in
-              //   if (widget.notificationMessage != null) {
-              //     return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
-              //   }
-              //   if (!widget.isFirstTime) return const MainScreen();
-              // }
-              // return widget.isFirstTime ? const HighlightsScreen() :
-              // const MainScreen(); //logged out
+              if (FirebaseAuth.instance.currentUser != null) {
+                //logged in
+                if (widget.notificationMessage != null) {
+                  return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
+                }
+                if (!widget.isFirstTime) return const MainScreen();
+              }
+              return widget.isFirstTime ? const HighlightsScreen() :
+              const MainScreen(); //logged out
               // const HighlightsScreen(); //logged out
-              return MainScreen();
+              // return MainScreen();
             });
   }
 }

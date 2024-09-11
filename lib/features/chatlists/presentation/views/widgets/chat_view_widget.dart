@@ -244,8 +244,8 @@ class _ChatViewState extends State<ChatView> {
                           reverse: true,
                           itemCount: messages.length,
                           itemBuilder: (ctx, index) {
-                            log(messages[index]['item_price'].runtimeType.toString());
-                            log(messages[index]['item_oldPrice'].runtimeType.toString());
+                            // log(messages[index]['item_price'].runtimeType.toString());
+                            // log(messages[index]['item_oldPrice'].runtimeType.toString());
                             return Container(
                                 padding: const EdgeInsets.all(8.0),
                                 child: MessageBubble(
@@ -435,6 +435,7 @@ class _ChatViewState extends State<ChatView> {
         "input": text
       },));
       var botResponse = jsonDecode(response.body)['output'];
+      // var botResponse = jsonDecode(response.body)['message'];
       await FirebaseFirestore.instance.collection('/lists/${widget.listId}/messages').add({
         'item_name': "",
         'item_image': "",
