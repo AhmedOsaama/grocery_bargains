@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:bargainb/features/onboarding/presentation/views/widgets/sub_info_widget.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
+import 'package:bargainb/features/registration/presentation/views/login_screen.dart';
 import 'package:bargainb/providers/subscription_provider.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/features/home/presentation/views/main_screen.dart';
@@ -162,7 +163,11 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
                   height: 60,
                   onPressed: () async {
                     if(displayedContent == "plans") {
+                      if(FirebaseAuth.instance.currentUser != null){
                       await initiateSubscription(context, selectedPlan);
+                      } else {
+                        AppNavigator.push(context: context, screen: LoginScreen());
+                      }
                     } else {
                       setState(() {
                         displayedContent = "plans";

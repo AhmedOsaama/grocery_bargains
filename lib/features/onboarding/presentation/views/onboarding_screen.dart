@@ -12,6 +12,7 @@ import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/button.dart';
 import 'package:dots_indicator/dots_indicator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart';
@@ -173,6 +174,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Future<void> saveSeventhScreenResponses(String selectedBudget) async {
     this.selectedBudget = selectedBudget;
     log("Seventh screen Responses: $selectedBudget");
+    if(kReleaseMode) {
     var country = "";
     var city = "";
     try {
@@ -185,7 +187,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }catch(e){
       log(e.toString());
     }
-    HubspotService.createHubspotContact({
+      HubspotService.createHubspotContact({
       "firstname": firstName,
       'last_name': lastName,
       'country': country,
@@ -198,5 +200,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'grocery_monthly_budget': this.selectedBudget.toString(),
       "hubspot_owner_id": "1252705237",
     });
+    }
   }
 }
