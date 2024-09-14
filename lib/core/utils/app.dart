@@ -18,6 +18,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:segment_analytics/state.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:upgrader/upgrader.dart';
 
@@ -28,6 +29,7 @@ import '../../providers/suggestion_provider.dart';
 import '../../providers/tutorial_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../view/widgets/app_home_widget.dart';
+import 'package:segment_analytics/client.dart';
 
 class MyApp extends StatefulWidget {
   final RemoteMessage? notificationMessage;
@@ -48,14 +50,8 @@ class _MyAppState extends State<MyApp> {
     super.initState();
       authStateChangesStream = FirebaseAuth.instance.authStateChanges();
       homeWidget = getHomeWidget(widget: widget, notificationMessage: widget.notificationMessage, isFirstTime: widget.isFirstTime,);
-      initMixpanel();
   }
 
-  Future<void> initMixpanel() async {
-    var mixpanelToken = kDebugMode ? '752b3abf782a7347499ccb3ebb504194' : '3aa827fb2f1cdf5ff2393b84d9c40bac';
-    mixPanel = await Mixpanel.init(mixpanelToken, trackAutomaticEvents: true);
-    FlutterBranchSdk.disableTracking(kDebugMode);
-  }
 
   @override
   Widget build(BuildContext context) {

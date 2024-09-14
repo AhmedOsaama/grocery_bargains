@@ -18,6 +18,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:segment_analytics/event.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
@@ -249,35 +250,53 @@ class RegisterRepoImpl implements RegisterRepo {
         },
       };
       await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set(userData);
-     // createHubspotContact(email, username, phoneNumber, country, city);
+      // createHubspotContact(email, username, phoneNumber, country, city);
 
       Provider.of<UserProvider>(context, listen: false)
           .setUserData(userCredential.user!.uid, username, email, phoneNumber, deviceToken!, imageURL);
 
-      TrackingUtils().mixpanel.identify(userCredential.user!.uid);
-      TrackingUtils().mixpanel.getPeople()
-        ..set("\$name", username)
-        ..set('\$email', email)
-        ..set('email', email)
-        ..set('username', username)
-        ..set('imageURL', imageURL)
-        ..set('phoneNumber', phoneNumber)
-        ..set('token', deviceToken)
-        ..set('timestamp', DateTime.now().toUtc().toString())
-        ..set('language', language)
-        ..set('status', "Hello! I'm using BargainB. Join the app")
-        ..set('privacy', {
-          'connectContacts': true,
-          'locationServices': false,
-        })
-        ..set('preferences', {
-          'emailMarketing': true,
-          'weekly': true,
-          'daily': false,
-        });
-    } catch (e) {
-      log("Error occurred in saveUserData: $e");
-    }
+      TrackingUtils().segment.identify(
+          userId: userCredential.user!.uid,
+          userTraits: UserTraits(
+            email: email,
+            name: username,
+            phone: phoneNumber,
+            createdAt: DateTime.now().toUtc().toString(),
+            custom: {
+              'connectContacts': true,
+              'locationServices': false,
+              'emailMarketing': true,
+              'weekly': true,
+              'daily': false,
+              "status": "Hello! I'm using BargainB. Join the app"
+            },
+
+          )
+      );
+
+      //   TrackingUtils().segment.getPeople()
+      //     ..set("\$name", username)
+      //     ..set('\$email', email)
+      //     ..set('email', email)
+      //     ..set('username', username)
+      //     ..set('imageURL', imageURL)
+      //     ..set('phoneNumber', phoneNumber)
+      //     ..set('token', deviceToken)
+      //     ..set('timestamp', DateTime.now().toUtc().toString())
+      //     ..set('language', language)
+      //     ..set('status', "Hello! I'm using BargainB. Join the app")
+      //     ..set('privacy', {
+      //       'connectContacts': true,
+      //       'locationServices': false,
+      //     })
+      //     ..set('preferences', {
+      //       'emailMarketing': true,
+      //       'weekly': true,
+      //       'daily': false,
+      //     });
+      } catch (e) {
+        log("Error occurred in saveUserData: $e");
+      }
   }
 
   Future<void> createHubspotContact(String email, String username, String phoneNumber, String country, String city) async {

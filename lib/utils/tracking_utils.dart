@@ -4,14 +4,18 @@ import 'package:bargainb/utils/algolia_tracking_utils.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_branch_sdk/flutter_branch_sdk.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
+import 'package:segment_analytics/analytics.dart';
+import 'package:segment_analytics/client.dart';
+import 'package:segment_analytics/state.dart';
 
 import '../core/utils/tracking_constants.dart';
 
 class TrackingUtils {
-  Mixpanel mixpanel = Mixpanel('3aa827fb2f1cdf5ff2393b84d9c40bac');
+  // Mixpanel segment = Mixpanel('3aa827fb2f1cdf5ff2393b84d9c40bac');
+  Analytics segment = createClient(Configuration("ju4vP6Xnyc1tRoh6O1NAtTxFhyyMkX4Y"));
 
   void trackButtonClick(String userId, String buttonName, String timestamp, String pageName) {
-    mixpanel.track(TrackingConstants.buttonClickEvent, properties: {
+    segment.track(TrackingConstants.buttonClickEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.buttonNameKey: buttonName,
       TrackingConstants.pageNameKey: pageName,
@@ -32,7 +36,7 @@ class TrackingUtils {
   }
 
   void trackPageView(String userId, String timestamp, String pageName) {
-    mixpanel.track(TrackingConstants.pageViewEvent, properties: {
+    segment.track(TrackingConstants.pageViewEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.pageNameKey: pageName,
       TrackingConstants.timeStampKey: timestamp,
@@ -50,7 +54,7 @@ class TrackingUtils {
   }
 
   void trackPopPageView(String userId, String timestamp, String popUpName) {
-    mixpanel.track(TrackingConstants.popPageViewEvent, properties: {
+    segment.track(TrackingConstants.popPageViewEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.popUpNameKey: popUpName,
       TrackingConstants.timeStampKey: timestamp,
@@ -68,7 +72,7 @@ class TrackingUtils {
   }
 
   void trackTextLinkClicked(String userId, String timestamp, String pageName, String textLinkName) {
-    mixpanel.track(TrackingConstants.textLinkClickedEvent, properties: {
+    segment.track(TrackingConstants.textLinkClickedEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.pageNameKey: pageName,
       TrackingConstants.timeStampKey: timestamp,
@@ -89,7 +93,7 @@ class TrackingUtils {
   }
 
   void trackLanguageSelected(String userId, String timestamp, String languageSelected) {
-    mixpanel.track(TrackingConstants.languageSelectedEvent, properties: {
+    segment.track(TrackingConstants.languageSelectedEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.languageSelectedKey: languageSelected,
@@ -107,7 +111,7 @@ class TrackingUtils {
   }
 
   void trackAppStartLanguage(String timestamp, String languageSelected) {
-    mixpanel.track(TrackingConstants.appStartLanguageEvent, properties: {
+    segment.track(TrackingConstants.appStartLanguageEvent, properties: {
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.languageSelectedKey: languageSelected,
     });
@@ -122,7 +126,7 @@ class TrackingUtils {
   }
 
   void trackBooleanToggleClicks(String userId, String timestamp, bool value, String toggleName, String pageName) {
-    mixpanel.track(TrackingConstants.booleanToggleClicksEvent, properties: {
+    segment.track(TrackingConstants.booleanToggleClicksEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.valueKey: value.toString(),
@@ -147,7 +151,7 @@ class TrackingUtils {
 
   void trackSideMenuItemClicked(
       String userId, String timestamp, String sideMenuName, String sideMenuItemClickedName, String pageName) {
-    mixpanel.track(TrackingConstants.sideMenuItemClickedEvent, properties: {
+    segment.track(TrackingConstants.sideMenuItemClickedEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.sideMenuNameKey: sideMenuName,
@@ -171,7 +175,7 @@ class TrackingUtils {
   }
 
   void trackCheckBoxItemClicked(String userId, String timestamp, String cbiName, String cbiPageName, bool value) {
-    mixpanel.track(TrackingConstants.checkboxItemClickedEvent, properties: {
+    segment.track(TrackingConstants.checkboxItemClickedEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.cbiNameKey: cbiName,
@@ -197,7 +201,7 @@ class TrackingUtils {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
   void trackFirstTimeUser(String timestamp) {
-    mixpanel.track(TrackingConstants.firstTimeEvent, properties: {
+    segment.track(TrackingConstants.firstTimeEvent, properties: {
       TrackingConstants.timeStampKey: timestamp,
     });
     FlutterBranchSdk.trackContentWithoutBuo(
@@ -209,7 +213,7 @@ class TrackingUtils {
   }
 
   void trackSignup(String userId, String timestamp) {
-    mixpanel.track(TrackingConstants.signUpEvent, properties: {
+    segment.track(TrackingConstants.signUpEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
     });
@@ -224,7 +228,7 @@ class TrackingUtils {
   }
 
   void trackLogin(String userId, String timestamp) {
-    mixpanel.track(TrackingConstants.loginEvent, properties: {
+    segment.track(TrackingConstants.loginEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
     });
@@ -239,7 +243,7 @@ class TrackingUtils {
   }
 
   void trackAppOpen(String userId, String timestamp) {
-    mixpanel.track(TrackingConstants.appOpenEvent, properties: {
+    segment.track(TrackingConstants.appOpenEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
     });
@@ -255,7 +259,7 @@ class TrackingUtils {
 
   void trackSearch(String userId, String timestamp, String searchQuery,
       {required String queryId, required List<String> objectIDs, required List<int> positions}) {
-    mixpanel.track(TrackingConstants.searchEvent, properties: {
+    segment.track(TrackingConstants.searchEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.searchQueryKey: searchQuery,
@@ -278,7 +282,7 @@ class TrackingUtils {
   void trackProductAction(String userId, String timestamp, bool discounted, String chatlistId, String ChatlistName,
       String quantity, String actionType,
       {String? productId}) {
-    mixpanel.track(TrackingConstants.productActionEvent, properties: {
+    segment.track(TrackingConstants.productActionEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.discountedKey: discounted.toString(),
@@ -310,7 +314,7 @@ class TrackingUtils {
 
   void trackShareProduct(
       String userId, String timestamp, String productId, String productName, String productCategory) {
-    mixpanel.track(TrackingConstants.shareProductEvent, properties: {
+    segment.track(TrackingConstants.shareProductEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.productIdKey: productId,
@@ -335,7 +339,7 @@ class TrackingUtils {
 
   void trackPhoneNumberVerified(String userId, String timestamp, bool status) {
     var verificationStatus = status ? "success" : "fail";
-    mixpanel.track(TrackingConstants.phoneNumberVerifiedEvent, properties: {
+    segment.track(TrackingConstants.phoneNumberVerifiedEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.statusKey: verificationStatus,
@@ -354,7 +358,7 @@ class TrackingUtils {
 
   void trackChatlistMessageSent(
       String userId, String timestamp, String messageText, String chatlistId, String chatlistName) {
-    mixpanel.track(TrackingConstants.chatlistMessageSentEvent, properties: {
+    segment.track(TrackingConstants.chatlistMessageSentEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.messageTextKey: messageText,
@@ -378,7 +382,7 @@ class TrackingUtils {
   }
 
   void trackFilterUsed(String userId, String timestamp, String pageName, String filterType) {
-    mixpanel.track(TrackingConstants.filterUsedEvent, properties: {
+    segment.track(TrackingConstants.filterUsedEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.pageNameKey: pageName,
@@ -399,7 +403,7 @@ class TrackingUtils {
   }
 
   void trackFormSubmitted(String userId, String timestamp, String pageName) {
-    mixpanel.track(TrackingConstants.formSubmittedEvent, properties: {
+    segment.track(TrackingConstants.formSubmittedEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.pageNameKey: pageName,
@@ -417,7 +421,7 @@ class TrackingUtils {
   }
 
   void trackFavouriteStores(String userId, String timestamp, String pageName, String favouriteStore) {
-    mixpanel.track(TrackingConstants.chooseFavouriteStoreEvent, properties: {
+    segment.track(TrackingConstants.chooseFavouriteStoreEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.pageNameKey: pageName,
@@ -438,7 +442,7 @@ class TrackingUtils {
   }
 
   void trackSubscriptionAction(String userId, String timestamp, String pageName, String plan, String price) {
-    mixpanel.track(TrackingConstants.subscriptionEvent, properties: {
+    segment.track(TrackingConstants.subscriptionEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.pageNameKey: pageName,
@@ -477,7 +481,7 @@ class TrackingUtils {
     String monthlySubscriptionPrice,
     String monthPayPreference,
   ) {
-    mixpanel.track(TrackingConstants.surveyEvent, properties: {
+    segment.track(TrackingConstants.surveyEvent, properties: {
       TrackingConstants.surveyAgeRangeKey: ageRange,
       TrackingConstants.surveyGenderKey: gender,
       TrackingConstants.surveyGroceryTimeKey: groceryTime,
@@ -523,7 +527,7 @@ class TrackingUtils {
   }
 
   void trackSurveyStarted(String userId, String timestamp, String pageName) {
-    mixpanel.track(TrackingConstants.surveyStartedEvent, properties: {
+    segment.track(TrackingConstants.surveyStartedEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.pageNameKey: pageName,
@@ -541,7 +545,7 @@ class TrackingUtils {
   }
 
   void trackSurveySkipped(String userId, String timestamp, String pageName) {
-    mixpanel.track(TrackingConstants.surveySkippedEvent, properties: {
+    segment.track(TrackingConstants.surveySkippedEvent, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.pageNameKey: pageName,
@@ -560,7 +564,7 @@ class TrackingUtils {
 
   void trackSurveyAction(
       String eventName, String userId, String timestamp, String pageName, String buttonName, String questionText) {
-    mixpanel.track(eventName, properties: {
+    segment.track(eventName, properties: {
       TrackingConstants.userIdKey: userId,
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.pageNameKey: pageName,
