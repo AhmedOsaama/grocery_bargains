@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:algolia/algolia.dart';
 import 'package:algolia_helper_flutter/algolia_helper_flutter.dart';
 import 'package:bargainb/features/search/presentation/views/widgets/filter_bottom_sheet.dart';
 import 'package:bargainb/features/search/presentation/views/widgets/search_appBar.dart';
@@ -39,32 +38,32 @@ class AlgoliaSearchScreen extends StatefulWidget {
 class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
   final PagingController<int, Product> _pagingController = PagingController(firstPageKey: 0);
   final _searchTextController = TextEditingController();
-  final _productsSearcher =
-  HitsSearcher(applicationID: AlgoliaApp.applicationID, apiKey: AlgoliaApp.searchOnlyKey, indexName: AlgoliaApp.hitsIndex);
-
-
+  final _productsSearcher = HitsSearcher(
+      applicationID: AlgoliaApp.applicationID, apiKey: AlgoliaApp.searchOnlyKey, indexName: AlgoliaApp.hitsIndex);
 
   final _filterState = FilterState();
 
-
-  late final storeFilter = FacetList(
-      searcher: _productsSearcher,
-      filterState: _filterState,
-      selectionMode: SelectionMode.multiple,
-      attribute: 'store_name');
-
-  late final categoryFilter = FacetList(
-      searcher: _productsSearcher,
-      filterState: _filterState,
-      selectionMode: SelectionMode.single,
-      attribute: 'category_name');
-
-  late final subcategoryFilter = FacetList(
-      searcher: _productsSearcher,
-      filterState: _filterState,
-      selectionMode: SelectionMode.single,
-      attribute: 'subcategory_name');
-
+  late final FacetList storeFilter;
+  late final FacetList categoryFilter;
+  late final FacetList subcategoryFilter;
+  // late final storeFilter = FacetList(
+  //     searcher: _productsSearcher,
+  //     filterState: _filterState,
+  //     selectionMode: SelectionMode.multiple,
+  //     attribute: 'store_name', state: , facetsStream: null);
+  //
+  // late final categoryFilter = FacetList(
+  //     searcher: _productsSearcher,
+  //     filterState: _filterState,
+  //     selectionMode: SelectionMode.single,
+  //     attribute: 'category_name'
+  //     );
+  //
+  // late final subcategoryFilter = FacetList(
+  //     searcher: _productsSearcher,
+  //     filterState: _filterState,
+  //     selectionMode: SelectionMode.single,
+  //     attribute: 'subcategory_name');
 
   Stream<SearchMetadata> get _searchMetadata => _productsSearcher.responses.map(SearchMetadata.fromResponse);
   Stream<HitsPage> get _searchPage => _productsSearcher.responses.map(HitsPage.fromResponse);
@@ -73,20 +72,33 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
 
   @override
   void initState() {
+    storeFilter = _productsSearcher.buildFacetList(
+      filterState: _filterState,
+      selectionMode: SelectionMode.multiple,
+      attribute: 'store_name',
+    );
+
+    categoryFilter = _productsSearcher.buildFacetList(
+      filterState: _filterState,
+      selectionMode: SelectionMode.single,
+      attribute: 'category_name',
+    );
+
+    subcategoryFilter = _productsSearcher.buildFacetList(
+      filterState: _filterState,
+      selectionMode: SelectionMode.single,
+      attribute: 'subcategory_name',
+    );
+
     _searchTextController.text = widget.query;
     _productsSearcher.query(_searchTextController.text);
     _searchTextController.addListener(() => _productsSearcher.query(_searchTextController.text));
 
     _searchTextController.addListener(
-          () => _productsSearcher.applyState(
-            (state) => state.copyWith(
-            query: _searchTextController.text,
-            page: 0,
-            clickAnalytics: true
-        ),
+      () => _productsSearcher.applyState(
+        (state) => state.copyWith(query: _searchTextController.text, page: 0, clickAnalytics: true),
       ),
     );
-
 
     _searchPage.listen((page) {
       if (page.pageKey == 0) {
@@ -99,29 +111,25 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
       return _pagingController.error = error;
     });
 
-    _pagingController.addPageRequestListener((pageKey) => _productsSearcher.applyState((state) => state.copyWith(
-        page: pageKey,
-        clickAnalytics: true
-    )));
+    _pagingController.addPageRequestListener(
+        (pageKey) => _productsSearcher.applyState((state) => state.copyWith(page: pageKey, clickAnalytics: true)));
 
     _productsSearcher.connectFilterState(_filterState);
     _filterState.filters.listen((_) => _pagingController.refresh());
 
-    if(widget.category != null) {
+    if (widget.category != null) {
       categoryFilter.toggle(widget.category!);
     }
-    if(widget.store != null) {
+    if (widget.store != null) {
       storeFilter.toggle(widget.store!);
     }
     // selectedStoreFilter.add(selectableFacets[index].item.value);
 
-
     try {
       TrackingUtils()
           .trackPageView(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Search screen");
-    }catch(e){
-      TrackingUtils()
-          .trackPageView('Guest', DateTime.now().toUtc().toString(), "Search screen");
+    } catch (e) {
+      TrackingUtils().trackPageView('Guest', DateTime.now().toUtc().toString(), "Search screen");
     }
     super.initState();
   }
@@ -148,10 +156,15 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             10.ph,
-            widget.category != null ?
-            Text("Results for '${widget.category}'", style: TextStylesPaytoneOne.textViewRegular24,)
-            :
-            Text("Results for '${widget.query}'", style: TextStylesPaytoneOne.textViewRegular24,),
+            widget.category != null
+                ? Text(
+                    "Results for '${widget.category}'",
+                    style: TextStylesPaytoneOne.textViewRegular24,
+                  )
+                : Text(
+                    "Results for '${widget.query}'",
+                    style: TextStylesPaytoneOne.textViewRegular24,
+                  ),
             Center(
               child: StreamBuilder<SearchMetadata>(
                 stream: _searchMetadata,
@@ -168,14 +181,20 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
             ),
             Align(
                 alignment: Alignment.centerRight,
-                child: IconButton(onPressed: () async {
-                  showModalBottomSheet(context: context,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)
-                      ),
-                      builder: (ctx) => FilterBottomSheet(storeFilter: storeFilter, categoryFilter: categoryFilter,
-                        subCategoryFilter: subcategoryFilter, filterState: _filterState, productSearcher: _productsSearcher,));
-                }, icon: Icon(Icons.filter_list))),
+                child: IconButton(
+                    onPressed: () async {
+                      showModalBottomSheet(
+                          context: context,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          builder: (ctx) => FilterBottomSheet(
+                                storeFilter: storeFilter,
+                                categoryFilter: categoryFilter,
+                                subCategoryFilter: subcategoryFilter,
+                                filterState: _filterState,
+                                productSearcher: _productsSearcher,
+                              ));
+                    },
+                    icon: Icon(Icons.filter_list))),
             Expanded(child: _hits(context))
           ],
         ),
@@ -183,14 +202,10 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
     );
   }
 
-
   Widget _hits(BuildContext context) => PagedGridView<int, Product>(
       pagingController: _pagingController,
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 200.w,
-          mainAxisExtent: 280,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10),
+          maxCrossAxisExtent: 200.w, mainAxisExtent: 280, crossAxisSpacing: 10, mainAxisSpacing: 10),
       builderDelegate: PagedChildBuilderDelegate<Product>(
         noItemsFoundIndicatorBuilder: (_) => Center(
           child: Text('No results found'.tr()),
@@ -230,10 +245,11 @@ class HitsPage {
 
 void trackSearch(String query, String? queryId, {required List<String> objectIDs, required List<int> positions}) {
   try {
-    TrackingUtils().trackSearch(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(),
-        query, queryId: queryId!, objectIDs: objectIDs, positions: positions);
+    TrackingUtils().trackSearch(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), query,
+        queryId: queryId!, objectIDs: objectIDs, positions: positions);
   } catch (e) {
     print(e);
-    TrackingUtils().trackSearch("Guest", DateTime.now().toUtc().toString(), query, queryId: queryId!, objectIDs: objectIDs, positions: positions);
+    TrackingUtils().trackSearch("Guest", DateTime.now().toUtc().toString(), query,
+        queryId: queryId!, objectIDs: objectIDs, positions: positions);
   }
 }

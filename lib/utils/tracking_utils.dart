@@ -270,9 +270,9 @@ class TrackingUtils {
       TrackingConstants.timeStampKey: timestamp,
       TrackingConstants.searchQueryKey: searchQuery,
     });
-    if (objectIDs.isNotEmpty || positions.isNotEmpty) {
-      AlgoliaTrackingUtils.trackAlgoliaClickEvent(userId, objectIDs, queryId, positions, TrackingConstants.searchEvent);
-    }
+    // if (objectIDs.isNotEmpty || positions.isNotEmpty) {
+    //   AlgoliaTrackingUtils.trackAlgoliaClickEvent(userId, objectIDs, queryId, positions, TrackingConstants.searchEvent);
+    // }
   }
 
   void trackProductAction(String userId, String timestamp, bool discounted, String chatlistId, String ChatlistName,
@@ -305,7 +305,7 @@ class TrackingUtils {
       TrackingConstants.quantityKey: quantity,
       TrackingConstants.actionTypeKey: actionType,
     });
-    AlgoliaTrackingUtils.trackAlgoliaConversionEvent(userId, productId, TrackingConstants.productActionEvent);
+    // AlgoliaTrackingUtils.trackAlgoliaConversionEvent(userId, productId, TrackingConstants.productActionEvent);
   }
 
   void trackShareProduct(
