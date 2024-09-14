@@ -20,6 +20,7 @@ class Product {
   late String storeName;
   late int availableNow;
   String? dateAdded;
+  late int compareId;
 
   Product({
     required this.id,
@@ -40,6 +41,7 @@ class Product {
     required this.storeId,
     required this.availableNow,
     this.dateAdded,
+    required this.compareId,
   });
 
 
@@ -67,6 +69,7 @@ class Product {
       storeName = json['store_name'] ?? 'N/A';
       availableNow = json['available_now'] ?? -1;
       dateAdded = json['date_added'] ?? 'N/A';
+      compareId = json['compare_id'];
     }catch(e){
       log("ERROR IN Product.fromJson: $e");
     }

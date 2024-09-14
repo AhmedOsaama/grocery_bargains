@@ -48,7 +48,7 @@ class RegisterRepoImpl implements RegisterRepo {
 
   @override
   Future<void> submitAuthForm({required BargainbUser user, required BuildContext context, required bool isLogin}) async {
-    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: false);
+    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: kDebugMode);
     try {
       if (!isLogin) {
         signup(context, user);

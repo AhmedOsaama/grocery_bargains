@@ -84,8 +84,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Future<void> getComparisons() async {
     try {
       var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
+      log("Finding similar products for ${widget.product.compareId}");
 
-        List<Product> similarProducts = await productsProvider.getSimilarProducts(widget.product.id);
+        List<Product> similarProducts = await productsProvider.getSimilarProducts(widget.product.compareId);
         for (var product in similarProducts) {
           // log(product.storeName);
           // log(product.storeId.toString());
