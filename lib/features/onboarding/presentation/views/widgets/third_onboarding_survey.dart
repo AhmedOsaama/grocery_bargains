@@ -38,34 +38,60 @@ class _ThirdOnboardingSurveyState extends State<ThirdOnboardingSurvey> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("What are your goals with Bargainb ?".tr(), style: TextStylesPaytoneOne.textViewRegular24,),
+        Text(
+          "What are your goals with Bargainb ?".tr(),
+          style: TextStylesPaytoneOne.textViewRegular24,
+        ),
         10.ph,
-        Text("Select one or more goals to help us personalize your experience".tr(), style: TextStylesInter.textViewMedium12,),
+        Text(
+          "Select one or more goals to help us personalize your experience".tr(),
+          style: TextStylesInter.textViewMedium12,
+        ),
         25.ph,
         Wrap(
           spacing: 10,
           children: choices.map((choice) {
-            return ActionChip(label: Text(choice.tr()),padding: EdgeInsets.all(10), onPressed: selectedChoices.contains(choice) ? null : (){
-              setState(() {
-                selectedChoices.add(choice);
-                if(showErrorText) showErrorText = false;
-              });
-            }, pressElevation: 0, backgroundColor: Color(0xffCBEBCC),);
+            return ActionChip(
+              label: Text(choice.tr(), style: TextStylesInter.textViewMedium14.copyWith(color: selectedChoices.contains(choice) ? primaryGreen : null),),
+              padding: EdgeInsets.all(10),
+              onPressed: selectedChoices.contains(choice)
+                  ? () {
+                setState(() {
+                  selectedChoices.remove(choice);
+                });
+                  }
+                  : () {
+                      setState(() {
+                        selectedChoices.add(choice);
+                        if (showErrorText) showErrorText = false;
+                      });
+                    },
+              pressElevation: 0,
+              shape: selectedChoices.contains(choice) ? RoundedRectangleBorder(
+                side: BorderSide(color: primaryGreen, width: 3,),
+                borderRadius: BorderRadius.circular(999)
+              ) : null,
+              backgroundColor: selectedChoices.contains(choice) ? Colors.white : Color(0xffCBEBCC),
+            );
           }).toList(),
         ),
         30.ph,
-        if(selectedChoices.isNotEmpty) Text("Selected Choices: $selectedChoices"),
-        if(showErrorText) Text("Please select at least one goal to proceed.".tr(), style: TextStylesInter.textViewRegular10.copyWith(color: Colors.red),),
+        // if(selectedChoices.isNotEmpty) Text("Selected Choices: $selectedChoices"),
+        if (showErrorText)
+          Text(
+            "Please select at least one goal to proceed.".tr(),
+            style: TextStylesInter.textViewRegular10.copyWith(color: Colors.red),
+          ),
         Spacer(),
         GenericButton(
             onPressed: () {
-              if(selectedChoices.isEmpty){
+              if (selectedChoices.isEmpty) {
                 setState(() {
-                showErrorText = true;
+                  showErrorText = true;
                 });
-              }else{
-                  widget.saveThirdScreenResponses(selectedChoices);
-                  widget.pageController.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+              } else {
+                widget.saveThirdScreenResponses(selectedChoices);
+                widget.pageController.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
               }
             },
             width: double.infinity,

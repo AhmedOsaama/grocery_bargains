@@ -51,23 +51,30 @@ class _FifthOnboardingSurveyState extends State<FifthOnboardingSurvey> {
             spacing: 10,
             children: choices.map((choice) {
               return ActionChip(
-                label: Text(choice.tr()),
+                label: Text(choice.tr(), style: TextStylesInter.textViewMedium14.copyWith(color: selectedChoices.contains(choice) ? primaryGreen : null),),
                 padding: EdgeInsets.all(10),
                 onPressed: selectedChoices.contains(choice)
-                    ? null
+                    ? () {
+                  setState(() {
+                    selectedChoices.remove(choice);
+                  });
+                    }
                     : () {
-                        setState(() {
-                          selectedChoices.add(choice);
-                          if (showErrorText) showErrorText = false;
-                        });
-                      },
+                  setState(() {
+                    selectedChoices.add(choice);
+                    if (showErrorText) showErrorText = false;
+                  });
+                },
                 pressElevation: 0,
-                backgroundColor: Color(0xffCBEBCC),
+                shape: selectedChoices.contains(choice) ? RoundedRectangleBorder(
+                    side: BorderSide(color: primaryGreen, width: 3,),
+                    borderRadius: BorderRadius.circular(999)
+                ) : null,
+                backgroundColor: selectedChoices.contains(choice) ? Colors.white : Color(0xffCBEBCC),
               );
             }).toList(),
           ),
           30.ph,
-          if (selectedChoices.isNotEmpty) Text("Selected Choices: $selectedChoices"),
           if (showErrorText)
             Text(
               "Please select at least one goal to proceed.".tr(),

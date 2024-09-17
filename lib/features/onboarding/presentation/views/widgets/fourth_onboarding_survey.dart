@@ -58,6 +58,8 @@ class _FourthOnboardingSurveyState extends State<FourthOnboardingSurvey> {
                   setState(() {
                     if (!selectedStores.contains(store.key)) {
                       selectedStores.add(store.key);
+                    }else{
+                      selectedStores.remove(store.key);
                     }
                     if (showErrorText) showErrorText = false;
                   });
@@ -67,8 +69,21 @@ class _FourthOnboardingSurveyState extends State<FourthOnboardingSurvey> {
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(5),
-                      border: selectedStores.contains(store.key) ? Border.all(color: Color(0xFF3463ED)) : null,
-                      boxShadow:  [
+                      border: selectedStores.contains(store.key) ? Border.all(color: primaryGreen) : null,
+                      boxShadow:  selectedStores.contains(store.key) ? [
+                        BoxShadow(
+                          color: Color.fromRGBO(0, 31, 143, 0.1),
+                          blurRadius: 6,
+                          spreadRadius: -1,
+                          offset: Offset(0, 4),
+                        ),
+                        BoxShadow(
+                            color: Color.fromRGBO(0, 31, 143, 0.1),
+                            blurRadius: 4,
+                            offset: Offset(0, 2),
+                            spreadRadius: -2
+                        )
+                      ] : [
                         BoxShadow(
                           color: Color(0xff00B207).withOpacity(0.1),
                           blurRadius: 3,
@@ -92,7 +107,6 @@ class _FourthOnboardingSurveyState extends State<FourthOnboardingSurvey> {
           ),
         ),
         30.ph,
-        if (selectedStores.isNotEmpty) Text("Selected Stores: $selectedStores"),
         if (showErrorText)
           Text(
             "Please select at least one goal to proceed.".tr(),

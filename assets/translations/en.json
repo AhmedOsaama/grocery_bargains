@@ -15,26 +15,21 @@
   "signUpWithApple"              : "SIGN UP WITH APPLE",
   "youDontHaveAnAccount"         : "You don't have an account yet ?",
   "signIn"                        : "Sign in",
-
   "welcomeBack"                   : "Welcome Back",
   "getTheLatestDiscounts"                   : "Get the latest discounts, create lists, and share the discounts or shopping with family and friends",
   "login"                   : "Login",
   "alreadyHaveAnAccount"          : "Already have an account ?",
-
   "toResetYourPassword"          : "To reset your password, you need your email or mobile number that can be authenticated",
   "resetPassword"          : "Reset password",
   "backToLogin"          : "BACK TO LOGIN",
-
   "checkEmail"          : "Check Your Email",
   "weHaveSentResetPassword"          : "We have sent the reset password to the email address",
   "openEmail"          : "Open email",
   "youHaveNotReceivedEmail"          : "You have not received the email ?",
   "resend"          : "Resend",
-
   "successfully"          : "Successfully",
   "yourPasswordHasBeenUpdated"          : "Your password has been updated, please change your password regularly to avoid this happening",
   "continueText"          : "Continue",
-
   "shoppingTogether"          : "Shopping together",
   "inviteFriends"          : "Invite friends",
   "inviteYourFriendsNowToShare"          : "Invite your friends now to share your shopping list with them. How would you like to send the invite.",
@@ -45,14 +40,12 @@
   "nameOrEmail"          : "Name or email to share with",
   "sendInvites"          : "Send invites",
   "skip"          : "Skip",
-
   "findAllTheDiscountsHere"          : "Find All The Discounts Here!",
   "exploreAllTheLatest"          : "Explore all the latest grocery discounts from all the major stores.",
   "chatWithFriends"          : "Chat with friends about groceries",
   "easilyAddItems"          : "Easily add the items you find to lists",
   "comparePricesAndLatest"          : "Compare prices & latest value discounts",
   "easilyAddFriends"          : "Easily add friends, family or flat mates to your lists and share the discounts or the shopping with them.",
-
   "hello"                     : "Hello",
   "whatAreYouLookingFor"                     : "What are you looking for?",
   "anyGrocery"                     : "Any Grocery",
@@ -66,7 +59,6 @@
   "addToCart"                     : "Add to cart",
   "latestBargains"                     : "Latest Bargains",
   "latestDeals"                     : "LATEST DEALS",
-
   "addToList"                           : "Add to list",
   "share"                           : "Share",
   "priceAlert"                           : "Price alert",
@@ -81,7 +73,6 @@
   "chooseAStore"                           : "Choose a store",
   "createListForStore"                           : "Create list for this store",
   "comingSoon"                           : "Coming Soon",
-
   "todaysBestBargain"                   : "Today’s best bargain",
   "shopByAisle"                   : "Shop by aisle",
   "vegetablesAndFruits"                   : "Vegetables & Fruits",
@@ -93,10 +84,8 @@
   "bakery"                   : "Bakery",
   "bananas"                   : "Bananas",
   "seeAll"                   : "See all",
-
   "chooseList"                 : "Choose a list",
   "createNewList"                 : "Create a new list",
-
   "profile"                     : "Profile",
   "home"                     : "Home",
   "edit"                        : "Edit",
@@ -120,7 +109,6 @@
   "deleteYourAccount"               : "Delete your account",
   "allDataWillBeRemoved"            : "All the data will be removed forever",
   "submit"            : "Submit",
-
   "searchForChats"                  : "Search for chats",
   "startAChatlist"                  : "Start a chatlist",
   "myChatlists"                  : "My Chatlists",
@@ -132,7 +120,6 @@
   "inputEmail"                  : "Input email...",
   "addToListFirstItem"                  : "Add To List first item",
   "you"                  : "You",
-
   "subcategories"                  : "Subcategories",
   "couldntDeleteList"                  : "Couldn't delete list. Please try again later",
   "tryAgain"                  : "Something went wrong please try again",
@@ -220,6 +207,7 @@
   "ThePricesShown"                  : "The prices shown are available online and may not reflect in store. Confirm prices before visiting the store",
   "Sizes"                  : "Sizes",
   "Name"                  : "Name",
+
   "YourStatus"                  : "Your Status",
   "PhoneNumberAlready"                  : "Phone number is already registered with another account. Please enter a different phone number",
   "EmailAlready"                  : "Email is already registered with another account. Please enter a different email",
@@ -303,7 +291,6 @@
   "Let’s show you" : "Let’s show you",
   "What’s your preferred grocery store?" : "What’s your preferred grocery store?",
   "Choose one" : "Choose one",
-
   "Your Data. Your Choice": "Your Data. Your Choice",
   "How We Collect and Use Your Data": "How We Collect and Use Your Data",
   "At BargainB, we value your privacy and are committed to protecting your personal information. We collect data about how and when you use our app to provide you with the best possible experience and personalize the content, products, and recipes you see. Read our": "At BargainB, we value your privacy and are committed to protecting your personal information. We collect data about how and when you use our app to provide you with the best possible experience and personalize the content, products, and recipes you see. Read our",
@@ -312,6 +299,7 @@
   "We use your data to personalise your Assistant, recommend products, send you alerts about deals, and track your savings. We also use your data to improve our app and services.": "We use your data to personalise your Assistant, recommend products, send you alerts about deals, and track your savings. We also use your data to improve our app and services.",
   "Yes, Personalise My Assistant": "Yes, Personalise My Assistant",
   "Not now, leave App": "Not now, leave App",
+
 
   "Feeling Hungry?": "Feeling Hungry?",
   "Not sure what to do with those leftover groceries?" : "Not sure what to do with those leftover groceries?",
@@ -476,6 +464,7 @@
   "Passwords do not match": "Passwords do not match",
   "DeleteChatlist": "Delete Chatlist",
 
+
   "Chats": "Chats",
   "@BB Find the best price for cheese": "@BB Find the best price for cheese",
   "@BB Build a me a grocery list for 150 euros.": "@BB Build a me a grocery list for 150 euros.",
@@ -587,6 +576,7 @@
   "Multi-Household Shopping": "Multi-Household Shopping",
   "Please select at least one goal to proceed.": "Please select at least one goal to proceed.",
   "What’s on your typical shopping list ?": "What’s on your typical shopping list ?",
+
   "Choose the items that are usually on your grocery shopping list. You can select multiple options.": "Choose the items that are usually on your grocery shopping list. You can select multiple options.",
   "Salads": "Salads",
   "Quark": "Quark",

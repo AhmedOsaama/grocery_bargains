@@ -60,7 +60,10 @@ class _HighlightsScreenState extends State<HighlightsScreen> {
         children: highlights
             .map((highlight) => Stack(
           children: [
-            Image.asset(highlight['image']!),
+            Image.asset(highlight['image']!,
+                width: double.infinity,
+                fit: BoxFit.fill
+            ),
             Container(
               decoration: const BoxDecoration(
                   gradient: LinearGradient(
@@ -102,7 +105,7 @@ class _HighlightsScreenState extends State<HighlightsScreen> {
                             duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
                       }
                       else if(_pageController.page! >= 2){
-                        AppNavigator.pushReplacement(context: context, screen: const WelcomeScreen());
+                        AppNavigator.pushReplacement(context: context, screen: const LoginScreen());
                       }
                     },
                     width: double.infinity,

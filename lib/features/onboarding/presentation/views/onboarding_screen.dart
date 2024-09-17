@@ -187,6 +187,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }catch(e){
       log(e.toString());
     }
+    if(kReleaseMode) {
       HubspotService.createHubspotContact({
       "firstname": firstName,
       'last_name': lastName,
@@ -200,6 +201,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'grocery_monthly_budget': this.selectedBudget.toString(),
       "hubspot_owner_id": "1252705237",
     });
+    }
     }
   }
 }

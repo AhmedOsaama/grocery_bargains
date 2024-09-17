@@ -96,7 +96,7 @@ class _MyAppState extends State<MyApp> {
 void initializeMyApp(RemoteMessage? notificationMessage, bool isFirstTime) {
   runApp(
       EasyLocalization(
-          supportedLocales: const [Locale('en'), Locale('nl')],
+          supportedLocales: const [Locale('en'), Locale('nl'), Locale('de'), Locale('es'), Locale('fr'), Locale('it')],
           path: 'assets/translations',
           fallbackLocale: const Locale('en'),
           // startLocale: const Locale('nl'),

@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Stack(
         alignment: Alignment.center,
         children: [
-          Image.asset(loginCover, width: double.infinity, fit: BoxFit.cover,),
+          Image.asset(loginCover, width: double.infinity, fit: BoxFit.fill,),
           Container(
             decoration: const BoxDecoration(
                 gradient: LinearGradient(

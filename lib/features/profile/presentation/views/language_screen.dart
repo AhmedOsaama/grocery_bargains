@@ -147,7 +147,159 @@ class _LanguageScreenState extends State<LanguageScreen> {
                               style: TextStyles.textViewMedium16
                                   .copyWith(color: black2),
                             ),
-                            snap.data!["language"] != "en"
+                            snap.data!["language"] == "nl"
+                                ? Icon(
+                                    Icons.done,
+                                    color: mainPurple,
+                                  )
+                                : SizedBox(
+                                    width: 5,
+                                  )
+                          ],
+                        ),
+                      ),
+                    ),
+                    Divider(),
+                    23.ph,
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () async {
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                            .update({
+                          'language': "de",
+                        });
+                        context.setLocale(Locale('de'));
+                        setState(() {
+                          updateUserDataFuture();
+                        });
+                        TrackingUtils().trackLanguageSelected(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "German");
+                      },
+                      child: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "German",
+                              style: TextStyles.textViewMedium16
+                                  .copyWith(color: black2),
+                            ),
+                            snap.data!["language"] == "de"
+                                ? Icon(
+                                    Icons.done,
+                                    color: mainPurple,
+                                  )
+                                : SizedBox(
+                                    width: 5,
+                                  )
+                          ],
+                        ),
+                      ),
+                    ),
+                    Divider(),
+                    23.ph,
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () async {
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                            .update({
+                          'language': "es",
+                        });
+                        context.setLocale(Locale('es'));
+                        setState(() {
+                          updateUserDataFuture();
+                        });
+                        TrackingUtils().trackLanguageSelected(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Spanish");
+                      },
+                      child: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Spanish",
+                              style: TextStyles.textViewMedium16
+                                  .copyWith(color: black2),
+                            ),
+                            snap.data!["language"] == "es"
+                                ? Icon(
+                                    Icons.done,
+                                    color: mainPurple,
+                                  )
+                                : SizedBox(
+                                    width: 5,
+                                  )
+                          ],
+                        ),
+                      ),
+                    ),
+                    Divider(),
+                    23.ph,
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () async {
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                            .update({
+                          'language': "fr",
+                        });
+                        context.setLocale(Locale('fr'));
+                        setState(() {
+                          updateUserDataFuture();
+                        });
+                        TrackingUtils().trackLanguageSelected(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "French");
+                      },
+                      child: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "French",
+                              style: TextStyles.textViewMedium16
+                                  .copyWith(color: black2),
+                            ),
+                            snap.data!["language"] == "fr"
+                                ? Icon(
+                                    Icons.done,
+                                    color: mainPurple,
+                                  )
+                                : SizedBox(
+                                    width: 5,
+                                  )
+                          ],
+                        ),
+                      ),
+                    ),
+                    Divider(),
+                    23.ph,
+                    GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () async {
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                            .update({
+                          'language': "it",
+                        });
+                        context.setLocale(Locale('it'));
+                        setState(() {
+                          updateUserDataFuture();
+                        });
+                        TrackingUtils().trackLanguageSelected(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), "Italian");
+                      },
+                      child: Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Italian",
+                              style: TextStyles.textViewMedium16
+                                  .copyWith(color: black2),
+                            ),
+                            snap.data!["language"] == "it"
                                 ? Icon(
                                     Icons.done,
                                     color: mainPurple,
