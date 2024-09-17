@@ -12,7 +12,7 @@ import '../core/utils/tracking_constants.dart';
 
 class TrackingUtils {
   // Mixpanel segment = Mixpanel('3aa827fb2f1cdf5ff2393b84d9c40bac');
-  Analytics segment = createClient(Configuration("ju4vP6Xnyc1tRoh6O1NAtTxFhyyMkX4Y"));
+  static Analytics segment = createClient(Configuration("ju4vP6Xnyc1tRoh6O1NAtTxFhyyMkX4Y"));
 
   void trackButtonClick(String userId, String buttonName, String timestamp, String pageName) {
     segment.track(TrackingConstants.buttonClickEvent, properties: {

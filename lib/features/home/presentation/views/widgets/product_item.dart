@@ -1,5 +1,6 @@
 import 'package:bargainb/features/home/presentation/views/widgets/store_product_card.dart';
 import 'package:bargainb/providers/chatlists_provider.dart';
+import 'package:bargainb/utils/algolia_tracking_utils.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,13 +19,16 @@ import '../product_detail_screen.dart';
 
 class ProductItem extends StatelessWidget {
   final Product product;
-  const ProductItem({super.key, required this.product});
+  final int productIndex;
+  final String queryId;
+  const ProductItem({super.key, required this.product, required this.productIndex, required this.queryId, });
 
   @override
   Widget build(BuildContext context) {
 
     return GestureDetector(
       onTap: () {
+        AlgoliaTrackingUtils.trackAlgoliaClickEvent(product.id.toString(), queryId, productIndex);
         AppNavigator.push(context: context, screen: ProductDetailScreen(product: product));
       },
       child: Container(
@@ -118,6 +122,7 @@ class ProductItem extends StatelessWidget {
                         size: product.unit,
                         category: product.category,
                         text: ''));
+                    AlgoliaTrackingUtils.trackAlgoliaProductAddedEvent(product.id.toString(), queryId);
                   },
                   child: Container(
                     padding: EdgeInsets.all(5),

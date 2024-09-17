@@ -255,7 +255,7 @@ class RegisterRepoImpl implements RegisterRepo {
       Provider.of<UserProvider>(context, listen: false)
           .setUserData(userCredential.user!.uid, username, email, phoneNumber, deviceToken!, imageURL);
 
-      TrackingUtils().segment.identify(
+      TrackingUtils.segment.identify(
           userId: userCredential.user!.uid,
           userTraits: UserTraits(
             email: email,

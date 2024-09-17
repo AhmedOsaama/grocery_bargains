@@ -46,27 +46,11 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
   late final FacetList storeFilter;
   late final FacetList categoryFilter;
   late final FacetList subcategoryFilter;
-  // late final storeFilter = FacetList(
-  //     searcher: _productsSearcher,
-  //     filterState: _filterState,
-  //     selectionMode: SelectionMode.multiple,
-  //     attribute: 'store_name', state: , facetsStream: null);
-  //
-  // late final categoryFilter = FacetList(
-  //     searcher: _productsSearcher,
-  //     filterState: _filterState,
-  //     selectionMode: SelectionMode.single,
-  //     attribute: 'category_name'
-  //     );
-  //
-  // late final subcategoryFilter = FacetList(
-  //     searcher: _productsSearcher,
-  //     filterState: _filterState,
-  //     selectionMode: SelectionMode.single,
-  //     attribute: 'subcategory_name');
 
   Stream<SearchMetadata> get _searchMetadata => _productsSearcher.responses.map(SearchMetadata.fromResponse);
   Stream<HitsPage> get _searchPage => _productsSearcher.responses.map(HitsPage.fromResponse);
+
+  late String queryId;
 
   // var storeList = ['Store', 'Albert Heijn', 'Jumbo', 'Hoogvliet', "Dirk"];
 
@@ -104,6 +88,7 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
       if (page.pageKey == 0) {
         _pagingController.refresh();
       }
+      queryId = page.queryId!;
       _pagingController.appendPage(page.items, page.nextPageKey);
       Provider.of<ProductsProvider>(context, listen: false).products.addAll(page.items);
     }).onError((error) {
@@ -123,7 +108,6 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
     if (widget.store != null) {
       storeFilter.toggle(widget.store!);
     }
-    // selectedStoreFilter.add(selectableFacets[index].item.value);
 
     try {
       TrackingUtils()
@@ -210,8 +194,10 @@ class _AlgoliaSearchScreenState extends State<AlgoliaSearchScreen> {
         noItemsFoundIndicatorBuilder: (_) => Center(
           child: Text('No results found'.tr()),
         ),
-        itemBuilder: (_, item, __) => ProductItem(
+        itemBuilder: (_, item, index) => ProductItem(
           product: item,
+          productIndex: index,
+          queryId: queryId,
         ),
       ));
 }
@@ -225,11 +211,12 @@ class SearchMetadata {
 }
 
 class HitsPage {
-  const HitsPage(this.items, this.pageKey, this.nextPageKey);
+  const HitsPage(this.items, this.pageKey, this.nextPageKey, this.queryId);
 
   final List<Product> items;
   final int pageKey;
   final int? nextPageKey;
+  final String? queryId;
 
   factory HitsPage.fromResponse(SearchResponse response) {
     final items = response.hits.map(Product.fromJson).toList();
@@ -239,7 +226,7 @@ class HitsPage {
     List<String> objectIDs = items.map((e) => e.id.toString()).toList();
     List<int> positions = items.map((e) => items.indexOf(e) + 1).toList();
     trackSearch(response.query, response.queryID, objectIDs: objectIDs, positions: positions);
-    return HitsPage(items, response.page, nextPageKey);
+    return HitsPage(items, response.page, nextPageKey, response.queryID);
   }
 }
 
