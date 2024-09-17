@@ -28,6 +28,8 @@ class _TopDealsRowState extends State<TopDealsRow> {
 
   Stream<HitsPage> get _searchPage => _productsSearcher.responses.map(HitsPage.fromResponse);
 
+  late String queryId;
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +39,7 @@ class _TopDealsRowState extends State<TopDealsRow> {
       if (page.pageKey == 0) {
         _pagingController.refresh();
       }
+      queryId = page.queryId!;
       _pagingController.appendPage(page.items, page.nextPageKey);
       //to make products available to all screens
       Provider.of<ProductsProvider>(context, listen: false).products.addAll(page.items);
@@ -63,8 +66,9 @@ class _TopDealsRowState extends State<TopDealsRow> {
             noItemsFoundIndicatorBuilder: (_) => Center(
               child: Text('No results found'.tr()),
             ),
-            itemBuilder: (_, item, __) => ProductItem(
+            itemBuilder: (_, item, index) => ProductItem(
               product: item,
+              productIndex: index, queryId: queryId,
             ),
           )),
     );
