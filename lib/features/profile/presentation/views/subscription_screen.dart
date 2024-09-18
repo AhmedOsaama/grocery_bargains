@@ -124,6 +124,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                       final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
                       var monthlyPrice = packages[0].storeProduct.priceString;
                       var yearlyPrice = packages[1].storeProduct.priceString;
+                      var yearlyPriceDouble = packages[1].storeProduct.price;
                       var currencyCode = packages.first.storeProduct.currencyCode;
                       var yearlyBeforeDiscountPrice = packages[1].storeProduct.price / 0.33;
                       // var yearlyDiscountPercentage = 0.33;
@@ -139,6 +140,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                               });
                             },
                             price: yearlyPrice,
+                            priceDouble: yearlyPriceDouble,
                             beforeDiscountPrice: yearlyBeforeDiscountPrice,
                             currencyCode: currencyCode,
                             plan: "Yearly",
