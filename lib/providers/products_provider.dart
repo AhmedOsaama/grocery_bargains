@@ -197,21 +197,21 @@ class ProductsProvider with ChangeNotifier {
     TrackingUtils().trackShareProduct(FirebaseAuth.instance.currentUser!.uid, DateTime.now().toUtc().toString(), itemId.toString(), itemName, productCategory);
   }
 
-  String getImage(String storeName) {
-    if (storeName == 'AH') return albert;
-    if (storeName == 'Albert') return albert;
-    if (storeName == 'Jumbo') return jumbo;
-    if (storeName == 'Hoogvliet') return hoogLogo;
-    if (storeName == 'Dirk') return dirkLogo;
-    return albert;
-  }
+  // String getImage(String storeName) {
+  //   if (storeName == 'AH') return albert;
+  //   if (storeName == 'Albert') return albert;
+  //   if (storeName == 'Jumbo') return jumbo;
+  //   if (storeName == 'Hoogvliet') return hoogLogo;
+  //   if (storeName == 'Dirk') return dirkLogo;
+  //   return albert;
+  // }
 
   String getStoreLogoPath(String selectedStore){
-    if(selectedStore == "Albert"){
+    if(selectedStore == "albert"){
       return albertLogo;
-    }if(selectedStore == "Jumbo"){
+    }if(selectedStore == "jumbo"){
       return jumbo;
-    }if(selectedStore == "Hoogvliet"){
+    }if(selectedStore == "hoogvliet"){
       return hoogvlietLogo;
     }
     if(selectedStore == "Dirk"){
@@ -220,14 +220,29 @@ class ProductsProvider with ChangeNotifier {
     if(selectedStore == "edeka24"){
       return edeka;
     }
+    if(selectedStore == "Plus"){
+      return plus;
+    }
+    if(selectedStore == "Rewe"){
+      return rewe;
+    }
+    if(selectedStore == "Coop"){
+      return coop;
+    }
+    if(selectedStore == "Spar"){
+      return spar;
+    }
+    if(selectedStore == "Aldi"){
+      return aldi;
+    }
     return imageError;
   }
 
-  String getStoreName(int storeId){
-    if(storeId == 1) return "Albert";
-    if(storeId == 2) return "Jumbo";
-    if(storeId == 3) return "Hoogvliet";
-    if(storeId == 4) return "Dirk";
-    return "N/A";
-  }
+  // String getStoreName(int storeId){
+  //   if(storeId == 1) return "Albert";
+  //   if(storeId == 2) return "Jumbo";
+  //   if(storeId == 3) return "Hoogvliet";
+  //   if(storeId == 4) return "Dirk";
+  //   return "N/A";
+  // }
 }

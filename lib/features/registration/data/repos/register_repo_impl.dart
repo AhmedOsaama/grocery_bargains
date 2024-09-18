@@ -39,7 +39,6 @@ class RegisterRepoImpl implements RegisterRepo {
   Future<void> authenticateUser({required BuildContext context, required BargainbUser user,
       required GlobalKey<FormState> formKey, required bool isLogin, required bool rememberMe}) async {
     FocusScope.of(context).unfocus();
-    log(user.phoneNumber);
       await submitAuthForm(context: context, user: user, isLogin: isLogin).timeout(
         const Duration(seconds: 180),
       );
@@ -128,7 +127,11 @@ class RegisterRepoImpl implements RegisterRepo {
       if(isSignup){
         AppNavigator.pushReplacement(context: context, screen: const EmailAddressScreen());
       } else {
-        AppNavigator.pushReplacement(context: context, screen: const FreeTrialScreen());
+        if(SubscriptionProvider.get(context).isSubscribed){
+          AppNavigator.pushReplacement(context: context, screen: MainScreen());
+        } else {
+          AppNavigator.pushReplacement(context: context, screen: const FreeTrialScreen());
+        }
       }
   }
 

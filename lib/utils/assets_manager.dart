@@ -91,5 +91,8 @@ const String subInfo3 = "$imgPath/sub_info_3.png";
 const String subInfo4 = "$imgPath/sub_info_4.png";
 const String edeka = "$imgPath/edeka.png";
 const String newBee = "$imgPath/new_bee.png";
+const String beeCheckmark = "$imgPath/bee_checkmark.png";
+const String plus = "$imgPath/plus.png";
+const String rewe = "$imgPath/plus.png";
 
 

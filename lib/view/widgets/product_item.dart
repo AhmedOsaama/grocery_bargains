@@ -32,8 +32,6 @@ class ProductItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var storeImage = Provider.of<ProductsProvider>(context, listen: false)
-        .getImage(storeName);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
       // margin: EdgeInsets.only(right: 10.w),

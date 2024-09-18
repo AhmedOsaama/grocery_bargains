@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:bargainb/features/onboarding/presentation/views/account_feedback_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/sub_info_widget.dart';
 import 'package:bargainb/features/profile/presentation/views/profile_screen.dart';
 import 'package:bargainb/features/registration/presentation/views/login_screen.dart';
@@ -58,22 +59,38 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
             children: [
               Row(
                 children: [
-                  Image.asset(premiumBB),
+                  Image.asset(premiumBB,width: 45,height: 45,),
                   10.pw,
                   Text("PREMIUM".tr(), style: TextStylesInter.textViewBold14.copyWith(color: primaryGreen),)
                 ],
               ),
+              20.ph,
+              displayedContent == "info"
+              ?
               Text.rich(TextSpan(
-                text: "Pays".tr(),
-                style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: primaryGreen),
-                children: [
-                   TextSpan(text: " for Itself".tr(), style: TextStyle(color: Color(0xff002401))),
-                  TextSpan(text: " with".tr(), style: TextStyle(color: primaryGreen)),
-                   TextSpan(text: " Grocery".tr(), style: TextStyle(color: Color(0xff002401))),
-                  TextSpan(text: " Savings".tr(), style: TextStyle(color: primaryGreen)),
-                ]
+                  text: "Get".tr(),
+                  style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: primaryGreen),
+                  children: [
+                    TextSpan(text: " the".tr(), style: TextStyle(color: Color(0xff002401))),
+                    TextSpan(text: " Best".tr(), style: TextStyle(color: primaryGreen)),
+                    TextSpan(text: " Grocery".tr(), style: TextStyle(color: Color(0xff002401))),
+                    TextSpan(text: " Deals".tr(), style: TextStyle(color: primaryGreen)),
+                    TextSpan(text: ", Every Time".tr(), style: TextStyle(color: Color(0xff002401))),
+                  ]
+              ))
+                  :
+              Text.rich(TextSpan(
+                  text: "Pays".tr(),
+                  style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: primaryGreen),
+                  children: [
+                    TextSpan(text: " for Itself".tr(), style: TextStyle(color: Color(0xff002401))),
+                    TextSpan(text: " with".tr(), style: TextStyle(color: primaryGreen)),
+                    TextSpan(text: " Grocery".tr(), style: TextStyle(color: Color(0xff002401))),
+                    TextSpan(text: " Savings".tr(), style: TextStyle(color: primaryGreen)),
+                  ]
               )),
-              10.ph,
+
+              30.ph,
               if(displayedContent == "plans") ...[
               Text("How your free trial works".tr(), style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: const Color(0xff181818)),),
                 if(!SubscriptionProvider.get(context).isSubscribed) ...[
@@ -92,6 +109,7 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
                         final packages = offerings.map((offer) => offer.availablePackages).expand((pair) => pair).toList();
                         var monthlyPrice = packages[0].storeProduct.priceString;
                         var yearlyPrice = packages[1].storeProduct.priceString;
+                        var yearlyPriceDouble = packages[1].storeProduct.price;
                         var currencyCode = packages.first.storeProduct.currencyCode;
                         var yearlyBeforeDiscountPrice = packages[1].storeProduct.price / 0.33;
                         return Column(
@@ -117,6 +135,7 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
                                 });
                               },
                               price: yearlyPrice,
+                              priceDouble: yearlyPriceDouble,
                               beforeDiscountPrice: yearlyBeforeDiscountPrice,
                               currencyCode: currencyCode,
                               plan: "Yearly",
@@ -177,6 +196,7 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
                   child: Text(
                     "Try BargainB Premium FREE for 7 Days".tr(),
                     style: TextStylesInter.textViewSemiBold16,
+                    textAlign: TextAlign.center,
                   )),
               10.ph,
               GenericButton(
@@ -193,7 +213,7 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
                   ],
                   onPressed: () async {
                     Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
-                    AppNavigator.pushReplacement(context: context, screen: const MainScreen());
+                    AppNavigator.pushReplacement(context: context, screen: const AccountFeedbackScreen(isPremium: false));
                   },
                   child: Text(
                     "No Thanks".tr(),
@@ -278,7 +298,7 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
       trackSubscription();
       SubscriptionProvider.get(context).changeSubscriptionStatus(hasPurchased);
       Provider.of<TutorialProvider>(context, listen: false).activateWelcomeTutorial();
-      AppNavigator.pushReplacement(context: context, screen: const MainScreen());
+      AppNavigator.pushReplacement(context: context, screen: const AccountFeedbackScreen(isPremium: true));
     }
     return hasPurchased;
   }

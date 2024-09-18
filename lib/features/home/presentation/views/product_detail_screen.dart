@@ -90,10 +90,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         for (var product in similarProducts) {
           // log(product.storeName);
           // log(product.storeId.toString());
-          var storeName = productsProvider.getStoreName(product.storeId);
-          if (product.availableNow == 1) {
-            addComparisonItem(storeName, product, productsProvider);
-        }
+          // if (product.availableNow == 1) {
+            addComparisonItem(product, productsProvider);
+        // }
       }
     } catch (e) {
       log("Failed to get price comparisons in product detail");
@@ -101,14 +100,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
   }
 
-  void addComparisonItem(
-      String storeName, Product product, ProductsProvider productsProvider) {
+  void addComparisonItem(Product product, ProductsProvider productsProvider) {
     comparisonItems.add(GestureDetector(
-      onTap: () => goToStoreProductPage(context, storeName, product),
+      onTap: () => goToStoreProductPage(context, product),
       child: PriceComparisonItem(
           price: product.price.toString(),
           size: product.unit,
-          storeImagePath: productsProvider.getStoreLogoPath(storeName)),
+          storeImagePath: productsProvider.getStoreLogoPath(product.storeName)),
     ));
     setState(() {
       canUpdateQuantity = true;
@@ -121,7 +119,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     }
   }
 
-  void goToStoreProductPage(BuildContext context, String selectedStore, Product product) {
+  void goToStoreProductPage(BuildContext context, Product product) {
     AppNavigator.push(
         context: context,
         screen: ProductDetailScreen(
@@ -177,7 +175,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         ),
                         Align(
                             alignment: Alignment.bottomLeft,
-                            child: StoreProductCard(storeId: widget.product.storeId,)
+                            child: StoreProductCard(storeName: widget.product.storeName,)
                         ),
                         Column(
                           mainAxisSize: MainAxisSize.min,

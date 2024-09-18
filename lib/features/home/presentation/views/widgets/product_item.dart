@@ -43,18 +43,18 @@ class ProductItem extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 15),
         child: Column(
           children: [
-            10.ph,
-            Align(
-              alignment: AlignmentDirectional.topStart,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.orange[500],
-                  borderRadius: BorderRadius.circular(10)
-                ),
-                child: Text("Saving\n €0.59", style: TextStyles.textViewRegular10.copyWith(color: Colors.white),),
-              ),
-            ),
+            30.ph,
+            // Align(
+            //   alignment: AlignmentDirectional.topStart,
+            //   child: Container(
+            //     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            //     decoration: BoxDecoration(
+            //       color: Colors.orange[500],
+            //       borderRadius: BorderRadius.circular(10)
+            //     ),
+            //     child: Text("Saving\n €0.59", style: TextStyles.textViewRegular10.copyWith(color: Colors.white),),
+            //   ),
+            // ),
             10.ph,
             Stack(
               alignment: AlignmentDirectional.bottomEnd,
@@ -71,7 +71,7 @@ class ProductItem extends StatelessWidget {
                 ),
                 Align(
                   alignment: Alignment.bottomLeft,
-                    child: StoreProductCard(storeId: product.storeId,)
+                    child: StoreProductCard(storeName: product.storeName,)
                 ),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 10,vertical: 2),

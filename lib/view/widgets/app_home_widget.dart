@@ -1,3 +1,4 @@
+import 'package:bargainb/features/onboarding/presentation/views/account_feedback_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/free_trial_screen.dart';
 import 'package:bargainb/features/registration/presentation/views/email_address_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -51,7 +52,7 @@ class _getHomeWidgetState extends State<getHomeWidget> {
               return widget.isFirstTime ? const HighlightsScreen() :
               const MainScreen(); //logged out
               // const HighlightsScreen(); //logged out
-              // return MainScreen();
+              // return AccountFeedbackScreen(isPremium: true);
             });
   }
 }

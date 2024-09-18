@@ -95,12 +95,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     saveFirstScreenResponses: saveFirstScreenResponses,
                     pageController: _pageController,
                   ),
+                  ThirdOnboardingSurvey(
+                      pageController: _pageController, saveThirdScreenResponses: saveThirdScreenResponses),
                   SecondOnboardingSurvey(
                     saveSecondScreenResponses: saveSecondScreenResponses,
                     pageController: _pageController,
                   ),
-                  ThirdOnboardingSurvey(
-                      pageController: _pageController, saveThirdScreenResponses: saveThirdScreenResponses),
                   FourthOnboardingSurvey(
                       pageController: _pageController, saveFourthScreenResponses: saveFourthScreenResponses),
                   FifthOnboardingSurvey(
