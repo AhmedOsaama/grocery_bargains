@@ -261,6 +261,7 @@ class _ChatViewState extends State<ChatView> {
                                   itemSize: (messages[index].data()! as Map).containsKey('item_size')
                                       ? messages[index]['item_size']
                                       : "",
+                                  products: (messages[index].data()! as Map).containsKey('products') ? messages[index]['products'] : null,
                                   itemName: messages[index]['item_name'],
                                   itemPrice: messages[index]['item_price'],
                                   itemOldPrice: messages[index]['item_oldPrice'],
@@ -429,13 +430,14 @@ class _ChatViewState extends State<ChatView> {
       setState(() {
         isBotLoading = true;
       });
-      var response = await post(Uri.parse("https://yswessi.pythonanywhere.com/query"), headers: {
+      var response = await post(Uri.parse("https://bbagent-yswessi.pythonanywhere.com/query"), headers: {
         "Content-Type": "application/json"
       }, body: json.encode({
         "message": text
       },));
       Map botResponse = jsonDecode(response.body);
       log(botResponse.toString());
+      log(widget.listId);
         var botMessage = botResponse['message'];
       if(botResponse['type'] == "BasicChat"){               //basic chat case
         var botMessageText = botMessage['text'];

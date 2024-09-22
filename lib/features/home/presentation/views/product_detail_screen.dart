@@ -147,7 +147,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if((widget.product.oldPrice! - widget.product.price) > 0)
+                    if(widget.product.oldPrice != null && (widget.product.oldPrice! - widget.product.price) > 0)
                     Align(
                       alignment: AlignmentDirectional.topStart,
                       child: Container(

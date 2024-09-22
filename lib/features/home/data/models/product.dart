@@ -16,7 +16,7 @@ class Product {
   late String image;
   late String description;
   late String englishName;
-  late int storeId;
+  // late int storeId;
   late String storeName;
   late int availableNow;
   String? dateAdded;
@@ -38,7 +38,8 @@ class Product {
     required this.image,
     required this.description,
     required this.englishName,
-    required this.storeId,
+    // required this.storeId,
+    required this.storeName,
     required this.availableNow,
     this.dateAdded,
     required this.compareId,
@@ -65,7 +66,7 @@ class Product {
       image = json['image_path'] ?? 'N/A';
       description = json['description'] ?? 'N/A';
       englishName = json['english_name'] ?? 'N/A';
-      storeId = json['store_id'] ?? -1;
+      // storeId = json['store_id'] ?? -1;
       storeName = json['store_name'] ?? 'N/A';
       availableNow = json['available_now'] ?? -1;
       dateAdded = json['date_added'] ?? 'N/A';
@@ -92,7 +93,8 @@ class Product {
     _data['image_path'] = image;
     _data['description'] = description;
     _data['english_name'] = englishName;
-    _data['store_id'] = storeId;
+    _data['store_name'] = storeName;
+    // _data['store_id'] = storeId;
     _data['available_now'] = availableNow;
     // _data['date_added'] = dateAdded;
     return _data;
