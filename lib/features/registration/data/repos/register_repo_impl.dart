@@ -47,7 +47,8 @@ class RegisterRepoImpl implements RegisterRepo {
 
   @override
   Future<void> submitAuthForm({required BargainbUser user, required BuildContext context, required bool isLogin}) async {
-    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: kDebugMode);
+    // FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: kDebugMode);
+    FirebaseAuth.instance.setSettings(appVerificationDisabledForTesting: true);
     try {
       if (!isLogin) {
         signup(context, user);
@@ -112,8 +113,12 @@ class RegisterRepoImpl implements RegisterRepo {
     var userMap = result.docs.first.data();
     TrackingUtils().trackLogin(userCredential.user!.uid, DateTime.now().toUtc().toString());
     if (!userMap.containsKey('token')) saveUserDeviceToken(userCredential);
-    Provider.of<UserProvider>(context, listen: false).setUserData(userCredential.user!.uid, userMap['username'],
-        userMap['email'], userMap['phoneNumber'], deviceToken, userMap['imageURL']);
+    Provider.of<UserProvider>(context, listen: false).setUserData(userCredential.user!.uid,
+        userMap['username'],
+        userMap['email'],
+        userMap['phoneNumber'],
+        deviceToken,
+        userMap['imageURL']);
   }
 
   @override
@@ -195,7 +200,6 @@ class RegisterRepoImpl implements RegisterRepo {
                 backgroundColor: Theme.of(context).colorScheme.error, content: Text(e.message ?? "invalidOTP".tr())));
             TrackingUtils().trackPhoneNumberVerified("Guest", DateTime.now().toUtc().toString(), false);
           }
-
           print("Signed In...");
 
           completer.complete(userCredential);

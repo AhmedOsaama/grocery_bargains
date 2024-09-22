@@ -429,27 +429,29 @@ class _ChatViewState extends State<ChatView> {
       setState(() {
         isBotLoading = true;
       });
-      var response = await post(Uri.parse("https://yswessi.pythonanywhere.com/chat"), headers: {
+      var response = await post(Uri.parse("https://yswessi.pythonanywhere.com/query"), headers: {
         "Content-Type": "application/json"
       }, body: json.encode({
-        "input": text
+        "message": text
       },));
-      var botResponse = jsonDecode(response.body)['output'];
-      // var botResponse = jsonDecode(response.body)['message'];
-      await FirebaseFirestore.instance.collection('/lists/${widget.listId}/messages').add({
-        'item_name': "",
-        'item_image': "",
-        'item_description': "",
-        'store_name': "",
-        'isAddedToList': false,
-        'item_price': 0.0,
-        'item_oldPrice': 0.0,
-        'message': botResponse,
-        'createdAt': Timestamp.fromDate(DateTime.now().toUtc()),
-        'userId': "bargainb",
-        'username': "BargainB",
-        'userImageURL': '',
-      });
+      Map botResponse = jsonDecode(response.body);
+      log(botResponse.toString());
+        var botMessage = botResponse['message'];
+      if(botResponse['type'] == "BasicChat"){               //basic chat case
+        var botMessageText = botMessage['text'];
+      storeMessageInDB(botMessageText);
+      } else if(botResponse['type'] == "ProductList"){      //products case
+        var botMessageText = botMessage['text'];
+        List botProducts = botMessage['products'];
+      storeMessageInDB(botMessageText, products: botProducts);
+      } else if(botResponse['type'] == "RecipeDetails"){    //recipe case
+        var botMessageText = botMessage['content'];
+        var botRecipe = botMessage['recipe'];
+        var botRecipeIngredients = botRecipe['ingredients'];
+        var botRecipeInstructions = botRecipe['instructions'];
+        var botRecipeName = botRecipe['name'];
+      storeMessageInDB(botMessageText, recipeName: botRecipeName, ingredients: botRecipeIngredients, instructions: botRecipeInstructions);
+      }
       setState(() {
         isBotLoading = false;
       });
@@ -462,5 +464,26 @@ class _ChatViewState extends State<ChatView> {
         FirebaseMessaging.instance.subscribeToTopic(widget.listId);
       });
     }
+  }
+
+  Future<void> storeMessageInDB(String response, {List? products, List? ingredients, List? instructions, String? recipeName}) async {
+    await FirebaseFirestore.instance.collection('/lists/${widget.listId}/messages').add({
+      'item_name': "",
+      'item_image': "",
+      'item_description': "",
+      'store_name': "",
+      'isAddedToList': false,
+      'item_price': 0.0,
+      'item_oldPrice': 0.0,
+      'message': response,
+      'products': products,
+      'ingredients': ingredients,
+      'instructions': instructions,
+      'recipe_name': recipeName,
+      'createdAt': Timestamp.fromDate(DateTime.now().toUtc()),
+      'userId': "bargainb",
+      'username': "BargainB",
+      'userImageURL': '',
+    });
   }
 }
