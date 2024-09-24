@@ -98,8 +98,7 @@ class _ProductDialogState extends State<ProductDialog> {
             ),
             5.ph,
             SizeContainer(itemSize: widget.itemSize),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30),
+            Center(
               child: QuantityCounter(
                 quantity: widget.itemQuantity,
                 increaseQuantity: () {
@@ -131,12 +130,12 @@ class _ProductDialogState extends State<ProductDialog> {
                         TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Delete chatlist item", DateTime.now().toUtc().toString(), "Chatlist screen");
                         AppNavigator.pop(context: context);
                       },
-                      icon: Icon(Icons.delete, color: purple30),
+                      icon: Icon(Icons.delete, color: primaryGreen),
                       splashRadius: 25,
                     ),
                     Text(
                       'Delete',
-                      style: TextStylesInter.textViewMedium12.copyWith(color: purple30),
+                      style: TextStylesInter.textViewMedium12.copyWith(color: secondaryGreen),
                     )
                   ],
                 ),
@@ -152,11 +151,11 @@ class _ProductDialogState extends State<ProductDialog> {
                         splashRadius: 25,
                         icon: Icon(
                           Icons.visibility_rounded,
-                          color: purple30,
+                          color: primaryGreen,
                         )),
                     Text(
                       'View',
-                      style: TextStylesInter.textViewMedium12.copyWith(color: purple30),
+                      style: TextStylesInter.textViewMedium12.copyWith(color: secondaryGreen),
                     )
                   ],
                 ),
@@ -169,11 +168,11 @@ class _ProductDialogState extends State<ProductDialog> {
                               .shareProductViaDeepLink(widget.itemName, widget.itemId, widget.storeName, context);
                           TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Share chatlist item", DateTime.now().toUtc().toString(), "Chatlist screen");
                         },
-                        icon: Icon(Icons.share_outlined, color: purple30),
+                        icon: Icon(Icons.share_outlined, color: primaryGreen),
                         splashRadius: 25),
                     Text(
                       'Share',
-                      style: TextStylesInter.textViewMedium12.copyWith(color: purple30),
+                      style: TextStylesInter.textViewMedium12.copyWith(color: secondaryGreen),
                     )
                   ],
                 ),

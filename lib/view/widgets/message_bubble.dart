@@ -164,7 +164,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                     ),
                     if (widget.products != null)
                       SizedBox(
-                        height: 300,
+                        height: 250,
                         width: MediaQuery.sizeOf(context).width * 0.8,
                         child: ListView.builder(
                           itemCount: widget.products!.length,
@@ -201,17 +201,35 @@ class _MessageBubbleState extends State<MessageBubble> {
                       ),
                     if (widget.ingredients != null && widget.instructions != null && widget.recipeName != null)
                       SizedBox(
-                        // height: 300,
-                        // width: MediaQuery.sizeOf(context).width * 0.8,
+                        width: MediaQuery.sizeOf(context).width * 0.8,
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(widget.message,),
+                            // Text(widget.message, style: TextStylesInter.textViewRegular14,),
                             Text(widget.recipeName!, style: TextStylesPaytoneOne.textViewRegular24,),
                             Text("Ingredients:", style: TextStylesInter.textViewBold12,),
                             //list of ingredients
+                            ...widget.ingredients!.map((ing) => Container(
+                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                              margin: EdgeInsets.symmetric(vertical: 5),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(color: Color(0xffE4E4E7))
+                              ),
+                              child: Text(ing, style: TextStylesInter.textViewRegular14.copyWith(color: Color(0xff71717A)),),
+                            )).toList(),
                             Text("Instructions:", style: TextStylesInter.textViewBold12,),
                             //list of instructions
-
+                            ...widget.instructions!.map((instruction) => Container(
+                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                              margin: EdgeInsets.symmetric(vertical: 5),
+                              decoration: BoxDecoration(
+                                  color: Color(0xffEDF2EE),
+                                  borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(instruction, style: TextStylesInter.textViewRegular14.copyWith(color: Color(0xff71717A)),),
+                            )).toList(),
                           ],
                         ),
                       )

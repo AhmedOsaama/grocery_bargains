@@ -23,6 +23,11 @@ class ItemListWidget extends StatelessWidget {
     required this.hoogvlietItems,
     required this.dirkItems,
     required this.edekaItems,
+    required this.plusItems,
+    required this.reweItems,
+    required this.coopItems,
+    required this.sparItems,
+    required this.aldiItems,
   });
 
   final List quicklyAddedItems;
@@ -33,6 +38,11 @@ class ItemListWidget extends StatelessWidget {
   final List hoogvlietItems;
   final List dirkItems;
   final List edekaItems;
+  final List plusItems;
+  final List reweItems;
+  final List coopItems;
+  final List sparItems;
+  final List aldiItems;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +57,7 @@ class ItemListWidget extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Image.asset(
-                  Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Albert"),
+                  Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("albert"),
                   width: 60,
                   height: 30,
                 ),
@@ -63,7 +73,7 @@ class ItemListWidget extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Image.asset(
-                  Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Jumbo"),
+                  Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("jumbo"),
                   width: 60,
                   height: 30,
                 ),
@@ -79,7 +89,7 @@ class ItemListWidget extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: Image.asset(
-                  Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Hoogvliet"),
+                  Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("hoogvliet"),
                   width: 60,
                   height: 30,
                 ),
@@ -119,6 +129,86 @@ class ItemListWidget extends StatelessWidget {
               5.ph,
               Column(
                 children: edekaItems.map((item) {
+                  return ChatlistItem(item: item);
+                }).toList(),
+              ),
+            ],
+            if (plusItems.isNotEmpty) ...[
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Image.asset(
+                  Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Plus"),
+                  width: 60,
+                  height: 30,
+                ),
+              ),
+              5.ph,
+              Column(
+                children: plusItems.map((item) {
+                  return ChatlistItem(item: item);
+                }).toList(),
+              ),
+            ],
+            if (reweItems.isNotEmpty) ...[
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Image.asset(
+                  Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Rewe"),
+                  width: 60,
+                  height: 30,
+                ),
+              ),
+              5.ph,
+              Column(
+                children: reweItems.map((item) {
+                  return ChatlistItem(item: item);
+                }).toList(),
+              ),
+            ],
+            if (coopItems.isNotEmpty) ...[
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Image.asset(
+                  Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Coop"),
+                  width: 60,
+                  height: 30,
+                ),
+              ),
+              5.ph,
+              Column(
+                children: coopItems.map((item) {
+                  return ChatlistItem(item: item);
+                }).toList(),
+              ),
+            ],
+            if (sparItems.isNotEmpty) ...[
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Image.asset(
+                  Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Spar"),
+                  width: 60,
+                  height: 30,
+                ),
+              ),
+              5.ph,
+              Column(
+                children: sparItems.map((item) {
+                  return ChatlistItem(item: item);
+                }).toList(),
+              ),
+            ],
+            if (aldiItems.isNotEmpty) ...[
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Image.asset(
+                  Provider.of<ProductsProvider>(context, listen: false).getStoreLogoPath("Aldi"),
+                  width: 60,
+                  height: 30,
+                ),
+              ),
+              5.ph,
+              Column(
+                children: aldiItems.map((item) {
                   return ChatlistItem(item: item);
                 }).toList(),
               ),

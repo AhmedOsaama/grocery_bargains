@@ -106,7 +106,7 @@ class _HomeViewBodyState extends State<HomeViewBody> {
                 Text("Buzzing with the best deals for you! How can I help you today?".tr(), style: TextStylesInter.textViewMedium14,),
                 15.ph,
                 HomePrompts(sendPrompt: (prompt){
-                  messageController.text = prompt;
+                  sendPromptMessage(context, prompt);
                 }),
                 20.ph,
                 Row(
@@ -128,22 +128,14 @@ class _HomeViewBodyState extends State<HomeViewBody> {
                         ),
                         borderRaduis: 99999,
                         onSubmitted: (value) async {
-                          var chatlist = Provider.of<ChatlistsProvider>(context, listen: false).chatlists.first;
-                          AppNavigator.push(context: context, screen: ChatListViewScreen(
-                            listId: chatlist.id,
-                            promptMessage: value,
-                          ));
+                          sendPromptMessage(context, value.trim());
                         },
                       ),
                     ),
                     5.pw,
                     ElevatedButton(
                       onPressed: () {
-                        var chatlist = Provider.of<ChatlistsProvider>(context, listen: false).chatlists.first;
-                        AppNavigator.push(context: context, screen: ChatListViewScreen(
-                          listId: chatlist.id,
-                          promptMessage: messageController.text.trim(),
-                        ));
+                        sendPromptMessage(context, messageController.text.trim());
                       },
                       style: ElevatedButton.styleFrom(
                         // fixedSize: Size(32, 32),
@@ -198,6 +190,14 @@ class _HomeViewBodyState extends State<HomeViewBody> {
         ),
       ),
     );
+  }
+
+  void sendPromptMessage(BuildContext context, String prompt) {
+       var chatlist = Provider.of<ChatlistsProvider>(context, listen: false).chatlists.first;
+    AppNavigator.push(context: context, screen: ChatListViewScreen(
+      listId: chatlist.id,
+      promptMessage: prompt,
+    ));
   }
 
   @override

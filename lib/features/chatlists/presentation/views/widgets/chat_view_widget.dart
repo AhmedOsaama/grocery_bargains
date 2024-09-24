@@ -71,6 +71,11 @@ class _ChatViewState extends State<ChatView> {
   List hoogvlietItems = [];
   List dirkItems = [];
   List edekaItems = [];
+  List plusItems = [];
+  List reweItems = [];
+  List coopItems = [];
+  List sparItems = [];
+  List aldiItems = [];
   List quicklyAddedItems = [];
   TextEditingController quickItemController = TextEditingController();
   var pageNumber = 0;
@@ -105,6 +110,7 @@ class _ChatViewState extends State<ChatView> {
     .snapshots();
     if(widget.promptMessage != null){
       messageController.text = widget.promptMessage!;
+      submitMessage(context);
     }
 
     super.initState();
@@ -179,6 +185,11 @@ class _ChatViewState extends State<ChatView> {
         hoogvlietItems: hoogvlietItems,
         dirkItems: dirkItems,
         edekaItems: edekaItems,
+      plusItems: plusItems,
+      reweItems: reweItems,
+      coopItems: coopItems,
+      sparItems: sparItems,
+      aldiItems: aldiItems,
     );
   }
 
@@ -199,6 +210,18 @@ class _ChatViewState extends State<ChatView> {
       }
       if (item['store_name'] == "edeka24") {
         edekaItems.add(item);
+      }
+      if (item['store_name'] == "Plus") {
+        plusItems.add(item);
+      }
+      if (item['store_name'] == "Rewe") {
+        reweItems.add(item);
+      }
+      if (item['store_name'] == "Spar") {
+        sparItems.add(item);
+      }
+      if (item['store_name'] == "Aldi") {
+        aldiItems.add(item);
       }
       if (item['store_name'].isEmpty) {
         quicklyAddedItems.add(item);
@@ -262,6 +285,9 @@ class _ChatViewState extends State<ChatView> {
                                       ? messages[index]['item_size']
                                       : "",
                                   products: (messages[index].data()! as Map).containsKey('products') ? messages[index]['products'] : null,
+                                  instructions: (messages[index].data()! as Map).containsKey('instructions') ? messages[index]['instructions'] : null,
+                                  ingredients: (messages[index].data()! as Map).containsKey('ingredients') ? messages[index]['ingredients'] : null,
+                                  recipeName: (messages[index].data()! as Map).containsKey('recipe_name') ? messages[index]['recipe_name'] : null,
                                   itemName: messages[index]['item_name'],
                                   itemPrice: messages[index]['item_price'],
                                   itemOldPrice: messages[index]['item_oldPrice'],

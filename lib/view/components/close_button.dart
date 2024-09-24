@@ -16,7 +16,7 @@ class MyCloseButton extends StatelessWidget {
         shape: CircleBorder(),
         padding: EdgeInsets.zero,
         width: width ?? 36,
-        color: purple70,
+        color: primaryGreen,
         child: Icon(
           Icons.close,
           color: white,
