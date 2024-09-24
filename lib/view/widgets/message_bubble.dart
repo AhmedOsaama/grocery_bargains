@@ -29,6 +29,9 @@ class MessageBubble extends StatefulWidget {
   final String userImage;
   final String message;
   final List? products;
+  final List? ingredients;
+  final List? instructions;
+  final String? recipeName;
 
   final bool isAddedToList;
   final DocumentReference? messageDocPath;
@@ -56,7 +59,8 @@ class MessageBubble extends StatefulWidget {
       required this.itemId,
       required this.itemBrand,
       required this.itemQuantity,
-      this.products})
+      this.products, this.ingredients, this.instructions, this.recipeName,
+      })
       : super(key: key);
 
   @override
@@ -193,6 +197,22 @@ class _MessageBubbleState extends State<MessageBubble> {
                                 productIndex: i,
                                 queryId: "N/A");
                           },
+                        ),
+                      ),
+                    if (widget.ingredients != null && widget.instructions != null && widget.recipeName != null)
+                      SizedBox(
+                        // height: 300,
+                        // width: MediaQuery.sizeOf(context).width * 0.8,
+                        child: Column(
+                          children: [
+                            Text(widget.message,),
+                            Text(widget.recipeName!, style: TextStylesPaytoneOne.textViewRegular24,),
+                            Text("Ingredients:", style: TextStylesInter.textViewBold12,),
+                            //list of ingredients
+                            Text("Instructions:", style: TextStylesInter.textViewBold12,),
+                            //list of instructions
+
+                          ],
                         ),
                       )
                   ],

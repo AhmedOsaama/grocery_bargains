@@ -477,11 +477,11 @@ class _ChatViewState extends State<ChatView> {
       'isAddedToList': false,
       'item_price': 0.0,
       'item_oldPrice': 0.0,
-      'message': response,
-      'products': products,
-      'ingredients': ingredients,
-      'instructions': instructions,
-      'recipe_name': recipeName,
+      'message': response,          // String
+      'products': products,         //list
+      'ingredients': ingredients,   //list
+      'instructions': instructions,  //list
+      'recipe_name': recipeName,      //String
       'createdAt': Timestamp.fromDate(DateTime.now().toUtc()),
       'userId': "bargainb",
       'username': "BargainB",
