@@ -12,7 +12,7 @@ class PlanContainer extends StatefulWidget {
   final Function changePlan;
   final String? offerText;
   final String price;
-  final double? priceDouble;
+  final double priceDouble;
   final double? beforeDiscountPrice;
   final String currencyCode;
   PlanContainer(
@@ -21,7 +21,7 @@ class PlanContainer extends StatefulWidget {
         required this.changePlan,
         this.offerText,
         required this.price,
-        required this.plan, this.beforeDiscountPrice, required this.currencyCode, this.priceDouble})
+        required this.plan, this.beforeDiscountPrice, required this.currencyCode, required this.priceDouble})
       : super(key: key);
 
   @override
@@ -92,9 +92,9 @@ class _PlanContainerState extends State<PlanContainer> {
                          style: TextStylesInter.textViewSemiBold20.copyWith(fontSize: 13.sp,color: Colors.grey, decoration: TextDecoration.lineThrough)),
                   ],
                 ),
-                if(widget.plan == "Yearly")
+                if(widget.plan == "Yearly" && widget.priceDouble != 0.0)
                   Text(
-                    "(Equivalent to ${(widget.priceDouble! / 12).toStringAsFixed(2)} ${widget.currencyCode}/month)",
+                    "(Equivalent to ${(widget.priceDouble / 12).toStringAsFixed(2)} ${widget.currencyCode}/month)",
                     // "Equivalent to ${widget.price} / month",
                     style: TextStylesInter.textViewRegular10.copyWith(color:  widget.plan == "Monthly" ? Colors.black : Colors.white),
                   ),

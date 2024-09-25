@@ -107,6 +107,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                     PlanContainer(
                       selectedPlan: PurchaseApi.subscriptionPeriod,
                       changePlan: (value) {},
+                      priceDouble: 0.0,
                       price: PurchaseApi.subscriptionPrice,
                       plan: PurchaseApi.subscriptionPeriod, currencyCode: '',
                     ),
@@ -154,6 +155,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                                 selectedPlanPrice = monthlyPrice;
                               });
                             },
+                            priceDouble: 0.0,
                             price: monthlyPrice,
                             currencyCode: currencyCode,
                             plan: "Monthly",

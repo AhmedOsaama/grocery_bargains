@@ -122,6 +122,7 @@ class _FreeTrialScreenState extends State<FreeTrialScreen> {
                                   selectedPlanPrice = monthlyPrice;
                                 });
                               },
+                              priceDouble: 0.0,
                               price: monthlyPrice,
                               currencyCode: currencyCode,
                               plan: "Monthly",

@@ -7,8 +7,8 @@ class SubscriptionProvider with ChangeNotifier{
   static SubscriptionProvider get(context) => Provider.of<SubscriptionProvider>(context, listen: false);
 
   Future<void> initSubscription() async {
-    // isSubscribed = await PurchaseApi.checkSubscriptionStatus();
-    isSubscribed = true;
+    isSubscribed = await PurchaseApi.checkSubscriptionStatus();
+    // isSubscribed = true;
     notifyListeners();
   }
 
