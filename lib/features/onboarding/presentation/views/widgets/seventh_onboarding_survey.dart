@@ -72,13 +72,13 @@ class _SeventhOnboardingSurveyState extends State<SeventhOnboardingSurvey> {
           ),
         Spacer(),
         GenericButton(
-            onPressed: () {
+            onPressed: () async {
               if (selectedBudget.isEmpty) {
                 setState(() {
                   showErrorText = true;
                 });
               } else {
-                widget.saveSeventhScreenResponses(selectedBudget);
+                await widget.saveSeventhScreenResponses(selectedBudget);
                 AppNavigator.pushReplacement(context: context, screen: FreeTrialScreen());
                 // widget.pageController.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
               }

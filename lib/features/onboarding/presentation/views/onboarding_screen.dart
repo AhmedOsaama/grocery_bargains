@@ -6,16 +6,20 @@ import 'package:bargainb/features/onboarding/presentation/views/widgets/fifth_on
 import 'package:bargainb/features/onboarding/presentation/views/widgets/first_onboarding_survey.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/second_onboarding_survey.dart';
 import 'package:bargainb/features/onboarding/presentation/views/widgets/third_onboarding_survey.dart';
+import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/assets_manager.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/view/components/button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dots_indicator/dots_indicator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../services/hubspot_service.dart';
 import 'widgets/fourth_onboarding_survey.dart';
@@ -174,6 +178,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Future<void> saveSeventhScreenResponses(String selectedBudget) async {
     this.selectedBudget = selectedBudget;
     log("Seventh screen Responses: $selectedBudget");
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({
+      'username': firstName,
+    });
     if(kReleaseMode) {
     var country = "";
     var city = "";
@@ -187,10 +197,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }catch(e){
       log(e.toString());
     }
-    if(kReleaseMode) {
-      HubspotService.createHubspotContact({
+      var email = Provider.of<UserProvider>(context, listen: false).email;
+     await HubspotService.createHubspotContact({
       "firstname": firstName,
       'last_name': lastName,
+      'email': email,
       'country': country,
       'city': city,
       'bargainb_goals': selectedGoals.toString(),
@@ -201,7 +212,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'grocery_monthly_budget': this.selectedBudget.toString(),
       "hubspot_owner_id": "1252705237",
     });
-    }
     }
   }
 }

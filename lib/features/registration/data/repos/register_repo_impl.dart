@@ -88,20 +88,6 @@ class RegisterRepoImpl implements RegisterRepo {
   Future<void> storeUserInfo({required BuildContext context,
     required UserCredential userCredential}) async {
     if (userCredential.user != null) {
-      // var userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).get();
-
-      //user doc doesn't exist
-      // if (!userSnapshot.exists) {
-      //   try {
-      //     user.email = userCredential.user!.email!;
-      //     user.username = userCredential.user!.displayName ?? "User";
-      //     user.imageURL = userCredential.user!.photoURL ?? "";
-      //     user.phoneNumber = "";
-      //   } catch (e) {
-      //     print(e);
-      //   }
-      //   await saveUserData(userCredential);
-      // }
       await saveUserData(userCredential, context);
     }
   }
@@ -133,7 +119,7 @@ class RegisterRepoImpl implements RegisterRepo {
         AppNavigator.pushReplacement(context: context, screen: const EmailAddressScreen());
       } else {
         if(SubscriptionProvider.get(context).isSubscribed){
-          AppNavigator.pushReplacement(context: context, screen: MainScreen());
+          AppNavigator.pushReplacement(context: context, screen: const MainScreen());
         } else {
           AppNavigator.pushReplacement(context: context, screen: const FreeTrialScreen());
         }
@@ -237,7 +223,7 @@ class RegisterRepoImpl implements RegisterRepo {
       var deviceToken = await FirebaseMessaging.instance
           .getToken(); //could produce a problem if permission is not accepted especially on iOS
       var userData = {
-        "email": email,
+        "email": email,               //email will be empty as this is before email address screen
         "username": username,
         'imageURL': imageURL,
         'phoneNumber': phoneNumber,
@@ -257,10 +243,10 @@ class RegisterRepoImpl implements RegisterRepo {
         },
       };
       await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set(userData);
-      // createHubspotContact(email, username, phoneNumber, country, city);
 
       Provider.of<UserProvider>(context, listen: false)
           .setUserData(userCredential.user!.uid, username, email, phoneNumber, deviceToken!, imageURL);
+
 
       TrackingUtils.segment.identify(
           userId: userCredential.user!.uid,
@@ -280,27 +266,6 @@ class RegisterRepoImpl implements RegisterRepo {
 
           )
       );
-
-      //   TrackingUtils().segment.getPeople()
-      //     ..set("\$name", username)
-      //     ..set('\$email', email)
-      //     ..set('email', email)
-      //     ..set('username', username)
-      //     ..set('imageURL', imageURL)
-      //     ..set('phoneNumber', phoneNumber)
-      //     ..set('token', deviceToken)
-      //     ..set('timestamp', DateTime.now().toUtc().toString())
-      //     ..set('language', language)
-      //     ..set('status', "Hello! I'm using BargainB. Join the app")
-      //     ..set('privacy', {
-      //       'connectContacts': true,
-      //       'locationServices': false,
-      //     })
-      //     ..set('preferences', {
-      //       'emailMarketing': true,
-      //       'weekly': true,
-      //       'daily': false,
-      //     });
       } catch (e) {
         log("Error occurred in saveUserData: $e");
       }

@@ -55,11 +55,6 @@ class _FirstOnboardingSurveyState extends State<FirstOnboardingSurvey> {
                   widget.saveFirstScreenResponses(_firstNameController.text.trim(), _lastNameController.text.trim());
                     widget.pageController.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
                 }
-                // if (_pageNumber >= _totalPages - 1) {
-                //   log("Survey Finished");
-                // } else if (_pageNumber < _totalPages - 1) {
-                //   _pageController.nextPage(duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
-                // }
               },
               width: double.infinity,
               height: 48,

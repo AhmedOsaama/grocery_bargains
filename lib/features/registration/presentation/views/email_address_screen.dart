@@ -1,14 +1,18 @@
 import 'dart:developer';
 
+import 'package:bargainb/providers/user_provider.dart';
 import 'package:bargainb/services/hubspot_service.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/style_utils.dart';
+import 'package:bargainb/utils/tracking_utils.dart';
 import 'package:bargainb/view/components/generic_field.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
+import 'package:segment_analytics/event.dart';
 
 import '../../../../config/routes/app_navigator.dart';
 import '../../../../utils/app_colors.dart';
@@ -25,8 +29,8 @@ class EmailAddressScreen extends StatefulWidget {
 }
 
 class _EmailAddressScreenState extends State<EmailAddressScreen> {
-  var _formKey = GlobalKey<FormState>();
-  TextEditingController _emailAddressController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailAddressController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,23 +82,19 @@ class _EmailAddressScreenState extends State<EmailAddressScreen> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       try {
+                        var email = _emailAddressController.text.trim();
+                        Provider.of<UserProvider>(context,listen: false).email = email;
                         await FirebaseFirestore.instance
                             .collection('users')
                             .doc(FirebaseAuth.instance.currentUser!.uid)
                             .update({
-                          'email': _emailAddressController.text.trim(),
+                          'email': email,
                         });
-                        var userData = await FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(FirebaseAuth.instance.currentUser!.uid)
-                            .get();
-                        var hubspotContactId = userData.get("hubspot_contact_id");
-                        HubspotService.updateHubspotContact(
-                            {"email": _emailAddressController.text.trim()}, hubspotContactId);
+                        TrackingUtils.segment.identify(userId: FirebaseAuth.instance.currentUser!.uid, userTraits: UserTraits(email: email));
                       } catch (e) {
                         log("email_address_screen Error: $e");
                       }
-                      AppNavigator.push(context: context, screen: WelcomeScreen());
+                      AppNavigator.push(context: context, screen: const WelcomeScreen());
                     }
                   },
                   child: Text(
