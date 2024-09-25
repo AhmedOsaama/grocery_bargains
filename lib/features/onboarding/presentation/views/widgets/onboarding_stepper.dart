@@ -1,3 +1,4 @@
+import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:easy_stepper/easy_stepper.dart';
@@ -27,7 +28,6 @@ class _OnboardingStepperState extends State<OnboardingStepper> {
   var activeStepWidget = SvgPicture.asset(activeStepIcon);
   var unReachedStepWidget = SvgPicture.asset(unreachedStepIcon);
 
-
   @override
   Widget build(BuildContext context) {
     return EasyStepper(
@@ -36,8 +36,8 @@ class _OnboardingStepperState extends State<OnboardingStepper> {
       lineSpace: 4,
       lineType: LineType.dotted,
       defaultLineColor: Color(0xFFE6E6E6),
-      finishedLineColor: Color(0xFF0162DD),
-      activeLineColor: Color(0xFF0162DD),
+      finishedLineColor: primaryGreen,
+      activeLineColor: primaryGreen,
       internalPadding: 0,
       showLoadingAnimation: false,
       stepRadius: widget.stepSize,
@@ -46,23 +46,43 @@ class _OnboardingStepperState extends State<OnboardingStepper> {
       steps: [
         EasyStep(
           customStep: activeStep >= 0 ? activeStepWidget : unReachedStepWidget,
-          customTitle: Text('Select Plan'.tr(), style: style.copyWith(color: activeStep >= 0 ?  Color(0xFF0162DD) :Color(0xFF465668)), textAlign: TextAlign.center,),
+          customTitle: Text(
+            'Select Plan'.tr(),
+            style: style.copyWith(color: activeStep >= 0 ? primaryGreen : Color(0xFF465668)),
+            textAlign: TextAlign.center,
+          ),
         ),
         EasyStep(
-         customStep: activeStep >= 1 ? activeStepWidget : unReachedStepWidget,
-          customTitle: Text('Payment'.tr(), style: style.copyWith(color: activeStep >= 1 ?  Color(0xFF0162DD) : Color(0xFF465668)), textAlign: TextAlign.center,),
+          customStep: activeStep >= 1 ? activeStepWidget : unReachedStepWidget,
+          customTitle: Text(
+            'Payment'.tr(),
+            style: style.copyWith(color: activeStep >= 1 ? Color(0xFF0162DD) : Color(0xFF465668)),
+            textAlign: TextAlign.center,
+          ),
         ),
         EasyStep(
           customStep: activeStep >= 2 ? activeStepWidget : unReachedStepWidget,
-          customTitle: Text('Setup'.tr(), style: style.copyWith(color: activeStep >= 2 ?  Color(0xFF0162DD) :Color(0xFF465668)), textAlign: TextAlign.center,),
+          customTitle: Text(
+            'Setup'.tr(),
+            style: style.copyWith(color: activeStep >= 2 ? Color(0xFF0162DD) : Color(0xFF465668)),
+            textAlign: TextAlign.center,
+          ),
         ),
         EasyStep(
           customStep: activeStep >= 3 ? activeStepWidget : unReachedStepWidget,
-          customTitle: Text('Tutorial'.tr(), style: style.copyWith(color: activeStep >= 3 ?  Color(0xFF0162DD) :Color(0xFF465668)), textAlign: TextAlign.center,),
+          customTitle: Text(
+            'Tutorial'.tr(),
+            style: style.copyWith(color: activeStep >= 3 ? Color(0xFF0162DD) : Color(0xFF465668)),
+            textAlign: TextAlign.center,
+          ),
         ),
         EasyStep(
           customStep: activeStep >= 4 ? activeStepWidget : unReachedStepWidget,
-          customTitle: Text('Start Saving'.tr(), style: style.copyWith(color: activeStep >= 4 ?  Color(0xFF0162DD) : Color(0xFF465668)), textAlign: TextAlign.center,),
+          customTitle: Text(
+            'Start Saving'.tr(),
+            style: style.copyWith(color: activeStep >= 4 ? Color(0xFF0162DD) : Color(0xFF465668)),
+            textAlign: TextAlign.center,
+          ),
         ),
       ],
       // onStepReached: (index) =>

@@ -249,12 +249,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                       width: 200.w,
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(8),
-                                        color: purple70,
+                                        color: Colors.white,
                                       ),
                                       child: Column(children: [
                                         Text(
                                           " View all the available prices, add to your list, and streamline your shopping experience".tr(),
-                                          style: TextStyles.textViewRegular16.copyWith(color: Colors.white),
+                                          style: TextStyles.textViewRegular16,
                                         ),
                                         GestureDetector(
                                           onTap: () async {
@@ -281,11 +281,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                               Spacer(),
                                               Text(
                                                 "Next".tr(),
-                                                style: TextStyles.textViewSemiBold14.copyWith(color: Colors.white),
+                                                style: TextStyles.textViewSemiBold14,
                                               ),
                                               Icon(
                                                 Icons.arrow_forward_ios,
-                                                color: white,
                                                 size: 15.sp,
                                               )
                                             ],
@@ -298,7 +297,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                       width: 13,
                                       child: CustomPaint(
                                         painter: DownTrianglePainter(
-                                          strokeColor: purple70,
+                                          strokeColor: Colors.white,
                                           strokeWidth: 1,
                                           paintingStyle: PaintingStyle.fill,
                                         ),

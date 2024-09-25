@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:bargainb/view/components/close_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -35,7 +36,7 @@ class TutorialDialog extends StatelessWidget {
         height: 250.h,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8.r),
-          color: purple70,
+          color: Colors.white,
         ),
         child: Column(children: [
           Expanded(
@@ -44,13 +45,15 @@ class TutorialDialog extends StatelessWidget {
               children: [
                 Text(
                   "${LocaleKeys.welcome.tr()}!",
-                  style: TextStyles.textViewSemiBold24.copyWith(color: white),
+                  style: TextStyles.textViewSemiBold24,
                 ),
-                GestureDetector(
-                    onTap: () {
-                      skipTutorial(context, showcaseContext);
-                    },
-                    child: SvgPicture.asset(closeCircle))
+                MyCloseButton(onPressed: (){
+                  skipTutorial(context, showcaseContext);
+                },)
+                // GestureDetector(
+                //     onTap: () {
+                //     },
+                //     child: SvgPicture.asset(closeCircle))
               ],
             ),
           ),
@@ -58,7 +61,7 @@ class TutorialDialog extends StatelessWidget {
             child: Text(
               "Let's take a quick tour of our app's features before diving into your AI sidekick".tr(),
               maxLines: 4,
-              style: TextStyles.textViewRegular16.copyWith(color: white),
+              style: TextStyles.textViewRegular16,
             ),
           ),
           GestureDetector(
@@ -70,11 +73,10 @@ class TutorialDialog extends StatelessWidget {
               children: [
                 Text(
                   LocaleKeys.next.tr(),
-                  style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                  style: TextStyles.textViewSemiBold14,
                 ),
                 Icon(
                   Icons.arrow_forward_ios,
-                  color: white,
                   size: 15.sp,
                 )
               ],

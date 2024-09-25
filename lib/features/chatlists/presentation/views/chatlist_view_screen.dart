@@ -240,7 +240,7 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
             width: 13,
             child: CustomPaint(
               painter: TrianglePainter(
-                strokeColor: purple70,
+                strokeColor: Colors.white,
                 strokeWidth: 1,
                 paintingStyle: PaintingStyle.fill,
               ),
@@ -251,13 +251,13 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
             width: 160.w,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: purple70,
+              color: white,
             ),
             child: Column(children: [
               Text(
                 "Collaborate with your loved ones, share grocery lists, and  your AI sidekick".tr(),
                 maxLines: 4,
-                style: TextStyles.textViewRegular13.copyWith(color: white),
+                style: TextStyles.textViewRegular13,
               ),
               GestureDetector(
                 onTap: () {
@@ -268,11 +268,10 @@ class _ChatListViewScreenState extends State<ChatListViewScreen> {
                   children: [
                     Text(
                       "Next".tr(),
-                      style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                      style: TextStyles.textViewSemiBold14,
                     ),
                     Icon(
                       Icons.arrow_forward_ios,
-                      color: white,
                       size: 15.sp,
                     )
                   ],

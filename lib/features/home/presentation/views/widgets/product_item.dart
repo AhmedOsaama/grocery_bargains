@@ -87,7 +87,7 @@ class ProductItem extends StatelessWidget {
             10.ph,
             Text(
               product.name,
-              maxLines: 3,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStylesInter.textViewRegular12.copyWith(color: blackSecondary),
             ),

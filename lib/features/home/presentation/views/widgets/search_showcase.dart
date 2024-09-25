@@ -43,7 +43,7 @@ class _SearchShowcaseState extends State<SearchShowcase> {
               width: 13,
               child: CustomPaint(
                 painter: TrianglePainter(
-                  strokeColor: purple70,
+                  strokeColor: Colors.white,
                   strokeWidth: 1,
                   paintingStyle: PaintingStyle.fill,
                 ),
@@ -54,12 +54,12 @@ class _SearchShowcaseState extends State<SearchShowcase> {
               width: 180.w,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8.r),
-                color: purple70,
+                color: Colors.white,
               ),
               child: Column(children: [
                 Text(
                   "Use the search bar to locate products and uncover the best deals".tr(),
-                  style: TextStyles.textViewRegular16.copyWith(color: white),
+                  style: TextStyles.textViewRegular16,
                 ),
                 GestureDetector(
                   onTap: () async {
@@ -72,11 +72,10 @@ class _SearchShowcaseState extends State<SearchShowcase> {
                       Spacer(),
                       Text(
                         "Next".tr(),
-                        style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                        style: TextStyles.textViewSemiBold14,
                       ),
                       Icon(
                         Icons.arrow_forward_ios,
-                        color: white,
                         size: 15.sp,
                       )
                     ],

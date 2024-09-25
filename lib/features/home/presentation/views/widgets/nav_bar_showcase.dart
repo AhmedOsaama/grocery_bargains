@@ -35,12 +35,12 @@ class NavBarTutorial extends StatelessWidget {
             width: 180.w,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.r),
-              color: purple70,
+              color: Colors.white,
             ),
             child: Column(children: [
               Text(
                 "Navigate easily with the navigation bar: Discover deals, access your sidekick, and manage your profile".tr(),
-                style: TextStyles.textViewRegular16.copyWith(color: white),
+                style: TextStyles.textViewRegular16,
               ),
               GestureDetector(
                 onTap: () {
@@ -57,11 +57,10 @@ class NavBarTutorial extends StatelessWidget {
                     Spacer(),
                     Text(
                       LocaleKeys.next.tr(),
-                      style: TextStyles.textViewSemiBold14.copyWith(color: white),
+                      style: TextStyles.textViewSemiBold14,
                     ),
                     Icon(
                       Icons.arrow_forward_ios,
-                      color: white,
                       size: 15.sp,
                     )
                   ],
@@ -74,7 +73,7 @@ class NavBarTutorial extends StatelessWidget {
             width: 13,
             child: CustomPaint(
               painter: DownTrianglePainter(
-                strokeColor: purple70,
+                strokeColor: Colors.white,
                 strokeWidth: 1,
                 paintingStyle: PaintingStyle.fill,
               ),

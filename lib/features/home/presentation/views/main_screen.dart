@@ -211,7 +211,7 @@ class _MainScreenState extends State<MainScreen> {
                               tutorialProvider.hideTutorialConfetti();
                             },),
                           ),
-                          if(SubscriptionProvider.get(context).isSubscribed) OnboardingStepper(activeStep: 4, stepSize: 10),
+                          // if(SubscriptionProvider.get(context).isSubscribed) OnboardingStepper(activeStep: 4, stepSize: 10),
                           Text('Grocery shopping just got smarter!'.tr(), style: TextStylesInter.textViewSemiBold20,textAlign: TextAlign.center,),
                           15.ph,
                           if(SubscriptionProvider.get(context).isSubscribed)
