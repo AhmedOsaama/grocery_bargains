@@ -151,12 +151,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     Align(
                       alignment: AlignmentDirectional.topStart,
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                             color: Colors.orange[500],
                             borderRadius: BorderRadius.circular(10)
                         ),
-                        child: Text("Saving\n ${(widget.product.oldPrice! - widget.product.price)}", style: TextStyles.textViewRegular10.copyWith(color: Colors.white),),
+                        child: Text("Saving\n €${(widget.product.oldPrice! - widget.product.price).toStringAsFixed(2)}", style: TextStyles.textViewRegular10.copyWith(color: Colors.white),),
                       ),
                     ),
                     10.ph,
@@ -181,11 +181,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              widget.product.price.toString(),
+                             "€${widget.product.price}",
                               style: TextStylesPaytoneOne.textViewRegular24.copyWith(color: Color(0xffEA4B48), fontSize: 13),
                             ),
                             if(widget.product.oldPrice != null && widget.product.oldPrice != 0.0)
-                              Text(widget.product.oldPrice.toString(), style: TextStylesInter.textViewMedium10.copyWith(color: Colors.grey, decoration: TextDecoration.lineThrough),)
+                              Text("€${widget.product.oldPrice}", style: TextStylesInter.textViewMedium10.copyWith(color: Colors.grey, decoration: TextDecoration.lineThrough),)
                           ],
                         ),
                       ],

@@ -51,8 +51,9 @@ Future<void> main() async {
     );
     var notificationMessage = await FirebaseMessaging.instance.getInitialMessage();
     var pref = await SharedPreferences.getInstance();
-    var isFirstTime = pref.getBool("firstTime") ?? true;
-    initializeMyApp(notificationMessage, isFirstTime);
+    var isFirstTime = pref.getBool("firstTime") ?? true;      //turned off when tutorial is done
+    var isOnboarding = pref.getBool("onboarding") ?? false;      //turned off when tutorial is done
+    initializeMyApp(notificationMessage, isFirstTime, isOnboarding);
   }, (error, stack) async {
     await Sentry.captureException(error, stackTrace: stack);
   });

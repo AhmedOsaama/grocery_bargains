@@ -4,7 +4,6 @@ const String imgWebPath = 'assets/images/web_images';
 const String albert = '$imgPath/albert.png';
 const String jumbo = '$imgPath/jumbo.png';
 const String hoogLogo = '$imgPath/hoogvliet_logo.png';
-const String newChatList = '$imgPath/new_chatlist.png';
 const String storePlaceholder = "$imgPath/store_placeholder.png";
 const String chatlistBackground = "$imgPath/chatlist_background.png";
 const String personImage = "$imgPath/personImage.jpeg";
@@ -94,5 +93,6 @@ const String newBee = "$imgPath/new_bee.png";
 const String beeCheckmark = "$imgPath/bee_checkmark.png";
 const String plus = "$imgPath/plus.png";
 const String rewe = "$imgPath/plus.png";
+const String newChatList = '$imgPath/new_chatlist.png';
 
 

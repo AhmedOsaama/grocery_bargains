@@ -178,7 +178,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
             if(tutorialProvider.canShowConfetti) ...[
               Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.center,
                     end: Alignment.bottomCenter,
@@ -192,12 +192,12 @@ class _MainScreenState extends State<MainScreen> {
                   child: DottedBorder(
                     strokeCap: StrokeCap.round,
                     borderType: BorderType.RRect,
-                    radius: Radius.circular(10),
+                    radius: const Radius.circular(10),
                     dashPattern: [3, 3],
                     strokeWidth: 1,
-                    color: Color(0xFF7192F2),
+                    color: const Color(0xFF7192F2),
                     child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white
@@ -278,7 +278,7 @@ class _MainScreenState extends State<MainScreen> {
   List<Widget> _buildScreens() {
     return [
       HomeView(),
-      ChatlistsScreen(),
+      const ChatlistsScreen(),
       ProfileScreen(),
     ];
   }

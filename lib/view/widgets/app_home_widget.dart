@@ -1,5 +1,6 @@
 import 'package:bargainb/features/onboarding/presentation/views/account_feedback_screen.dart';
 import 'package:bargainb/features/onboarding/presentation/views/free_trial_screen.dart';
+import 'package:bargainb/features/onboarding/presentation/views/onboarding_screen.dart';
 import 'package:bargainb/features/registration/presentation/views/email_address_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -15,11 +16,13 @@ class getHomeWidget extends StatefulWidget {
     super.key,
     required this.widget,
     required this.isFirstTime,
+    required this.isOnboarding,
     required this.notificationMessage,
   });
 
   final MyApp widget;
   final bool isFirstTime;
+  final bool isOnboarding;
   final RemoteMessage? notificationMessage;
 
   @override
@@ -47,10 +50,14 @@ class _getHomeWidgetState extends State<getHomeWidget> {
                 if (widget.notificationMessage != null) {
                   return MainScreen(notificationData: widget.notificationMessage?.data['listId']);
                 }
+                //still not finished onboarding
+                if(widget.isOnboarding) return OnboardingScreen();
+
                 if (!widget.isFirstTime) return const MainScreen();
               }
               return widget.isFirstTime ? const HighlightsScreen() :
               const MainScreen(); //logged out
+
               // const HighlightsScreen(); //logged out
               // return AccountFeedbackScreen(isPremium: true);
             });

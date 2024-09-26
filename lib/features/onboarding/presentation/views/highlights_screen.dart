@@ -48,117 +48,130 @@ class _HighlightsScreenState extends State<HighlightsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PageView(
-        physics: const BouncingScrollPhysics(),
-        controller: _pageController,
-        allowImplicitScrolling: true,
-        onPageChanged: (pageNumber) {
-          setState(() {
-            _currentPage = pageNumber;
-          });
-        },
-        children: highlights
-            .map((highlight) => Stack(
-          children: [
-            Image.asset(highlight['image']!,
-                width: double.infinity,
-                fit: BoxFit.fill
-            ),
-            Container(
-              decoration: const BoxDecoration(
-                  gradient: LinearGradient(
-                      colors: [Colors.transparent, Color(0xff081609)],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter)),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    highlight['title']!.tr(),
-                    style: TextStyles.textViewSemiBold24.copyWith(color: Colors.white),
-                    textAlign: TextAlign.center,
-                  ),
-                  10.ph,
-                  Text(
-                    highlight['subtitle']!.tr(),
-                    style: TextStyles.textViewRegular18.copyWith(color: Colors.white),
-                    textAlign: TextAlign.center,
-                  ),
-                  DotsIndicator(
-                    dotsCount: 3,
-                    position: _currentPage.toDouble(),
-                    decorator: DotsDecorator(
-                        color: const Color(0xff84D187).withOpacity(0.24),
-                        size: const Size(12, 12),
-                        activeSize: const Size(12, 12),
-                        activeColor: const Color(0xff00B207)),
-                  ),
-                  16.ph,
-                  GenericButton(
-                    onPressed: () {
-                      log(_pageController.page.toString());
-                      if (_pageController.page! < 2) {
-                        _pageController.nextPage(
-                            duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-                      }
-                      else if(_pageController.page! >= 2){
-                        AppNavigator.pushReplacement(context: context, screen: const LoginScreen());
-                      }
-                    },
+      body: Stack(
+        children: [
+          PageView(
+            physics: const BouncingScrollPhysics(),
+            controller: _pageController,
+            allowImplicitScrolling: true,
+            onPageChanged: (pageNumber) {
+              setState(() {
+                _currentPage = pageNumber;
+              });
+            },
+            children: highlights
+                .map((highlight) => Stack(
+              children: [
+                Image.asset(highlight['image']!,
                     width: double.infinity,
-                    height: 48,
-                    color: primaryGreen,
-                    borderRadius: BorderRadius.circular(6),
-                    child: Text(
-                      "Get Started".tr(),
-                      style: TextStylesInter.textViewMedium16,
-                    ),
+                    fit: BoxFit.fill
+                ),
+                Container(
+                  decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                          colors: [Colors.transparent, Color(0xff081609)],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        highlight['title']!.tr(),
+                        style: TextStyles.textViewSemiBold24.copyWith(color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),
+                      10.ph,
+                      Text(
+                        highlight['subtitle']!.tr(),
+                        style: TextStyles.textViewRegular18.copyWith(color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ),
+                      230.ph,
+                    ],
                   ),
-                  15.ph,
-                  GenericButton(
-                    onPressed: () {
-                      AppNavigator.push(context: context, screen: const LoginScreen());
-                    },
-                    width: double.infinity,
-                    height: 48,
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(6),
-                    child: Text(
-                      "I got an account, Log me in".tr(),
-                      style: TextStylesInter.textViewMedium16.copyWith(color: Colors.black),
-                    ),
+                )
+              ],
+            ))
+                .toList(),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Column(
+              children: [
+                Spacer(),
+                DotsIndicator(
+                  dotsCount: 3,
+                  position: _currentPage.toDouble(),
+                  decorator: DotsDecorator(
+                      color: const Color(0xff84D187).withOpacity(0.24),
+                      size: const Size(12, 12),
+                      activeSize: const Size(12, 12),
+                      activeColor: const Color(0xff00B207)),
+                ),
+                10.ph,
+                GenericButton(
+                  onPressed: () {
+                    log(_pageController.page.toString());
+                    if (_pageController.page! < 2) {
+                      _pageController.nextPage(
+                          duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+                    }
+                    else if(_pageController.page! >= 2){
+                      AppNavigator.pushReplacement(context: context, screen: const LoginScreen());
+                    }
+                  },
+                  width: double.infinity,
+                  height: 48,
+                  color: primaryGreen,
+                  borderRadius: BorderRadius.circular(6),
+                  child: Text(
+                    "Get Started".tr(),
+                    style: TextStylesInter.textViewMedium16,
                   ),
-                  10.ph,
-                  Text.rich(
-                    textAlign: TextAlign.center,
-                    TextSpan(
-                        text: "By logging or registering you agree to our ".tr(),
-                        style: TextStylesInter.textViewRegular12.copyWith(color: Colors.white),
-                        children: [
-                          TextSpan(
-                              text: "Terms of Service".tr(),
-                              style: const TextStyle(color: Colors.brown),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () => AppNavigator.push(context: context, screen: TermsOfServiceScreen())),
-                          TextSpan(
-                            text: " and ".tr(),
-                          ),
-                          TextSpan(
-                              text: "Privacy Policy".tr(),
-                              style: const TextStyle(color: Colors.brown),
-                              recognizer: TapGestureRecognizer()..onTap = () => AppNavigator.push(context: context, screen: PolicyScreen()))
-                        ]),
+                ),
+                15.ph,
+                GenericButton(
+                  onPressed: () {
+                    AppNavigator.push(context: context, screen: const LoginScreen());
+                  },
+                  width: double.infinity,
+                  height: 48,
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6),
+                  child: Text(
+                    "I got an account, Log me in".tr(),
+                    style: TextStylesInter.textViewMedium16.copyWith(color: Colors.black),
                   ),
-                  20.ph,
-                ],
-              ),
-            )
-          ],
-        ))
-            .toList(),
+                ),
+                10.ph,
+                Text.rich(
+                  textAlign: TextAlign.center,
+                  TextSpan(
+                      text: "By logging or registering you agree to our ".tr(),
+                      style: TextStylesInter.textViewRegular12.copyWith(color: Colors.white),
+                      children: [
+                        TextSpan(
+                            text: "Terms of Service".tr(),
+                            style: const TextStyle(color: Colors.brown),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => AppNavigator.push(context: context, screen: TermsOfServiceScreen())),
+                        TextSpan(
+                          text: " and ".tr(),
+                        ),
+                        TextSpan(
+                            text: "Privacy Policy".tr(),
+                            style: const TextStyle(color: Colors.brown),
+                            recognizer: TapGestureRecognizer()..onTap = () => AppNavigator.push(context: context, screen: PolicyScreen()))
+                      ]),
+                ),
+                20.ph,
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

@@ -34,7 +34,8 @@ import 'package:segment_analytics/client.dart';
 class MyApp extends StatefulWidget {
   final RemoteMessage? notificationMessage;
   final bool isFirstTime;
-  const MyApp({super.key, required this.isFirstTime, this.notificationMessage});
+  final bool isOnboarding;
+  const MyApp({super.key, required this.isFirstTime, this.notificationMessage, required this.isOnboarding});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -49,7 +50,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
       authStateChangesStream = FirebaseAuth.instance.authStateChanges();
-      homeWidget = getHomeWidget(widget: widget, notificationMessage: widget.notificationMessage, isFirstTime: widget.isFirstTime,);
+      homeWidget = getHomeWidget(widget: widget, notificationMessage: widget.notificationMessage, isFirstTime: widget.isFirstTime, isOnboarding: widget.isOnboarding,);
   }
 
 
@@ -93,7 +94,7 @@ class _MyAppState extends State<MyApp> {
 }
 
 
-void initializeMyApp(RemoteMessage? notificationMessage, bool isFirstTime) {
+void initializeMyApp(RemoteMessage? notificationMessage, bool isFirstTime, bool isOnboarding) {
   runApp(
       EasyLocalization(
           supportedLocales: const [Locale('en'), Locale('nl'), Locale('de'), Locale('es'), Locale('fr'), Locale('it')],
@@ -111,7 +112,7 @@ void initializeMyApp(RemoteMessage? notificationMessage, bool isFirstTime) {
               ChangeNotifierProvider<SuggestionRepository>(create: (_) => SuggestionRepository()),
               ChangeNotifierProvider<SubscriptionProvider>(create: (_) => SubscriptionProvider()..initSubscription()),
             ],
-            child: MyApp(notificationMessage: notificationMessage, isFirstTime: isFirstTime),
+            child: MyApp(notificationMessage: notificationMessage, isFirstTime: isFirstTime, isOnboarding: isOnboarding),
           ))
   );
 }

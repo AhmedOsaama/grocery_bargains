@@ -4,6 +4,7 @@ import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'onboarding_screen.dart';
 
@@ -19,7 +20,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(seconds: 3), (){
+    Future.delayed(Duration(seconds: 3), () async {
+    var pref = await SharedPreferences.getInstance();
+    pref.setBool("onboarding", true);
       AppNavigator.pushReplacement(context: context, screen: OnboardingScreen());
     });
   }

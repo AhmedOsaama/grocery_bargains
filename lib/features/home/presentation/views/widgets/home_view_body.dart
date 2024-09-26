@@ -149,14 +149,16 @@ class _HomeViewBodyState extends State<HomeViewBody> {
               ]
               else
               SearchShowcase(showcaseContext: widget.showcaseContext,),
-              SizedBox(
-                height: 10.h,
-              ),
-              Text(
-                "Shop Latest Offer By Categories".tr(),
-                style: TextStylesPaytoneOne.textViewRegular24,
-              ),
-              const CategoriesList(),
+             20.ph,
+              NewChatlistWidget(),
+              10.ph,
+              if(!SubscriptionProvider.get(context).isSubscribed) ...[
+                Text(
+                  "Shop Latest Offer By Categories".tr(),
+                  style: TextStylesPaytoneOne.textViewRegular24,
+                ),
+                const CategoriesList(),
+              ],
               // const NewChatlistWidget(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -179,6 +181,13 @@ class _HomeViewBodyState extends State<HomeViewBody> {
               10.ph,
               const HomeStores(),
               20.ph,
+              if(SubscriptionProvider.get(context).isSubscribed) ...[
+                Text(
+                  "Shop Latest Offer By Categories".tr(),
+                  style: TextStylesPaytoneOne.textViewRegular24,
+                ),
+                const CategoriesList(),
+              ],
               if(!Provider.of<SubscriptionProvider>(context, listen: false).isSubscribed)
               GestureDetector(
                 onTap: (){

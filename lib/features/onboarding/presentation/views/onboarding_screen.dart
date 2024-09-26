@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../services/hubspot_service.dart';
 import 'widgets/fourth_onboarding_survey.dart';
@@ -213,5 +214,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       "hubspot_owner_id": "1252705237",
     });
     }
+    var pref = await SharedPreferences.getInstance();
+    pref.setBool("onboarding", false);
   }
 }
