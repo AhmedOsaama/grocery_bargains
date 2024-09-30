@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -34,12 +36,18 @@ class _SearchWidgetState extends State<SearchWidget> {
           Expanded(
             child: TypeAheadField<QuerySuggestion>(
               suggestionsCallback: (search) async {
-                suggestionRepository.query(search);
-                var suggestions = await suggestionRepository.suggestions.first;
-                return suggestions;
+                log("message");
+                try {
+                  suggestionRepository.query(search);
+                  var suggestions = await suggestionRepository.suggestions.first;
+                  return suggestions;
+                }catch(e){
+                  log("Suggestions error: ${e}");
+                }
+                return [];
               },
               builder: (context, controller, focusNode) {
-                if(widget.searchController != null){
+                if (widget.searchController != null) {
                   controller = widget.searchController!;
                 }
                 textController = controller;
@@ -48,29 +56,32 @@ class _SearchWidgetState extends State<SearchWidget> {
                     focusNode: focusNode,
                     hintText: "What are you looking for?".tr(),
                     hintStyle: TextStyles.textViewRegular14.copyWith(color: Color(0xff71717A)),
-                    border: const OutlineInputBorder(
-                        borderSide: BorderSide.none
-                    ),
-                    boxShadow:  const [
+                    border: const OutlineInputBorder(borderSide: BorderSide.none),
+                    boxShadow: const [
                       BoxShadow(
-                        offset: Offset(0,1),
+                        offset: Offset(0, 1),
                         blurRadius: 3,
                         color: Color.fromRGBO(0, 178, 7, 0.1),
                       ),
                       BoxShadow(
-                        offset: Offset(0,1),
+                        offset: Offset(0, 1),
                         blurRadius: 2,
                         spreadRadius: -1,
                         color: Color.fromRGBO(44, 116, 47, 0.1),
                       ),
-                    ]
-                );
+                    ]);
               },
               itemBuilder: (context, option) {
-                return ListTile(title: Text(option.query),);
+                return ListTile(
+                  title: Text(option.query),
+                );
               },
-              onSelected: (suggestion){
-                AppNavigator.push(context: context, screen: AlgoliaSearchScreen(query: suggestion.query,));
+              onSelected: (suggestion) {
+                AppNavigator.push(
+                    context: context,
+                    screen: AlgoliaSearchScreen(
+                      query: suggestion.query,
+                    ));
               },
             ),
           ),
@@ -78,17 +89,27 @@ class _SearchWidgetState extends State<SearchWidget> {
           SizedBox(
             width: 40,
             height: 40,
-            child: ElevatedButton(onPressed: (){
-              AppNavigator.push(context: context, screen: AlgoliaSearchScreen(query: textController.text.trim(),));
-            }, style: ElevatedButton.styleFrom(
-                backgroundColor: primaryGreen,
-                padding: EdgeInsets.zero,
-                // fixedSize: Size(40, 40),
-                // maximumSize: ,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                )
-            ), child: SvgPicture.asset(search, color: Colors.white,),),
+            child: ElevatedButton(
+              onPressed: () {
+                AppNavigator.push(
+                    context: context,
+                    screen: AlgoliaSearchScreen(
+                      query: textController.text.trim(),
+                    ));
+              },
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryGreen,
+                  padding: EdgeInsets.zero,
+                  // fixedSize: Size(40, 40),
+                  // maximumSize: ,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  )),
+              child: SvgPicture.asset(
+                search,
+                color: Colors.white,
+              ),
+            ),
           )
         ],
       ),
