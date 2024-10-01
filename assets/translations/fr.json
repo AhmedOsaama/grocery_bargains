@@ -95,6 +95,7 @@
   "chatlist": "Liste de discussions",
   "chatlists": "Listes de discussions",
   "subscription": "Abonnement",
+  "Subscription": "Abonnement",
   "freePlan": "Plan gratuit",
   "language": "Langue",
   "english": "Anglais",
@@ -208,7 +209,7 @@
   "Sizes": "Tailles",
   "Name": "Nom",
 
-  "YourStatus": "Votre statut",
+  "Your Status": "Votre statut",
   "PhoneNumberAlready": "Le numéro de téléphone est déjà enregistré avec un autre compte. Veuillez entrer un autre numéro de téléphone",
   "EmailAlready": "L'email est déjà enregistré avec un autre compte. Veuillez entrer un autre email",
   "invalidOTP": "Le code de vérification reçu par SMS/TOTP est invalide. Veuillez vérifier et entrer à nouveau le code de vérification correct.",
@@ -618,7 +619,8 @@
   "Vegan": "Végétalien",
   "No Preferences": "Aucune préférence",
   "Do you have any dietary preferences ?": "Avez-vous des préférences alimentaires ?",
-  "Please select any dietary preferences you have. This will help us tailor your grocery recommendations.": "Veuillez sélectionner les préférences alimentaires que vous avez. Cela nous aidera à personnaliser vos recommandations de courses."
+  "Please select any dietary preferences you have. This will help us tailor your grocery recommendations.": "Veuillez sélectionner les préférences alimentaires que vous avez. Cela nous aidera à personnaliser vos recommandations de courses.",
+  "Rate Us": "Évaluez-nous"
 
 
 }

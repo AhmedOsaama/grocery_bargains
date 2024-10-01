@@ -95,6 +95,7 @@
   "chatlist": "Chatliste",
   "chatlists": "Chatlisten",
   "subscription": "Abonnement",
+  "Subscription": "Abonnement",
   "freePlan": "Kostenloser Plan",
   "language": "Sprache",
   "english": "Englisch",
@@ -618,7 +619,8 @@
   "Vegan": "Vegan",
   "No Preferences": "Keine Präferenzen",
   "Do you have any dietary preferences ?": "Haben Sie spezielle Ernährungspräferenzen?",
-  "Please select any dietary preferences you have. This will help us tailor your grocery recommendations.": "Bitte wählen Sie alle Ernährungspräferenzen aus, die Sie haben. Dies wird uns helfen, Ihre Einkaufsempfehlungen anzupassen."
+  "Please select any dietary preferences you have. This will help us tailor your grocery recommendations.": "Bitte wählen Sie alle Ernährungspräferenzen aus, die Sie haben. Dies wird uns helfen, Ihre Einkaufsempfehlungen anzupassen.",
+  "Rate Us": "Bewerte uns"
 }
 
 

@@ -25,15 +25,15 @@ class CategoriesList extends StatefulWidget {
 class _CategoriesListState extends State<CategoriesList> {
   Future? getCategoryTranslations;
 
-  Future getAllCategories() async {
-    await Provider.of<ProductsProvider>(context, listen: false).getAllCategories();
+  void getAllCategories() async {
+    Provider.of<ProductsProvider>(context, listen: false).getAllCategories();
   }
 
-  Future translateCategories() async {
+  Future translateCategories(String languageCode) async {
     var productsProvider = Provider.of<ProductsProvider>(context, listen: false);
     List<Future<Translation>> translatedCategoryList = [];
     productsProvider.categories.forEach((element) {
-      var translationFuture = GoogleTranslator().translate(element.category, to: "nl");
+      var translationFuture = GoogleTranslator().translate(element.category, to: languageCode);
       translatedCategoryList.add(translationFuture);
     });
     return Future.wait(translatedCategoryList);
@@ -42,9 +42,13 @@ class _CategoriesListState extends State<CategoriesList> {
   @override
   void initState() {
     super.initState();
-    getAllCategories().then((value) {
-      if (context.locale.languageCode == "nl") getCategoryTranslations = translateCategories();
-    });
+    getAllCategories();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (context.locale.languageCode != "en") getCategoryTranslations = translateCategories(context.locale.languageCode);
   }
 
   @override
@@ -92,7 +96,7 @@ class _CategoriesListState extends State<CategoriesList> {
                                 return SvgPicture.asset(imageError);
                               },
                             ),
-                            if (context.locale.languageCode == "nl")
+                            context.locale.languageCode != "en" ?
                               FutureBuilder(
                                   future: getCategoryTranslations,
                                   builder: (context, snapshot) {
@@ -118,7 +122,7 @@ class _CategoriesListState extends State<CategoriesList> {
                                       textAlign: TextAlign.center,
                                       maxLines: 3,
                                     );
-                                  }),
+                                  }) :
                             Text(
                               element.category,
                               style: TextStyles.textViewMedium10.copyWith(color: gunmetal),

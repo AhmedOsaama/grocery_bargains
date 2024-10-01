@@ -94,6 +94,7 @@
   "chatlist": "ChatLijst",
   "chatlists": "ChatLijsten",
   "subscription" : "Abonnement",
+  "Subscription" : "Abonnement",
   "freePlan" : "Gratis abonnement",
   "language" : "Taal",
   "english"  : "Engels",
@@ -207,7 +208,7 @@
   "ThePricesShown"                  : "De getoonde prijzen zijn online beschikbaar en komen mogelijk niet in de winkel voor. Bevestig de prijzen voordat u de winkel bezoekt",
   "Sizes"                  : "Maten",
   "Name"                  : "Naam",
-  "YourStatus"                  : "Jouw Status",
+  "Your Status"                  : "Jouw Status",
   "PhoneNumberAlready"                  : "Telefoonnummer is al geregistreerd bij een ander account. Voer een ander telefoonnummer in",
   "EmailAlready"                  : "Email is al geregistreerd bij een ander account. Voer een ander email in",
   "invalidOTP"                  : "De verificatiecode van SMS / TOTP is ongeldig. Controleer en voer opnieuw de juiste verificatiecode in.",
@@ -569,7 +570,8 @@
   "Multi-Household Shopping": "Winkelen voor meerdere huishoudens",
   "Please select at least one goal to proceed.": "Selecteer ten minste één doel om verder te gaan.",
   "What’s on your typical shopping list ?": "Wat staat er op je typische boodschappenlijst?",
-  "Choose the items that are usually on your grocery shopping list. You can select multiple options.": "Kies de items die meestal op je boodschappenlijst staan. Je kunt"
+  "Choose the items that are usually on your grocery shopping list. You can select multiple options.": "Kies de items die meestal op je boodschappenlijst staan. Je kunt",
+  "Rate Us": "Beoordeel ons"
 
 
 

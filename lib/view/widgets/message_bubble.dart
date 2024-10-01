@@ -90,8 +90,8 @@ class _MessageBubbleState extends State<MessageBubble> {
               if (widget.message.isEmpty) //case of product as a message
                 GestureDetector(
                   onTap: () async {
-                    var productProvider = Provider.of<ProductsProvider>(context, listen: false);
-                    productProvider.goToProductPage(widget.storeName, context, widget.itemId);
+                    // var productProvider = Provider.of<ProductsProvider>(context, listen: false);
+                    // productProvider.goToProductPage(widget.storeName, context, widget.itemId);
                   },
                   child: Container(
                     key: widget.key,

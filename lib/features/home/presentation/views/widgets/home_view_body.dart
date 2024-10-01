@@ -1,16 +1,10 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:bargainb/core/utils/firestore_utils.dart';
 import 'package:bargainb/features/chatlists/presentation/views/chatlist_view_screen.dart';
-import 'package:bargainb/features/chatlists/presentation/views/widgets/chat_prompts_widget.dart';
-import 'package:bargainb/features/chatlists/presentation/views/widgets/chat_view_widget.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/categories_list.dart';
-import 'package:bargainb/features/home/presentation/views/widgets/categories_row.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/home_prompts_widget.dart';
-import 'package:bargainb/features/home/presentation/views/widgets/latest_bargains_row.dart';
 import 'package:bargainb/features/home/presentation/views/widgets/search_showcase.dart';
-import 'package:bargainb/features/home/presentation/views/widgets/see_more_button.dart';
 import 'package:bargainb/features/profile/presentation/views/subscription_screen.dart';
 import 'package:bargainb/features/search/presentation/views/algolia_search_screen.dart';
 import 'package:bargainb/features/search/presentation/views/widgets/search_widget.dart';

@@ -57,7 +57,7 @@ class ProfileSettingsWidget extends StatelessWidget {
             Icons.person,
             color: primaryGreen,
           ),
-          settingText: "Your Status",
+          settingText: "Your Status".tr(),
           value: userStatus,
           onTap: () {
             editProfile();
@@ -71,7 +71,7 @@ class ProfileSettingsWidget extends StatelessWidget {
             masterCard,
             color: primaryGreen,
           ),
-          settingText: "Subscription",
+          settingText: "Subscription".tr(),
           onTap: () {
             pushNewScreen(context, screen: SubscriptionScreen());
             TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid,

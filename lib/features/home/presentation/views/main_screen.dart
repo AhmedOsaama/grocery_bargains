@@ -87,20 +87,20 @@ class _MainScreenState extends State<MainScreen> {
         if (page != null) {
           if (page == '/profile-screen') AppNavigator.push(context: context, screen: ProfileScreen());
         }
-        if (productData != null) {
-          try {
-            productData = jsonDecode(productData);
-            Provider.of<ProductsProvider>(context, listen: false)
-                .goToProductPage(productData['store_name'], context, productData['product_id']);
-          } catch (e) {
-            Provider.of<ProductsProvider>(context, listen: false).getAllProducts().then((value) {
-              Provider.of<ProductsProvider>(context, listen: false)
-                  .goToProductPage(productData['store_name'], context, productData['product_id']);
-            }).catchError((e) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-            });
-          }
-        }
+        // if (productData != null) {
+        //   try {
+        //     productData = jsonDecode(productData);
+        //     Provider.of<ProductsProvider>(context, listen: false)
+        //         .goToProductPage(productData['store_name'], context, productData['product_id']);
+        //   } catch (e) {
+        //     Provider.of<ProductsProvider>(context, listen: false).getAllProducts().then((value) {
+        //       Provider.of<ProductsProvider>(context, listen: false)
+        //           .goToProductPage(productData['store_name'], context, productData['product_id']);
+        //     }).catchError((e) {
+        //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+        //     });
+        //   }
+        // }
         if (listId != null) {                         //case when a user clicks on a deep link to a chatlist
           var currentUserId = FirebaseAuth.instance.currentUser?.uid;
           if(!SubscriptionProvider.get(context).isSubscribed){

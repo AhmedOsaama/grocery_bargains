@@ -139,43 +139,43 @@ class _ProductDialogState extends State<ProductDialog> {
                     )
                   ],
                 ),
-                30.pw,
-                Column(
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          var productProvider = Provider.of<ProductsProvider>(context, listen: false);
-                          productProvider.goToProductPage(widget.storeName, context, widget.itemId);
-                          TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open product page", DateTime.now().toUtc().toString(), "Chatlist screen");
-                        },
-                        splashRadius: 25,
-                        icon: Icon(
-                          Icons.visibility_rounded,
-                          color: primaryGreen,
-                        )),
-                    Text(
-                      'View',
-                      style: TextStylesInter.textViewMedium12.copyWith(color: secondaryGreen),
-                    )
-                  ],
-                ),
-                30.pw,
-                Column(
-                  children: [
-                    IconButton(
-                        onPressed: () {
-                          Provider.of<ProductsProvider>(context, listen: false)
-                              .shareProductViaDeepLink(widget.itemName, widget.itemId, widget.storeName, context);
-                          TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Share chatlist item", DateTime.now().toUtc().toString(), "Chatlist screen");
-                        },
-                        icon: Icon(Icons.share_outlined, color: primaryGreen),
-                        splashRadius: 25),
-                    Text(
-                      'Share',
-                      style: TextStylesInter.textViewMedium12.copyWith(color: secondaryGreen),
-                    )
-                  ],
-                ),
+                // 30.pw,
+                // Column(
+                //   children: [
+                //     IconButton(
+                //         onPressed: () {
+                //           var productProvider = Provider.of<ProductsProvider>(context, listen: false);
+                //           productProvider.goToProductPage(widget.storeName, context, widget.itemId);
+                //           TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Open product page", DateTime.now().toUtc().toString(), "Chatlist screen");
+                //         },
+                //         splashRadius: 25,
+                //         icon: Icon(
+                //           Icons.visibility_rounded,
+                //           color: primaryGreen,
+                //         )),
+                //     Text(
+                //       'View',
+                //       style: TextStylesInter.textViewMedium12.copyWith(color: secondaryGreen),
+                //     )
+                //   ],
+                // ),
+                // 30.pw,
+                // Column(
+                //   children: [
+                //     IconButton(
+                //         onPressed: () {
+                //           Provider.of<ProductsProvider>(context, listen: false)
+                //               .shareProductViaDeepLink(widget.itemName, widget.itemId, widget.storeName, context);
+                //           TrackingUtils().trackButtonClick(FirebaseAuth.instance.currentUser!.uid, "Share chatlist item", DateTime.now().toUtc().toString(), "Chatlist screen");
+                //         },
+                //         icon: Icon(Icons.share_outlined, color: primaryGreen),
+                //         splashRadius: 25),
+                //     Text(
+                //       'Share',
+                //       style: TextStylesInter.textViewMedium12.copyWith(color: secondaryGreen),
+                //     )
+                //   ],
+                // ),
               ],
             )
           ],

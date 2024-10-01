@@ -95,6 +95,7 @@
   "chatlist": "Lista chat",
   "chatlists": "Liste chat",
   "subscription": "Abbonamento",
+  "Subscription": "Abbonamento",
   "freePlan": "Piano gratuito",
   "language": "Lingua",
   "english": "Inglese",
@@ -205,7 +206,7 @@
   "ThePricesShown": "I prezzi mostrati sono disponibili online e potrebbero non riflettere i prezzi in negozio. Conferma i prezzi prima di visitare il negozio",
   "Sizes": "Taglie",
   "Name": "Nome",
-  "YourStatus": "Il tuo stato",
+  "Your Status": "Il tuo stato",
   "PhoneNumberAlready": "Il numero di telefono è già registrato con un altro account. Inserisci un numero di telefono diverso.",
   "EmailAlready": "L'email è già registrata con un altro account. Inserisci una email diversa.",
   "invalidOTP": "Il codice di verifica SMS/TOTP non è valido. Controlla e inserisci nuovamente il codice di verifica corretto.",
@@ -602,7 +603,8 @@
   "Vegan": "Vegano",
   "No Preferences": "Nessuna Preferenza",
   "Do you have any dietary preferences ?": "Hai delle preferenze alimentari?",
-  "Please select any dietary preferences you have. This will help us tailor your grocery recommendations.": "Seleziona le preferenze alimentari che hai. Questo ci aiuterà a personalizzare le tue raccomandazioni per la spesa."
+  "Please select any dietary preferences you have. This will help us tailor your grocery recommendations.": "Seleziona le preferenze alimentari che hai. Questo ci aiuterà a personalizzare le tue raccomandazioni per la spesa.",
+  "Rate Us": "Valutaci"
 
 
 
