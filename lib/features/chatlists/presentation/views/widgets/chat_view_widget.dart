@@ -234,6 +234,12 @@ class _ChatViewState extends State<ChatView> {
     jumboItems.clear();
     hoogvlietItems.clear();
     dirkItems.clear();
+    edekaItems.clear();
+    aldiItems.clear();
+    plusItems.clear();
+    coopItems.clear();
+    sparItems.clear();
+    reweItems.clear();
     quicklyAddedItems.clear();
   }
 
