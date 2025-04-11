@@ -1,6 +1,6 @@
-# BargainB
+# Grocery Bargains
 
-An Afdal X Project.
+A grocery app combining various supermarkets with price comparisons and todo lists.
 
 ## Getting Started
 

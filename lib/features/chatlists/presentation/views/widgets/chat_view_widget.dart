@@ -273,8 +273,6 @@ class _ChatViewState extends State<ChatView> {
                           reverse: true,
                           itemCount: messages.length,
                           itemBuilder: (ctx, index) {
-                            // log(messages[index]['item_price'].runtimeType.toString());
-                            // log(messages[index]['item_oldPrice'].runtimeType.toString());
                             return Container(
                                 padding: const EdgeInsets.all(8.0),
                                 child: MessageBubble(
