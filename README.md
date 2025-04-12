@@ -16,3 +16,6 @@ Skills and concepts:
 - State management
 - Multi-language
 - In-app purchases
+
+![Demo](assets/test.gif)
+
