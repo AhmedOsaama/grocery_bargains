@@ -2,7 +2,7 @@
 
 A grocery app combining various supermarkets with price comparisons and todo lists.
 
-Skills and concepts:
+# Skills and concepts:
 - Firebase
 - RESTful APIs
 - Third party SDK integration(Mixpanel, Branch, Sentry etc.)
@@ -17,5 +17,6 @@ Skills and concepts:
 - Multi-language
 - In-app purchases
 
-![Demo](assets/test.gif)
+# Demo
+![Demo](assets/demo.gif)
 
