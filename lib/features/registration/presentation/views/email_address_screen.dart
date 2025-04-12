@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:bargainb/providers/user_provider.dart';
-import 'package:bargainb/services/hubspot_service.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:bargainb/utils/style_utils.dart';
 import 'package:bargainb/utils/tracking_utils.dart';

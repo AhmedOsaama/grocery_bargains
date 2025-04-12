@@ -22,7 +22,6 @@ import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../../services/hubspot_service.dart';
 import 'widgets/fourth_onboarding_survey.dart';
 import 'widgets/seventh_onboarding_survey.dart';
 import 'widgets/sixth_onboarding_survey.dart';
@@ -199,20 +198,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       log(e.toString());
     }
       var email = Provider.of<UserProvider>(context, listen: false).email;
-     await HubspotService.createHubspotContact({
-      "firstname": firstName,
-      'last_name': lastName,
-      'email': email,
-      'country': country,
-      'city': city,
-      'bargainb_goals': selectedGoals.toString(),
-      'dietary_preferences': dietaryPreferences.toString(),
-      'favourite_stores': selectedStores.toString(),
-      'shopping_list_people': soloShopper ? "One person" : "Grown ups: $numOfGrownUps, Little Ones: $numOfLittleOnes, Furry Friends $numOfFurryFriends",
-      'typical_shopping_list': shoppingList.toString(),
-      'grocery_monthly_budget': this.selectedBudget.toString(),
-      "hubspot_owner_id": "1252705237",
-    });
     }
     var pref = await SharedPreferences.getInstance();
     pref.setBool("onboarding", false);

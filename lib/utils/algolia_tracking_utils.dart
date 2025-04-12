@@ -5,7 +5,6 @@ import 'package:bargainb/utils/algolia_utils.dart';
 import 'package:bargainb/utils/tracking_utils.dart';
 
 class AlgoliaTrackingUtils{
-  // static Algolia algolia = Algolia.init(applicationId: 'DG62X9U03X', apiKey: AlgoliaApp.searchOnlyKey);
   static const algoliaIndexName = AlgoliaApp.hitsIndex;
 
   static Future<void> trackAlgoliaClickEvent(String objectID, String queryId, int position) async {

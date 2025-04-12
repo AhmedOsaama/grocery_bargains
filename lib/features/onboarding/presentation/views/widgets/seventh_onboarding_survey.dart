@@ -1,6 +1,5 @@
 import 'package:bargainb/config/routes/app_navigator.dart';
 import 'package:bargainb/features/onboarding/presentation/views/free_trial_screen.dart';
-import 'package:bargainb/services/hubspot_service.dart';
 import 'package:bargainb/utils/app_colors.dart';
 import 'package:bargainb/utils/empty_padding.dart';
 import 'package:easy_localization/easy_localization.dart';
