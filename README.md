@@ -18,5 +18,9 @@ A grocery app combining various supermarkets with price comparisons and todo lis
 - In-app purchases
 
 # Demo
-![Demo](assets/demo.gif)
+Demo 1:
+![Demo](assets/demo_short_resized.gif)
+
+Demo2:
+![Demo](assets/demo_resized.gif)
 
